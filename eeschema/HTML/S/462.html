@@ -1,0 +1,156 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>tools/sch_line_wire_bus_tool.h</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/484.html'>tools</a>/sch_line_wire_bus_tool.h</h2>
+<em class='comment'>/* [&lt;][&gt;][^][v][top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'><a href='../J/397.html' title='Multiple included from 5 places.'>INCLUDED FROM</a></h2>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * This program source code file is part of KiCad, a free EDA CAD application.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 2019 CERN</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> * Copyright (C) 2019 KiCad Developers, see AUTHORS.txt for contributors.</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> *</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> * This program is free software; you can redistribute it and/or</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * modify it under the terms of the GNU General Public License</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * as published by the Free Software Foundation; either version 2</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> * of the License, or (at your option) any later version.</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> *</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> * This program is distributed in the hope that it will be useful,</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> * GNU General Public License for more details.</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> *</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> * You should have received a copy of the GNU General Public License</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * along with this program; if not, you may find one here:</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> * or you may search the http://www.gnu.org website for the version 2 license,</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'> * or you may write to the Free Software Foundation, Inc.,</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'> * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'> */</em>
+<a id='L24' name='L24'></a>  24 
+<a id='L25' name='L25'></a>  25 <em class='sharp'>#ifndef</em> <a href='../S/462.html#L26' title='Defined at 26 in tools/sch_line_wire_bus_tool.h.'>SCH_LINE_WIRE_BUS_TOOL_H</a>
+<a id='L26' name='L26'></a>  26 <em class='sharp'>#define</em> <a href='../S/462.html#L25' title='Referred from 25 in tools/sch_line_wire_bus_tool.h.'>SCH_LINE_WIRE_BUS_TOOL_H</a>
+<a id='L27' name='L27'></a>  27 
+<a id='L28' name='L28'></a>  28 <em class='sharp'>#include</em> &lt;wx/gdicmn.h&gt;
+<a id='L29' name='L29'></a>  29 <em class='sharp'>#include</em> &lt;wx/string.h&gt;
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#include</em> &lt;string&gt;
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#include</em> &lt;vector&gt;
+<a id='L32' name='L32'></a>  32 
+<a id='L33' name='L33'></a>  33 <em class='sharp'>#include</em> &lt;math/vector2d.h&gt;
+<a id='L34' name='L34'></a>  34 <em class='sharp'>#include</em> &lt;tool/tool_event.h&gt;
+<a id='L35' name='L35'></a>  35 <em class='sharp'>#include</em> &lt;<a href='357.html'>sch_edit_frame.h</a>&gt;
+<a id='L36' name='L36'></a>  36 <em class='sharp'>#include</em> &lt;<a href='370.html'>sch_line.h</a>&gt;
+<a id='L37' name='L37'></a>  37 
+<a id='L38' name='L38'></a>  38 <em class='sharp'>#include</em> &lt;<a href='444.html'>ee_tool_base.h</a>&gt;
+<a id='L39' name='L39'></a>  39 
+<a id='L40' name='L40'></a>  40 
+<a id='L41' name='L41'></a>  41 <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../S/346.html#L52' title='Defined at 52 in sch_bus_entry.cpp.'>SCH_BUS_WIRE_ENTRY</a>;
+<a id='L42' name='L42'></a>  42 <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../S/395.html#L755' title='Defined at 755 in sch_text.cpp.'>SCH_LABEL</a>;
+<a id='L43' name='L43'></a>  43 <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../S/356.html#L299' title='Defined at 299 in sch_edit_frame.cpp.'>SCH_EDIT_FRAME</a>;
+<a id='L44' name='L44'></a>  44 <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../S/442.html#L134' title='Defined at 134 in tools/ee_selection_tool.cpp.'>EE_SELECTION_TOOL</a>;
+<a id='L45' name='L45'></a>  45 
+<a id='L46' name='L46'></a>  46 
+<a id='L47' name='L47'></a>  47 <em class='comment'>/// Collection of data related to the bus unfolding tool</em>
+<a id='L48' name='L48'></a>  48 <strong class='reserved'>struct</strong> <a href='../S/462.html#L128' title='Referred from 128 in tools/sch_line_wire_bus_tool.h.'>BUS_UNFOLDING_T</a>
+<a id='L49' name='L49'></a>  49 <em class='brace'>{</em>
+<a id='L50' name='L50'></a>  50     <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../Y/4776.html' title='Multiple used in 10 places.'>in_progress</a>;   <em class='comment'>///&lt; True if bus unfold operation is running</em>
+<a id='L51' name='L51'></a>  51     <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../Y/4507.html' title='Multiple used in 5 places.'>flipX</a>;         <em class='comment'>///&lt; True if the bus entry should be flipped in the x-axis</em>
+<a id='L52' name='L52'></a>  52     <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../Y/4508.html' title='Multiple used in 5 places.'>flipY</a>;         <em class='comment'>///&lt; True if the bus entry should be flipped in the y-axis</em>
+<a id='L53' name='L53'></a>  53     <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../Y/4911.html' title='Multiple used in 7 places.'>label_placed</a>;  <em class='comment'>///&lt; True if user has placed the net label</em>
+<a id='L54' name='L54'></a>  54 
+<a id='L55' name='L55'></a>  55     <a href='../Y/8819.html' title='Multiple used in 1271 places.'>wxPoint</a> <a href='../Y/7091.html' title='Multiple used in 11 places.'>origin</a>;     <em class='comment'>///&lt; Origin (on the bus) of the unfold</em>
+<a id='L56' name='L56'></a>  56     <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a> <a href='../Y/6863.html' title='Multiple used in 4 places.'>net_name</a>;  <em class='comment'>///&lt; Net label for the unfolding operation</em>
+<a id='L57' name='L57'></a>  57 
+<a id='L58' name='L58'></a>  58     <a href='../S/346.html#L52' title='Defined at 52 in sch_bus_entry.cpp.'>SCH_BUS_WIRE_ENTRY</a>* <a href='../Y/4297.html' title='Multiple used in 85 places.'>entry</a>;
+<a id='L59' name='L59'></a>  59     <a href='../S/395.html#L755' title='Defined at 755 in sch_text.cpp.'>SCH_LABEL</a>* <a href='../Y/4903.html' title='Multiple used in 120 places.'>label</a>;
+<a id='L60' name='L60'></a>  60 <em class='brace'>}</em>;
+<a id='L61' name='L61'></a>  61 
+<a id='L62' name='L62'></a>  62 
+<a id='L63' name='L63'></a>  63 <em class='comment'>/**</em>
+<a id='L64' name='L64'></a>  64 <em class='comment'> * SCH_LINE_DRAWING_TOOL</em>
+<a id='L65' name='L65'></a>  65 <em class='comment'> *</em>
+<a id='L66' name='L66'></a>  66 <em class='comment'> * Tool responsible for drawing/placing items (symbols, wires, buses, labels, etc.)</em>
+<a id='L67' name='L67'></a>  67 <em class='comment'> */</em>
+<a id='L68' name='L68'></a>  68 
+<a id='L69' name='L69'></a>  69 <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../D/1541.html' title='Multiple defined in 2 places.'>SCH_LINE_WIRE_BUS_TOOL</a> : <a href='../Y/7469.html' title='Multiple used in 431 places.'>public</a> <a href='../Y/410.html' title='Multiple used in 39 places.'>EE_TOOL_BASE</a>&lt;<a href='../S/356.html#L299' title='Defined at 299 in sch_edit_frame.cpp.'>SCH_EDIT_FRAME</a>&gt;
+<a id='L70' name='L70'></a>  70 <em class='brace'>{</em>
+<a id='L71' name='L71'></a>  71 <a href='../Y/7469.html' title='Multiple used in 431 places.'>public</a>:
+<a id='L72' name='L72'></a>  72     <a href='../D/1541.html' title='Multiple defined in 2 places.'>SCH_LINE_WIRE_BUS_TOOL</a>();
+<a id='L73' name='L73'></a>  73     ~<a href='../D/1541.html' title='Multiple defined in 2 places.'>SCH_LINE_WIRE_BUS_TOOL</a>();
+<a id='L74' name='L74'></a>  74 
+<a id='L75' name='L75'></a>  75     <em class='comment'>/// @copydoc TOOL_INTERACTIVE::Init()</em>
+<a id='L76' name='L76'></a>  76     <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../D/872.html' title='Multiple defined in 16 places.'>Init</a>() <a href='../Y/7123.html' title='Multiple used in 1177 places.'>override</a>;
+<a id='L77' name='L77'></a>  77 
+<a id='L78' name='L78'></a>  78     <strong class='reserved'>int</strong> <a href='../S/461.html#L290' title='Defined at 290 in tools/sch_line_wire_bus_tool.cpp.'>DrawSegments</a>( <strong class='reserved'>const</strong> <a href='../Y/2386.html' title='Multiple used in 281 places.'>TOOL_EVENT</a>&amp; <a href='../Y/2893.html' title='Multiple used in 548 places.'>aEvent</a> );
+<a id='L79' name='L79'></a>  79     <strong class='reserved'>int</strong> <a href='../S/461.html#L310' title='Defined at 310 in tools/sch_line_wire_bus_tool.cpp.'>UnfoldBus</a>( <strong class='reserved'>const</strong> <a href='../Y/2386.html' title='Multiple used in 281 places.'>TOOL_EVENT</a>&amp; <a href='../Y/2893.html' title='Multiple used in 548 places.'>aEvent</a> );
+<a id='L80' name='L80'></a>  80 
+<a id='L81' name='L81'></a>  81     <em class='comment'>// SELECTION_CONDITIONs:</em>
+<a id='L82' name='L82'></a>  82     <strong class='reserved'>static</strong> <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../S/461.html#L260' title='Defined at 260 in tools/sch_line_wire_bus_tool.cpp.'>IsDrawingLine</a>( <strong class='reserved'>const</strong> <a href='../S/234.html#L83' title='Defined at 83 in eeschema_settings.h.'>SELECTION</a>&amp; <a href='../Y/3299.html' title='Multiple used in 42 places.'>aSelection</a> );
+<a id='L83' name='L83'></a>  83     <strong class='reserved'>static</strong> <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../S/461.html#L267' title='Defined at 267 in tools/sch_line_wire_bus_tool.cpp.'>IsDrawingWire</a>( <strong class='reserved'>const</strong> <a href='../S/234.html#L83' title='Defined at 83 in eeschema_settings.h.'>SELECTION</a>&amp; <a href='../Y/3299.html' title='Multiple used in 42 places.'>aSelection</a> );
+<a id='L84' name='L84'></a>  84     <strong class='reserved'>static</strong> <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../S/461.html#L274' title='Defined at 274 in tools/sch_line_wire_bus_tool.cpp.'>IsDrawingBus</a>( <strong class='reserved'>const</strong> <a href='../S/234.html#L83' title='Defined at 83 in eeschema_settings.h.'>SELECTION</a>&amp; <a href='../Y/3299.html' title='Multiple used in 42 places.'>aSelection</a> );
+<a id='L85' name='L85'></a>  85     <strong class='reserved'>static</strong> <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../S/461.html#L281' title='Defined at 281 in tools/sch_line_wire_bus_tool.cpp.'>IsDrawingLineWireOrBus</a>( <strong class='reserved'>const</strong> <a href='../S/234.html#L83' title='Defined at 83 in eeschema_settings.h.'>SELECTION</a>&amp; <a href='../Y/3299.html' title='Multiple used in 42 places.'>aSelection</a> );
+<a id='L86' name='L86'></a>  86 
+<a id='L87' name='L87'></a>  87     <em class='comment'>/**</em>
+<a id='L88' name='L88'></a>  88 <em class='comment'>     * Handle the addition of junctions to a selection of objects</em>
+<a id='L89' name='L89'></a>  89 <em class='comment'>     */</em>
+<a id='L90' name='L90'></a>  90     <strong class='reserved'>int</strong> <a href='../S/461.html#L901' title='Defined at 901 in tools/sch_line_wire_bus_tool.cpp.'>AddJunctionsIfNeeded</a>( <strong class='reserved'>const</strong> <a href='../Y/2386.html' title='Multiple used in 281 places.'>TOOL_EVENT</a>&amp; <a href='../Y/2893.html' title='Multiple used in 548 places.'>aEvent</a> );
+<a id='L91' name='L91'></a>  91 
+<a id='L92' name='L92'></a>  92 <a href='../Y/7425.html' title='Multiple used in 187 places.'>private</a>:
+<a id='L93' name='L93'></a>  93     <strong class='reserved'>int</strong> <a href='../S/461.html#L474' title='Defined at 474 in tools/sch_line_wire_bus_tool.cpp.'>doDrawSegments</a>( <strong class='reserved'>const</strong> <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8004.html' title='Multiple used in 145 places.'>string</a>&amp; <a href='../Y/3400.html' title='Multiple used in 4 places.'>aTool</a>, <strong class='reserved'>int</strong> <a href='../Y/3407.html' title='Multiple used in 154 places.'>aType</a> );
+<a id='L94' name='L94'></a>  94     <a href='../D/1539.html' title='Multiple defined in 2 places.'>SCH_LINE</a>* <a href='../S/461.html#L717' title='Defined at 717 in tools/sch_line_wire_bus_tool.cpp.'>startSegments</a>( <strong class='reserved'>int</strong> <a href='../Y/3407.html' title='Multiple used in 154 places.'>aType</a>, <strong class='reserved'>const</strong> <a href='../Y/2643.html' title='Multiple used in 106 places.'>VECTOR2D</a>&amp; <a href='../Y/3209.html' title='Multiple used in 69 places.'>aPos</a> );
+<a id='L95' name='L95'></a>  95     <a href='../D/1539.html' title='Multiple defined in 2 places.'>SCH_LINE</a>* <a href='../S/461.html#L370' title='Defined at 370 in tools/sch_line_wire_bus_tool.cpp.'>doUnfoldBus</a>( <strong class='reserved'>const</strong> <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&amp; <a href='../Y/3103.html' title='Multiple used in 4 places.'>aNet</a> );
+<a id='L96' name='L96'></a>  96     <strong class='reserved'>void</strong> <a href='../S/461.html#L804' title='Defined at 804 in tools/sch_line_wire_bus_tool.cpp.'>finishSegments</a>();
+<a id='L97' name='L97'></a>  97 
+<a id='L98' name='L98'></a>  98     <em class='comment'>/**</em>
+<a id='L99' name='L99'></a>  99 <em class='comment'>     * Iterates over the wire list and removes the null segments and</em>
+<a id='L100' name='L100'></a> 100 <em class='comment'>     * overlapping segments to create a simplified wirelist</em>
+<a id='L101' name='L101'></a> 101 <em class='comment'>     */</em>
+<a id='L102' name='L102'></a> 102     <strong class='reserved'>void</strong> <a href='../S/461.html#L767' title='Defined at 767 in tools/sch_line_wire_bus_tool.cpp.'>simplifyWireList</a>();
+<a id='L103' name='L103'></a> 103 
+<a id='L104' name='L104'></a> 104     <em class='comment'>///&gt; Sets up handlers for various events.</em>
+<a id='L105' name='L105'></a> 105     <strong class='reserved'>void</strong> <a href='../D/2551.html' title='Multiple defined in 13 places.'>setTransitions</a>() <a href='../Y/7123.html' title='Multiple used in 1177 places.'>override</a>;
+<a id='L106' name='L106'></a> 106 
+<a id='L107' name='L107'></a> 107     <em class='comment'>/**</em>
+<a id='L108' name='L108'></a> 108 <em class='comment'>     * Searches for a sheet pin at a location</em>
+<a id='L109' name='L109'></a> 109 <em class='comment'>     * @param aPosition grid point to search for existing sheet pin</em>
+<a id='L110' name='L110'></a> 110 <em class='comment'>     * @return Pointer to sheet pin or nullptr on failure</em>
+<a id='L111' name='L111'></a> 111 <em class='comment'>     */</em>
+<a id='L112' name='L112'></a> 112     <strong class='reserved'>const</strong> <a href='../Y/1854.html' title='Multiple used in 121 places.'>SCH_SHEET_PIN</a>* <a href='../S/461.html#L397' title='Defined at 397 in tools/sch_line_wire_bus_tool.cpp.'>getSheetPin</a>( <strong class='reserved'>const</strong> <a href='../Y/8819.html' title='Multiple used in 1271 places.'>wxPoint</a>&amp; <a href='../Y/3212.html' title='Multiple used in 381 places.'>aPosition</a> );
+<a id='L113' name='L113'></a> 113 
+<a id='L114' name='L114'></a> 114     <em class='comment'>/**</em>
+<a id='L115' name='L115'></a> 115 <em class='comment'>     * Function ComputeBreakPoint</em>
+<a id='L116' name='L116'></a> 116 <em class='comment'>     * computes the middle coordinate for 2 segments from the start point to \a aPosition</em>
+<a id='L117' name='L117'></a> 117 <em class='comment'>     * with the segments kept in the horizontal or vertical axis only.</em>
+<a id='L118' name='L118'></a> 118 <em class='comment'>     *</em>
+<a id='L119' name='L119'></a> 119 <em class='comment'>     * @param aSegments A pair of pointers to a #SCH_LINE objects containing the first line</em>
+<a id='L120' name='L120'></a> 120 <em class='comment'>     *                  break point to compute.</em>
+<a id='L121' name='L121'></a> 121 <em class='comment'>     * @param aPosition A reference to a wxPoint object containing the coordinates of the</em>
+<a id='L122' name='L122'></a> 122 <em class='comment'>     *                  position used to calculate the line break point.</em>
+<a id='L123' name='L123'></a> 123 <em class='comment'>     */</em>
+<a id='L124' name='L124'></a> 124     <strong class='reserved'>void</strong> <a href='../S/461.html#L416' title='Defined at 416 in tools/sch_line_wire_bus_tool.cpp.'>computeBreakPoint</a>( <strong class='reserved'>const</strong> <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/7156.html' title='Multiple used in 66 places.'>pair</a>&lt;<a href='../D/1539.html' title='Multiple defined in 2 places.'>SCH_LINE</a>*, <a href='../D/1539.html' title='Multiple defined in 2 places.'>SCH_LINE</a>*&gt;&amp; <a href='../Y/3296.html' title='Multiple used in 5 places.'>aSegments</a>, <a href='../Y/8819.html' title='Multiple used in 1271 places.'>wxPoint</a>&amp; <a href='../Y/3212.html' title='Multiple used in 381 places.'>aPosition</a> );
+<a id='L125' name='L125'></a> 125 
+<a id='L126' name='L126'></a> 126 <a href='../Y/7425.html' title='Multiple used in 187 places.'>private</a>:
+<a id='L127' name='L127'></a> 127     <em class='comment'>/// Data related to bus unfolding tool.</em>
+<a id='L128' name='L128'></a> 128     <a href='../S/462.html#L48' title='Defined at 48 in tools/sch_line_wire_bus_tool.h.'>BUS_UNFOLDING_T</a>         <a href='../Y/5405.html' title='Multiple used in 49 places.'>m_busUnfold</a>;
+<a id='L129' name='L129'></a> 129 
+<a id='L130' name='L130'></a> 130     <em class='comment'>/// Storage for the line segments while drawing</em>
+<a id='L131' name='L131'></a> 131     <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8368.html' title='Multiple used in 470 places.'>vector</a>&lt;<a href='../D/1539.html' title='Multiple defined in 2 places.'>SCH_LINE</a>*&gt;   <a href='../Y/6640.html' title='Multiple used in 32 places.'>m_wires</a>;
+<a id='L132' name='L132'></a> 132 <em class='brace'>}</em>;
+<a id='L133' name='L133'></a> 133 
+<a id='L134' name='L134'></a> 134 <em class='sharp'>#endif</em> <em class='comment'>/* SCH_LINE_WIRE_BUS_TOOL_H */</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;][^][v]<a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

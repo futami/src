@@ -1,0 +1,415 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>eeschema.cpp</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/eeschema.cpp</h2>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L69'>[^]</a><a href='#L237'>[v]</a>[top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L69' title='Defined at 69.'>CreateWindow</a></li>
+<li><a href='#L124' title='Defined at 124.'>IfaceOrAddress</a></li>
+<li><a href='#L148' title='Defined at 148.'>Kiface</a></li>
+<li><a href='#L153' title='Defined at 153.'>MY_API</a></li>
+<li><a href='#L160' title='Defined at 160.'>Pgm</a></li>
+<li><a href='#L168' title='Defined at 168.'>PgmOrNull</a></li>
+<li><a href='#L174' title='Defined at 174.'>OnKifaceStart</a></li>
+<li><a href='#L219' title='Defined at 219.'>OnKifaceEnd</a></li>
+<li><a href='#L224' title='Defined at 224.'>traverseSEXPR</a></li>
+<li><a href='#L237' title='Defined at 237.'>SaveFileAs</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * This program source code file is part of KiCad, a free EDA CAD application.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 2004 Jean-Pierre Charras, jaen-pierre.charras@gipsa-lab.inpg.com</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> * Copyright (C) 2008 Wayne Stambaugh &lt;stambaughw@gmail.com&gt;</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> * Copyright (C) 2004-2020 KiCad Developers, see change_log.txt for contributors.</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> *</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * This program is free software; you can redistribute it and/or</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * modify it under the terms of the GNU General Public License</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> * as published by the Free Software Foundation; either version 2</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> * of the License, or (at your option) any later version.</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> *</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * This program is distributed in the hope that it will be useful,</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> * GNU General Public License for more details.</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> *</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * You should have received a copy of the GNU General Public License</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> * along with this program; if not, you may find one here:</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'> * or you may search the http://www.gnu.org website for the version 2 license,</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'> * or you may write to the Free Software Foundation, Inc.,</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'> * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA</em>
+<a id='L24' name='L24'></a>  24 <em class='comment'> */</em>
+<a id='L25' name='L25'></a>  25 
+<a id='L26' name='L26'></a>  26 <em class='sharp'>#include</em> &lt;fctsys.h&gt;
+<a id='L27' name='L27'></a>  27 <em class='sharp'>#include</em> &lt;pgm_base.h&gt;
+<a id='L28' name='L28'></a>  28 <em class='sharp'>#include</em> &lt;kiface_i.h&gt;
+<a id='L29' name='L29'></a>  29 <em class='sharp'>#include</em> &lt;confirm.h&gt;
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#include</em> &lt;gestfich.h&gt;
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#include</em> &lt;eda_dde.h&gt;
+<a id='L32' name='L32'></a>  32 <em class='sharp'>#include</em> &lt;<a href='234.html'>eeschema_settings.h</a>&gt;
+<a id='L33' name='L33'></a>  33 <em class='sharp'>#include</em> &lt;<a href='357.html'>sch_edit_frame.h</a>&gt;
+<a id='L34' name='L34'></a>  34 <em class='sharp'>#include</em> &lt;<a href='260.html'>lib_edit_frame.h</a>&gt;
+<a id='L35' name='L35'></a>  35 <em class='sharp'>#include</em> &lt;<a href='286.html'>lib_view_frame.h</a>&gt;
+<a id='L36' name='L36'></a>  36 <em class='sharp'>#include</em> &lt;<a href='246.html'>general.h</a>&gt;
+<a id='L37' name='L37'></a>  37 <em class='sharp'>#include</em> &lt;<a href='9.html'>class_libentry.h</a>&gt;
+<a id='L38' name='L38'></a>  38 <em class='sharp'>#include</em> &lt;<a href='466.html'>transform.h</a>&gt;
+<a id='L39' name='L39'></a>  39 <em class='sharp'>#include</em> &lt;<a href='424.html'>symbol_lib_table.h</a>&gt;
+<a id='L40' name='L40'></a>  40 <em class='sharp'>#include</em> &lt;<a href='81.html'>dialogs/dialog_global_sym_lib_table_config.h</a>&gt;
+<a id='L41' name='L41'></a>  41 <em class='sharp'>#include</em> &lt;<a href='224.html'>dialogs/panel_sym_lib_table.h</a>&gt;
+<a id='L42' name='L42'></a>  42 <em class='sharp'>#include</em> &lt;kiway.h&gt;
+<a id='L43' name='L43'></a>  43 <em class='sharp'>#include</em> &lt;<a href='409.html'>sim/sim_plot_frame.h</a>&gt;
+<a id='L44' name='L44'></a>  44 <em class='sharp'>#include</em> &lt;settings/settings_manager.h&gt;
+<a id='L45' name='L45'></a>  45 <em class='sharp'>#include</em> &lt;sexpr/sexpr.h&gt;
+<a id='L46' name='L46'></a>  46 <em class='sharp'>#include</em> &lt;sexpr/sexpr_parser.h&gt;
+<a id='L47' name='L47'></a>  47 
+<a id='L48' name='L48'></a>  48 <em class='comment'>// The main sheet of the project</em>
+<a id='L49' name='L49'></a>  49 <a href='../D/1561.html' title='Multiple defined in 3 places.'>SCH_SHEET</a>*  g_RootSheet = <a href='../Y/1527.html' title='Multiple used in 775 places.'>NULL</a>;
+<a id='L50' name='L50'></a>  50 
+<a id='L51' name='L51'></a>  51 <em class='comment'>// a transform matrix, to display components in lib editor</em>
+<a id='L52' name='L52'></a>  52 <a href='../Y/2395.html' title='Multiple used in 87 places.'>TRANSFORM</a> <a href='../Y/337.html' title='Multiple used in 28 places.'>DefaultTransform</a> = <a href='../Y/2395.html' title='Multiple used in 87 places.'>TRANSFORM</a>( 1, 0, 0, -1 );
+<a id='L53' name='L53'></a>  53 
+<a id='L54' name='L54'></a>  54 
+<a id='L55' name='L55'></a>  55 <strong class='reserved'>namespace</strong> <a href='../S/228.html#L143' title='Referred from 143 in eeschema.cpp.'>SCH</a> <em class='brace'>{</em>
+<a id='L56' name='L56'></a>  56 
+<a id='L57' name='L57'></a>  57 <strong class='reserved'>static</strong> <strong class='reserved'>struct</strong> <a href='../R/831.html' title='Multiple referred from 3 places.'>IFACE</a> : <strong class='reserved'>public</strong> <a href='../Y/1284.html' title='Multiple used in 3 places.'>KIFACE_I</a>
+<a id='L58' name='L58'></a>  58 <em class='brace'>{</em>
+<a id='L59' name='L59'></a>  59     <em class='comment'>// Of course all are virtual overloads, implementations of the KIFACE.</em>
+<a id='L60' name='L60'></a>  60 
+<a id='L61' name='L61'></a>  61     IFACE( <strong class='reserved'>const</strong> <strong class='reserved'>char</strong>* <a href='../Y/3100.html' title='Multiple used in 141 places.'>aName</a>, <a href='../Y/1287.html' title='Multiple used in 23 places.'>KIWAY</a>::FACE_T <a href='../Y/3407.html' title='Multiple used in 154 places.'>aType</a> ) :
+<a id='L62' name='L62'></a>  62         <a href='../Y/1284.html' title='Multiple used in 3 places.'>KIFACE_I</a>( <a href='../Y/3100.html' title='Multiple used in 141 places.'>aName</a>, <a href='../Y/3407.html' title='Multiple used in 154 places.'>aType</a> )
+<a id='L63' name='L63'></a>  63     <em class='brace'>{</em><em class='brace'>}</em>
+<a id='L64' name='L64'></a>  64 
+<a id='L65' name='L65'></a>  65     <strong class='reserved'>bool</strong> <a href='../S/228.html#L174' title='Defined at 174 in eeschema.cpp.'>OnKifaceStart</a>( <a href='../Y/1612.html' title='Multiple used in 7 places.'>PGM_BASE</a>* <a href='../Y/3227.html' title='Multiple used in 5 places.'>aProgram</a>, <strong class='reserved'>int</strong> <a href='../Y/2830.html' title='Multiple used in 4 places.'>aCtlBits</a> ) <a href='../Y/7123.html' title='Multiple used in 1177 places.'>override</a>;
+<a id='L66' name='L66'></a>  66 
+<a id='L67' name='L67'></a>  67     <strong class='reserved'>void</strong> <a href='../S/228.html#L219' title='Defined at 219 in eeschema.cpp.'>OnKifaceEnd</a>() <a href='../Y/7123.html' title='Multiple used in 1177 places.'>override</a>;
+<a id='L68' name='L68'></a>  68 
+<a id='L69' name='L69'></a>  69     <a href='../Y/8956.html' title='Multiple used in 200 places.'>wxWindow</a>* CreateWindow( <a href='../Y/8956.html' title='Multiple used in 200 places.'>wxWindow</a>* <a href='../Y/3169.html' title='Multiple used in 321 places.'>aParent</a>, <strong class='reserved'>int</strong> <a href='../Y/2790.html' title='Multiple used in 3 places.'>aClassId</a>, <a href='../Y/1287.html' title='Multiple used in 23 places.'>KIWAY</a>* <a href='../Y/3027.html' title='Multiple used in 32 places.'>aKiway</a>, <strong class='reserved'>int</strong> <a href='../Y/2830.html' title='Multiple used in 4 places.'>aCtlBits</a> = 0 ) <a href='../Y/7123.html' title='Multiple used in 1177 places.'>override</a>
+<a id='L70' name='L70'></a>  70     <em class='brace'>{</em>
+<a id='L71' name='L71'></a>  71         <strong class='reserved'>switch</strong>( <a href='../Y/2790.html' title='Multiple used in 3 places.'>aClassId</a> )
+<a id='L72' name='L72'></a>  72         <em class='brace'>{</em>
+<a id='L73' name='L73'></a>  73         <strong class='reserved'>case</strong> <a href='../Y/519.html' title='Multiple used in 9 places.'>FRAME_SCH</a>:
+<a id='L74' name='L74'></a>  74         <em class='brace'>{</em>
+<a id='L75' name='L75'></a>  75             <a href='../S/356.html#L299' title='Defined at 299 in sch_edit_frame.cpp.'>SCH_EDIT_FRAME</a>* <a href='../Y/4553.html' title='Multiple used in 72 places.'>frame</a> = <strong class='reserved'>new</strong> <a href='../S/356.html#L299' title='Defined at 299 in sch_edit_frame.cpp.'>SCH_EDIT_FRAME</a>( <a href='../Y/3027.html' title='Multiple used in 32 places.'>aKiway</a>, <a href='../Y/3169.html' title='Multiple used in 321 places.'>aParent</a> );
+<a id='L76' name='L76'></a>  76 
+<a id='L77' name='L77'></a>  77             <strong class='reserved'>if</strong>( <a href='../S/228.html#L148' title='Defined at 148 in eeschema.cpp.'>Kiface</a>().<a href='../Y/1255.html' title='Multiple used in 14 places.'>IsSingle</a>() )
+<a id='L78' name='L78'></a>  78             <em class='brace'>{</em>
+<a id='L79' name='L79'></a>  79                 <em class='comment'>// only run this under single_top, not under a project manager.</em>
+<a id='L80' name='L80'></a>  80                 <a href='../Y/4553.html' title='Multiple used in 72 places.'>frame</a>-&gt;CreateServer( KICAD_SCH_PORT_SERVICE_NUMBER );
+<a id='L81' name='L81'></a>  81             <em class='brace'>}</em>
+<a id='L82' name='L82'></a>  82 
+<a id='L83' name='L83'></a>  83             <strong class='reserved'>return</strong> <a href='../Y/4553.html' title='Multiple used in 72 places.'>frame</a>;
+<a id='L84' name='L84'></a>  84         <em class='brace'>}</em>
+<a id='L85' name='L85'></a>  85 
+<a id='L86' name='L86'></a>  86         <strong class='reserved'>case</strong> <a href='../Y/520.html' title='Multiple used in 35 places.'>FRAME_SCH_LIB_EDITOR</a>:
+<a id='L87' name='L87'></a>  87         <em class='brace'>{</em>
+<a id='L88' name='L88'></a>  88             <a href='../S/259.html#L193' title='Defined at 193 in libedit/lib_edit_frame.cpp.'>LIB_EDIT_FRAME</a>* <a href='../Y/4553.html' title='Multiple used in 72 places.'>frame</a> = <strong class='reserved'>new</strong> <a href='../S/259.html#L193' title='Defined at 193 in libedit/lib_edit_frame.cpp.'>LIB_EDIT_FRAME</a>( <a href='../Y/3027.html' title='Multiple used in 32 places.'>aKiway</a>, <a href='../Y/3169.html' title='Multiple used in 321 places.'>aParent</a> );
+<a id='L89' name='L89'></a>  89             <strong class='reserved'>return</strong> <a href='../Y/4553.html' title='Multiple used in 72 places.'>frame</a>;
+<a id='L90' name='L90'></a>  90         <em class='brace'>}</em>
+<a id='L91' name='L91'></a>  91 
+<a id='L92' name='L92'></a>  92 <em class='sharp'>#ifdef</em> <a href='../Y/1278.html' title='Multiple used in 13 places.'>KICAD_SPICE</a>
+<a id='L93' name='L93'></a>  93         <strong class='reserved'>case</strong> <a href='../Y/523.html' title='Multiple used in 5 places.'>FRAME_SIMULATOR</a>:
+<a id='L94' name='L94'></a>  94         <em class='brace'>{</em>
+<a id='L95' name='L95'></a>  95             <a href='../S/408.html#L231' title='Defined at 231 in sim/sim_plot_frame.cpp.'>SIM_PLOT_FRAME</a>* <a href='../Y/4553.html' title='Multiple used in 72 places.'>frame</a> = <strong class='reserved'>new</strong> <a href='../S/408.html#L231' title='Defined at 231 in sim/sim_plot_frame.cpp.'>SIM_PLOT_FRAME</a>( <a href='../Y/3027.html' title='Multiple used in 32 places.'>aKiway</a>, <a href='../Y/3169.html' title='Multiple used in 321 places.'>aParent</a> );
+<a id='L96' name='L96'></a>  96             <strong class='reserved'>return</strong> <a href='../Y/4553.html' title='Multiple used in 72 places.'>frame</a>;
+<a id='L97' name='L97'></a>  97         <em class='brace'>}</em>
+<a id='L98' name='L98'></a>  98 <em class='sharp'>#endif</em>
+<a id='L99' name='L99'></a>  99         <strong class='reserved'>case</strong> <a href='../Y/521.html' title='Multiple used in 9 places.'>FRAME_SCH_VIEWER</a>:
+<a id='L100' name='L100'></a> 100         <strong class='reserved'>case</strong> <a href='../Y/522.html' title='Multiple used in 9 places.'>FRAME_SCH_VIEWER_MODAL</a>:
+<a id='L101' name='L101'></a> 101         <em class='brace'>{</em>
+<a id='L102' name='L102'></a> 102             <a href='../S/285.html#L209' title='Defined at 209 in lib_view_frame.cpp.'>LIB_VIEW_FRAME</a>* <a href='../Y/4553.html' title='Multiple used in 72 places.'>frame</a> = <strong class='reserved'>new</strong> <a href='../S/285.html#L209' title='Defined at 209 in lib_view_frame.cpp.'>LIB_VIEW_FRAME</a>( <a href='../Y/3027.html' title='Multiple used in 32 places.'>aKiway</a>, <a href='../Y/3169.html' title='Multiple used in 321 places.'>aParent</a>, <a href='../Y/524.html' title='Multiple used in 5 places.'>FRAME_T</a>( <a href='../Y/2790.html' title='Multiple used in 3 places.'>aClassId</a> ) );
+<a id='L103' name='L103'></a> 103             <strong class='reserved'>return</strong> <a href='../Y/4553.html' title='Multiple used in 72 places.'>frame</a>;
+<a id='L104' name='L104'></a> 104         <em class='brace'>}</em>
+<a id='L105' name='L105'></a> 105 
+<a id='L106' name='L106'></a> 106         <strong class='reserved'>case</strong> DIALOG_SCH_LIBRARY_TABLE:
+<a id='L107' name='L107'></a> 107             <a href='../S/223.html#L799' title='Defined at 799 in dialogs/panel_sym_lib_table.cpp.'>InvokeSchEditSymbolLibTable</a>( <a href='../Y/3027.html' title='Multiple used in 32 places.'>aKiway</a>, <a href='../Y/3169.html' title='Multiple used in 321 places.'>aParent</a> );
+<a id='L108' name='L108'></a> 108             <em class='comment'>// Dialog has completed; nothing to return.</em>
+<a id='L109' name='L109'></a> 109             <strong class='reserved'>return</strong> <a href='../Y/7001.html' title='Multiple used in 622 places.'>nullptr</a>;
+<a id='L110' name='L110'></a> 110 
+<a id='L111' name='L111'></a> 111         <strong class='reserved'>default</strong>:
+<a id='L112' name='L112'></a> 112             <strong class='reserved'>return</strong> <a href='../Y/1527.html' title='Multiple used in 775 places.'>NULL</a>;
+<a id='L113' name='L113'></a> 113         <em class='brace'>}</em>
+<a id='L114' name='L114'></a> 114     <em class='brace'>}</em>
+<a id='L115' name='L115'></a> 115 
+<a id='L116' name='L116'></a> 116     <em class='comment'>/**</em>
+<a id='L117' name='L117'></a> 117 <em class='comment'>     * Function IfaceOrAddress</em>
+<a id='L118' name='L118'></a> 118 <em class='comment'>     * return a pointer to the requested object.  The safest way to use this is to retrieve</em>
+<a id='L119' name='L119'></a> 119 <em class='comment'>     * a pointer to a static instance of an interface, similar to how the KIFACE interface</em>
+<a id='L120' name='L120'></a> 120 <em class='comment'>     * is exported.  But if you know what you are doing use it to retrieve anything you want.</em>
+<a id='L121' name='L121'></a> 121 <em class='comment'>     * @param aDataId identifies which object you want the address of.</em>
+<a id='L122' name='L122'></a> 122 <em class='comment'>     * @return void* - and must be cast into the know type.</em>
+<a id='L123' name='L123'></a> 123 <em class='comment'>     */</em>
+<a id='L124' name='L124'></a> 124     <strong class='reserved'>void</strong>* IfaceOrAddress( <strong class='reserved'>int</strong> aDataId ) <a href='../Y/7123.html' title='Multiple used in 1177 places.'>override</a>
+<a id='L125' name='L125'></a> 125     <em class='brace'>{</em>
+<a id='L126' name='L126'></a> 126         <strong class='reserved'>return</strong> <a href='../Y/1527.html' title='Multiple used in 775 places.'>NULL</a>;
+<a id='L127' name='L127'></a> 127     <em class='brace'>}</em>
+<a id='L128' name='L128'></a> 128 
+<a id='L129' name='L129'></a> 129     <em class='comment'>/**</em>
+<a id='L130' name='L130'></a> 130 <em class='comment'>     * Function SaveFileAs</em>
+<a id='L131' name='L131'></a> 131 <em class='comment'>     * Saving a file under a different name is delegated to the various KIFACEs because</em>
+<a id='L132' name='L132'></a> 132 <em class='comment'>     * the project doesn't know the internal format of the various files (which may have</em>
+<a id='L133' name='L133'></a> 133 <em class='comment'>     * paths in them that need updating).</em>
+<a id='L134' name='L134'></a> 134 <em class='comment'>     */</em>
+<a id='L135' name='L135'></a> 135     <strong class='reserved'>void</strong> <a href='../S/228.html#L237' title='Defined at 237 in eeschema.cpp.'>SaveFileAs</a>( <strong class='reserved'>const</strong> <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&amp; <a href='../Y/3230.html' title='Multiple used in 10 places.'>aProjectBasePath</a>, <strong class='reserved'>const</strong> <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&amp; <a href='../Y/3232.html' title='Multiple used in 10 places.'>aProjectName</a>,
+<a id='L136' name='L136'></a> 136                      <strong class='reserved'>const</strong> <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&amp; <a href='../Y/3124.html' title='Multiple used in 5 places.'>aNewProjectBasePath</a>, <strong class='reserved'>const</strong> <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&amp; <a href='../Y/3125.html' title='Multiple used in 10 places.'>aNewProjectName</a>,
+<a id='L137' name='L137'></a> 137                      <strong class='reserved'>const</strong> <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&amp; <a href='../Y/3349.html' title='Multiple used in 8 places.'>aSrcFilePath</a>, <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&amp; <a href='../Y/2892.html' title='Multiple used in 11 places.'>aErrors</a> ) <a href='../Y/7123.html' title='Multiple used in 1177 places.'>override</a>;
+<a id='L138' name='L138'></a> 138 
+<a id='L139' name='L139'></a> 139 <em class='brace'>}</em> <a href='../Y/4893.html' title='Multiple used in 3 places.'>kiface</a>( "eeschema", <a href='../Y/1287.html' title='Multiple used in 23 places.'>KIWAY</a>::FACE_SCH );
+<a id='L140' name='L140'></a> 140 
+<a id='L141' name='L141'></a> 141 <em class='brace'>}</em> <em class='comment'>// namespace</em>
+<a id='L142' name='L142'></a> 142 
+<a id='L143' name='L143'></a> 143 <strong class='reserved'>using</strong> <strong class='reserved'>namespace</strong> <a href='../S/228.html#L55' title='Defined at 55 in eeschema.cpp.'>SCH</a>;
+<a id='L144' name='L144'></a> 144 
+<a id='L145' name='L145'></a> 145 <strong class='reserved'>static</strong> <a href='../Y/1612.html' title='Multiple used in 7 places.'>PGM_BASE</a>* <a href='../Y/7437.html' title='Multiple used in 5 places.'>process</a>;
+<a id='L146' name='L146'></a> 146 
+<a id='L147' name='L147'></a> 147 
+<a id='L148' name='L148'></a> 148 <a href='../Y/1284.html' title='Multiple used in 3 places.'>KIFACE_I</a>&amp; <a href='../R/937.html' title='Multiple referred from 45 places.'>Kiface</a>() <em class='brace'>{</em> <strong class='reserved'>return</strong> <a href='../Y/4893.html' title='Multiple used in 3 places.'>kiface</a>; <em class='brace'>}</em>
+<a id='L149' name='L149'></a> 149 
+<a id='L150' name='L150'></a> 150 
+<a id='L151' name='L151'></a> 151 <em class='comment'>// KIFACE_GETTER's actual spelling is a substitution macro found in kiway.h.</em>
+<a id='L152' name='L152'></a> 152 <em class='comment'>// KIFACE_GETTER will not have name mangling due to declaration in kiway.h.</em>
+<a id='L153' name='L153'></a> 153 MY_API( KIFACE* ) KIFACE_GETTER(  <strong class='reserved'>int</strong>* aKIFACEversion, <strong class='reserved'>int</strong> aKiwayVersion, <a href='../Y/1612.html' title='Multiple used in 7 places.'>PGM_BASE</a>* <a href='../Y/3227.html' title='Multiple used in 5 places.'>aProgram</a> )
+<a id='L154' name='L154'></a> 154 <em class='brace'>{</em>
+<a id='L155' name='L155'></a> 155     <a href='../Y/7437.html' title='Multiple used in 5 places.'>process</a> = <a href='../Y/3227.html' title='Multiple used in 5 places.'>aProgram</a>;
+<a id='L156' name='L156'></a> 156     <strong class='reserved'>return</strong> &amp;<a href='../Y/4893.html' title='Multiple used in 3 places.'>kiface</a>;
+<a id='L157' name='L157'></a> 157 <em class='brace'>}</em>
+<a id='L158' name='L158'></a> 158 
+<a id='L159' name='L159'></a> 159 
+<a id='L160' name='L160'></a> 160 <a href='../Y/1612.html' title='Multiple used in 7 places.'>PGM_BASE</a>&amp; <a href='../R/1342.html' title='Multiple referred from 67 places.'>Pgm</a>()
+<a id='L161' name='L161'></a> 161 <em class='brace'>{</em>
+<a id='L162' name='L162'></a> 162     <a href='../Y/8441.html' title='Multiple used in 163 places.'>wxASSERT</a>( <a href='../Y/7437.html' title='Multiple used in 5 places.'>process</a> );    <em class='comment'>// KIFACE_GETTER has already been called.</em>
+<a id='L163' name='L163'></a> 163     <strong class='reserved'>return</strong> *<a href='../Y/7437.html' title='Multiple used in 5 places.'>process</a>;
+<a id='L164' name='L164'></a> 164 <em class='brace'>}</em>
+<a id='L165' name='L165'></a> 165 
+<a id='L166' name='L166'></a> 166 <em class='comment'>// Similar to PGM_BASE&amp; Pgm(), but return nullptr when a *.ki_face is run from</em>
+<a id='L167' name='L167'></a> 167 <em class='comment'>// a python script or something else.</em>
+<a id='L168' name='L168'></a> 168 <a href='../Y/1612.html' title='Multiple used in 7 places.'>PGM_BASE</a>* <a href='../S/277.html#L170' title='Referred from 170 in lib_pin.cpp.'>PgmOrNull</a>()
+<a id='L169' name='L169'></a> 169 <em class='brace'>{</em>
+<a id='L170' name='L170'></a> 170     <strong class='reserved'>return</strong> <a href='../Y/7437.html' title='Multiple used in 5 places.'>process</a>;
+<a id='L171' name='L171'></a> 171 <em class='brace'>}</em>
+<a id='L172' name='L172'></a> 172 
+<a id='L173' name='L173'></a> 173 
+<a id='L174' name='L174'></a> 174 <strong class='reserved'>bool</strong> <a href='../S/228.html#L57' title='Defined at 57 in eeschema.cpp.'>IFACE</a>::<a href='../S/228.html#L65' title='Referred from 65 in eeschema.cpp.'>OnKifaceStart</a>( <a href='../Y/1612.html' title='Multiple used in 7 places.'>PGM_BASE</a>* <a href='../Y/3227.html' title='Multiple used in 5 places.'>aProgram</a>, <strong class='reserved'>int</strong> <a href='../Y/2830.html' title='Multiple used in 4 places.'>aCtlBits</a> )
+<a id='L175' name='L175'></a> 175 <em class='brace'>{</em>
+<a id='L176' name='L176'></a> 176     <em class='comment'>// This is process-level-initialization, not project-level-initialization of the DSO.</em>
+<a id='L177' name='L177'></a> 177     <em class='comment'>// Do nothing in here pertinent to a project!</em>
+<a id='L178' name='L178'></a> 178     InitSettings( <strong class='reserved'>new</strong> <a href='../Y/404.html' title='Multiple used in 69 places.'>EESCHEMA_SETTINGS</a> );
+<a id='L179' name='L179'></a> 179     <a href='../Y/3227.html' title='Multiple used in 5 places.'>aProgram</a>-&gt;<a href='../Y/975.html' title='Multiple used in 63 places.'>GetSettingsManager</a>().RegisterSettings( <a href='../Y/1302.html' title='Multiple used in 30 places.'>KifaceSettings</a>() );
+<a id='L180' name='L180'></a> 180 
+<a id='L181' name='L181'></a> 181     start_common( <a href='../Y/2830.html' title='Multiple used in 4 places.'>aCtlBits</a> );
+<a id='L182' name='L182'></a> 182 
+<a id='L183' name='L183'></a> 183     <a href='../Y/8647.html' title='Multiple used in 186 places.'>wxFileName</a> <a href='../Y/4512.html' title='Multiple used in 297 places.'>fn</a> = <a href='../S/423.html#L89' title='Defined at 89 in symbol_lib_table.cpp.'>SYMBOL_LIB_TABLE</a>::<a href='../D/601.html' title='Multiple defined in 2 places.'>GetGlobalTableFileName</a>();
+<a id='L184' name='L184'></a> 184 
+<a id='L185' name='L185'></a> 185     <strong class='reserved'>if</strong>( !<a href='../Y/4512.html' title='Multiple used in 297 places.'>fn</a>.<a href='../Y/534.html' title='Multiple used in 30 places.'>FileExists</a>() )
+<a id='L186' name='L186'></a> 186     <em class='brace'>{</em>
+<a id='L187' name='L187'></a> 187         <a href='../D/280.html' title='Multiple defined in 2 places.'>DIALOG_GLOBAL_SYM_LIB_TABLE_CONFIG</a> <a href='../Y/4542.html' title='Multiple used in 2 places.'>fpDialog</a>( <a href='../Y/1527.html' title='Multiple used in 775 places.'>NULL</a> );
+<a id='L188' name='L188'></a> 188 
+<a id='L189' name='L189'></a> 189         <a href='../Y/4542.html' title='Multiple used in 2 places.'>fpDialog</a>.<a href='../D/1806.html' title='Multiple defined in 2 places.'>ShowModal</a>();
+<a id='L190' name='L190'></a> 190     <em class='brace'>}</em>
+<a id='L191' name='L191'></a> 191     <strong class='reserved'>else</strong>
+<a id='L192' name='L192'></a> 192     <em class='brace'>{</em>
+<a id='L193' name='L193'></a> 193         <strong class='reserved'>try</strong>
+<a id='L194' name='L194'></a> 194         <em class='brace'>{</em>
+<a id='L195' name='L195'></a> 195             <em class='comment'>// The global table is not related to a specific project.  All projects</em>
+<a id='L196' name='L196'></a> 196             <em class='comment'>// will use the same global table.  So the KIFACE::OnKifaceStart() contract</em>
+<a id='L197' name='L197'></a> 197             <em class='comment'>// of avoiding anything project specific is not violated here.</em>
+<a id='L198' name='L198'></a> 198             <strong class='reserved'>if</strong>( !<a href='../S/423.html#L89' title='Defined at 89 in symbol_lib_table.cpp.'>SYMBOL_LIB_TABLE</a>::<a href='../S/423.html#L474' title='Defined at 474 in symbol_lib_table.cpp.'>LoadGlobalTable</a>( <a href='../S/423.html#L89' title='Defined at 89 in symbol_lib_table.cpp.'>SYMBOL_LIB_TABLE</a>::<a href='../S/423.html#L97' title='Defined at 97 in symbol_lib_table.cpp.'>GetGlobalLibTable</a>() ) )
+<a id='L199' name='L199'></a> 199                 <strong class='reserved'>return</strong> <strong class='reserved'>false</strong>;
+<a id='L200' name='L200'></a> 200         <em class='brace'>}</em>
+<a id='L201' name='L201'></a> 201         <strong class='reserved'>catch</strong>( <strong class='reserved'>const</strong> <a href='../Y/1128.html' title='Multiple used in 74 places.'>IO_ERROR</a>&amp; <a href='../Y/4814.html' title='Multiple used in 99 places.'>ioe</a> )
+<a id='L202' name='L202'></a> 202         <em class='brace'>{</em>
+<a id='L203' name='L203'></a> 203             <em class='comment'>// if we are here, a incorrect global symbol library table was found.</em>
+<a id='L204' name='L204'></a> 204             <em class='comment'>// Incorrect global symbol library table is not a fatal error:</em>
+<a id='L205' name='L205'></a> 205             <em class='comment'>// the user just has to edit the (partially) loaded table.</em>
+<a id='L206' name='L206'></a> 206             <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a> <a href='../Y/6788.html' title='Multiple used in 619 places.'>msg</a> = <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>(
+<a id='L207' name='L207'></a> 207                 "An error occurred attempting to load the global symbol library table.\n"
+<a id='L208' name='L208'></a> 208                 "Please edit this global symbol library table in Preferences menu."
+<a id='L209' name='L209'></a> 209                 );
+<a id='L210' name='L210'></a> 210 
+<a id='L211' name='L211'></a> 211             <a href='../Y/361.html' title='Multiple used in 33 places.'>DisplayErrorMessage</a>( <a href='../Y/1527.html' title='Multiple used in 775 places.'>NULL</a>, <a href='../Y/6788.html' title='Multiple used in 619 places.'>msg</a>, <a href='../Y/4814.html' title='Multiple used in 99 places.'>ioe</a>.<a href='../Y/2690.html' title='Multiple used in 63 places.'>What</a>() );
+<a id='L212' name='L212'></a> 212         <em class='brace'>}</em>
+<a id='L213' name='L213'></a> 213     <em class='brace'>}</em>
+<a id='L214' name='L214'></a> 214 
+<a id='L215' name='L215'></a> 215     <strong class='reserved'>return</strong> <strong class='reserved'>true</strong>;
+<a id='L216' name='L216'></a> 216 <em class='brace'>}</em>
+<a id='L217' name='L217'></a> 217 
+<a id='L218' name='L218'></a> 218 
+<a id='L219' name='L219'></a> 219 <strong class='reserved'>void</strong> <a href='../S/228.html#L57' title='Defined at 57 in eeschema.cpp.'>IFACE</a>::<a href='../S/228.html#L67' title='Referred from 67 in eeschema.cpp.'>OnKifaceEnd</a>()
+<a id='L220' name='L220'></a> 220 <em class='brace'>{</em>
+<a id='L221' name='L221'></a> 221     end_common();
+<a id='L222' name='L222'></a> 222 <em class='brace'>}</em>
+<a id='L223' name='L223'></a> 223 
+<a id='L224' name='L224'></a> 224 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong> <a href='../R/2529.html' title='Multiple referred from 2 places.'>traverseSEXPR</a>( <a href='../Y/1873.html' title='Multiple used in 7 places.'>SEXPR</a>::<a href='../Y/1873.html' title='Multiple used in 7 places.'>SEXPR</a>* <a href='../Y/3137.html' title='Multiple used in 5 places.'>aNode</a>,
+<a id='L225' name='L225'></a> 225                            <strong class='reserved'>const</strong> <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/4572.html' title='Multiple used in 13 places.'>function</a>&lt;<strong class='reserved'>void</strong>( <a href='../Y/1873.html' title='Multiple used in 7 places.'>SEXPR</a>::<a href='../Y/1873.html' title='Multiple used in 7 places.'>SEXPR</a>* )&gt;&amp; <a href='../Y/3436.html' title='Multiple used in 3 places.'>aVisitor</a> )
+<a id='L226' name='L226'></a> 226 <em class='brace'>{</em>
+<a id='L227' name='L227'></a> 227     <a href='../Y/3436.html' title='Multiple used in 3 places.'>aVisitor</a>( <a href='../Y/3137.html' title='Multiple used in 5 places.'>aNode</a> );
+<a id='L228' name='L228'></a> 228 
+<a id='L229' name='L229'></a> 229     <strong class='reserved'>if</strong>( <a href='../Y/3137.html' title='Multiple used in 5 places.'>aNode</a>-&gt;<a href='../Y/1217.html' title='Multiple used in 2 places.'>IsList</a>() )
+<a id='L230' name='L230'></a> 230     <em class='brace'>{</em>
+<a id='L231' name='L231'></a> 231         <strong class='reserved'>for</strong>( <strong class='reserved'>unsigned</strong> <a href='../Y/4729.html' title='Multiple used in 805 places.'>i</a> = 0; <a href='../Y/4729.html' title='Multiple used in 805 places.'>i</a> &lt; <a href='../Y/3137.html' title='Multiple used in 5 places.'>aNode</a>-&gt;<a href='../Y/868.html' title='Multiple used in 2 places.'>GetNumberOfChildren</a>(); <a href='../Y/4729.html' title='Multiple used in 805 places.'>i</a>++ )
+<a id='L232' name='L232'></a> 232             <a href='../S/228.html#L224' title='Defined at 224 in eeschema.cpp.'>traverseSEXPR</a>( <a href='../Y/3137.html' title='Multiple used in 5 places.'>aNode</a>-&gt;<a href='../Y/664.html' title='Multiple used in 5 places.'>GetChild</a>( <a href='../Y/4729.html' title='Multiple used in 805 places.'>i</a> ), <a href='../Y/3436.html' title='Multiple used in 3 places.'>aVisitor</a> );
+<a id='L233' name='L233'></a> 233     <em class='brace'>}</em>
+<a id='L234' name='L234'></a> 234 <em class='brace'>}</em>
+<a id='L235' name='L235'></a> 235 
+<a id='L236' name='L236'></a> 236 
+<a id='L237' name='L237'></a> 237 <strong class='reserved'>void</strong> <a href='../S/228.html#L57' title='Defined at 57 in eeschema.cpp.'>IFACE</a>::<a href='../S/228.html#L135' title='Referred from 135 in eeschema.cpp.'>SaveFileAs</a>( <strong class='reserved'>const</strong> <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&amp; <a href='../Y/3230.html' title='Multiple used in 10 places.'>aProjectBasePath</a>, <strong class='reserved'>const</strong> <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&amp; <a href='../Y/3232.html' title='Multiple used in 10 places.'>aProjectName</a>,
+<a id='L238' name='L238'></a> 238                         <strong class='reserved'>const</strong> <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&amp; <a href='../Y/3124.html' title='Multiple used in 5 places.'>aNewProjectBasePath</a>, <strong class='reserved'>const</strong> <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&amp; <a href='../Y/3125.html' title='Multiple used in 10 places.'>aNewProjectName</a>,
+<a id='L239' name='L239'></a> 239                         <strong class='reserved'>const</strong> <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&amp; <a href='../Y/3349.html' title='Multiple used in 8 places.'>aSrcFilePath</a>, <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&amp; <a href='../Y/2892.html' title='Multiple used in 11 places.'>aErrors</a> )
+<a id='L240' name='L240'></a> 240 <em class='brace'>{</em>
+<a id='L241' name='L241'></a> 241     <a href='../Y/8647.html' title='Multiple used in 186 places.'>wxFileName</a> <a href='../Y/4115.html' title='Multiple used in 22 places.'>destFile</a>( <a href='../Y/3349.html' title='Multiple used in 8 places.'>aSrcFilePath</a> );
+<a id='L242' name='L242'></a> 242     <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>   <a href='../Y/4119.html' title='Multiple used in 4 places.'>destPath</a> = <a href='../Y/4115.html' title='Multiple used in 22 places.'>destFile</a>.<a href='../Y/896.html' title='Multiple used in 5 places.'>GetPathWithSep</a>();
+<a id='L243' name='L243'></a> 243     <a href='../Y/8947.html' title='Multiple used in 3 places.'>wxUniChar</a>  <a href='../Y/7210.html' title='Multiple used in 2 places.'>pathSep</a> = <a href='../Y/8647.html' title='Multiple used in 186 places.'>wxFileName</a>::<a href='../Y/895.html' title='Multiple used in 3 places.'>GetPathSeparator</a>();
+<a id='L244' name='L244'></a> 244     <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>   <a href='../Y/4377.html' title='Multiple used in 27 places.'>ext</a> = <a href='../Y/4115.html' title='Multiple used in 22 places.'>destFile</a>.<a href='../Y/739.html' title='Multiple used in 24 places.'>GetExt</a>();
+<a id='L245' name='L245'></a> 245 
+<a id='L246' name='L246'></a> 246     <strong class='reserved'>if</strong>( <a href='../Y/4119.html' title='Multiple used in 4 places.'>destPath</a>.<a href='../Y/2339.html' title='Multiple used in 26 places.'>StartsWith</a>( <a href='../Y/3230.html' title='Multiple used in 10 places.'>aProjectBasePath</a> + <a href='../Y/7210.html' title='Multiple used in 2 places.'>pathSep</a> ) )
+<a id='L247' name='L247'></a> 247         <a href='../Y/4119.html' title='Multiple used in 4 places.'>destPath</a>.<a href='../S/358.html#L360' title='Defined at 360 in sch_field.cpp.'>Replace</a>( <a href='../Y/3230.html' title='Multiple used in 10 places.'>aProjectBasePath</a>, <a href='../Y/3124.html' title='Multiple used in 5 places.'>aNewProjectBasePath</a>, <strong class='reserved'>false</strong> );
+<a id='L248' name='L248'></a> 248 
+<a id='L249' name='L249'></a> 249     <a href='../Y/4115.html' title='Multiple used in 22 places.'>destFile</a>.<a href='../Y/2160.html' title='Multiple used in 20 places.'>SetPath</a>( <a href='../Y/4119.html' title='Multiple used in 4 places.'>destPath</a> );
+<a id='L250' name='L250'></a> 250 
+<a id='L251' name='L251'></a> 251     <strong class='reserved'>if</strong>( <a href='../Y/4377.html' title='Multiple used in 27 places.'>ext</a> == "sch" || <a href='../Y/4377.html' title='Multiple used in 27 places.'>ext</a> == "sch-bak" || <a href='../Y/4377.html' title='Multiple used in 27 places.'>ext</a> == "kicad_sch" || <a href='../Y/4377.html' title='Multiple used in 27 places.'>ext</a> == "kicad_sch-bak" )
+<a id='L252' name='L252'></a> 252     <em class='brace'>{</em>
+<a id='L253' name='L253'></a> 253         <strong class='reserved'>if</strong>( <a href='../Y/4115.html' title='Multiple used in 22 places.'>destFile</a>.<a href='../D/644.html' title='Multiple defined in 3 places.'>GetName</a>() == <a href='../Y/3232.html' title='Multiple used in 10 places.'>aProjectName</a> )
+<a id='L254' name='L254'></a> 254             <a href='../Y/4115.html' title='Multiple used in 22 places.'>destFile</a>.<a href='../D/1747.html' title='Multiple defined in 3 places.'>SetName</a>( <a href='../Y/3125.html' title='Multiple used in 10 places.'>aNewProjectName</a>  );
+<a id='L255' name='L255'></a> 255 
+<a id='L256' name='L256'></a> 256         <em class='comment'>// Sheet paths when auto-generated are relative to the root, so those will stay</em>
+<a id='L257' name='L257'></a> 257         <em class='comment'>// pointing to whatever they were pointing at.</em>
+<a id='L258' name='L258'></a> 258         <em class='comment'>// The author can create their own absolute and relative sheet paths.  Absolute</em>
+<a id='L259' name='L259'></a> 259         <em class='comment'>// sheet paths aren't an issue, and relative ones will continue to work as long</em>
+<a id='L260' name='L260'></a> 260         <em class='comment'>// as the author didn't include any '..'s.  If they did, it's still not clear</em>
+<a id='L261' name='L261'></a> 261         <em class='comment'>// whether they should be adjusted or not (as the author may be duplicating an</em>
+<a id='L262' name='L262'></a> 262         <em class='comment'>// entire tree with several projects within it), so we leave this as an exercise</em>
+<a id='L263' name='L263'></a> 263         <em class='comment'>// to the author.</em>
+<a id='L264' name='L264'></a> 264 
+<a id='L265' name='L265'></a> 265         <a href='../Y/252.html' title='Multiple used in 3 places.'>CopyFile</a>( <a href='../Y/3349.html' title='Multiple used in 8 places.'>aSrcFilePath</a>, <a href='../Y/4115.html' title='Multiple used in 22 places.'>destFile</a>.<a href='../Y/766.html' title='Multiple used in 221 places.'>GetFullPath</a>(), <a href='../Y/2892.html' title='Multiple used in 11 places.'>aErrors</a> );
+<a id='L266' name='L266'></a> 266     <em class='brace'>}</em>
+<a id='L267' name='L267'></a> 267     <strong class='reserved'>else</strong> <strong class='reserved'>if</strong>( <a href='../Y/4377.html' title='Multiple used in 27 places.'>ext</a> == "sym" )
+<a id='L268' name='L268'></a> 268     <em class='brace'>{</em>
+<a id='L269' name='L269'></a> 269         <em class='comment'>// Symbols are not project-specific.  Keep their source names.</em>
+<a id='L270' name='L270'></a> 270         <a href='../Y/252.html' title='Multiple used in 3 places.'>CopyFile</a>( <a href='../Y/3349.html' title='Multiple used in 8 places.'>aSrcFilePath</a>, <a href='../Y/4115.html' title='Multiple used in 22 places.'>destFile</a>.<a href='../Y/766.html' title='Multiple used in 221 places.'>GetFullPath</a>(), <a href='../Y/2892.html' title='Multiple used in 11 places.'>aErrors</a> );
+<a id='L271' name='L271'></a> 271     <em class='brace'>}</em>
+<a id='L272' name='L272'></a> 272     <strong class='reserved'>else</strong> <strong class='reserved'>if</strong>( <a href='../Y/4377.html' title='Multiple used in 27 places.'>ext</a> == "lib" || <a href='../Y/4377.html' title='Multiple used in 27 places.'>ext</a> == "dcm" || <a href='../Y/4377.html' title='Multiple used in 27 places.'>ext</a> == "kicad_sym" )
+<a id='L273' name='L273'></a> 273     <em class='brace'>{</em>
+<a id='L274' name='L274'></a> 274         <strong class='reserved'>if</strong>( <a href='../Y/4115.html' title='Multiple used in 22 places.'>destFile</a>.<a href='../D/644.html' title='Multiple defined in 3 places.'>GetName</a>() == <a href='../Y/3232.html' title='Multiple used in 10 places.'>aProjectName</a> + "-cache" )
+<a id='L275' name='L275'></a> 275             <a href='../Y/4115.html' title='Multiple used in 22 places.'>destFile</a>.<a href='../D/1747.html' title='Multiple defined in 3 places.'>SetName</a>( <a href='../Y/3125.html' title='Multiple used in 10 places.'>aNewProjectName</a> + "-cache"  );
+<a id='L276' name='L276'></a> 276 
+<a id='L277' name='L277'></a> 277         <a href='../Y/252.html' title='Multiple used in 3 places.'>CopyFile</a>( <a href='../Y/3349.html' title='Multiple used in 8 places.'>aSrcFilePath</a>, <a href='../Y/4115.html' title='Multiple used in 22 places.'>destFile</a>.<a href='../Y/766.html' title='Multiple used in 221 places.'>GetFullPath</a>(), <a href='../Y/2892.html' title='Multiple used in 11 places.'>aErrors</a> );
+<a id='L278' name='L278'></a> 278     <em class='brace'>}</em>
+<a id='L279' name='L279'></a> 279     <strong class='reserved'>else</strong> <strong class='reserved'>if</strong>( <a href='../Y/4377.html' title='Multiple used in 27 places.'>ext</a> == "net" )
+<a id='L280' name='L280'></a> 280     <em class='brace'>{</em>
+<a id='L281' name='L281'></a> 281         <strong class='reserved'>bool</strong> <a href='../Y/8039.html' title='Multiple used in 34 places.'>success</a> = <strong class='reserved'>false</strong>;
+<a id='L282' name='L282'></a> 282 
+<a id='L283' name='L283'></a> 283         <strong class='reserved'>if</strong>( <a href='../Y/4115.html' title='Multiple used in 22 places.'>destFile</a>.<a href='../D/644.html' title='Multiple defined in 3 places.'>GetName</a>() == <a href='../Y/3232.html' title='Multiple used in 10 places.'>aProjectName</a> )
+<a id='L284' name='L284'></a> 284             <a href='../Y/4115.html' title='Multiple used in 22 places.'>destFile</a>.<a href='../D/1747.html' title='Multiple defined in 3 places.'>SetName</a>( <a href='../Y/3125.html' title='Multiple used in 10 places.'>aNewProjectName</a>  );
+<a id='L285' name='L285'></a> 285 
+<a id='L286' name='L286'></a> 286         <strong class='reserved'>try</strong>
+<a id='L287' name='L287'></a> 287         <em class='brace'>{</em>
+<a id='L288' name='L288'></a> 288             <a href='../Y/1873.html' title='Multiple used in 7 places.'>SEXPR</a>::PARSER <a href='../Y/7176.html' title='Multiple used in 12 places.'>parser</a>;
+<a id='L289' name='L289'></a> 289             <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8293.html' title='Multiple used in 145 places.'>unique_ptr</a>&lt;<a href='../Y/1873.html' title='Multiple used in 7 places.'>SEXPR</a>::<a href='../Y/1873.html' title='Multiple used in 7 places.'>SEXPR</a>&gt; <a href='../Y/7815.html' title='Multiple used in 3 places.'>sexpr</a>( <a href='../Y/7176.html' title='Multiple used in 12 places.'>parser</a>.ParseFromFile( <a href='../Y/2392.html' title='Multiple used in 83 places.'>TO_UTF8</a>( <a href='../Y/3349.html' title='Multiple used in 8 places.'>aSrcFilePath</a> ) ) );
+<a id='L290' name='L290'></a> 290 
+<a id='L291' name='L291'></a> 291             <a href='../S/228.html#L224' title='Defined at 224 in eeschema.cpp.'>traverseSEXPR</a>( <a href='../Y/7815.html' title='Multiple used in 3 places.'>sexpr</a>.<a href='../Y/4638.html' title='Multiple used in 187 places.'>get</a>(), [&amp;]( <a href='../Y/1873.html' title='Multiple used in 7 places.'>SEXPR</a>::<a href='../Y/1873.html' title='Multiple used in 7 places.'>SEXPR</a>* <a href='../S/293.html#L605' title='Defined at 605 in netlist_exporters/netlist_exporter_generic.cpp.'>node</a> )
+<a id='L292' name='L292'></a> 292                 <em class='brace'>{</em>
+<a id='L293' name='L293'></a> 293                     <strong class='reserved'>if</strong>( <a href='../S/293.html#L605' title='Defined at 605 in netlist_exporters/netlist_exporter_generic.cpp.'>node</a>-&gt;<a href='../Y/1217.html' title='Multiple used in 2 places.'>IsList</a>() &amp;&amp; <a href='../S/293.html#L605' title='Defined at 605 in netlist_exporters/netlist_exporter_generic.cpp.'>node</a>-&gt;<a href='../Y/868.html' title='Multiple used in 2 places.'>GetNumberOfChildren</a>() &gt; 1
+<a id='L294' name='L294'></a> 294                             &amp;&amp; <a href='../S/293.html#L605' title='Defined at 605 in netlist_exporters/netlist_exporter_generic.cpp.'>node</a>-&gt;<a href='../Y/664.html' title='Multiple used in 5 places.'>GetChild</a>( 0 )-&gt;<a href='../Y/1261.html' title='Multiple used in 16 places.'>IsSymbol</a>()
+<a id='L295' name='L295'></a> 295                             &amp;&amp; <a href='../S/293.html#L605' title='Defined at 605 in netlist_exporters/netlist_exporter_generic.cpp.'>node</a>-&gt;<a href='../Y/664.html' title='Multiple used in 5 places.'>GetChild</a>( 0 )-&gt;<a href='../Y/1004.html' title='Multiple used in 9 places.'>GetSymbol</a>() == "source" )
+<a id='L296' name='L296'></a> 296                     <em class='brace'>{</em>
+<a id='L297' name='L297'></a> 297                         <strong class='reserved'>auto</strong> <a href='../Y/7209.html' title='Multiple used in 5 places.'>pathNode</a> = <strong class='reserved'>dynamic_cast</strong>&lt;<a href='../Y/1873.html' title='Multiple used in 7 places.'>SEXPR</a>::SEXPR_STRING*&gt;( <a href='../S/293.html#L605' title='Defined at 605 in netlist_exporters/netlist_exporter_generic.cpp.'>node</a>-&gt;<a href='../Y/664.html' title='Multiple used in 5 places.'>GetChild</a>( 1 ) );
+<a id='L298' name='L298'></a> 298                         <strong class='reserved'>auto</strong> <a href='../Y/8048.html' title='Multiple used in 5 places.'>symNode</a> = <strong class='reserved'>dynamic_cast</strong>&lt;<a href='../Y/1873.html' title='Multiple used in 7 places.'>SEXPR</a>::SEXPR_SYMBOL*&gt;( <a href='../S/293.html#L605' title='Defined at 605 in netlist_exporters/netlist_exporter_generic.cpp.'>node</a>-&gt;<a href='../Y/664.html' title='Multiple used in 5 places.'>GetChild</a>( 1 ) );
+<a id='L299' name='L299'></a> 299                         <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a> <a href='../Y/7206.html' title='Multiple used in 114 places.'>path</a>;
+<a id='L300' name='L300'></a> 300 
+<a id='L301' name='L301'></a> 301                         <strong class='reserved'>if</strong>( <a href='../Y/7209.html' title='Multiple used in 5 places.'>pathNode</a> )
+<a id='L302' name='L302'></a> 302                             <a href='../Y/7206.html' title='Multiple used in 114 places.'>path</a> = <a href='../Y/7209.html' title='Multiple used in 5 places.'>pathNode</a>-&gt;<a href='../Y/6605.html' title='Multiple used in 27 places.'>m_value</a>;
+<a id='L303' name='L303'></a> 303                         <strong class='reserved'>else</strong> <strong class='reserved'>if</strong>( <a href='../Y/8048.html' title='Multiple used in 5 places.'>symNode</a> )
+<a id='L304' name='L304'></a> 304                             <a href='../Y/7206.html' title='Multiple used in 114 places.'>path</a> = <a href='../Y/8048.html' title='Multiple used in 5 places.'>symNode</a>-&gt;<a href='../Y/6605.html' title='Multiple used in 27 places.'>m_value</a>;
+<a id='L305' name='L305'></a> 305 
+<a id='L306' name='L306'></a> 306                         <strong class='reserved'>if</strong>( <a href='../Y/7206.html' title='Multiple used in 114 places.'>path</a> == <a href='../Y/3232.html' title='Multiple used in 10 places.'>aProjectName</a> + ".sch" )
+<a id='L307' name='L307'></a> 307                             <a href='../Y/7206.html' title='Multiple used in 114 places.'>path</a> = <a href='../Y/3125.html' title='Multiple used in 10 places.'>aNewProjectName</a> + ".sch";
+<a id='L308' name='L308'></a> 308                         <strong class='reserved'>else</strong> <strong class='reserved'>if</strong>( <a href='../Y/7206.html' title='Multiple used in 114 places.'>path</a> == <a href='../Y/3230.html' title='Multiple used in 10 places.'>aProjectBasePath</a> + "/" + <a href='../Y/3232.html' title='Multiple used in 10 places.'>aProjectName</a> + ".sch" )
+<a id='L309' name='L309'></a> 309                             <a href='../Y/7206.html' title='Multiple used in 114 places.'>path</a> = <a href='../Y/3124.html' title='Multiple used in 5 places.'>aNewProjectBasePath</a> + "/" + <a href='../Y/3125.html' title='Multiple used in 10 places.'>aNewProjectName</a> + ".sch";
+<a id='L310' name='L310'></a> 310                         <strong class='reserved'>else</strong> <strong class='reserved'>if</strong>( <a href='../Y/7206.html' title='Multiple used in 114 places.'>path</a>.<a href='../Y/2339.html' title='Multiple used in 26 places.'>StartsWith</a>( <a href='../Y/3230.html' title='Multiple used in 10 places.'>aProjectBasePath</a> ) )
+<a id='L311' name='L311'></a> 311                             <a href='../Y/7206.html' title='Multiple used in 114 places.'>path</a>.<a href='../S/358.html#L360' title='Defined at 360 in sch_field.cpp.'>Replace</a>( <a href='../Y/3230.html' title='Multiple used in 10 places.'>aProjectBasePath</a>, <a href='../Y/3124.html' title='Multiple used in 5 places.'>aNewProjectBasePath</a>, <strong class='reserved'>false</strong> );
+<a id='L312' name='L312'></a> 312 
+<a id='L313' name='L313'></a> 313                         <strong class='reserved'>if</strong>( <a href='../Y/7209.html' title='Multiple used in 5 places.'>pathNode</a> )
+<a id='L314' name='L314'></a> 314                             <a href='../Y/7209.html' title='Multiple used in 5 places.'>pathNode</a>-&gt;<a href='../Y/6605.html' title='Multiple used in 27 places.'>m_value</a> = <a href='../Y/7206.html' title='Multiple used in 114 places.'>path</a>;
+<a id='L315' name='L315'></a> 315                         <strong class='reserved'>else</strong> <strong class='reserved'>if</strong>( <a href='../Y/8048.html' title='Multiple used in 5 places.'>symNode</a> )
+<a id='L316' name='L316'></a> 316                             <a href='../Y/8048.html' title='Multiple used in 5 places.'>symNode</a>-&gt;<a href='../Y/6605.html' title='Multiple used in 27 places.'>m_value</a> = <a href='../Y/7206.html' title='Multiple used in 114 places.'>path</a>;
+<a id='L317' name='L317'></a> 317                     <em class='brace'>}</em>
+<a id='L318' name='L318'></a> 318                 <em class='brace'>}</em> );
+<a id='L319' name='L319'></a> 319 
+<a id='L320' name='L320'></a> 320             <a href='../Y/8644.html' title='Multiple used in 5 places.'>wxFile</a> <a href='../Y/4118.html' title='Multiple used in 3 places.'>destNetList</a>( <a href='../Y/4115.html' title='Multiple used in 22 places.'>destFile</a>.<a href='../Y/766.html' title='Multiple used in 221 places.'>GetFullPath</a>(), <a href='../Y/8644.html' title='Multiple used in 5 places.'>wxFile</a>::<a href='../Y/8429.html' title='Multiple used in 2 places.'>write</a> );
+<a id='L321' name='L321'></a> 321 
+<a id='L322' name='L322'></a> 322             <strong class='reserved'>if</strong>( <a href='../Y/4118.html' title='Multiple used in 3 places.'>destNetList</a>.<a href='../Y/1237.html' title='Multiple used in 4 places.'>IsOpened</a>() )
+<a id='L323' name='L323'></a> 323                 <a href='../Y/8039.html' title='Multiple used in 34 places.'>success</a> = <a href='../Y/4118.html' title='Multiple used in 3 places.'>destNetList</a>.<a href='../Y/2696.html' title='Multiple used in 17 places.'>Write</a>( <a href='../Y/7815.html' title='Multiple used in 3 places.'>sexpr</a>-&gt;<a href='../Y/81.html' title='Multiple used in 25 places.'>AsString</a>( 0 ) );
+<a id='L324' name='L324'></a> 324 
+<a id='L325' name='L325'></a> 325             <em class='comment'>// wxFile dtor will close the file</em>
+<a id='L326' name='L326'></a> 326         <em class='brace'>}</em>
+<a id='L327' name='L327'></a> 327         <strong class='reserved'>catch</strong>( ... )
+<a id='L328' name='L328'></a> 328         <em class='brace'>{</em>
+<a id='L329' name='L329'></a> 329             <a href='../Y/8039.html' title='Multiple used in 34 places.'>success</a> = <strong class='reserved'>false</strong>;
+<a id='L330' name='L330'></a> 330         <em class='brace'>}</em>
+<a id='L331' name='L331'></a> 331 
+<a id='L332' name='L332'></a> 332         <strong class='reserved'>if</strong>( !<a href='../Y/8039.html' title='Multiple used in 34 places.'>success</a> )
+<a id='L333' name='L333'></a> 333         <em class='brace'>{</em>
+<a id='L334' name='L334'></a> 334             <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a> <a href='../Y/6788.html' title='Multiple used in 619 places.'>msg</a>;
+<a id='L335' name='L335'></a> 335 
+<a id='L336' name='L336'></a> 336             <strong class='reserved'>if</strong>( !<a href='../Y/2892.html' title='Multiple used in 11 places.'>aErrors</a>.<a href='../D/2102.html' title='Multiple defined in 2 places.'>empty</a>() )
+<a id='L337' name='L337'></a> 337                 <a href='../Y/2892.html' title='Multiple used in 11 places.'>aErrors</a> += "\n";
+<a id='L338' name='L338'></a> 338 
+<a id='L339' name='L339'></a> 339             <a href='../Y/6788.html' title='Multiple used in 619 places.'>msg</a>.<a href='../Y/1699.html' title='Multiple used in 239 places.'>Printf</a>( <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Cannot copy file \"%s\"." ), <a href='../Y/4115.html' title='Multiple used in 22 places.'>destFile</a>.<a href='../Y/766.html' title='Multiple used in 221 places.'>GetFullPath</a>() );
+<a id='L340' name='L340'></a> 340             <a href='../Y/2892.html' title='Multiple used in 11 places.'>aErrors</a> += <a href='../Y/6788.html' title='Multiple used in 619 places.'>msg</a>;
+<a id='L341' name='L341'></a> 341         <em class='brace'>}</em>
+<a id='L342' name='L342'></a> 342     <em class='brace'>}</em>
+<a id='L343' name='L343'></a> 343     <strong class='reserved'>else</strong> <strong class='reserved'>if</strong>( <a href='../Y/4115.html' title='Multiple used in 22 places.'>destFile</a>.<a href='../D/644.html' title='Multiple defined in 3 places.'>GetName</a>() == "sym-lib-table" )
+<a id='L344' name='L344'></a> 344     <em class='brace'>{</em>
+<a id='L345' name='L345'></a> 345         <a href='../S/423.html#L89' title='Defined at 89 in symbol_lib_table.cpp.'>SYMBOL_LIB_TABLE</a> <a href='../Y/8059.html' title='Multiple used in 5 places.'>symbolLibTable</a>;
+<a id='L346' name='L346'></a> 346         <a href='../Y/8059.html' title='Multiple used in 5 places.'>symbolLibTable</a>.<a href='../D/1019.html' title='Multiple defined in 6 places.'>Load</a>( <a href='../Y/3349.html' title='Multiple used in 8 places.'>aSrcFilePath</a> );
+<a id='L347' name='L347'></a> 347 
+<a id='L348' name='L348'></a> 348         <strong class='reserved'>for</strong>( <strong class='reserved'>unsigned</strong> <a href='../Y/4729.html' title='Multiple used in 805 places.'>i</a> = 0; <a href='../Y/4729.html' title='Multiple used in 805 places.'>i</a> &lt; <a href='../Y/8059.html' title='Multiple used in 5 places.'>symbolLibTable</a>.<a href='../S/241.html#L265' title='Defined at 265 in erc_settings.cpp.'>GetCount</a>(); <a href='../Y/4729.html' title='Multiple used in 805 places.'>i</a>++ )
+<a id='L349' name='L349'></a> 349         <em class='brace'>{</em>
+<a id='L350' name='L350'></a> 350             <a href='../Y/1377.html' title='Multiple used in 16 places.'>LIB_TABLE_ROW</a>&amp; <a href='../Y/7641.html' title='Multiple used in 184 places.'>row</a> = <a href='../Y/8059.html' title='Multiple used in 5 places.'>symbolLibTable</a>.<a href='../Y/87.html' title='Multiple used in 3 places.'>At</a>( <a href='../Y/4729.html' title='Multiple used in 805 places.'>i</a> );
+<a id='L351' name='L351'></a> 351             <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>       <a href='../Y/8332.html' title='Multiple used in 21 places.'>uri</a> = <a href='../Y/7641.html' title='Multiple used in 184 places.'>row</a>.<a href='../Y/768.html' title='Multiple used in 20 places.'>GetFullURI</a>();
+<a id='L352' name='L352'></a> 352 
+<a id='L353' name='L353'></a> 353             <a href='../Y/8332.html' title='Multiple used in 21 places.'>uri</a>.<a href='../S/358.html#L360' title='Defined at 360 in sch_field.cpp.'>Replace</a>( "/" + <a href='../Y/3232.html' title='Multiple used in 10 places.'>aProjectName</a> + "-cache.lib", "/" + <a href='../Y/3125.html' title='Multiple used in 10 places.'>aNewProjectName</a> + "-cache.lib" );
+<a id='L354' name='L354'></a> 354             <a href='../Y/8332.html' title='Multiple used in 21 places.'>uri</a>.<a href='../S/358.html#L360' title='Defined at 360 in sch_field.cpp.'>Replace</a>( "/" + <a href='../Y/3232.html' title='Multiple used in 10 places.'>aProjectName</a> + "-rescue.lib", "/" + <a href='../Y/3125.html' title='Multiple used in 10 places.'>aNewProjectName</a> + "-rescue.lib" );
+<a id='L355' name='L355'></a> 355             <a href='../Y/8332.html' title='Multiple used in 21 places.'>uri</a>.<a href='../S/358.html#L360' title='Defined at 360 in sch_field.cpp.'>Replace</a>( "/" + <a href='../Y/3232.html' title='Multiple used in 10 places.'>aProjectName</a> + ".lib", "/" + <a href='../Y/3125.html' title='Multiple used in 10 places.'>aNewProjectName</a> + ".lib" );
+<a id='L356' name='L356'></a> 356 
+<a id='L357' name='L357'></a> 357             <a href='../Y/7641.html' title='Multiple used in 184 places.'>row</a>.<a href='../Y/2056.html' title='Multiple used in 2 places.'>SetFullURI</a>( <a href='../Y/8332.html' title='Multiple used in 21 places.'>uri</a> );
+<a id='L358' name='L358'></a> 358         <em class='brace'>}</em>
+<a id='L359' name='L359'></a> 359 
+<a id='L360' name='L360'></a> 360         <strong class='reserved'>try</strong>
+<a id='L361' name='L361'></a> 361         <em class='brace'>{</em>
+<a id='L362' name='L362'></a> 362             <a href='../Y/8059.html' title='Multiple used in 5 places.'>symbolLibTable</a>.<a href='../D/1678.html' title='Multiple defined in 9 places.'>Save</a>( <a href='../Y/4115.html' title='Multiple used in 22 places.'>destFile</a>.<a href='../Y/766.html' title='Multiple used in 221 places.'>GetFullPath</a>() );
+<a id='L363' name='L363'></a> 363         <em class='brace'>}</em>
+<a id='L364' name='L364'></a> 364         <strong class='reserved'>catch</strong>( ... )
+<a id='L365' name='L365'></a> 365         <em class='brace'>{</em>
+<a id='L366' name='L366'></a> 366             <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a> <a href='../Y/6788.html' title='Multiple used in 619 places.'>msg</a>;
+<a id='L367' name='L367'></a> 367 
+<a id='L368' name='L368'></a> 368             <strong class='reserved'>if</strong>( !<a href='../Y/2892.html' title='Multiple used in 11 places.'>aErrors</a>.<a href='../D/2102.html' title='Multiple defined in 2 places.'>empty</a>() )
+<a id='L369' name='L369'></a> 369                 <a href='../Y/2892.html' title='Multiple used in 11 places.'>aErrors</a> += "\n";
+<a id='L370' name='L370'></a> 370 
+<a id='L371' name='L371'></a> 371             <a href='../Y/6788.html' title='Multiple used in 619 places.'>msg</a>.<a href='../Y/1699.html' title='Multiple used in 239 places.'>Printf</a>( <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Cannot copy file \"%s\"." ), <a href='../Y/4115.html' title='Multiple used in 22 places.'>destFile</a>.<a href='../Y/766.html' title='Multiple used in 221 places.'>GetFullPath</a>() );
+<a id='L372' name='L372'></a> 372             <a href='../Y/2892.html' title='Multiple used in 11 places.'>aErrors</a> += <a href='../Y/6788.html' title='Multiple used in 619 places.'>msg</a>;
+<a id='L373' name='L373'></a> 373         <em class='brace'>}</em>
+<a id='L374' name='L374'></a> 374     <em class='brace'>}</em>
+<a id='L375' name='L375'></a> 375     <strong class='reserved'>else</strong>
+<a id='L376' name='L376'></a> 376     <em class='brace'>{</em>
+<a id='L377' name='L377'></a> 377         <a href='../Y/8617.html' title='Multiple used in 34 places.'>wxFAIL_MSG</a>( "Unexpected filetype for Eeschema::SaveFileAs()" );
+<a id='L378' name='L378'></a> 378     <em class='brace'>}</em>
+<a id='L379' name='L379'></a> 379 <em class='brace'>}</em>
+<a id='L380' name='L380'></a> 380 
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L69'>[^]</a><a href='#L237'>[v]</a><a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

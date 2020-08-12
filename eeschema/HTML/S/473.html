@@ -1,0 +1,96 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>widgets/symbol_tree_pane.cpp</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/485.html'>widgets</a>/symbol_tree_pane.cpp</h2>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L37'>[^]</a><a href='#L60'>[v]</a>[top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L37' title='Defined at 37.'>m_libMgr</a></li>
+<li><a href='#L60' title='Defined at 60.'>onComponentSelected</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * This program source code file is part of KiCad, a free EDA CAD application.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 2017 CERN</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> * @author Maciej Suminski &lt;maciej.suminski@cern.ch&gt;</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> *</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> * This program is free software; you can redistribute it and/or</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * modify it under the terms of the GNU General Public License</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * as published by the Free Software Foundation; either version 3</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> * of the License, or (at your option) any later version.</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> *</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> * This program is distributed in the hope that it will be useful,</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> * GNU General Public License for more details.</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> *</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> * You should have received a copy of the GNU General Public License</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * along with this program; if not, you may find one here:</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> * https://www.gnu.org/licenses/gpl-3.0.html</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> * or you may search the http://www.gnu.org website for the version 3 license,</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'> * or you may write to the Free Software Foundation, Inc.,</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'> * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'> */</em>
+<a id='L24' name='L24'></a>  24 
+<a id='L25' name='L25'></a>  25 <em class='sharp'>#include</em> "<a href='474.html'>symbol_tree_pane.h</a>"
+<a id='L26' name='L26'></a>  26 <em class='sharp'>#include</em> &lt;widgets/lib_tree.h&gt;
+<a id='L27' name='L27'></a>  27 <em class='sharp'>#include</em> &lt;<a href='263.html'>lib_manager.h</a>&gt;
+<a id='L28' name='L28'></a>  28 <em class='sharp'>#include</em> &lt;<a href='260.html'>lib_edit_frame.h</a>&gt;
+<a id='L29' name='L29'></a>  29 <em class='sharp'>#include</em> &lt;<a href='424.html'>symbol_lib_table.h</a>&gt;
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#include</em> &lt;tool/tool_manager.h&gt;
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#include</em> &lt;<a href='435.html'>tools/ee_actions.h</a>&gt;
+<a id='L32' name='L32'></a>  32 
+<a id='L33' name='L33'></a>  33 <a href='../S/473.html#L54' title='Defined at 54 in widgets/symbol_tree_pane.cpp.'>SYMBOL_TREE_PANE</a>::<a href='../S/473.html#L54' title='Defined at 54 in widgets/symbol_tree_pane.cpp.'>SYMBOL_TREE_PANE</a>( <a href='../S/259.html#L193' title='Defined at 193 in libedit/lib_edit_frame.cpp.'>LIB_EDIT_FRAME</a>* <a href='../Y/3169.html' title='Multiple used in 321 places.'>aParent</a>, <a href='../Y/1368.html' title='Multiple used in 72 places.'>LIB_MANAGER</a>* <a href='../Y/3049.html' title='Multiple used in 8 places.'>aLibMgr</a> )
+<a id='L34' name='L34'></a>  34         : <a href='../Y/8814.html' title='Multiple used in 113 places.'>wxPanel</a>( <a href='../Y/3169.html' title='Multiple used in 321 places.'>aParent</a> ),
+<a id='L35' name='L35'></a>  35           <a href='../Y/5816.html' title='Multiple used in 3 places.'>m_libEditFrame</a>( <a href='../Y/3169.html' title='Multiple used in 321 places.'>aParent</a> ),
+<a id='L36' name='L36'></a>  36           <a href='../Y/6562.html' title='Multiple used in 38 places.'>m_tree</a>( <a href='../Y/7001.html' title='Multiple used in 622 places.'>nullptr</a> ),
+<a id='L37' name='L37'></a>  37           <a href='../R/2246.html' title='Multiple referred from 105 places.'>m_libMgr</a>( <a href='../Y/3049.html' title='Multiple used in 8 places.'>aLibMgr</a> )
+<a id='L38' name='L38'></a>  38 <em class='brace'>{</em>
+<a id='L39' name='L39'></a>  39     <em class='comment'>// Create widgets</em>
+<a id='L40' name='L40'></a>  40     <a href='../Y/8479.html' title='Multiple used in 391 places.'>wxBoxSizer</a>* <a href='../Y/3726.html' title='Multiple used in 4 places.'>boxSizer</a> = <strong class='reserved'>new</strong> <a href='../Y/8479.html' title='Multiple used in 391 places.'>wxBoxSizer</a>( <a href='../Y/8950.html' title='Multiple used in 169 places.'>wxVERTICAL</a> );
+<a id='L41' name='L41'></a>  41     <a href='../Y/6562.html' title='Multiple used in 38 places.'>m_tree</a> = <strong class='reserved'>new</strong> <a href='../Y/1383.html' title='Multiple used in 9 places.'>LIB_TREE</a>( <strong class='reserved'>this</strong>, &amp;<a href='../S/423.html#L89' title='Defined at 89 in symbol_lib_table.cpp.'>SYMBOL_LIB_TABLE</a>::<a href='../S/423.html#L97' title='Defined at 97 in symbol_lib_table.cpp.'>GetGlobalLibTable</a>(), <a href='../S/473.html#L37' title='Defined at 37 in widgets/symbol_tree_pane.cpp.'>m_libMgr</a>-&gt;<a href='../Y/622.html' title='Multiple used in 7 places.'>GetAdapter</a>(),
+<a id='L42' name='L42'></a>  42                            <a href='../Y/1383.html' title='Multiple used in 9 places.'>LIB_TREE</a>::SEARCH );
+<a id='L43' name='L43'></a>  43     <a href='../Y/3726.html' title='Multiple used in 4 places.'>boxSizer</a>-&gt;<a href='../Y/18.html' title='Multiple used in 1358 places.'>Add</a>( <a href='../Y/6562.html' title='Multiple used in 38 places.'>m_tree</a>, 1, <a href='../Y/8612.html' title='Multiple used in 606 places.'>wxEXPAND</a>, 5 );
+<a id='L44' name='L44'></a>  44 
+<a id='L45' name='L45'></a>  45     <a href='../Y/2221.html' title='Multiple used in 86 places.'>SetSizer</a>( <a href='../Y/3726.html' title='Multiple used in 4 places.'>boxSizer</a> );      <em class='comment'>// should remove the previous sizer according to wxWidgets docs</em>
+<a id='L46' name='L46'></a>  46     <a href='../Y/1400.html' title='Multiple used in 110 places.'>Layout</a>();
+<a id='L47' name='L47'></a>  47     <a href='../Y/3726.html' title='Multiple used in 4 places.'>boxSizer</a>-&gt;<a href='../Y/554.html' title='Multiple used in 80 places.'>Fit</a>( <strong class='reserved'>this</strong> );
+<a id='L48' name='L48'></a>  48 
+<a id='L49' name='L49'></a>  49     <em class='comment'>// Event handlers</em>
+<a id='L50' name='L50'></a>  50     <a href='../Y/127.html' title='Multiple used in 33 places.'>Bind</a>( <a href='../Y/158.html' title='Multiple used in 3 places.'>COMPONENT_SELECTED</a>, &amp;<a href='../S/473.html#L54' title='Defined at 54 in widgets/symbol_tree_pane.cpp.'>SYMBOL_TREE_PANE</a>::<a href='../S/473.html#L60' title='Defined at 60 in widgets/symbol_tree_pane.cpp.'>onComponentSelected</a>, <strong class='reserved'>this</strong> );
+<a id='L51' name='L51'></a>  51 <em class='brace'>}</em>
+<a id='L52' name='L52'></a>  52 
+<a id='L53' name='L53'></a>  53 
+<a id='L54' name='L54'></a>  54 <a href='../S/473.html#L54' title='Defined at 54 in widgets/symbol_tree_pane.cpp.'>SYMBOL_TREE_PANE</a>::~<a href='../R/1630.html' title='Multiple referred from 10 places.'>SYMBOL_TREE_PANE</a>()
+<a id='L55' name='L55'></a>  55 <em class='brace'>{</em>
+<a id='L56' name='L56'></a>  56     <a href='../Y/6562.html' title='Multiple used in 38 places.'>m_tree</a>-&gt;<a href='../Y/351.html' title='Multiple used in 19 places.'>Destroy</a>();
+<a id='L57' name='L57'></a>  57 <em class='brace'>}</em>
+<a id='L58' name='L58'></a>  58 
+<a id='L59' name='L59'></a>  59 
+<a id='L60' name='L60'></a>  60 <strong class='reserved'>void</strong> <a href='../S/473.html#L54' title='Defined at 54 in widgets/symbol_tree_pane.cpp.'>SYMBOL_TREE_PANE</a>::<a href='../R/2328.html' title='Multiple referred from 2 places.'>onComponentSelected</a>( <a href='../Y/8519.html' title='Multiple used in 531 places.'>wxCommandEvent</a>&amp; <a href='../Y/2893.html' title='Multiple used in 548 places.'>aEvent</a> )
+<a id='L61' name='L61'></a>  61 <em class='brace'>{</em>
+<a id='L62' name='L62'></a>  62     <a href='../Y/5816.html' title='Multiple used in 3 places.'>m_libEditFrame</a>-&gt;<a href='../Y/1034.html' title='Multiple used in 26 places.'>GetToolManager</a>()-&gt;<a href='../Y/1795.html' title='Multiple used in 146 places.'>RunAction</a>( <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/4246.html' title='Multiple used in 5 places.'>editSymbol</a>, <strong class='reserved'>true</strong> );
+<a id='L63' name='L63'></a>  63 
+<a id='L64' name='L64'></a>  64     <em class='comment'>// Make sure current-part highlighting doesn't get lost in selection highlighting</em>
+<a id='L65' name='L65'></a>  65     <a href='../Y/6562.html' title='Multiple used in 38 places.'>m_tree</a>-&gt;<a href='../Y/2621.html' title='Multiple used in 3 places.'>Unselect</a>();
+<a id='L66' name='L66'></a>  66 
+<a id='L67' name='L67'></a>  67     <em class='comment'>// Turn off any previous current-part highlighting</em>
+<a id='L68' name='L68'></a>  68     <a href='../Y/6562.html' title='Multiple used in 38 places.'>m_tree</a>-&gt;<a href='../Y/1759.html' title='Multiple used in 6 places.'>RefreshLibTree</a>();
+<a id='L69' name='L69'></a>  69 <em class='brace'>}</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L37'>[^]</a><a href='#L60'>[v]</a><a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

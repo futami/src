@@ -1,0 +1,361 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>sch_sheet_pin.cpp</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/sch_sheet_pin.cpp</h2>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L44'>[^]</a><a href='#L310'>[v]</a>[top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L44' title='Defined at 44.'>m_edge</a></li>
+<li><a href='#L63' title='Defined at 63.'>Clone</a></li>
+<li><a href='#L69' title='Defined at 69.'>Print</a></li>
+<li><a href='#L76' title='Defined at 76.'>SwapData</a></li>
+<li><a href='#L99' title='Defined at 99.'>GetPenWidth</a></li>
+<li><a href='#L105' title='Defined at 105.'>SetNumber</a></li>
+<li><a href='#L113' title='Defined at 113.'>SetEdge</a></li>
+<li><a href='#L151' title='Defined at 151.'>GetEdge</a></li>
+<li><a href='#L157' title='Defined at 157.'>ConstrainOnEdge</a></li>
+<li><a href='#L218' title='Defined at 218.'>MirrorX</a></li>
+<li><a href='#L233' title='Defined at 233.'>MirrorY</a></li>
+<li><a href='#L248' title='Defined at 248.'>Rotate</a></li>
+<li><a href='#L256' title='Defined at 256.'>CreateGraphicShape</a></li>
+<li><a href='#L279' title='Defined at 279.'>GetEndPoints</a></li>
+<li><a href='#L286' title='Defined at 286.'>GetSelectMenuText</a></li>
+<li><a href='#L292' title='Defined at 292.'>GetMenuImage</a></li>
+<li><a href='#L298' title='Defined at 298.'>HitTest</a></li>
+<li><a href='#L310' title='Defined at 310.'>Show</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * This program source code file is part of KiCad, a free EDA CAD application.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 2006 Jean-Pierre Charras, jaen-pierre.charras@gipsa-lab.inpg.com</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> * Copyright (C) 1992-2019 KiCad Developers, see AUTHORS.txt for contributors.</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> *</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> * This program is free software; you can redistribute it and/or</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * modify it under the terms of the GNU General Public License</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * as published by the Free Software Foundation; either version 2</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> * of the License, or (at your option) any later version.</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> *</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> * This program is distributed in the hope that it will be useful,</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> * GNU General Public License for more details.</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> *</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> * You should have received a copy of the GNU General Public License</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * along with this program; if not, you may find one here:</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> * or you may search the http://www.gnu.org website for the version 2 license,</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'> * or you may write to the Free Software Foundation, Inc.,</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'> * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'> */</em>
+<a id='L24' name='L24'></a>  24 
+<a id='L25' name='L25'></a>  25 <em class='sharp'>#include</em> &lt;algorithm&gt;
+<a id='L26' name='L26'></a>  26 
+<a id='L27' name='L27'></a>  27 <em class='sharp'>#include</em> &lt;bitmaps.h&gt;
+<a id='L28' name='L28'></a>  28 <em class='sharp'>#include</em> &lt;fctsys.h&gt;
+<a id='L29' name='L29'></a>  29 <em class='sharp'>#include</em> &lt;<a href='246.html'>general.h</a>&gt;
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#include</em> &lt;geometry/shape_line_chain.h&gt;
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#include</em> &lt;gr_basic.h&gt;
+<a id='L32' name='L32'></a>  32 <em class='sharp'>#include</em> &lt;gr_text.h&gt;
+<a id='L33' name='L33'></a>  33 <em class='sharp'>#include</em> &lt;kicad_string.h&gt;
+<a id='L34' name='L34'></a>  34 <em class='sharp'>#include</em> &lt;plotter.h&gt;
+<a id='L35' name='L35'></a>  35 <em class='sharp'>#include</em> &lt;<a href='353.html'>sch_draw_panel.h</a>&gt;
+<a id='L36' name='L36'></a>  36 <em class='sharp'>#include</em> &lt;<a href='357.html'>sch_edit_frame.h</a>&gt;
+<a id='L37' name='L37'></a>  37 <em class='sharp'>#include</em> &lt;<a href='391.html'>sch_sheet.h</a>&gt;
+<a id='L38' name='L38'></a>  38 <em class='sharp'>#include</em> &lt;<a href='376.html'>sch_painter.h</a>&gt;
+<a id='L39' name='L39'></a>  39 <em class='sharp'>#include</em> &lt;trigo.h&gt;
+<a id='L40' name='L40'></a>  40 
+<a id='L41' name='L41'></a>  41 
+<a id='L42' name='L42'></a>  42 <a href='../Y/1854.html' title='Multiple used in 121 places.'>SCH_SHEET_PIN</a>::<a href='../Y/1854.html' title='Multiple used in 121 places.'>SCH_SHEET_PIN</a>( <a href='../D/1561.html' title='Multiple defined in 3 places.'>SCH_SHEET</a>* <a href='../Y/7163.html' title='Multiple used in 308 places.'>parent</a>, <strong class='reserved'>const</strong> <a href='../Y/8819.html' title='Multiple used in 1271 places.'>wxPoint</a>&amp; <a href='../Y/7373.html' title='Multiple used in 437 places.'>pos</a>, <strong class='reserved'>const</strong> <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&amp; <a href='../Y/8111.html' title='Multiple used in 348 places.'>text</a> ) :
+<a id='L43' name='L43'></a>  43     <a href='../S/395.html#L1094' title='Defined at 1094 in sch_text.cpp.'>SCH_HIERLABEL</a>( <a href='../Y/7373.html' title='Multiple used in 437 places.'>pos</a>, <a href='../Y/8111.html' title='Multiple used in 348 places.'>text</a>, <a href='../Y/1855.html' title='Multiple used in 61 places.'>SCH_SHEET_PIN_T</a> ),
+<a id='L44' name='L44'></a>  44     <a href='../R/2225.html' title='Multiple referred from 8 places.'>m_edge</a>( <a href='../S/391.html#L61' title='Defined at 61 in sch_sheet.h.'>SHEET_UNDEFINED_SIDE</a> )
+<a id='L45' name='L45'></a>  45 <em class='brace'>{</em>
+<a id='L46' name='L46'></a>  46     <a href='../S/8.html#L312' title='Defined at 312 in class_libentry.cpp.'>SetParent</a>( <a href='../Y/7163.html' title='Multiple used in 308 places.'>parent</a> );
+<a id='L47' name='L47'></a>  47     <a href='../Y/8441.html' title='Multiple used in 163 places.'>wxASSERT</a>( <a href='../Y/7163.html' title='Multiple used in 308 places.'>parent</a> );
+<a id='L48' name='L48'></a>  48     <a href='../Y/5179.html' title='Multiple used in 47 places.'>m_Layer</a> = <a href='../Y/1341.html' title='Multiple used in 5 places.'>LAYER_SHEETLABEL</a>;
+<a id='L49' name='L49'></a>  49 
+<a id='L50' name='L50'></a>  50     <a href='../Y/2246.html' title='Multiple used in 42 places.'>SetTextPos</a>( <a href='../Y/7373.html' title='Multiple used in 437 places.'>pos</a> );
+<a id='L51' name='L51'></a>  51 
+<a id='L52' name='L52'></a>  52     <strong class='reserved'>if</strong>( <a href='../Y/7163.html' title='Multiple used in 308 places.'>parent</a>-&gt;<a href='../S/390.html#L331' title='Defined at 331 in sch_sheet.cpp.'>IsVerticalOrientation</a>() )
+<a id='L53' name='L53'></a>  53         <a href='../S/394.html#L113' title='Defined at 113 in sch_sheet_pin.cpp.'>SetEdge</a>( <a href='../S/391.html#L59' title='Defined at 59 in sch_sheet.h.'>SHEET_TOP_SIDE</a> );
+<a id='L54' name='L54'></a>  54     <strong class='reserved'>else</strong>
+<a id='L55' name='L55'></a>  55         <a href='../S/394.html#L113' title='Defined at 113 in sch_sheet_pin.cpp.'>SetEdge</a>( <a href='../S/391.html#L57' title='Defined at 57 in sch_sheet.h.'>SHEET_LEFT_SIDE</a> );
+<a id='L56' name='L56'></a>  56 
+<a id='L57' name='L57'></a>  57     <a href='../S/277.html#L161' title='Defined at 161 in lib_pin.cpp.'>m_shape</a>      = <a href='../Y/1617.html' title='Multiple used in 67 places.'>PINSHEETLABEL_SHAPE</a>::<a href='../Y/1635.html' title='Multiple used in 18 places.'>PS_INPUT</a>;
+<a id='L58' name='L58'></a>  58     <a href='../Y/5759.html' title='Multiple used in 26 places.'>m_isDangling</a> = <strong class='reserved'>true</strong>;
+<a id='L59' name='L59'></a>  59     <a href='../Y/5944.html' title='Multiple used in 29 places.'>m_number</a>     = 2;
+<a id='L60' name='L60'></a>  60 <em class='brace'>}</em>
+<a id='L61' name='L61'></a>  61 
+<a id='L62' name='L62'></a>  62 
+<a id='L63' name='L63'></a>  63 <a href='../Y/392.html' title='Multiple used in 237 places.'>EDA_ITEM</a>* <a href='../Y/1854.html' title='Multiple used in 121 places.'>SCH_SHEET_PIN</a>::<a href='../R/179.html' title='Multiple referred from 75 places.'>Clone</a>() <strong class='reserved'>const</strong>
+<a id='L64' name='L64'></a>  64 <em class='brace'>{</em>
+<a id='L65' name='L65'></a>  65     <strong class='reserved'>return</strong> <strong class='reserved'>new</strong> <a href='../Y/1854.html' title='Multiple used in 121 places.'>SCH_SHEET_PIN</a>( *<strong class='reserved'>this</strong> );
+<a id='L66' name='L66'></a>  66 <em class='brace'>}</em>
+<a id='L67' name='L67'></a>  67 
+<a id='L68' name='L68'></a>  68 
+<a id='L69' name='L69'></a>  69 <strong class='reserved'>void</strong> <a href='../Y/1854.html' title='Multiple used in 121 places.'>SCH_SHEET_PIN</a>::<a href='../R/1366.html' title='Multiple referred from 309 places.'>Print</a>( <a href='../Y/1730.html' title='Multiple used in 104 places.'>RENDER_SETTINGS</a>* <a href='../Y/3304.html' title='Multiple used in 201 places.'>aSettings</a>, <strong class='reserved'>const</strong> <a href='../Y/8819.html' title='Multiple used in 1271 places.'>wxPoint</a>&amp;  <a href='../Y/3141.html' title='Multiple used in 154 places.'>aOffset</a> )
+<a id='L70' name='L70'></a>  70 <em class='brace'>{</em>
+<a id='L71' name='L71'></a>  71     <em class='comment'>// The icon selection is handle by the virtual method CreateGraphicShape called by ::Print</em>
+<a id='L72' name='L72'></a>  72     <a href='../S/395.html#L1094' title='Defined at 1094 in sch_text.cpp.'>SCH_HIERLABEL</a>::<a href='../D/1400.html' title='Multiple defined in 18 places.'>Print</a>( <a href='../Y/3304.html' title='Multiple used in 201 places.'>aSettings</a>, <a href='../Y/3141.html' title='Multiple used in 154 places.'>aOffset</a> );
+<a id='L73' name='L73'></a>  73 <em class='brace'>}</em>
+<a id='L74' name='L74'></a>  74 
+<a id='L75' name='L75'></a>  75 
+<a id='L76' name='L76'></a>  76 <strong class='reserved'>void</strong> <a href='../Y/1854.html' title='Multiple used in 121 places.'>SCH_SHEET_PIN</a>::<a href='../R/1783.html' title='Multiple referred from 14 places.'>SwapData</a>( <a href='../D/1533.html' title='Multiple defined in 3 places.'>SCH_ITEM</a>* <a href='../Y/3005.html' title='Multiple used in 689 places.'>aItem</a> )
+<a id='L77' name='L77'></a>  77 <em class='brace'>{</em>
+<a id='L78' name='L78'></a>  78     <a href='../Y/8498.html' title='Multiple used in 111 places.'>wxCHECK_RET</a>( <a href='../Y/3005.html' title='Multiple used in 689 places.'>aItem</a>-&gt;<a href='../Y/2583.html' title='Multiple used in 406 places.'>Type</a>() == <a href='../Y/1855.html' title='Multiple used in 61 places.'>SCH_SHEET_PIN_T</a>,
+<a id='L79' name='L79'></a>  79                  <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>::<a href='../D/501.html' title='Multiple defined in 7 places.'>Format</a>( <a href='../Y/8911.html' title='Multiple used in 490 places.'>wxT</a>( "SCH_SHEET_PIN object cannot swap data with %s object." ),
+<a id='L80' name='L80'></a>  80                                    <a href='../Y/663.html' title='Multiple used in 25 places.'>GetChars</a>( <a href='../Y/3005.html' title='Multiple used in 689 places.'>aItem</a>-&gt;<a href='../S/392.html#L61' title='Defined at 61 in sch_sheet_path.cpp.'>GetClass</a>() ) ) );
+<a id='L81' name='L81'></a>  81 
+<a id='L82' name='L82'></a>  82     <a href='../Y/1854.html' title='Multiple used in 121 places.'>SCH_SHEET_PIN</a>* <a href='../Y/7237.html' title='Multiple used in 532 places.'>pin</a> = ( <a href='../Y/1854.html' title='Multiple used in 121 places.'>SCH_SHEET_PIN</a>* ) <a href='../Y/3005.html' title='Multiple used in 689 places.'>aItem</a>;
+<a id='L83' name='L83'></a>  83     <a href='../Y/1857.html' title='Multiple used in 140 places.'>SCH_TEXT</a>::<a href='../D/1828.html' title='Multiple defined in 12 places.'>SwapData</a>( (<a href='../Y/1857.html' title='Multiple used in 140 places.'>SCH_TEXT</a>*) <a href='../Y/7237.html' title='Multiple used in 532 places.'>pin</a> );
+<a id='L84' name='L84'></a>  84     <strong class='reserved'>int</strong> <a href='../Y/8170.html' title='Multiple used in 361 places.'>tmp</a> = <a href='../Y/7237.html' title='Multiple used in 532 places.'>pin</a>-&gt;<a href='../Y/867.html' title='Multiple used in 40 places.'>GetNumber</a>();
+<a id='L85' name='L85'></a>  85     <a href='../Y/7237.html' title='Multiple used in 532 places.'>pin</a>-&gt;<a href='../D/1750.html' title='Multiple defined in 2 places.'>SetNumber</a>( <a href='../Y/867.html' title='Multiple used in 40 places.'>GetNumber</a>() );
+<a id='L86' name='L86'></a>  86     <a href='../D/1750.html' title='Multiple defined in 2 places.'>SetNumber</a>( <a href='../Y/8170.html' title='Multiple used in 361 places.'>tmp</a> );
+<a id='L87' name='L87'></a>  87     <a href='../S/391.html#L55' title='Defined at 55 in sch_sheet.h.'>SHEET_SIDE</a> <a href='../Y/7992.html' title='Multiple used in 2 places.'>stmp</a> = <a href='../Y/7237.html' title='Multiple used in 532 places.'>pin</a>-&gt;<a href='../S/394.html#L151' title='Defined at 151 in sch_sheet_pin.cpp.'>GetEdge</a>();
+<a id='L88' name='L88'></a>  88     <a href='../Y/7237.html' title='Multiple used in 532 places.'>pin</a>-&gt;<a href='../S/394.html#L113' title='Defined at 113 in sch_sheet_pin.cpp.'>SetEdge</a>( <a href='../S/394.html#L151' title='Defined at 151 in sch_sheet_pin.cpp.'>GetEdge</a>() );
+<a id='L89' name='L89'></a>  89     <a href='../S/394.html#L113' title='Defined at 113 in sch_sheet_pin.cpp.'>SetEdge</a>( <a href='../Y/7992.html' title='Multiple used in 2 places.'>stmp</a> );
+<a id='L90' name='L90'></a>  90 <em class='brace'>}</em>
+<a id='L91' name='L91'></a>  91 
+<a id='L92' name='L92'></a>  92 
+<a id='L93' name='L93'></a>  93 <strong class='reserved'>bool</strong> <a href='../Y/1854.html' title='Multiple used in 121 places.'>SCH_SHEET_PIN</a>::<strong class='reserved'>operator</strong>==( <strong class='reserved'>const</strong> <a href='../Y/1854.html' title='Multiple used in 121 places.'>SCH_SHEET_PIN</a>* <a href='../Y/3181.html' title='Multiple used in 161 places.'>aPin</a> ) <strong class='reserved'>const</strong>
+<a id='L94' name='L94'></a>  94 <em class='brace'>{</em>
+<a id='L95' name='L95'></a>  95     <strong class='reserved'>return</strong> <a href='../Y/3181.html' title='Multiple used in 161 places.'>aPin</a> == <strong class='reserved'>this</strong>;
+<a id='L96' name='L96'></a>  96 <em class='brace'>}</em>
+<a id='L97' name='L97'></a>  97 
+<a id='L98' name='L98'></a>  98 
+<a id='L99' name='L99'></a>  99 <strong class='reserved'>int</strong> <a href='../Y/1854.html' title='Multiple used in 121 places.'>SCH_SHEET_PIN</a>::<a href='../R/655.html' title='Multiple referred from 79 places.'>GetPenWidth</a>() <strong class='reserved'>const</strong>
+<a id='L100' name='L100'></a> 100 <em class='brace'>{</em>
+<a id='L101' name='L101'></a> 101     <strong class='reserved'>return</strong> 1;
+<a id='L102' name='L102'></a> 102 <em class='brace'>}</em>
+<a id='L103' name='L103'></a> 103 
+<a id='L104' name='L104'></a> 104 
+<a id='L105' name='L105'></a> 105 <strong class='reserved'>void</strong> <a href='../Y/1854.html' title='Multiple used in 121 places.'>SCH_SHEET_PIN</a>::<a href='../R/1705.html' title='Multiple referred from 14 places.'>SetNumber</a>( <strong class='reserved'>int</strong> <a href='../Y/3138.html' title='Multiple used in 10 places.'>aNumber</a> )
+<a id='L106' name='L106'></a> 106 <em class='brace'>{</em>
+<a id='L107' name='L107'></a> 107     <a href='../Y/8441.html' title='Multiple used in 163 places.'>wxASSERT</a>( <a href='../Y/3138.html' title='Multiple used in 10 places.'>aNumber</a> &gt;= 2 );
+<a id='L108' name='L108'></a> 108 
+<a id='L109' name='L109'></a> 109     <a href='../Y/5944.html' title='Multiple used in 29 places.'>m_number</a> = <a href='../Y/3138.html' title='Multiple used in 10 places.'>aNumber</a>;
+<a id='L110' name='L110'></a> 110 <em class='brace'>}</em>
+<a id='L111' name='L111'></a> 111 
+<a id='L112' name='L112'></a> 112 
+<a id='L113' name='L113'></a> 113 <strong class='reserved'>void</strong> <a href='../Y/1854.html' title='Multiple used in 121 places.'>SCH_SHEET_PIN</a>::<a href='../R/1680.html' title='Multiple referred from 21 places.'>SetEdge</a>( <a href='../S/391.html#L55' title='Defined at 55 in sch_sheet.h.'>SHEET_SIDE</a> <a href='../Y/2877.html' title='Multiple used in 7 places.'>aEdge</a> )
+<a id='L114' name='L114'></a> 114 <em class='brace'>{</em>
+<a id='L115' name='L115'></a> 115     <a href='../D/1561.html' title='Multiple defined in 3 places.'>SCH_SHEET</a>* <a href='../Y/2284.html' title='Multiple used in 12 places.'>Sheet</a> = <a href='../D/666.html' title='Multiple defined in 2 places.'>GetParent</a>();
+<a id='L116' name='L116'></a> 116 
+<a id='L117' name='L117'></a> 117     <em class='comment'>// use SHEET_UNDEFINED_SIDE to adjust text orientation without changing edge</em>
+<a id='L118' name='L118'></a> 118 
+<a id='L119' name='L119'></a> 119     <strong class='reserved'>switch</strong>( <a href='../Y/2877.html' title='Multiple used in 7 places.'>aEdge</a> )
+<a id='L120' name='L120'></a> 120     <em class='brace'>{</em>
+<a id='L121' name='L121'></a> 121     <strong class='reserved'>case</strong> <a href='../S/391.html#L57' title='Defined at 57 in sch_sheet.h.'>SHEET_LEFT_SIDE</a>:
+<a id='L122' name='L122'></a> 122         <a href='../S/394.html#L44' title='Defined at 44 in sch_sheet_pin.cpp.'>m_edge</a> = <a href='../Y/2877.html' title='Multiple used in 7 places.'>aEdge</a>;
+<a id='L123' name='L123'></a> 123         <a href='../Y/2249.html' title='Multiple used in 9 places.'>SetTextX</a>( <a href='../Y/2284.html' title='Multiple used in 12 places.'>Sheet</a>-&gt;<a href='../Y/6054.html' title='Multiple used in 121 places.'>m_pos</a>.<a href='../Y/8967.html' title='Multiple used in 647 places.'>x</a> );
+<a id='L124' name='L124'></a> 124         <a href='../D/1737.html' title='Multiple defined in 3 places.'>SetLabelSpinStyle</a>( <a href='../Y/1305.html' title='Multiple used in 123 places.'>LABEL_SPIN_STYLE</a>::<a href='../Y/1737.html' title='Multiple used in 33 places.'>RIGHT</a> ); <em class='comment'>// Orientation horiz inverse</em>
+<a id='L125' name='L125'></a> 125         <strong class='reserved'>break</strong>;
+<a id='L126' name='L126'></a> 126 
+<a id='L127' name='L127'></a> 127     <strong class='reserved'>case</strong> <a href='../S/391.html#L58' title='Defined at 58 in sch_sheet.h.'>SHEET_RIGHT_SIDE</a>:
+<a id='L128' name='L128'></a> 128         <a href='../S/394.html#L44' title='Defined at 44 in sch_sheet_pin.cpp.'>m_edge</a> = <a href='../Y/2877.html' title='Multiple used in 7 places.'>aEdge</a>;
+<a id='L129' name='L129'></a> 129         <a href='../Y/2249.html' title='Multiple used in 9 places.'>SetTextX</a>( <a href='../Y/2284.html' title='Multiple used in 12 places.'>Sheet</a>-&gt;<a href='../Y/6054.html' title='Multiple used in 121 places.'>m_pos</a>.<a href='../Y/8967.html' title='Multiple used in 647 places.'>x</a> + <a href='../Y/2284.html' title='Multiple used in 12 places.'>Sheet</a>-&gt;<a href='../Y/6276.html' title='Multiple used in 54 places.'>m_size</a>.<a href='../Y/8967.html' title='Multiple used in 647 places.'>x</a> );
+<a id='L130' name='L130'></a> 130         <a href='../D/1737.html' title='Multiple defined in 3 places.'>SetLabelSpinStyle</a>( <a href='../Y/1305.html' title='Multiple used in 123 places.'>LABEL_SPIN_STYLE</a>::<a href='../Y/1347.html' title='Multiple used in 31 places.'>LEFT</a> ); <em class='comment'>// Orientation horiz normal</em>
+<a id='L131' name='L131'></a> 131         <strong class='reserved'>break</strong>;
+<a id='L132' name='L132'></a> 132 
+<a id='L133' name='L133'></a> 133     <strong class='reserved'>case</strong> <a href='../S/391.html#L59' title='Defined at 59 in sch_sheet.h.'>SHEET_TOP_SIDE</a>:
+<a id='L134' name='L134'></a> 134         <a href='../S/394.html#L44' title='Defined at 44 in sch_sheet_pin.cpp.'>m_edge</a> = <a href='../Y/2877.html' title='Multiple used in 7 places.'>aEdge</a>;
+<a id='L135' name='L135'></a> 135         <a href='../Y/2250.html' title='Multiple used in 10 places.'>SetTextY</a>( <a href='../Y/2284.html' title='Multiple used in 12 places.'>Sheet</a>-&gt;<a href='../Y/6054.html' title='Multiple used in 121 places.'>m_pos</a>.<a href='../Y/9006.html' title='Multiple used in 589 places.'>y</a> );
+<a id='L136' name='L136'></a> 136         <a href='../D/1737.html' title='Multiple defined in 3 places.'>SetLabelSpinStyle</a>( <a href='../Y/1305.html' title='Multiple used in 123 places.'>LABEL_SPIN_STYLE</a>::<a href='../Y/108.html' title='Multiple used in 24 places.'>BOTTOM</a> ); <em class='comment'>// Orientation vert BOTTOM</em>
+<a id='L137' name='L137'></a> 137         <strong class='reserved'>break</strong>;
+<a id='L138' name='L138'></a> 138 
+<a id='L139' name='L139'></a> 139     <strong class='reserved'>case</strong> <a href='../S/391.html#L60' title='Defined at 60 in sch_sheet.h.'>SHEET_BOTTOM_SIDE</a>:
+<a id='L140' name='L140'></a> 140         <a href='../S/394.html#L44' title='Defined at 44 in sch_sheet_pin.cpp.'>m_edge</a> = <a href='../Y/2877.html' title='Multiple used in 7 places.'>aEdge</a>;
+<a id='L141' name='L141'></a> 141         <a href='../Y/2250.html' title='Multiple used in 10 places.'>SetTextY</a>( <a href='../Y/2284.html' title='Multiple used in 12 places.'>Sheet</a>-&gt;<a href='../Y/6054.html' title='Multiple used in 121 places.'>m_pos</a>.<a href='../Y/9006.html' title='Multiple used in 589 places.'>y</a> + <a href='../Y/2284.html' title='Multiple used in 12 places.'>Sheet</a>-&gt;<a href='../Y/6276.html' title='Multiple used in 54 places.'>m_size</a>.<a href='../Y/9006.html' title='Multiple used in 589 places.'>y</a> );
+<a id='L142' name='L142'></a> 142         <a href='../D/1737.html' title='Multiple defined in 3 places.'>SetLabelSpinStyle</a>( <a href='../Y/1305.html' title='Multiple used in 123 places.'>LABEL_SPIN_STYLE</a>::<a href='../Y/2596.html' title='Multiple used in 24 places.'>UP</a> ); <em class='comment'>// Orientation vert UP</em>
+<a id='L143' name='L143'></a> 143         <strong class='reserved'>break</strong>;
+<a id='L144' name='L144'></a> 144 
+<a id='L145' name='L145'></a> 145     <strong class='reserved'>default</strong>:
+<a id='L146' name='L146'></a> 146         <strong class='reserved'>break</strong>;
+<a id='L147' name='L147'></a> 147     <em class='brace'>}</em>
+<a id='L148' name='L148'></a> 148 <em class='brace'>}</em>
+<a id='L149' name='L149'></a> 149 
+<a id='L150' name='L150'></a> 150 
+<a id='L151' name='L151'></a> 151 <strong class='reserved'>enum</strong> <a href='../S/391.html#L55' title='Defined at 55 in sch_sheet.h.'>SHEET_SIDE</a> <a href='../Y/1854.html' title='Multiple used in 121 places.'>SCH_SHEET_PIN</a>::<a href='../R/565.html' title='Multiple referred from 12 places.'>GetEdge</a>() <strong class='reserved'>const</strong>
+<a id='L152' name='L152'></a> 152 <em class='brace'>{</em>
+<a id='L153' name='L153'></a> 153     <strong class='reserved'>return</strong> <a href='../S/394.html#L44' title='Defined at 44 in sch_sheet_pin.cpp.'>m_edge</a>;
+<a id='L154' name='L154'></a> 154 <em class='brace'>}</em>
+<a id='L155' name='L155'></a> 155 
+<a id='L156' name='L156'></a> 156 
+<a id='L157' name='L157'></a> 157 <strong class='reserved'>void</strong> <a href='../Y/1854.html' title='Multiple used in 121 places.'>SCH_SHEET_PIN</a>::<a href='../R/197.html' title='Multiple referred from 5 places.'>ConstrainOnEdge</a>( <a href='../Y/8819.html' title='Multiple used in 1271 places.'>wxPoint</a> <a href='../Y/1690.html' title='Multiple used in 12 places.'>Pos</a> )
+<a id='L158' name='L158'></a> 158 <em class='brace'>{</em>
+<a id='L159' name='L159'></a> 159     <a href='../D/1561.html' title='Multiple defined in 3 places.'>SCH_SHEET</a>* <a href='../Y/7821.html' title='Multiple used in 409 places.'>sheet</a> = <a href='../D/666.html' title='Multiple defined in 2 places.'>GetParent</a>();
+<a id='L160' name='L160'></a> 160 
+<a id='L161' name='L161'></a> 161     <strong class='reserved'>if</strong>( <a href='../Y/7821.html' title='Multiple used in 409 places.'>sheet</a> == <a href='../Y/1527.html' title='Multiple used in 775 places.'>NULL</a> )
+<a id='L162' name='L162'></a> 162         <strong class='reserved'>return</strong>;
+<a id='L163' name='L163'></a> 163 
+<a id='L164' name='L164'></a> 164     <strong class='reserved'>int</strong> <a href='../Y/4948.html' title='Multiple used in 6 places.'>leftSide</a>  = <a href='../Y/7821.html' title='Multiple used in 409 places.'>sheet</a>-&gt;<a href='../Y/6054.html' title='Multiple used in 121 places.'>m_pos</a>.<a href='../Y/8967.html' title='Multiple used in 647 places.'>x</a>;
+<a id='L165' name='L165'></a> 165     <strong class='reserved'>int</strong> <a href='../Y/7612.html' title='Multiple used in 5 places.'>rightSide</a> = <a href='../Y/7821.html' title='Multiple used in 409 places.'>sheet</a>-&gt;<a href='../Y/6054.html' title='Multiple used in 121 places.'>m_pos</a>.<a href='../Y/8967.html' title='Multiple used in 647 places.'>x</a> + <a href='../Y/7821.html' title='Multiple used in 409 places.'>sheet</a>-&gt;<a href='../Y/6276.html' title='Multiple used in 54 places.'>m_size</a>.<a href='../Y/8967.html' title='Multiple used in 647 places.'>x</a>;
+<a id='L166' name='L166'></a> 166     <strong class='reserved'>int</strong> <a href='../Y/8222.html' title='Multiple used in 6 places.'>topSide</a>   = <a href='../Y/7821.html' title='Multiple used in 409 places.'>sheet</a>-&gt;<a href='../Y/6054.html' title='Multiple used in 121 places.'>m_pos</a>.<a href='../Y/9006.html' title='Multiple used in 589 places.'>y</a>;
+<a id='L167' name='L167'></a> 167     <strong class='reserved'>int</strong> <a href='../Y/3721.html' title='Multiple used in 5 places.'>botSide</a>   = <a href='../Y/7821.html' title='Multiple used in 409 places.'>sheet</a>-&gt;<a href='../Y/6054.html' title='Multiple used in 121 places.'>m_pos</a>.<a href='../Y/9006.html' title='Multiple used in 589 places.'>y</a> + <a href='../Y/7821.html' title='Multiple used in 409 places.'>sheet</a>-&gt;<a href='../Y/6276.html' title='Multiple used in 54 places.'>m_size</a>.<a href='../Y/9006.html' title='Multiple used in 589 places.'>y</a>;
+<a id='L168' name='L168'></a> 168 
+<a id='L169' name='L169'></a> 169     <a href='../Y/1876.html' title='Multiple used in 3 places.'>SHAPE_LINE_CHAIN</a> <a href='../Y/7825.html' title='Multiple used in 7 places.'>sheetEdge</a>;
+<a id='L170' name='L170'></a> 170 
+<a id='L171' name='L171'></a> 171     <a href='../Y/7825.html' title='Multiple used in 7 places.'>sheetEdge</a>.<a href='../D/55.html' title='Multiple defined in 2 places.'>Append</a>( <a href='../Y/4948.html' title='Multiple used in 6 places.'>leftSide</a>,  <a href='../Y/8222.html' title='Multiple used in 6 places.'>topSide</a> );
+<a id='L172' name='L172'></a> 172     <a href='../Y/7825.html' title='Multiple used in 7 places.'>sheetEdge</a>.<a href='../D/55.html' title='Multiple defined in 2 places.'>Append</a>( <a href='../Y/7612.html' title='Multiple used in 5 places.'>rightSide</a>, <a href='../Y/8222.html' title='Multiple used in 6 places.'>topSide</a> );
+<a id='L173' name='L173'></a> 173     <a href='../Y/7825.html' title='Multiple used in 7 places.'>sheetEdge</a>.<a href='../D/55.html' title='Multiple defined in 2 places.'>Append</a>( <a href='../Y/7612.html' title='Multiple used in 5 places.'>rightSide</a>, <a href='../Y/3721.html' title='Multiple used in 5 places.'>botSide</a> );
+<a id='L174' name='L174'></a> 174     <a href='../Y/7825.html' title='Multiple used in 7 places.'>sheetEdge</a>.<a href='../D/55.html' title='Multiple defined in 2 places.'>Append</a>( <a href='../Y/4948.html' title='Multiple used in 6 places.'>leftSide</a>,  <a href='../Y/3721.html' title='Multiple used in 5 places.'>botSide</a> );
+<a id='L175' name='L175'></a> 175     <a href='../Y/7825.html' title='Multiple used in 7 places.'>sheetEdge</a>.<a href='../D/55.html' title='Multiple defined in 2 places.'>Append</a>( <a href='../Y/4948.html' title='Multiple used in 6 places.'>leftSide</a>,  <a href='../Y/8222.html' title='Multiple used in 6 places.'>topSide</a> );
+<a id='L176' name='L176'></a> 176 
+<a id='L177' name='L177'></a> 177     <strong class='reserved'>switch</strong>( <a href='../Y/7825.html' title='Multiple used in 7 places.'>sheetEdge</a>.NearestSegment( <a href='../Y/1690.html' title='Multiple used in 12 places.'>Pos</a> ) )
+<a id='L178' name='L178'></a> 178     <em class='brace'>{</em>
+<a id='L179' name='L179'></a> 179     <strong class='reserved'>case</strong> 0: <a href='../S/394.html#L113' title='Defined at 113 in sch_sheet_pin.cpp.'>SetEdge</a>( <a href='../S/391.html#L59' title='Defined at 59 in sch_sheet.h.'>SHEET_TOP_SIDE</a> );    <strong class='reserved'>break</strong>;
+<a id='L180' name='L180'></a> 180     <strong class='reserved'>case</strong> 1: <a href='../S/394.html#L113' title='Defined at 113 in sch_sheet_pin.cpp.'>SetEdge</a>( <a href='../S/391.html#L58' title='Defined at 58 in sch_sheet.h.'>SHEET_RIGHT_SIDE</a> );  <strong class='reserved'>break</strong>;
+<a id='L181' name='L181'></a> 181     <strong class='reserved'>case</strong> 2: <a href='../S/394.html#L113' title='Defined at 113 in sch_sheet_pin.cpp.'>SetEdge</a>( <a href='../S/391.html#L60' title='Defined at 60 in sch_sheet.h.'>SHEET_BOTTOM_SIDE</a> ); <strong class='reserved'>break</strong>;
+<a id='L182' name='L182'></a> 182     <strong class='reserved'>case</strong> 3: <a href='../S/394.html#L113' title='Defined at 113 in sch_sheet_pin.cpp.'>SetEdge</a>( <a href='../S/391.html#L57' title='Defined at 57 in sch_sheet.h.'>SHEET_LEFT_SIDE</a> );   <strong class='reserved'>break</strong>;
+<a id='L183' name='L183'></a> 183     <strong class='reserved'>default</strong>: <a href='../Y/8441.html' title='Multiple used in 163 places.'>wxASSERT</a>( "Invalid segment number" );
+<a id='L184' name='L184'></a> 184     <em class='brace'>}</em>
+<a id='L185' name='L185'></a> 185 
+<a id='L186' name='L186'></a> 186     <strong class='reserved'>switch</strong>( <a href='../S/394.html#L151' title='Defined at 151 in sch_sheet_pin.cpp.'>GetEdge</a>() )
+<a id='L187' name='L187'></a> 187     <em class='brace'>{</em>
+<a id='L188' name='L188'></a> 188     <strong class='reserved'>case</strong> <a href='../S/391.html#L58' title='Defined at 58 in sch_sheet.h.'>SHEET_RIGHT_SIDE</a>:
+<a id='L189' name='L189'></a> 189     <strong class='reserved'>case</strong> <a href='../S/391.html#L57' title='Defined at 57 in sch_sheet.h.'>SHEET_LEFT_SIDE</a>:
+<a id='L190' name='L190'></a> 190         <a href='../Y/2250.html' title='Multiple used in 10 places.'>SetTextY</a>( <a href='../Y/1690.html' title='Multiple used in 12 places.'>Pos</a>.<a href='../Y/9006.html' title='Multiple used in 589 places.'>y</a> );
+<a id='L191' name='L191'></a> 191 
+<a id='L192' name='L192'></a> 192         <strong class='reserved'>if</strong>( <a href='../Y/1016.html' title='Multiple used in 90 places.'>GetTextPos</a>().<a href='../Y/9006.html' title='Multiple used in 589 places.'>y</a> &lt; <a href='../Y/8222.html' title='Multiple used in 6 places.'>topSide</a> )
+<a id='L193' name='L193'></a> 193             <a href='../Y/2250.html' title='Multiple used in 10 places.'>SetTextY</a>( <a href='../Y/8222.html' title='Multiple used in 6 places.'>topSide</a> );
+<a id='L194' name='L194'></a> 194 
+<a id='L195' name='L195'></a> 195         <strong class='reserved'>if</strong>( <a href='../Y/1016.html' title='Multiple used in 90 places.'>GetTextPos</a>().<a href='../Y/9006.html' title='Multiple used in 589 places.'>y</a> &gt; <a href='../Y/3721.html' title='Multiple used in 5 places.'>botSide</a> )
+<a id='L196' name='L196'></a> 196             <a href='../Y/2250.html' title='Multiple used in 10 places.'>SetTextY</a>( <a href='../Y/3721.html' title='Multiple used in 5 places.'>botSide</a> );
+<a id='L197' name='L197'></a> 197 
+<a id='L198' name='L198'></a> 198         <strong class='reserved'>break</strong>;
+<a id='L199' name='L199'></a> 199 
+<a id='L200' name='L200'></a> 200     <strong class='reserved'>case</strong> <a href='../S/391.html#L60' title='Defined at 60 in sch_sheet.h.'>SHEET_BOTTOM_SIDE</a>:
+<a id='L201' name='L201'></a> 201     <strong class='reserved'>case</strong> <a href='../S/391.html#L59' title='Defined at 59 in sch_sheet.h.'>SHEET_TOP_SIDE</a>:
+<a id='L202' name='L202'></a> 202         <a href='../Y/2249.html' title='Multiple used in 9 places.'>SetTextX</a>( <a href='../Y/1690.html' title='Multiple used in 12 places.'>Pos</a>.<a href='../Y/8967.html' title='Multiple used in 647 places.'>x</a> );
+<a id='L203' name='L203'></a> 203 
+<a id='L204' name='L204'></a> 204         <strong class='reserved'>if</strong>( <a href='../Y/1016.html' title='Multiple used in 90 places.'>GetTextPos</a>().<a href='../Y/8967.html' title='Multiple used in 647 places.'>x</a> &lt; <a href='../Y/4948.html' title='Multiple used in 6 places.'>leftSide</a> )
+<a id='L205' name='L205'></a> 205             <a href='../Y/2249.html' title='Multiple used in 9 places.'>SetTextX</a>( <a href='../Y/4948.html' title='Multiple used in 6 places.'>leftSide</a> );
+<a id='L206' name='L206'></a> 206 
+<a id='L207' name='L207'></a> 207         <strong class='reserved'>if</strong>( <a href='../Y/1016.html' title='Multiple used in 90 places.'>GetTextPos</a>().<a href='../Y/8967.html' title='Multiple used in 647 places.'>x</a> &gt; <a href='../Y/7612.html' title='Multiple used in 5 places.'>rightSide</a> )
+<a id='L208' name='L208'></a> 208             <a href='../Y/2249.html' title='Multiple used in 9 places.'>SetTextX</a>( <a href='../Y/7612.html' title='Multiple used in 5 places.'>rightSide</a> );
+<a id='L209' name='L209'></a> 209 
+<a id='L210' name='L210'></a> 210         <strong class='reserved'>break</strong>;
+<a id='L211' name='L211'></a> 211 
+<a id='L212' name='L212'></a> 212     <strong class='reserved'>case</strong> <a href='../S/391.html#L61' title='Defined at 61 in sch_sheet.h.'>SHEET_UNDEFINED_SIDE</a>:
+<a id='L213' name='L213'></a> 213         <a href='../Y/8441.html' title='Multiple used in 163 places.'>wxASSERT</a>( "Undefined sheet side" );
+<a id='L214' name='L214'></a> 214     <em class='brace'>}</em>
+<a id='L215' name='L215'></a> 215 <em class='brace'>}</em>
+<a id='L216' name='L216'></a> 216 
+<a id='L217' name='L217'></a> 217 
+<a id='L218' name='L218'></a> 218 <strong class='reserved'>void</strong> <a href='../Y/1854.html' title='Multiple used in 121 places.'>SCH_SHEET_PIN</a>::<a href='../R/1040.html' title='Multiple referred from 26 places.'>MirrorX</a>( <strong class='reserved'>int</strong> <a href='../Y/3449.html' title='Multiple used in 38 places.'>aXaxis_position</a> )
+<a id='L219' name='L219'></a> 219 <em class='brace'>{</em>
+<a id='L220' name='L220'></a> 220     <strong class='reserved'>int</strong> <a href='../Y/7126.html' title='Multiple used in 72 places.'>p</a> = <a href='../Y/1016.html' title='Multiple used in 90 places.'>GetTextPos</a>().<a href='../Y/9006.html' title='Multiple used in 589 places.'>y</a> - <a href='../Y/3449.html' title='Multiple used in 38 places.'>aXaxis_position</a>;
+<a id='L221' name='L221'></a> 221 
+<a id='L222' name='L222'></a> 222     <a href='../Y/2250.html' title='Multiple used in 10 places.'>SetTextY</a>( <a href='../Y/3449.html' title='Multiple used in 38 places.'>aXaxis_position</a> - <a href='../Y/7126.html' title='Multiple used in 72 places.'>p</a> );
+<a id='L223' name='L223'></a> 223 
+<a id='L224' name='L224'></a> 224     <strong class='reserved'>switch</strong>( <a href='../S/394.html#L44' title='Defined at 44 in sch_sheet_pin.cpp.'>m_edge</a> )
+<a id='L225' name='L225'></a> 225     <em class='brace'>{</em>
+<a id='L226' name='L226'></a> 226     <strong class='reserved'>case</strong> <a href='../S/391.html#L59' title='Defined at 59 in sch_sheet.h.'>SHEET_TOP_SIDE</a>:    <a href='../S/394.html#L113' title='Defined at 113 in sch_sheet_pin.cpp.'>SetEdge</a>( <a href='../S/391.html#L60' title='Defined at 60 in sch_sheet.h.'>SHEET_BOTTOM_SIDE</a> ); <strong class='reserved'>break</strong>;
+<a id='L227' name='L227'></a> 227     <strong class='reserved'>case</strong> <a href='../S/391.html#L60' title='Defined at 60 in sch_sheet.h.'>SHEET_BOTTOM_SIDE</a>: <a href='../S/394.html#L113' title='Defined at 113 in sch_sheet_pin.cpp.'>SetEdge</a>( <a href='../S/391.html#L59' title='Defined at 59 in sch_sheet.h.'>SHEET_TOP_SIDE</a> );    <strong class='reserved'>break</strong>;
+<a id='L228' name='L228'></a> 228     <strong class='reserved'>default</strong>: <strong class='reserved'>break</strong>;
+<a id='L229' name='L229'></a> 229     <em class='brace'>}</em>
+<a id='L230' name='L230'></a> 230 <em class='brace'>}</em>
+<a id='L231' name='L231'></a> 231 
+<a id='L232' name='L232'></a> 232 
+<a id='L233' name='L233'></a> 233 <strong class='reserved'>void</strong> <a href='../Y/1854.html' title='Multiple used in 121 places.'>SCH_SHEET_PIN</a>::<a href='../R/1041.html' title='Multiple referred from 28 places.'>MirrorY</a>( <strong class='reserved'>int</strong> <a href='../Y/3451.html' title='Multiple used in 38 places.'>aYaxis_position</a> )
+<a id='L234' name='L234'></a> 234 <em class='brace'>{</em>
+<a id='L235' name='L235'></a> 235     <strong class='reserved'>int</strong> <a href='../Y/7126.html' title='Multiple used in 72 places.'>p</a> = <a href='../Y/1016.html' title='Multiple used in 90 places.'>GetTextPos</a>().<a href='../Y/8967.html' title='Multiple used in 647 places.'>x</a> - <a href='../Y/3451.html' title='Multiple used in 38 places.'>aYaxis_position</a>;
+<a id='L236' name='L236'></a> 236 
+<a id='L237' name='L237'></a> 237     <a href='../Y/2249.html' title='Multiple used in 9 places.'>SetTextX</a>( <a href='../Y/3451.html' title='Multiple used in 38 places.'>aYaxis_position</a> - <a href='../Y/7126.html' title='Multiple used in 72 places.'>p</a> );
+<a id='L238' name='L238'></a> 238 
+<a id='L239' name='L239'></a> 239     <strong class='reserved'>switch</strong>( <a href='../S/394.html#L44' title='Defined at 44 in sch_sheet_pin.cpp.'>m_edge</a> )
+<a id='L240' name='L240'></a> 240     <em class='brace'>{</em>
+<a id='L241' name='L241'></a> 241     <strong class='reserved'>case</strong> <a href='../S/391.html#L57' title='Defined at 57 in sch_sheet.h.'>SHEET_LEFT_SIDE</a>:  <a href='../S/394.html#L113' title='Defined at 113 in sch_sheet_pin.cpp.'>SetEdge</a>( <a href='../S/391.html#L58' title='Defined at 58 in sch_sheet.h.'>SHEET_RIGHT_SIDE</a> ); <strong class='reserved'>break</strong>;
+<a id='L242' name='L242'></a> 242     <strong class='reserved'>case</strong> <a href='../S/391.html#L58' title='Defined at 58 in sch_sheet.h.'>SHEET_RIGHT_SIDE</a>: <a href='../S/394.html#L113' title='Defined at 113 in sch_sheet_pin.cpp.'>SetEdge</a>( <a href='../S/391.html#L57' title='Defined at 57 in sch_sheet.h.'>SHEET_LEFT_SIDE</a> );  <strong class='reserved'>break</strong>;
+<a id='L243' name='L243'></a> 243     <strong class='reserved'>default</strong>: <strong class='reserved'>break</strong>;
+<a id='L244' name='L244'></a> 244     <em class='brace'>}</em>
+<a id='L245' name='L245'></a> 245 <em class='brace'>}</em>
+<a id='L246' name='L246'></a> 246 
+<a id='L247' name='L247'></a> 247 
+<a id='L248' name='L248'></a> 248 <strong class='reserved'>void</strong> <a href='../Y/1854.html' title='Multiple used in 121 places.'>SCH_SHEET_PIN</a>::<a href='../R/1460.html' title='Multiple referred from 44 places.'>Rotate</a>( <a href='../Y/8819.html' title='Multiple used in 1271 places.'>wxPoint</a> <a href='../Y/3212.html' title='Multiple used in 381 places.'>aPosition</a> )
+<a id='L249' name='L249'></a> 249 <em class='brace'>{</em>
+<a id='L250' name='L250'></a> 250     <a href='../Y/8819.html' title='Multiple used in 1271 places.'>wxPoint</a> <a href='../Y/7458.html' title='Multiple used in 55 places.'>pt</a> = <a href='../Y/1016.html' title='Multiple used in 90 places.'>GetTextPos</a>();
+<a id='L251' name='L251'></a> 251     <a href='../Y/1794.html' title='Multiple used in 47 places.'>RotatePoint</a>( &amp;<a href='../Y/7458.html' title='Multiple used in 55 places.'>pt</a>, <a href='../Y/3212.html' title='Multiple used in 381 places.'>aPosition</a>, 900 );
+<a id='L252' name='L252'></a> 252     <a href='../S/394.html#L157' title='Defined at 157 in sch_sheet_pin.cpp.'>ConstrainOnEdge</a>( <a href='../Y/7458.html' title='Multiple used in 55 places.'>pt</a> );
+<a id='L253' name='L253'></a> 253 <em class='brace'>}</em>
+<a id='L254' name='L254'></a> 254 
+<a id='L255' name='L255'></a> 255 
+<a id='L256' name='L256'></a> 256 <strong class='reserved'>void</strong> <a href='../Y/1854.html' title='Multiple used in 121 places.'>SCH_SHEET_PIN</a>::<a href='../R/215.html' title='Multiple referred from 10 places.'>CreateGraphicShape</a>( <a href='../Y/1730.html' title='Multiple used in 104 places.'>RENDER_SETTINGS</a>* <a href='../Y/3254.html' title='Multiple used in 33 places.'>aRenderSettings</a>,
+<a id='L257' name='L257'></a> 257                                         <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8368.html' title='Multiple used in 470 places.'>vector</a>&lt;<a href='../Y/8819.html' title='Multiple used in 1271 places.'>wxPoint</a>&gt;&amp; <a href='../Y/3206.html' title='Multiple used in 58 places.'>aPoints</a>, <strong class='reserved'>const</strong> <a href='../Y/8819.html' title='Multiple used in 1271 places.'>wxPoint</a>&amp; <a href='../Y/3209.html' title='Multiple used in 69 places.'>aPos</a> )
+<a id='L258' name='L258'></a> 258 <em class='brace'>{</em>
+<a id='L259' name='L259'></a> 259     <em class='comment'>/*</em>
+<a id='L260' name='L260'></a> 260 <em class='comment'>     * These are the same icon shapes as SCH_HIERLABEL but the graphic icon is slightly</em>
+<a id='L261' name='L261'></a> 261 <em class='comment'>     * different in 2 cases:</em>
+<a id='L262' name='L262'></a> 262 <em class='comment'>     * for INPUT type the icon is the OUTPUT shape of SCH_HIERLABEL</em>
+<a id='L263' name='L263'></a> 263 <em class='comment'>     * for OUTPUT type the icon is the INPUT shape of SCH_HIERLABEL</em>
+<a id='L264' name='L264'></a> 264 <em class='comment'>     */</em>
+<a id='L265' name='L265'></a> 265     <a href='../Y/1617.html' title='Multiple used in 67 places.'>PINSHEETLABEL_SHAPE</a> <a href='../Y/8170.html' title='Multiple used in 361 places.'>tmp</a> = <a href='../S/277.html#L161' title='Defined at 161 in lib_pin.cpp.'>m_shape</a>;
+<a id='L266' name='L266'></a> 266 
+<a id='L267' name='L267'></a> 267     <strong class='reserved'>switch</strong>( <a href='../S/277.html#L161' title='Defined at 161 in lib_pin.cpp.'>m_shape</a> )
+<a id='L268' name='L268'></a> 268     <em class='brace'>{</em>
+<a id='L269' name='L269'></a> 269     <strong class='reserved'>case</strong> <a href='../Y/1617.html' title='Multiple used in 67 places.'>PINSHEETLABEL_SHAPE</a>::<a href='../Y/1635.html' title='Multiple used in 18 places.'>PS_INPUT</a>:  <a href='../S/277.html#L161' title='Defined at 161 in lib_pin.cpp.'>m_shape</a> = <a href='../Y/1617.html' title='Multiple used in 67 places.'>PINSHEETLABEL_SHAPE</a>::<a href='../Y/1636.html' title='Multiple used in 13 places.'>PS_OUTPUT</a>; <strong class='reserved'>break</strong>;
+<a id='L270' name='L270'></a> 270     <strong class='reserved'>case</strong> <a href='../Y/1617.html' title='Multiple used in 67 places.'>PINSHEETLABEL_SHAPE</a>::<a href='../Y/1636.html' title='Multiple used in 13 places.'>PS_OUTPUT</a>: <a href='../S/277.html#L161' title='Defined at 161 in lib_pin.cpp.'>m_shape</a> = <a href='../Y/1617.html' title='Multiple used in 67 places.'>PINSHEETLABEL_SHAPE</a>::<a href='../Y/1635.html' title='Multiple used in 18 places.'>PS_INPUT</a>;  <strong class='reserved'>break</strong>;
+<a id='L271' name='L271'></a> 271     <strong class='reserved'>default</strong>:                                                                       <strong class='reserved'>break</strong>;
+<a id='L272' name='L272'></a> 272     <em class='brace'>}</em>
+<a id='L273' name='L273'></a> 273 
+<a id='L274' name='L274'></a> 274     <a href='../S/395.html#L1094' title='Defined at 1094 in sch_text.cpp.'>SCH_HIERLABEL</a>::<a href='../D/222.html' title='Multiple defined in 3 places.'>CreateGraphicShape</a>( <a href='../Y/3254.html' title='Multiple used in 33 places.'>aRenderSettings</a>, <a href='../Y/3206.html' title='Multiple used in 58 places.'>aPoints</a>, <a href='../Y/3209.html' title='Multiple used in 69 places.'>aPos</a> );
+<a id='L275' name='L275'></a> 275     <a href='../S/277.html#L161' title='Defined at 161 in lib_pin.cpp.'>m_shape</a> = <a href='../Y/8170.html' title='Multiple used in 361 places.'>tmp</a>;
+<a id='L276' name='L276'></a> 276 <em class='brace'>}</em>
+<a id='L277' name='L277'></a> 277 
+<a id='L278' name='L278'></a> 278 
+<a id='L279' name='L279'></a> 279 <strong class='reserved'>void</strong> <a href='../Y/1854.html' title='Multiple used in 121 places.'>SCH_SHEET_PIN</a>::<a href='../R/567.html' title='Multiple referred from 15 places.'>GetEndPoints</a>( <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8368.html' title='Multiple used in 470 places.'>vector</a> &lt;<a href='../Y/271.html' title='Multiple used in 59 places.'>DANGLING_END_ITEM</a>&gt;&amp; <a href='../Y/3011.html' title='Multiple used in 56 places.'>aItemList</a> )
+<a id='L280' name='L280'></a> 280 <em class='brace'>{</em>
+<a id='L281' name='L281'></a> 281     <a href='../Y/271.html' title='Multiple used in 59 places.'>DANGLING_END_ITEM</a> <a href='../Y/4848.html' title='Multiple used in 1338 places.'>item</a>( <a href='../S/364.html#L76' title='Defined at 76 in sch_item.h.'>SHEET_LABEL_END</a>, <strong class='reserved'>this</strong>, <a href='../Y/1016.html' title='Multiple used in 90 places.'>GetTextPos</a>() );
+<a id='L282' name='L282'></a> 282     <a href='../Y/3011.html' title='Multiple used in 56 places.'>aItemList</a>.<a href='../S/223.html#L129' title='Defined at 129 in dialogs/panel_sym_lib_table.cpp.'>push_back</a>( <a href='../Y/4848.html' title='Multiple used in 1338 places.'>item</a> );
+<a id='L283' name='L283'></a> 283 <em class='brace'>}</em>
+<a id='L284' name='L284'></a> 284 
+<a id='L285' name='L285'></a> 285 
+<a id='L286' name='L286'></a> 286 <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a> <a href='../Y/1854.html' title='Multiple used in 121 places.'>SCH_SHEET_PIN</a>::<a href='../R/688.html' title='Multiple referred from 34 places.'>GetSelectMenuText</a>( <a href='../Y/399.html' title='Multiple used in 79 places.'>EDA_UNITS</a> <a href='../Y/3416.html' title='Multiple used in 61 places.'>aUnits</a> ) <strong class='reserved'>const</strong>
+<a id='L287' name='L287'></a> 287 <em class='brace'>{</em>
+<a id='L288' name='L288'></a> 288     <strong class='reserved'>return</strong> <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>::<a href='../D/501.html' title='Multiple defined in 7 places.'>Format</a>( <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Hierarchical Sheet Pin %s" ), <a href='../Y/2289.html' title='Multiple used in 8 places.'>ShortenedShownText</a>() );
+<a id='L289' name='L289'></a> 289 <em class='brace'>}</em>
+<a id='L290' name='L290'></a> 290 
+<a id='L291' name='L291'></a> 291 
+<a id='L292' name='L292'></a> 292 <a href='../Y/103.html' title='Multiple used in 60 places.'>BITMAP_DEF</a> <a href='../Y/1854.html' title='Multiple used in 121 places.'>SCH_SHEET_PIN</a>::<a href='../R/620.html' title='Multiple referred from 23 places.'>GetMenuImage</a>() <strong class='reserved'>const</strong>
+<a id='L293' name='L293'></a> 293 <em class='brace'>{</em>
+<a id='L294' name='L294'></a> 294     <strong class='reserved'>return</strong> <a href='../Y/3491.html' title='Multiple used in 2 places.'>add_hierar_pin_xpm</a>;
+<a id='L295' name='L295'></a> 295 <em class='brace'>}</em>
+<a id='L296' name='L296'></a> 296 
+<a id='L297' name='L297'></a> 297 
+<a id='L298' name='L298'></a> 298 <strong class='reserved'>bool</strong> <a href='../Y/1854.html' title='Multiple used in 121 places.'>SCH_SHEET_PIN</a>::<a href='../R/784.html' title='Multiple referred from 53 places.'>HitTest</a>( <strong class='reserved'>const</strong> <a href='../Y/8819.html' title='Multiple used in 1271 places.'>wxPoint</a>&amp; <a href='../Y/3204.html' title='Multiple used in 65 places.'>aPoint</a>, <strong class='reserved'>int</strong> <a href='../Y/2732.html' title='Multiple used in 140 places.'>aAccuracy</a> ) <strong class='reserved'>const</strong>
+<a id='L299' name='L299'></a> 299 <em class='brace'>{</em>
+<a id='L300' name='L300'></a> 300     <a href='../Y/396.html' title='Multiple used in 189 places.'>EDA_RECT</a> <a href='../Y/7495.html' title='Multiple used in 161 places.'>rect</a> = <a href='../D/541.html' title='Multiple defined in 22 places.'>GetBoundingBox</a>();
+<a id='L301' name='L301'></a> 301 
+<a id='L302' name='L302'></a> 302     <a href='../Y/7495.html' title='Multiple used in 161 places.'>rect</a>.<a href='../Y/1152.html' title='Multiple used in 42 places.'>Inflate</a>( <a href='../Y/2732.html' title='Multiple used in 140 places.'>aAccuracy</a> );
+<a id='L303' name='L303'></a> 303 
+<a id='L304' name='L304'></a> 304     <strong class='reserved'>return</strong> <a href='../Y/7495.html' title='Multiple used in 161 places.'>rect</a>.<a href='../S/6.html#L37' title='Defined at 37 in bus_alias.cpp.'>Contains</a>( <a href='../Y/3204.html' title='Multiple used in 65 places.'>aPoint</a> );
+<a id='L305' name='L305'></a> 305 <em class='brace'>}</em>
+<a id='L306' name='L306'></a> 306 
+<a id='L307' name='L307'></a> 307 
+<a id='L308' name='L308'></a> 308 <em class='sharp'>#if</em> <strong class='reserved'>defined</strong>(<a href='../Y/285.html' title='Multiple used in 43 places.'>DEBUG</a>)
+<a id='L309' name='L309'></a> 309 
+<a id='L310' name='L310'></a> 310 <strong class='reserved'>void</strong> <a href='../Y/1854.html' title='Multiple used in 121 places.'>SCH_SHEET_PIN</a>::<a href='../R/1750.html' title='Multiple referred from 90 places.'>Show</a>( <strong class='reserved'>int</strong> <a href='../Y/6844.html' title='Multiple used in 43 places.'>nestLevel</a>, <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/7101.html' title='Multiple used in 30 places.'>ostream</a>&amp; <a href='../Y/7100.html' title='Multiple used in 43 places.'>os</a> ) <strong class='reserved'>const</strong>
+<a id='L311' name='L311'></a> 311 <em class='brace'>{</em>
+<a id='L312' name='L312'></a> 312     <em class='comment'>// XML output:</em>
+<a id='L313' name='L313'></a> 313     <a href='../Y/1537.html' title='Multiple used in 14 places.'>NestedSpace</a>( <a href='../Y/6844.html' title='Multiple used in 43 places.'>nestLevel</a>, <a href='../Y/7100.html' title='Multiple used in 43 places.'>os</a> ) &lt;&lt; '&lt;' &lt;&lt; <a href='../S/392.html#L61' title='Defined at 61 in sch_sheet_path.cpp.'>GetClass</a>().<a href='../Y/1429.html' title='Multiple used in 42 places.'>Lower</a>().<a href='../Y/6693.html' title='Multiple used in 18 places.'>mb_str</a>() &lt;&lt; "&gt;"
+<a id='L314' name='L314'></a> 314                                  &lt;&lt; " pin_name=\"" &lt;&lt; <a href='../Y/2392.html' title='Multiple used in 83 places.'>TO_UTF8</a>( <a href='../D/732.html' title='Multiple defined in 2 places.'>GetText</a>() )
+<a id='L315' name='L315'></a> 315                                  &lt;&lt; '"' &lt;&lt; "/&gt;\n" &lt;&lt; <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/4510.html' title='Multiple used in 2 places.'>flush</a>;
+<a id='L316' name='L316'></a> 316 <em class='brace'>}</em>
+<a id='L317' name='L317'></a> 317 
+<a id='L318' name='L318'></a> 318 <em class='sharp'>#endif</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L44'>[^]</a><a href='#L310'>[v]</a><a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

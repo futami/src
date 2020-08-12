@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>plugins/python_scripts/bom_csv_grouped_by_value_with_fp.py</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/483.html'>plugins</a>/<a href='../files/484.html'>python_scripts</a>/bom_csv_grouped_by_value_with_fp.py</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>#
+<a id='L2' name='L2'></a># Example python script to generate a BOM from a KiCad generic netlist
+<a id='L3' name='L3'></a>#
+<a id='L4' name='L4'></a># Example: Sorted and Grouped CSV BOM
+<a id='L5' name='L5'></a>#
+<a id='L6' name='L6'></a>
+<a id='L7' name='L7'></a>"""
+<a id='L8' name='L8'></a>    @package
+<a id='L9' name='L9'></a>    Generate a comma delimited list (csv file type).
+<a id='L10' name='L10'></a>    Components are sorted by ref and grouped by value with same footprint
+<a id='L11' name='L11'></a>    Fields are (if exist)
+<a id='L12' name='L12'></a>    'Ref', 'Qnty', 'Value', 'Cmp name', 'Footprint', 'Description', 'Vendor'
+<a id='L13' name='L13'></a>
+<a id='L14' name='L14'></a>    Command line:
+<a id='L15' name='L15'></a>    python "pathToFile/bom_csv_grouped_by_value_with_fp.py" "%I" "%O.csv"
+<a id='L16' name='L16'></a>"""
+<a id='L17' name='L17'></a>
+<a id='L18' name='L18'></a># Import the KiCad python helper module and the csv formatter
+<a id='L19' name='L19'></a>import kicad_netlist_reader
+<a id='L20' name='L20'></a>import csv
+<a id='L21' name='L21'></a>import sys
+<a id='L22' name='L22'></a>
+<a id='L23' name='L23'></a># Generate an instance of a generic netlist, and load the netlist tree from
+<a id='L24' name='L24'></a># the command line option. If the file doesn't exist, execution will stop
+<a id='L25' name='L25'></a>net = kicad_netlist_reader.netlist(sys.argv[1])
+<a id='L26' name='L26'></a>
+<a id='L27' name='L27'></a># Open a file to write to, if the file cannot be opened output to stdout
+<a id='L28' name='L28'></a># instead
+<a id='L29' name='L29'></a>try:
+<a id='L30' name='L30'></a>    f = open(sys.argv[2], 'w')
+<a id='L31' name='L31'></a>except IOError:
+<a id='L32' name='L32'></a>    e = "Can't open output file for writing: " + sys.argv[2]
+<a id='L33' name='L33'></a>    print(__file__, ":", e, sys.stderr)
+<a id='L34' name='L34'></a>    f = sys.stdout
+<a id='L35' name='L35'></a>
+<a id='L36' name='L36'></a># Create a new csv writer object to use as the output formatter
+<a id='L37' name='L37'></a>out = csv.writer(f, lineterminator='\n', delimiter=',', quotechar='\"', quoting=csv.QUOTE_ALL)
+<a id='L38' name='L38'></a>
+<a id='L39' name='L39'></a># Output a set of rows for a header providing general information
+<a id='L40' name='L40'></a>out.writerow(['Source:', net.getSource()])
+<a id='L41' name='L41'></a>out.writerow(['Date:', net.getDate()])
+<a id='L42' name='L42'></a>out.writerow(['Tool:', net.getTool()])
+<a id='L43' name='L43'></a>out.writerow( ['Generator:', sys.argv[0]] )
+<a id='L44' name='L44'></a>out.writerow(['Component Count:', len(net.components)])
+<a id='L45' name='L45'></a>out.writerow(['Ref', 'Qnty', 'Value', 'Cmp name', 'Footprint', 'Description', 'Vendor'])
+<a id='L46' name='L46'></a>
+<a id='L47' name='L47'></a># Get all of the components in groups of matching parts + values
+<a id='L48' name='L48'></a># (see ky_generic_netlist_reader.py)
+<a id='L49' name='L49'></a>grouped = net.groupComponents()
+<a id='L50' name='L50'></a>
+<a id='L51' name='L51'></a># Output all of the component information
+<a id='L52' name='L52'></a>for group in grouped:
+<a id='L53' name='L53'></a>    refs = ""
+<a id='L54' name='L54'></a>
+<a id='L55' name='L55'></a>    # Add the reference of every component in the group and keep a reference
+<a id='L56' name='L56'></a>    # to the component so that the other data can be filled in once per group
+<a id='L57' name='L57'></a>    for component in group:
+<a id='L58' name='L58'></a>        refs += component.getRef() + ", "
+<a id='L59' name='L59'></a>        c = component
+<a id='L60' name='L60'></a>
+<a id='L61' name='L61'></a>    # Fill in the component groups common data
+<a id='L62' name='L62'></a>    out.writerow([refs, len(group), c.getValue(), c.getPartName(), c.getFootprint(),
+<a id='L63' name='L63'></a>        c.getDescription(), c.getField("Vendor")])
+<a id='L64' name='L64'></a>
+<a id='L65' name='L65'></a>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a> */</em>
+</body>
+</html>

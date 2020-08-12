@@ -1,0 +1,271 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>tools/ee_selection_tool.h</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/484.html'>tools</a>/ee_selection_tool.h</h2>
+<em class='comment'>/* [&lt;][&gt;][^][v][top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'><a href='../J/378.html' title='Multiple included from 24 places.'>INCLUDED FROM</a></h2>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * This program source code file is part of KiCad, a free EDA CAD application.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 2019 CERN</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> * Copyright (C) 2019 KiCad Developers, see AUTHORS.txt for contributors.</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> *</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> * This program is free software; you can redistribute it and/or</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * modify it under the terms of the GNU General Public License</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * as published by the Free Software Foundation; either version 2</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> * of the License, or (at your option) any later version.</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> *</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> * This program is distributed in the hope that it will be useful,</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> * GNU General Public License for more details.</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> *</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> * You should have received a copy of the GNU General Public License</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * along with this program; if not, you may find one here:</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> * or you may search the http://www.gnu.org website for the version 2 license,</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'> * or you may write to the Free Software Foundation, Inc.,</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'> * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'> */</em>
+<a id='L24' name='L24'></a>  24 
+<a id='L25' name='L25'></a>  25 <em class='sharp'>#ifndef</em> <a href='../S/443.html#L26' title='Defined at 26 in tools/ee_selection_tool.h.'>KICAD_SCH_SELECTION_TOOL_H</a>
+<a id='L26' name='L26'></a>  26 <em class='sharp'>#define</em> <a href='../S/443.html#L25' title='Referred from 25 in tools/ee_selection_tool.h.'>KICAD_SCH_SELECTION_TOOL_H</a>
+<a id='L27' name='L27'></a>  27 
+<a id='L28' name='L28'></a>  28 <em class='sharp'>#include</em> &lt;tool/tool_interactive.h&gt;
+<a id='L29' name='L29'></a>  29 <em class='sharp'>#include</em> &lt;tool/action_menu.h&gt;
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#include</em> &lt;tool/tool_menu.h&gt;
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#include</em> &lt;<a href='441.html'>tools/ee_selection.h</a>&gt;
+<a id='L32' name='L32'></a>  32 <em class='sharp'>#include</em> &lt;<a href='236.html'>ee_collectors.h</a>&gt;
+<a id='L33' name='L33'></a>  33 <em class='sharp'>#include</em> &lt;<a href='349.html'>sch_component.h</a>&gt;
+<a id='L34' name='L34'></a>  34 
+<a id='L35' name='L35'></a>  35 <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../S/342.html#L94' title='Defined at 94 in sch_base_frame.cpp.'>SCH_BASE_FRAME</a>;
+<a id='L36' name='L36'></a>  36 <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../D/1533.html' title='Multiple defined in 3 places.'>SCH_ITEM</a>;
+<a id='L37' name='L37'></a>  37 
+<a id='L38' name='L38'></a>  38 <a href='../Y/6828.html' title='Multiple used in 10 places.'>namespace</a> <a href='../D/959.html' title='Multiple defined in 2 places.'>KIGFX</a>
+<a id='L39' name='L39'></a>  39 <em class='brace'>{</em>
+<a id='L40' name='L40'></a>  40     <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../Y/570.html' title='Multiple used in 4 places.'>GAL</a>;
+<a id='L41' name='L41'></a>  41 <em class='brace'>}</em>
+<a id='L42' name='L42'></a>  42 
+<a id='L43' name='L43'></a>  43 
+<a id='L44' name='L44'></a>  44 <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../Y/407.html' title='Multiple used in 153 places.'>EE_CONDITIONS</a> : <a href='../Y/7469.html' title='Multiple used in 431 places.'>public</a> <a href='../Y/1869.html' title='Multiple used in 4 places.'>SELECTION_CONDITIONS</a>
+<a id='L45' name='L45'></a>  45 <em class='brace'>{</em>
+<a id='L46' name='L46'></a>  46 <a href='../Y/7469.html' title='Multiple used in 431 places.'>public</a>:
+<a id='L47' name='L47'></a>  47     <strong class='reserved'>static</strong> <a href='../Y/1868.html' title='Multiple used in 12 places.'>SELECTION_CONDITION</a> <a href='../Y/460.html' title='Multiple used in 49 places.'>Empty</a>;
+<a id='L48' name='L48'></a>  48     <strong class='reserved'>static</strong> <a href='../Y/1868.html' title='Multiple used in 12 places.'>SELECTION_CONDITION</a> <a href='../Y/1145.html' title='Multiple used in 41 places.'>Idle</a>;
+<a id='L49' name='L49'></a>  49     <strong class='reserved'>static</strong> <a href='../Y/1868.html' title='Multiple used in 12 places.'>SELECTION_CONDITION</a> <a href='../Y/1146.html' title='Multiple used in 15 places.'>IdleSelection</a>;
+<a id='L50' name='L50'></a>  50 
+<a id='L51' name='L51'></a>  51     <strong class='reserved'>static</strong> <a href='../Y/1868.html' title='Multiple used in 12 places.'>SELECTION_CONDITION</a> <a href='../Y/2315.html' title='Multiple used in 7 places.'>SingleSymbol</a>;
+<a id='L52' name='L52'></a>  52     <strong class='reserved'>static</strong> <a href='../Y/1868.html' title='Multiple used in 12 places.'>SELECTION_CONDITION</a> <a href='../Y/2313.html' title='Multiple used in 4 places.'>SingleDeMorganSymbol</a>;
+<a id='L53' name='L53'></a>  53     <strong class='reserved'>static</strong> <a href='../Y/1868.html' title='Multiple used in 12 places.'>SELECTION_CONDITION</a> <a href='../Y/2314.html' title='Multiple used in 5 places.'>SingleMultiUnitSymbol</a>;
+<a id='L54' name='L54'></a>  54 <em class='brace'>}</em>;
+<a id='L55' name='L55'></a>  55 
+<a id='L56' name='L56'></a>  56 
+<a id='L57' name='L57'></a>  57 <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../S/442.html#L134' title='Defined at 134 in tools/ee_selection_tool.cpp.'>EE_SELECTION_TOOL</a> : <a href='../Y/7469.html' title='Multiple used in 431 places.'>public</a> <a href='../Y/2387.html' title='Multiple used in 7 places.'>TOOL_INTERACTIVE</a>
+<a id='L58' name='L58'></a>  58 <em class='brace'>{</em>
+<a id='L59' name='L59'></a>  59 <a href='../Y/7469.html' title='Multiple used in 431 places.'>public</a>:
+<a id='L60' name='L60'></a>  60     <a href='../S/442.html#L134' title='Defined at 134 in tools/ee_selection_tool.cpp.'>EE_SELECTION_TOOL</a>();
+<a id='L61' name='L61'></a>  61     ~<a href='../S/442.html#L134' title='Defined at 134 in tools/ee_selection_tool.cpp.'>EE_SELECTION_TOOL</a>();
+<a id='L62' name='L62'></a>  62 
+<a id='L63' name='L63'></a>  63     <em class='comment'>/// @copydoc TOOL_BASE::Init()</em>
+<a id='L64' name='L64'></a>  64     <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../D/872.html' title='Multiple defined in 16 places.'>Init</a>() <a href='../Y/7123.html' title='Multiple used in 1177 places.'>override</a>;
+<a id='L65' name='L65'></a>  65 
+<a id='L66' name='L66'></a>  66     <em class='comment'>/// @copydoc TOOL_BASE::Reset()</em>
+<a id='L67' name='L67'></a>  67     <strong class='reserved'>void</strong> <a href='../D/1483.html' title='Multiple defined in 6 places.'>Reset</a>( <a href='../Y/1736.html' title='Multiple used in 7 places.'>RESET_REASON</a> <a href='../Y/3240.html' title='Multiple used in 12 places.'>aReason</a> ) <a href='../Y/7123.html' title='Multiple used in 1177 places.'>override</a>;
+<a id='L68' name='L68'></a>  68 
+<a id='L69' name='L69'></a>  69     <strong class='reserved'>int</strong> <a href='../S/442.html#L263' title='Defined at 263 in tools/ee_selection_tool.cpp.'>UpdateMenu</a>( <strong class='reserved'>const</strong> <a href='../Y/2386.html' title='Multiple used in 281 places.'>TOOL_EVENT</a>&amp; <a href='../Y/2893.html' title='Multiple used in 548 places.'>aEvent</a> );
+<a id='L70' name='L70'></a>  70 
+<a id='L71' name='L71'></a>  71     <em class='comment'>/**</em>
+<a id='L72' name='L72'></a>  72 <em class='comment'>     * Function Main()</em>
+<a id='L73' name='L73'></a>  73 <em class='comment'>     *</em>
+<a id='L74' name='L74'></a>  74 <em class='comment'>     * The main loop.</em>
+<a id='L75' name='L75'></a>  75 <em class='comment'>     */</em>
+<a id='L76' name='L76'></a>  76     <strong class='reserved'>int</strong> <a href='../D/1056.html' title='Multiple defined in 4 places.'>Main</a>( <strong class='reserved'>const</strong> <a href='../Y/2386.html' title='Multiple used in 281 places.'>TOOL_EVENT</a>&amp; <a href='../Y/2893.html' title='Multiple used in 548 places.'>aEvent</a> );
+<a id='L77' name='L77'></a>  77 
+<a id='L78' name='L78'></a>  78     <em class='comment'>/**</em>
+<a id='L79' name='L79'></a>  79 <em class='comment'>     * Function GetSelection()</em>
+<a id='L80' name='L80'></a>  80 <em class='comment'>     *</em>
+<a id='L81' name='L81'></a>  81 <em class='comment'>     * Returns the set of currently selected items.</em>
+<a id='L82' name='L82'></a>  82 <em class='comment'>     */</em>
+<a id='L83' name='L83'></a>  83     <a href='../S/440.html#L30' title='Defined at 30 in tools/ee_selection.cpp.'>EE_SELECTION</a>&amp; <a href='../S/442.html#L461' title='Defined at 461 in tools/ee_selection_tool.cpp.'>GetSelection</a>();
+<a id='L84' name='L84'></a>  84 
+<a id='L85' name='L85'></a>  85     <em class='comment'>/**</em>
+<a id='L86' name='L86'></a>  86 <em class='comment'>     * Function RequestSelection()</em>
+<a id='L87' name='L87'></a>  87 <em class='comment'>     *</em>
+<a id='L88' name='L88'></a>  88 <em class='comment'>     * Returns either an existing selection (filtered), or the selection at the current</em>
+<a id='L89' name='L89'></a>  89 <em class='comment'>     * cursor if the existing selection is empty.</em>
+<a id='L90' name='L90'></a>  90 <em class='comment'>     */</em>
+<a id='L91' name='L91'></a>  91     <a href='../S/440.html#L30' title='Defined at 30 in tools/ee_selection.cpp.'>EE_SELECTION</a>&amp; <a href='../S/442.html#L676' title='Defined at 676 in tools/ee_selection_tool.cpp.'>RequestSelection</a>( <strong class='reserved'>const</strong> <a href='../Y/1279.html' title='Multiple used in 118 places.'>KICAD_T</a>* <a href='../Y/2923.html' title='Multiple used in 15 places.'>aFilterList</a> = <a href='../Y/406.html' title='Multiple used in 35 places.'>EE_COLLECTOR</a>::<a href='../Y/59.html' title='Multiple used in 7 places.'>AllItems</a> );
+<a id='L92' name='L92'></a>  92 
+<a id='L93' name='L93'></a>  93     <em class='comment'>/**</em>
+<a id='L94' name='L94'></a>  94 <em class='comment'>     * Function SelectPoint()</em>
+<a id='L95' name='L95'></a>  95 <em class='comment'>     * Selects one or all items pointed by the parameter aWhere.</em>
+<a id='L96' name='L96'></a>  96 <em class='comment'>     * If there is more than one item at that place,</em>
+<a id='L97' name='L97'></a>  97 <em class='comment'>     * there is a menu displayed that allows one to choose the item or all of them.</em>
+<a id='L98' name='L98'></a>  98 <em class='comment'>     *</em>
+<a id='L99' name='L99'></a>  99 <em class='comment'>     * @param aWhere is the place where the item should be selected.</em>
+<a id='L100' name='L100'></a> 100 <em class='comment'>     * @param aItem is set to the newly selected item if only one was selected, otherwise is unchanged.</em>
+<a id='L101' name='L101'></a> 101 <em class='comment'>     * @param aSelectionCancelledFlag allows the function to inform its caller that a selection</em>
+<a id='L102' name='L102'></a> 102 <em class='comment'>     * was cancelled (for instance, by clicking outside of the disambiguation menu).</em>
+<a id='L103' name='L103'></a> 103 <em class='comment'>     * @param aCheckLocked indicates if locked items should be excluded.</em>
+<a id='L104' name='L104'></a> 104 <em class='comment'>     */</em>
+<a id='L105' name='L105'></a> 105     <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../S/442.html#L467' title='Defined at 467 in tools/ee_selection_tool.cpp.'>SelectPoint</a>( <strong class='reserved'>const</strong> <a href='../Y/2644.html' title='Multiple used in 101 places.'>VECTOR2I</a>&amp; <a href='../Y/3438.html' title='Multiple used in 7 places.'>aWhere</a>, <strong class='reserved'>const</strong> <a href='../Y/1279.html' title='Multiple used in 118 places.'>KICAD_T</a>* <a href='../Y/2923.html' title='Multiple used in 15 places.'>aFilterList</a> = <a href='../Y/406.html' title='Multiple used in 35 places.'>EE_COLLECTOR</a>::<a href='../Y/59.html' title='Multiple used in 7 places.'>AllItems</a>,
+<a id='L106' name='L106'></a> 106                       <a href='../Y/392.html' title='Multiple used in 237 places.'>EDA_ITEM</a>** <a href='../Y/3005.html' title='Multiple used in 689 places.'>aItem</a> = <a href='../Y/7001.html' title='Multiple used in 622 places.'>nullptr</a>, <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a>* <a href='../Y/3300.html' title='Multiple used in 4 places.'>aSelectionCancelledFlag</a> = <a href='../Y/7001.html' title='Multiple used in 622 places.'>nullptr</a>,
+<a id='L107' name='L107'></a> 107                       <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../Y/2787.html' title='Multiple used in 3 places.'>aCheckLocked</a> = <a href='../Y/4387.html' title='Multiple used in 97 places.'>false</a>, <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../Y/2734.html' title='Multiple used in 3 places.'>aAdd</a> = <a href='../Y/4387.html' title='Multiple used in 97 places.'>false</a>, <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../Y/3364.html' title='Multiple used in 4 places.'>aSubtract</a> = <a href='../Y/4387.html' title='Multiple used in 97 places.'>false</a>,
+<a id='L108' name='L108'></a> 108                       <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../Y/2895.html' title='Multiple used in 4 places.'>aExclusiveOr</a> = <a href='../Y/4387.html' title='Multiple used in 97 places.'>false</a> );
+<a id='L109' name='L109'></a> 109 
+<a id='L110' name='L110'></a> 110     <strong class='reserved'>int</strong> <a href='../D/26.html' title='Multiple defined in 2 places.'>AddItemToSel</a>( <strong class='reserved'>const</strong> <a href='../Y/2386.html' title='Multiple used in 281 places.'>TOOL_EVENT</a>&amp; <a href='../Y/2893.html' title='Multiple used in 548 places.'>aEvent</a> );
+<a id='L111' name='L111'></a> 111     <strong class='reserved'>void</strong> <a href='../D/26.html' title='Multiple defined in 2 places.'>AddItemToSel</a>( <a href='../Y/392.html' title='Multiple used in 237 places.'>EDA_ITEM</a>* <a href='../Y/3005.html' title='Multiple used in 689 places.'>aItem</a>, <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../Y/3237.html' title='Multiple used in 12 places.'>aQuietMode</a> = <a href='../Y/4387.html' title='Multiple used in 97 places.'>false</a> );
+<a id='L112' name='L112'></a> 112     <strong class='reserved'>int</strong> <a href='../D/27.html' title='Multiple defined in 2 places.'>AddItemsToSel</a>( <strong class='reserved'>const</strong> <a href='../Y/2386.html' title='Multiple used in 281 places.'>TOOL_EVENT</a>&amp; <a href='../Y/2893.html' title='Multiple used in 548 places.'>aEvent</a> );
+<a id='L113' name='L113'></a> 113     <strong class='reserved'>void</strong> <a href='../D/27.html' title='Multiple defined in 2 places.'>AddItemsToSel</a>( <a href='../Y/393.html' title='Multiple used in 14 places.'>EDA_ITEMS</a>* <a href='../Y/3070.html' title='Multiple used in 231 places.'>aList</a>, <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../Y/3237.html' title='Multiple used in 12 places.'>aQuietMode</a> = <a href='../Y/4387.html' title='Multiple used in 97 places.'>false</a> );
+<a id='L114' name='L114'></a> 114 
+<a id='L115' name='L115'></a> 115     <strong class='reserved'>int</strong> <a href='../D/1461.html' title='Multiple defined in 2 places.'>RemoveItemFromSel</a>( <strong class='reserved'>const</strong> <a href='../Y/2386.html' title='Multiple used in 281 places.'>TOOL_EVENT</a>&amp; <a href='../Y/2893.html' title='Multiple used in 548 places.'>aEvent</a> );
+<a id='L116' name='L116'></a> 116     <strong class='reserved'>void</strong> <a href='../D/1461.html' title='Multiple defined in 2 places.'>RemoveItemFromSel</a>( <a href='../Y/392.html' title='Multiple used in 237 places.'>EDA_ITEM</a>* <a href='../Y/3005.html' title='Multiple used in 689 places.'>aItem</a>, <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../Y/3237.html' title='Multiple used in 12 places.'>aQuietMode</a> = <a href='../Y/4387.html' title='Multiple used in 97 places.'>false</a> );
+<a id='L117' name='L117'></a> 117     <strong class='reserved'>int</strong> <a href='../D/1462.html' title='Multiple defined in 2 places.'>RemoveItemsFromSel</a>( <strong class='reserved'>const</strong> <a href='../Y/2386.html' title='Multiple used in 281 places.'>TOOL_EVENT</a>&amp; <a href='../Y/2893.html' title='Multiple used in 548 places.'>aEvent</a> );
+<a id='L118' name='L118'></a> 118     <strong class='reserved'>void</strong> <a href='../D/1462.html' title='Multiple defined in 2 places.'>RemoveItemsFromSel</a>( <a href='../Y/393.html' title='Multiple used in 14 places.'>EDA_ITEMS</a>* <a href='../Y/3070.html' title='Multiple used in 231 places.'>aList</a>, <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../Y/3237.html' title='Multiple used in 12 places.'>aQuietMode</a> = <a href='../Y/4387.html' title='Multiple used in 97 places.'>false</a> );
+<a id='L119' name='L119'></a> 119 
+<a id='L120' name='L120'></a> 120     <strong class='reserved'>void</strong> <a href='../S/442.html#L1011' title='Defined at 1011 in tools/ee_selection_tool.cpp.'>BrightenItem</a>( <a href='../Y/392.html' title='Multiple used in 237 places.'>EDA_ITEM</a>* <a href='../Y/3005.html' title='Multiple used in 689 places.'>aItem</a> );
+<a id='L121' name='L121'></a> 121     <strong class='reserved'>void</strong> <a href='../S/442.html#L1017' title='Defined at 1017 in tools/ee_selection_tool.cpp.'>UnbrightenItem</a>( <a href='../Y/392.html' title='Multiple used in 237 places.'>EDA_ITEM</a>* <a href='../Y/3005.html' title='Multiple used in 689 places.'>aItem</a> );
+<a id='L122' name='L122'></a> 122 
+<a id='L123' name='L123'></a> 123     <strong class='reserved'>void</strong> <a href='../Y/1920.html' title='Multiple used in 2 places.'>SelectHighlightItem</a>( <a href='../Y/392.html' title='Multiple used in 237 places.'>EDA_ITEM</a>* <a href='../Y/3005.html' title='Multiple used in 689 places.'>aItem</a> ) <em class='brace'>{</em> <a href='../S/442.html#L1326' title='Defined at 1326 in tools/ee_selection_tool.cpp.'>highlight</a>( <a href='../Y/3005.html' title='Multiple used in 689 places.'>aItem</a>, <a href='../Y/1866.html' title='Multiple used in 24 places.'>SELECTED</a> ); <em class='brace'>}</em>
+<a id='L124' name='L124'></a> 124 
+<a id='L125' name='L125'></a> 125     <em class='comment'>///&gt; Find (but don't select) node under cursor</em>
+<a id='L126' name='L126'></a> 126     <a href='../Y/392.html' title='Multiple used in 237 places.'>EDA_ITEM</a>* <a href='../S/442.html#L870' title='Defined at 870 in tools/ee_selection_tool.cpp.'>GetNode</a>( <a href='../Y/2644.html' title='Multiple used in 101 places.'>VECTOR2I</a> <a href='../Y/3212.html' title='Multiple used in 381 places.'>aPosition</a> );
+<a id='L127' name='L127'></a> 127 
+<a id='L128' name='L128'></a> 128     <em class='comment'>///&gt; Select node under cursor</em>
+<a id='L129' name='L129'></a> 129     <strong class='reserved'>int</strong> <a href='../S/442.html#L890' title='Defined at 890 in tools/ee_selection_tool.cpp.'>SelectNode</a>( <strong class='reserved'>const</strong> <a href='../Y/2386.html' title='Multiple used in 281 places.'>TOOL_EVENT</a>&amp; <a href='../Y/2893.html' title='Multiple used in 548 places.'>aEvent</a> );
+<a id='L130' name='L130'></a> 130 
+<a id='L131' name='L131'></a> 131     <em class='comment'>///&gt; If node selected then expand to connection, otherwise select connection under cursor</em>
+<a id='L132' name='L132'></a> 132     <strong class='reserved'>int</strong> <a href='../S/442.html#L900' title='Defined at 900 in tools/ee_selection_tool.cpp.'>SelectConnection</a>( <strong class='reserved'>const</strong> <a href='../Y/2386.html' title='Multiple used in 281 places.'>TOOL_EVENT</a>&amp; <a href='../Y/2893.html' title='Multiple used in 548 places.'>aEvent</a> );
+<a id='L133' name='L133'></a> 133 
+<a id='L134' name='L134'></a> 134     <em class='comment'>///&gt; Clear current selection event handler.</em>
+<a id='L135' name='L135'></a> 135     <strong class='reserved'>int</strong> <a href='../D/181.html' title='Multiple defined in 2 places.'>ClearSelection</a>( <strong class='reserved'>const</strong> <a href='../Y/2386.html' title='Multiple used in 281 places.'>TOOL_EVENT</a>&amp; <a href='../Y/2893.html' title='Multiple used in 548 places.'>aEvent</a> );
+<a id='L136' name='L136'></a> 136 
+<a id='L137' name='L137'></a> 137     <strong class='reserved'>void</strong> <a href='../D/181.html' title='Multiple defined in 2 places.'>ClearSelection</a>();
+<a id='L138' name='L138'></a> 138 
+<a id='L139' name='L139'></a> 139     <em class='comment'>/**</em>
+<a id='L140' name='L140'></a> 140 <em class='comment'>     * Function Selectable()</em>
+<a id='L141' name='L141'></a> 141 <em class='comment'>     * Checks conditions for an item to be selected.</em>
+<a id='L142' name='L142'></a> 142 <em class='comment'>     * @return True if the item fulfills conditions to be selected.</em>
+<a id='L143' name='L143'></a> 143 <em class='comment'>     */</em>
+<a id='L144' name='L144'></a> 144     <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../S/442.html#L1245' title='Defined at 1245 in tools/ee_selection_tool.cpp.'>Selectable</a>( <strong class='reserved'>const</strong> <a href='../Y/392.html' title='Multiple used in 237 places.'>EDA_ITEM</a>* <a href='../Y/3005.html' title='Multiple used in 689 places.'>aItem</a>, <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../Y/3823.html' title='Multiple used in 2 places.'>checkVisibilityOnly</a> = <a href='../Y/4387.html' title='Multiple used in 97 places.'>false</a> ) <strong class='reserved'>const</strong>;
+<a id='L145' name='L145'></a> 145 
+<a id='L146' name='L146'></a> 146     <em class='comment'>/**</em>
+<a id='L147' name='L147'></a> 147 <em class='comment'>     * Apply heuristics to try and determine a single object when multiple are found under the</em>
+<a id='L148' name='L148'></a> 148 <em class='comment'>     * cursor.</em>
+<a id='L149' name='L149'></a> 149 <em class='comment'>     */</em>
+<a id='L150' name='L150'></a> 150     <strong class='reserved'>void</strong> <a href='../S/442.html#L583' title='Defined at 583 in tools/ee_selection_tool.cpp.'>GuessSelectionCandidates</a>( <a href='../Y/406.html' title='Multiple used in 35 places.'>EE_COLLECTOR</a>&amp; <a href='../Y/3889.html' title='Multiple used in 84 places.'>collector</a>, <strong class='reserved'>const</strong> <a href='../Y/2644.html' title='Multiple used in 101 places.'>VECTOR2I</a>&amp; <a href='../Y/3209.html' title='Multiple used in 69 places.'>aPos</a> );
+<a id='L151' name='L151'></a> 151 
+<a id='L152' name='L152'></a> 152     <em class='comment'>/**</em>
+<a id='L153' name='L153'></a> 153 <em class='comment'>     * Function SelectionMenu()</em>
+<a id='L154' name='L154'></a> 154 <em class='comment'>     * Shows a popup menu to trim the COLLECTOR passed as aEvent's parameter down to a single</em>
+<a id='L155' name='L155'></a> 155 <em class='comment'>     * item.</em>
+<a id='L156' name='L156'></a> 156 <em class='comment'>     *</em>
+<a id='L157' name='L157'></a> 157 <em class='comment'>     * NOTE: this routine DOES NOT modify the selection.</em>
+<a id='L158' name='L158'></a> 158 <em class='comment'>     */</em>
+<a id='L159' name='L159'></a> 159     <strong class='reserved'>int</strong> <a href='../S/442.html#L1091' title='Defined at 1091 in tools/ee_selection_tool.cpp.'>SelectionMenu</a>( <strong class='reserved'>const</strong> <a href='../Y/2386.html' title='Multiple used in 281 places.'>TOOL_EVENT</a>&amp; <a href='../Y/2893.html' title='Multiple used in 548 places.'>aEvent</a> );
+<a id='L160' name='L160'></a> 160 
+<a id='L161' name='L161'></a> 161     <em class='comment'>/**</em>
+<a id='L162' name='L162'></a> 162 <em class='comment'>     * Rebuilds the selection from the EDA_ITEMs' selection flags.  Commonly called after</em>
+<a id='L163' name='L163'></a> 163 <em class='comment'>     * rolling back an undo state to make sure there aren't any stale pointers.</em>
+<a id='L164' name='L164'></a> 164 <em class='comment'>     */</em>
+<a id='L165' name='L165'></a> 165     <strong class='reserved'>void</strong> <a href='../S/442.html#L1031' title='Defined at 1031 in tools/ee_selection_tool.cpp.'>RebuildSelection</a>();
+<a id='L166' name='L166'></a> 166 
+<a id='L167' name='L167'></a> 167 <a href='../Y/7425.html' title='Multiple used in 187 places.'>private</a>:
+<a id='L168' name='L168'></a> 168     <em class='comment'>/**</em>
+<a id='L169' name='L169'></a> 169 <em class='comment'>     * Function selectMultiple()</em>
+<a id='L170' name='L170'></a> 170 <em class='comment'>     * Handles drawing a selection box that allows one to select many items at</em>
+<a id='L171' name='L171'></a> 171 <em class='comment'>     * the same time.</em>
+<a id='L172' name='L172'></a> 172 <em class='comment'>     *</em>
+<a id='L173' name='L173'></a> 173 <em class='comment'>     * @return true if the function was cancelled (i.e. CancelEvent was received).</em>
+<a id='L174' name='L174'></a> 174 <em class='comment'>     */</em>
+<a id='L175' name='L175'></a> 175     <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../S/442.html#L723' title='Defined at 723 in tools/ee_selection_tool.cpp.'>selectMultiple</a>();
+<a id='L176' name='L176'></a> 176 
+<a id='L177' name='L177'></a> 177     <em class='comment'>/**</em>
+<a id='L178' name='L178'></a> 178 <em class='comment'>     * Allows the selection of a single item from a list via pop-up menu.  The items are</em>
+<a id='L179' name='L179'></a> 179 <em class='comment'>     * highlighted on the canvas when hovered in the menu.  The collector is trimmed to</em>
+<a id='L180' name='L180'></a> 180 <em class='comment'>     * the picked item.</em>
+<a id='L181' name='L181'></a> 181 <em class='comment'>     * @return true if an item was picked</em>
+<a id='L182' name='L182'></a> 182 <em class='comment'>     */</em>
+<a id='L183' name='L183'></a> 183     <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../S/442.html#L1102' title='Defined at 1102 in tools/ee_selection_tool.cpp.'>doSelectionMenu</a>( <a href='../Y/406.html' title='Multiple used in 35 places.'>EE_COLLECTOR</a>* <a href='../Y/3014.html' title='Multiple used in 14 places.'>aItems</a> );
+<a id='L184' name='L184'></a> 184 
+<a id='L185' name='L185'></a> 185     <em class='comment'>/**</em>
+<a id='L186' name='L186'></a> 186 <em class='comment'>     * Function select()</em>
+<a id='L187' name='L187'></a> 187 <em class='comment'>     * Takes necessary action mark an item as selected.</em>
+<a id='L188' name='L188'></a> 188 <em class='comment'>     *</em>
+<a id='L189' name='L189'></a> 189 <em class='comment'>     * @param aItem is an item to be selected.</em>
+<a id='L190' name='L190'></a> 190 <em class='comment'>     */</em>
+<a id='L191' name='L191'></a> 191     <strong class='reserved'>void</strong> <a href='../S/442.html#L1314' title='Defined at 1314 in tools/ee_selection_tool.cpp.'>select</a>( <a href='../Y/392.html' title='Multiple used in 237 places.'>EDA_ITEM</a>* <a href='../Y/3005.html' title='Multiple used in 689 places.'>aItem</a> );
+<a id='L192' name='L192'></a> 192 
+<a id='L193' name='L193'></a> 193     <em class='comment'>/**</em>
+<a id='L194' name='L194'></a> 194 <em class='comment'>     * Function unselect()</em>
+<a id='L195' name='L195'></a> 195 <em class='comment'>     * Takes necessary action mark an item as unselected.</em>
+<a id='L196' name='L196'></a> 196 <em class='comment'>     *</em>
+<a id='L197' name='L197'></a> 197 <em class='comment'>     * @param aItem is an item to be unselected.</em>
+<a id='L198' name='L198'></a> 198 <em class='comment'>     */</em>
+<a id='L199' name='L199'></a> 199     <strong class='reserved'>void</strong> <a href='../S/442.html#L1320' title='Defined at 1320 in tools/ee_selection_tool.cpp.'>unselect</a>( <a href='../Y/392.html' title='Multiple used in 237 places.'>EDA_ITEM</a>* <a href='../Y/3005.html' title='Multiple used in 689 places.'>aItem</a> );
+<a id='L200' name='L200'></a> 200 
+<a id='L201' name='L201'></a> 201     <em class='comment'>/**</em>
+<a id='L202' name='L202'></a> 202 <em class='comment'>     * Function highlight()</em>
+<a id='L203' name='L203'></a> 203 <em class='comment'>     * Highlights the item visually.</em>
+<a id='L204' name='L204'></a> 204 <em class='comment'>     * @param aItem is an item to be be highlighted.</em>
+<a id='L205' name='L205'></a> 205 <em class='comment'>     * @param aHighlightMode should be either SELECTED or BRIGHTENED</em>
+<a id='L206' name='L206'></a> 206 <em class='comment'>     * @param aGroup is the group to add the item to in the BRIGHTENED mode.</em>
+<a id='L207' name='L207'></a> 207 <em class='comment'>     */</em>
+<a id='L208' name='L208'></a> 208     <strong class='reserved'>void</strong> <a href='../S/442.html#L1326' title='Defined at 1326 in tools/ee_selection_tool.cpp.'>highlight</a>( <a href='../Y/392.html' title='Multiple used in 237 places.'>EDA_ITEM</a>* <a href='../Y/3005.html' title='Multiple used in 689 places.'>aItem</a>, <strong class='reserved'>int</strong> <a href='../Y/2972.html' title='Multiple used in 2 places.'>aHighlightMode</a>, <a href='../S/440.html#L30' title='Defined at 30 in tools/ee_selection.cpp.'>EE_SELECTION</a>* <a href='../Y/2968.html' title='Multiple used in 20 places.'>aGroup</a> = <a href='../Y/7001.html' title='Multiple used in 622 places.'>nullptr</a> );
+<a id='L209' name='L209'></a> 209 
+<a id='L210' name='L210'></a> 210     <em class='comment'>/**</em>
+<a id='L211' name='L211'></a> 211 <em class='comment'>     * Function unhighlight()</em>
+<a id='L212' name='L212'></a> 212 <em class='comment'>     * Unhighlights the item visually.</em>
+<a id='L213' name='L213'></a> 213 <em class='comment'>     * @param aItem is an item to be be highlighted.</em>
+<a id='L214' name='L214'></a> 214 <em class='comment'>     * @param aHighlightMode should be either SELECTED or BRIGHTENED</em>
+<a id='L215' name='L215'></a> 215 <em class='comment'>     * @param aGroup is the group to remove the item from.</em>
+<a id='L216' name='L216'></a> 216 <em class='comment'>     */</em>
+<a id='L217' name='L217'></a> 217     <strong class='reserved'>void</strong> <a href='../S/442.html#L1390' title='Defined at 1390 in tools/ee_selection_tool.cpp.'>unhighlight</a>( <a href='../Y/392.html' title='Multiple used in 237 places.'>EDA_ITEM</a>* <a href='../Y/3005.html' title='Multiple used in 689 places.'>aItem</a>, <strong class='reserved'>int</strong> <a href='../Y/2972.html' title='Multiple used in 2 places.'>aHighlightMode</a>, <a href='../S/440.html#L30' title='Defined at 30 in tools/ee_selection.cpp.'>EE_SELECTION</a>* <a href='../Y/2968.html' title='Multiple used in 20 places.'>aGroup</a> = <a href='../Y/7001.html' title='Multiple used in 622 places.'>nullptr</a> );
+<a id='L218' name='L218'></a> 218 
+<a id='L219' name='L219'></a> 219     <em class='comment'>/**</em>
+<a id='L220' name='L220'></a> 220 <em class='comment'>     * Sets the reference point to the anchor of the top-left item.</em>
+<a id='L221' name='L221'></a> 221 <em class='comment'>     */</em>
+<a id='L222' name='L222'></a> 222     <strong class='reserved'>void</strong> <a href='../S/442.html#L707' title='Defined at 707 in tools/ee_selection_tool.cpp.'>updateReferencePoint</a>();
+<a id='L223' name='L223'></a> 223 
+<a id='L224' name='L224'></a> 224     <em class='comment'>/**</em>
+<a id='L225' name='L225'></a> 225 <em class='comment'>     * Function selectionContains()</em>
+<a id='L226' name='L226'></a> 226 <em class='comment'>     * @return True if the given point is contained in any of selected items' bounding box.</em>
+<a id='L227' name='L227'></a> 227 <em class='comment'>     */</em>
+<a id='L228' name='L228'></a> 228     <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../S/442.html#L1454' title='Defined at 1454 in tools/ee_selection_tool.cpp.'>selectionContains</a>( <strong class='reserved'>const</strong> <a href='../Y/2644.html' title='Multiple used in 101 places.'>VECTOR2I</a>&amp; <a href='../Y/3204.html' title='Multiple used in 65 places.'>aPoint</a> ) <strong class='reserved'>const</strong>;
+<a id='L229' name='L229'></a> 229 
+<a id='L230' name='L230'></a> 230     <em class='comment'>///&gt; Sets up handlers for various events.</em>
+<a id='L231' name='L231'></a> 231     <strong class='reserved'>void</strong> <a href='../D/2551.html' title='Multiple defined in 13 places.'>setTransitions</a>() <a href='../Y/7123.html' title='Multiple used in 1177 places.'>override</a>;
+<a id='L232' name='L232'></a> 232 
+<a id='L233' name='L233'></a> 233 <a href='../Y/7425.html' title='Multiple used in 187 places.'>private</a>:
+<a id='L234' name='L234'></a> 234     <a href='../S/342.html#L94' title='Defined at 94 in sch_base_frame.cpp.'>SCH_BASE_FRAME</a>* <a href='../D/2289.html' title='Multiple defined in 5 places.'>m_frame</a>;     <em class='comment'>// Pointer to the parent frame</em>
+<a id='L235' name='L235'></a> 235     <a href='../S/440.html#L30' title='Defined at 30 in tools/ee_selection.cpp.'>EE_SELECTION</a>    <a href='../Y/6221.html' title='Multiple used in 48 places.'>m_selection</a>; <em class='comment'>// Current state of selection</em>
+<a id='L236' name='L236'></a> 236 
+<a id='L237' name='L237'></a> 237     <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../Y/5340.html' title='Multiple used in 8 places.'>m_additive</a>;             <em class='comment'>// Items should be added to selection (instead of replacing)</em>
+<a id='L238' name='L238'></a> 238     <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../Y/6493.html' title='Multiple used in 9 places.'>m_subtractive</a>;          <em class='comment'>// Items should be removed from selection</em>
+<a id='L239' name='L239'></a> 239     <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../Y/5634.html' title='Multiple used in 9 places.'>m_exclusive_or</a>;         <em class='comment'>// Items' selection state should be toggled</em>
+<a id='L240' name='L240'></a> 240     <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../Y/5884.html' title='Multiple used in 4 places.'>m_multiple</a>;             <em class='comment'>// Multiple selection mode is active</em>
+<a id='L241' name='L241'></a> 241     <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../Y/6282.html' title='Multiple used in 4 places.'>m_skip_heuristics</a>;      <em class='comment'>// Heuristics are not allowed when choosing item under cursor</em>
+<a id='L242' name='L242'></a> 242 
+<a id='L243' name='L243'></a> 243     <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../Y/5766.html' title='Multiple used in 26 places.'>m_isLibEdit</a>;            <em class='comment'>// True when libedit is the parent frame</em>
+<a id='L244' name='L244'></a> 244     <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../Y/5768.html' title='Multiple used in 5 places.'>m_isLibView</a>;            <em class='comment'>// True when libview is the parent frame</em>
+<a id='L245' name='L245'></a> 245     <strong class='reserved'>int</strong>  <a href='../S/247.html#L62' title='Defined at 62 in generate_alias_info.cpp.'>m_unit</a>;                 <em class='comment'>// Fixed unit filter (for symbol editor)</em>
+<a id='L246' name='L246'></a> 246     <strong class='reserved'>int</strong>  <a href='../D/2271.html' title='Multiple defined in 2 places.'>m_convert</a>;              <em class='comment'>// Fixed DeMorgan filter (for symbol editor)</em>
+<a id='L247' name='L247'></a> 247 <em class='brace'>}</em>;
+<a id='L248' name='L248'></a> 248 
+<a id='L249' name='L249'></a> 249 <em class='sharp'>#endif</em> <em class='comment'>//KICAD_SCH_SELECTION_TOOL_H</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;][^][v]<a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

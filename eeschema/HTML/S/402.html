@@ -1,0 +1,308 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>sim/netlist_exporter_pspice_sim.cpp</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/483.html'>sim</a>/netlist_exporter_pspice_sim.cpp</h2>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L29'>[^]</a><a href='#L224'>[v]</a>[top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L29' title='Defined at 29.'>ComponentToVector</a></li>
+<li><a href='#L72' title='Defined at 72.'>VectorToSignal</a></li>
+<li><a href='#L107' title='Defined at 107.'>GetCurrents</a></li>
+<li><a href='#L138' title='Defined at 138.'>GetSheetSimCommand</a></li>
+<li><a href='#L154' title='Defined at 154.'>GetUsedSimCommand</a></li>
+<li><a href='#L160' title='Defined at 160.'>GetSimType</a></li>
+<li><a href='#L166' title='Defined at 166.'>CommandToSimType</a></li>
+<li><a href='#L192' title='Defined at 192.'>ParseDCCommand</a></li>
+<li><a href='#L224' title='Defined at 224.'>writeDirectives</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * This program source code file is part of KiCad, a free EDA CAD application.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 2016 CERN</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> * @author Maciej Suminski &lt;maciej.suminski@cern.ch&gt;</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> *</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> * This program is free software; you can redistribute it and/or</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * modify it under the terms of the GNU General Public License</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * as published by the Free Software Foundation; either version 3</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> * of the License, or (at your option) any later version.</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> *</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> * This program is distributed in the hope that it will be useful,</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> * GNU General Public License for more details.</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> *</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> * You should have received a copy of the GNU General Public License</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * along with this program; if not, you may find one here:</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> * https://www.gnu.org/licenses/gpl-3.0.html</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> * or you may search the http://www.gnu.org website for the version 3 license,</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'> * or you may write to the Free Software Foundation, Inc.,</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'> * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'> */</em>
+<a id='L24' name='L24'></a>  24 
+<a id='L25' name='L25'></a>  25 <em class='sharp'>#include</em> "<a href='403.html'>netlist_exporter_pspice_sim.h</a>"
+<a id='L26' name='L26'></a>  26 <em class='sharp'>#include</em> &lt;wx/regex.h&gt;
+<a id='L27' name='L27'></a>  27 <em class='sharp'>#include</em> &lt;wx/tokenzr.h&gt;
+<a id='L28' name='L28'></a>  28 
+<a id='L29' name='L29'></a>  29 <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a> <a href='../Y/1514.html' title='Multiple used in 29 places.'>NETLIST_EXPORTER_PSPICE_SIM</a>::<a href='../R/191.html' title='Multiple referred from 4 places.'>ComponentToVector</a>(
+<a id='L30' name='L30'></a>  30         <strong class='reserved'>const</strong> <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&amp; <a href='../Y/3100.html' title='Multiple used in 141 places.'>aName</a>, <a href='../S/415.html#L44' title='Defined at 44 in sim/sim_types.h.'>SIM_PLOT_TYPE</a> <a href='../Y/3407.html' title='Multiple used in 154 places.'>aType</a>, <strong class='reserved'>const</strong> <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&amp; <a href='../Y/3168.html' title='Multiple used in 13 places.'>aParam</a> ) <strong class='reserved'>const</strong>
+<a id='L31' name='L31'></a>  31 <em class='brace'>{</em>
+<a id='L32' name='L32'></a>  32     <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a> <a href='../Y/7575.html' title='Multiple used in 76 places.'>res</a>;
+<a id='L33' name='L33'></a>  33 
+<a id='L34' name='L34'></a>  34     <em class='comment'>// Some of the flags should exclude mutually</em>
+<a id='L35' name='L35'></a>  35     <a href='../Y/3567.html' title='Multiple used in 7 places.'>assert</a>( ( ( <a href='../Y/3407.html' title='Multiple used in 154 places.'>aType</a> &amp; <a href='../S/415.html#L47' title='Defined at 47 in sim/sim_types.h.'>SPT_VOLTAGE</a> ) == 0 ) != ( ( <a href='../Y/3407.html' title='Multiple used in 154 places.'>aType</a> &amp; <a href='../S/415.html#L48' title='Defined at 48 in sim/sim_types.h.'>SPT_CURRENT</a> ) == 0 ) );
+<a id='L36' name='L36'></a>  36     <a href='../Y/3567.html' title='Multiple used in 7 places.'>assert</a>( ( ( <a href='../Y/3407.html' title='Multiple used in 154 places.'>aType</a> &amp; <a href='../S/415.html#L49' title='Defined at 49 in sim/sim_types.h.'>SPT_AC_PHASE</a> ) == 0 ) || ( ( <a href='../Y/3407.html' title='Multiple used in 154 places.'>aType</a> &amp; <a href='../S/415.html#L50' title='Defined at 50 in sim/sim_types.h.'>SPT_AC_MAG</a> ) == 0 ) );
+<a id='L37' name='L37'></a>  37 
+<a id='L38' name='L38'></a>  38     <strong class='reserved'>if</strong>( <a href='../Y/3407.html' title='Multiple used in 154 places.'>aType</a> &amp; <a href='../S/415.html#L47' title='Defined at 47 in sim/sim_types.h.'>SPT_VOLTAGE</a> )
+<a id='L39' name='L39'></a>  39     <em class='brace'>{</em>
+<a id='L40' name='L40'></a>  40         <em class='comment'>// netnames are escaped (can contain "{slash}" for '/') Unscape them:</em>
+<a id='L41' name='L41'></a>  41         <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a> <a href='../Y/7950.html' title='Multiple used in 3 places.'>spicenet</a> = <a href='../Y/2613.html' title='Multiple used in 14 places.'>UnescapeString</a>( <a href='../Y/3100.html' title='Multiple used in 141 places.'>aName</a> );
+<a id='L42' name='L42'></a>  42 
+<a id='L43' name='L43'></a>  43         <em class='comment'>// Spice netlist netnames does not accept some chars, which are replaced</em>
+<a id='L44' name='L44'></a>  44         <em class='comment'>// by eeschema netlist generator.</em>
+<a id='L45' name='L45'></a>  45         <em class='comment'>// Replace these forbidden chars to find the actual spice net name</em>
+<a id='L46' name='L46'></a>  46         <a href='../Y/1513.html' title='Multiple used in 28 places.'>NETLIST_EXPORTER_PSPICE</a>::<a href='../S/299.html#L67' title='Defined at 67 in netlist_exporters/netlist_exporter_pspice.cpp.'>ReplaceForbiddenChars</a>( <a href='../Y/7950.html' title='Multiple used in 3 places.'>spicenet</a> );
+<a id='L47' name='L47'></a>  47 
+<a id='L48' name='L48'></a>  48         <strong class='reserved'>return</strong> <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>::<a href='../D/501.html' title='Multiple defined in 7 places.'>Format</a>( "V(%s)", <a href='../Y/7950.html' title='Multiple used in 3 places.'>spicenet</a> );
+<a id='L49' name='L49'></a>  49     <em class='brace'>}</em>
+<a id='L50' name='L50'></a>  50 
+<a id='L51' name='L51'></a>  51     <strong class='reserved'>else</strong> <strong class='reserved'>if</strong>( <a href='../Y/3407.html' title='Multiple used in 154 places.'>aType</a> &amp; <a href='../S/415.html#L48' title='Defined at 48 in sim/sim_types.h.'>SPT_CURRENT</a> )
+<a id='L52' name='L52'></a>  52     <em class='brace'>{</em>
+<a id='L53' name='L53'></a>  53         <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a> <a href='../Y/4125.html' title='Multiple used in 7 places.'>device</a> = <a href='../S/299.html#L43' title='Defined at 43 in netlist_exporters/netlist_exporter_pspice.cpp.'>GetSpiceDevice</a>( <a href='../Y/3100.html' title='Multiple used in 141 places.'>aName</a> ).<a href='../Y/1429.html' title='Multiple used in 42 places.'>Lower</a>();
+<a id='L54' name='L54'></a>  54         <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a> <a href='../Y/7161.html' title='Multiple used in 11 places.'>param</a> = <a href='../Y/3168.html' title='Multiple used in 13 places.'>aParam</a>.<a href='../Y/1429.html' title='Multiple used in 42 places.'>Lower</a>();
+<a id='L55' name='L55'></a>  55 
+<a id='L56' name='L56'></a>  56         <strong class='reserved'>if</strong>( <a href='../Y/4125.html' title='Multiple used in 7 places.'>device</a>[0] == 'x' )
+<a id='L57' name='L57'></a>  57         <em class='brace'>{</em>
+<a id='L58' name='L58'></a>  58             <strong class='reserved'>return</strong> "current probe of .subckt not yet implemented";
+<a id='L59' name='L59'></a>  59         <em class='brace'>}</em>
+<a id='L60' name='L60'></a>  60         <strong class='reserved'>else</strong>
+<a id='L61' name='L61'></a>  61         <em class='brace'>{</em>
+<a id='L62' name='L62'></a>  62             <strong class='reserved'>return</strong> <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>::<a href='../D/501.html' title='Multiple defined in 7 places.'>Format</a>( "@%s[%s]",
+<a id='L63' name='L63'></a>  63                                      <a href='../Y/4125.html' title='Multiple used in 7 places.'>device</a>,
+<a id='L64' name='L64'></a>  64                                      <a href='../Y/7161.html' title='Multiple used in 11 places.'>param</a>.<a href='../Y/1197.html' title='Multiple used in 258 places.'>IsEmpty</a>() ? "i" : <a href='../Y/7161.html' title='Multiple used in 11 places.'>param</a> );
+<a id='L65' name='L65'></a>  65         <em class='brace'>}</em>
+<a id='L66' name='L66'></a>  66     <em class='brace'>}</em>
+<a id='L67' name='L67'></a>  67 
+<a id='L68' name='L68'></a>  68     <strong class='reserved'>return</strong> <a href='../Y/7575.html' title='Multiple used in 76 places.'>res</a>;
+<a id='L69' name='L69'></a>  69 <em class='brace'>}</em>
+<a id='L70' name='L70'></a>  70 
+<a id='L71' name='L71'></a>  71 
+<a id='L72' name='L72'></a>  72 <a href='../S/415.html#L44' title='Defined at 44 in sim/sim_types.h.'>SIM_PLOT_TYPE</a> <a href='../Y/1514.html' title='Multiple used in 29 places.'>NETLIST_EXPORTER_PSPICE_SIM</a>::<a href='../R/1882.html' title='Multiple referred from 2 places.'>VectorToSignal</a>(
+<a id='L73' name='L73'></a>  73         <strong class='reserved'>const</strong> <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8004.html' title='Multiple used in 145 places.'>string</a>&amp; <a href='../Y/3431.html' title='Multiple used in 7 places.'>aVector</a>, <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&amp; <a href='../Y/3329.html' title='Multiple used in 8 places.'>aSignal</a> ) <strong class='reserved'>const</strong>
+<a id='L74' name='L74'></a>  74 <em class='brace'>{</em>
+<a id='L75' name='L75'></a>  75     <strong class='reserved'>using</strong> <strong class='reserved'>namespace</strong> <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>;
+<a id='L76' name='L76'></a>  76 
+<a id='L77' name='L77'></a>  77     <em class='comment'>// See ngspice manual chapt. 31.1 "Accessing internal device parameters"</em>
+<a id='L78' name='L78'></a>  78     <a href='../Y/8841.html' title='Multiple used in 7 places.'>wxRegEx</a>  <a href='../Y/4800.html' title='Multiple used in 4 places.'>internalDevParameter</a>( "^@(\\w*[\\.\\w+]*)\\[(\\w*)\\]$", <a href='../Y/8833.html' title='Multiple used in 4 places.'>wxRE_ADVANCED</a> );
+<a id='L79' name='L79'></a>  79     <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a> <a href='../Y/8368.html' title='Multiple used in 470 places.'>vector</a>( <a href='../Y/3431.html' title='Multiple used in 7 places.'>aVector</a> );
+<a id='L80' name='L80'></a>  80 
+<a id='L81' name='L81'></a>  81     <strong class='reserved'>if</strong>( !<a href='../Y/4800.html' title='Multiple used in 4 places.'>internalDevParameter</a>.<a href='../D/1061.html' title='Multiple defined in 6 places.'>Matches</a>( <a href='../Y/8368.html' title='Multiple used in 470 places.'>vector</a> ) )
+<a id='L82' name='L82'></a>  82     <em class='brace'>{</em>
+<a id='L83' name='L83'></a>  83         <em class='comment'>// any text is a node name, which returns voltage</em>
+<a id='L84' name='L84'></a>  84         <a href='../Y/3329.html' title='Multiple used in 8 places.'>aSignal</a> = "V(" + <a href='../Y/3431.html' title='Multiple used in 7 places.'>aVector</a> + ")";
+<a id='L85' name='L85'></a>  85         <strong class='reserved'>return</strong> <a href='../S/415.html#L47' title='Defined at 47 in sim/sim_types.h.'>SPT_VOLTAGE</a>;
+<a id='L86' name='L86'></a>  86     <em class='brace'>}</em>
+<a id='L87' name='L87'></a>  87     <strong class='reserved'>else</strong>
+<a id='L88' name='L88'></a>  88     <em class='brace'>{</em>
+<a id='L89' name='L89'></a>  89         <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a> <a href='../Y/7162.html' title='Multiple used in 4 places.'>paramType</a> = <a href='../Y/4800.html' title='Multiple used in 4 places.'>internalDevParameter</a>.<a href='../Y/839.html' title='Multiple used in 9 places.'>GetMatch</a>( <a href='../Y/8368.html' title='Multiple used in 470 places.'>vector</a>, 2 );
+<a id='L90' name='L90'></a>  90 
+<a id='L91' name='L91'></a>  91         <strong class='reserved'>if</strong>( <a href='../Y/7162.html' title='Multiple used in 4 places.'>paramType</a>.<a href='../Y/1429.html' title='Multiple used in 42 places.'>Lower</a>()[0] == 'i' )
+<a id='L92' name='L92'></a>  92         <em class='brace'>{</em>
+<a id='L93' name='L93'></a>  93             <em class='comment'>// this is a branch current</em>
+<a id='L94' name='L94'></a>  94             <a href='../Y/7162.html' title='Multiple used in 4 places.'>paramType</a>[0] = 'I';
+<a id='L95' name='L95'></a>  95             <a href='../Y/3329.html' title='Multiple used in 8 places.'>aSignal</a>      = <a href='../Y/7162.html' title='Multiple used in 4 places.'>paramType</a> + "(";
+<a id='L96' name='L96'></a>  96             <a href='../Y/3329.html' title='Multiple used in 8 places.'>aSignal</a> += <a href='../Y/4800.html' title='Multiple used in 4 places.'>internalDevParameter</a>.<a href='../Y/839.html' title='Multiple used in 9 places.'>GetMatch</a>( <a href='../Y/8368.html' title='Multiple used in 470 places.'>vector</a>, 1 ).<a href='../Y/2636.html' title='Multiple used in 9 places.'>Upper</a>() + ")";
+<a id='L97' name='L97'></a>  97             <strong class='reserved'>return</strong> <a href='../S/415.html#L48' title='Defined at 48 in sim/sim_types.h.'>SPT_CURRENT</a>;
+<a id='L98' name='L98'></a>  98         <em class='brace'>}</em>
+<a id='L99' name='L99'></a>  99         <strong class='reserved'>else</strong>
+<a id='L100' name='L100'></a> 100         <em class='brace'>{</em>
+<a id='L101' name='L101'></a> 101             <strong class='reserved'>return</strong> <a href='../S/415.html#L58' title='Defined at 58 in sim/sim_types.h.'>SPT_UNKNOWN</a>;
+<a id='L102' name='L102'></a> 102         <em class='brace'>}</em>
+<a id='L103' name='L103'></a> 103     <em class='brace'>}</em>
+<a id='L104' name='L104'></a> 104 <em class='brace'>}</em>
+<a id='L105' name='L105'></a> 105 
+<a id='L106' name='L106'></a> 106 
+<a id='L107' name='L107'></a> 107 <strong class='reserved'>const</strong> <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8368.html' title='Multiple used in 470 places.'>vector</a>&lt;<a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&gt;&amp; <a href='../Y/1514.html' title='Multiple used in 29 places.'>NETLIST_EXPORTER_PSPICE_SIM</a>::<a href='../R/551.html' title='Multiple referred from 3 places.'>GetCurrents</a>( <a href='../S/300.html#L52' title='Defined at 52 in netlist_exporters/netlist_exporter_pspice.h.'>SPICE_PRIMITIVE</a> <a href='../Y/3219.html' title='Multiple used in 5 places.'>aPrimitive</a> )
+<a id='L108' name='L108'></a> 108 <em class='brace'>{</em>
+<a id='L109' name='L109'></a> 109     <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8368.html' title='Multiple used in 470 places.'>vector</a>&lt;<a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&gt; <a href='../Y/7197.html' title='Multiple used in 2 places.'>passive</a> = <em class='brace'>{</em> "I" <em class='brace'>}</em>;
+<a id='L110' name='L110'></a> 110     <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8368.html' title='Multiple used in 470 places.'>vector</a>&lt;<a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&gt; <a href='../Y/4141.html' title='Multiple used in 2 places.'>diode</a> = <em class='brace'>{</em> "Id" <em class='brace'>}</em>;
+<a id='L111' name='L111'></a> 111     <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8368.html' title='Multiple used in 470 places.'>vector</a>&lt;<a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&gt; <a href='../Y/3702.html' title='Multiple used in 2 places.'>bjt</a> = <em class='brace'>{</em> "Ib", "Ic", "Ie" <em class='brace'>}</em>;
+<a id='L112' name='L112'></a> 112     <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8368.html' title='Multiple used in 470 places.'>vector</a>&lt;<a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&gt; <a href='../Y/6761.html' title='Multiple used in 2 places.'>mos</a> = <em class='brace'>{</em> "Ig", "Id", "Is" <em class='brace'>}</em>;
+<a id='L113' name='L113'></a> 113     <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8368.html' title='Multiple used in 470 places.'>vector</a>&lt;<a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&gt; <a href='../D/2102.html' title='Multiple defined in 2 places.'>empty</a>;
+<a id='L114' name='L114'></a> 114 
+<a id='L115' name='L115'></a> 115     <strong class='reserved'>switch</strong>( <a href='../Y/3219.html' title='Multiple used in 5 places.'>aPrimitive</a> )
+<a id='L116' name='L116'></a> 116     <em class='brace'>{</em>
+<a id='L117' name='L117'></a> 117         <strong class='reserved'>case</strong> <a href='../S/300.html#L54' title='Defined at 54 in netlist_exporters/netlist_exporter_pspice.h.'>SP_RESISTOR</a>:
+<a id='L118' name='L118'></a> 118         <strong class='reserved'>case</strong> <a href='../S/300.html#L55' title='Defined at 55 in netlist_exporters/netlist_exporter_pspice.h.'>SP_CAPACITOR</a>:
+<a id='L119' name='L119'></a> 119         <strong class='reserved'>case</strong> <a href='../S/300.html#L56' title='Defined at 56 in netlist_exporters/netlist_exporter_pspice.h.'>SP_INDUCTOR</a>:
+<a id='L120' name='L120'></a> 120         <strong class='reserved'>case</strong> <a href='../S/300.html#L62' title='Defined at 62 in netlist_exporters/netlist_exporter_pspice.h.'>SP_VSOURCE</a>:
+<a id='L121' name='L121'></a> 121             <strong class='reserved'>return</strong> <a href='../Y/7197.html' title='Multiple used in 2 places.'>passive</a>;
+<a id='L122' name='L122'></a> 122 
+<a id='L123' name='L123'></a> 123         <strong class='reserved'>case</strong> <a href='../S/300.html#L57' title='Defined at 57 in netlist_exporters/netlist_exporter_pspice.h.'>SP_DIODE</a>:
+<a id='L124' name='L124'></a> 124             <strong class='reserved'>return</strong> <a href='../Y/4141.html' title='Multiple used in 2 places.'>diode</a>;
+<a id='L125' name='L125'></a> 125 
+<a id='L126' name='L126'></a> 126         <strong class='reserved'>case</strong> <a href='../S/300.html#L58' title='Defined at 58 in netlist_exporters/netlist_exporter_pspice.h.'>SP_BJT</a>:
+<a id='L127' name='L127'></a> 127             <strong class='reserved'>return</strong> <a href='../Y/3702.html' title='Multiple used in 2 places.'>bjt</a>;
+<a id='L128' name='L128'></a> 128 
+<a id='L129' name='L129'></a> 129         <strong class='reserved'>case</strong> <a href='../S/300.html#L59' title='Defined at 59 in netlist_exporters/netlist_exporter_pspice.h.'>SP_MOSFET</a>:
+<a id='L130' name='L130'></a> 130             <strong class='reserved'>return</strong> <a href='../Y/6761.html' title='Multiple used in 2 places.'>mos</a>;
+<a id='L131' name='L131'></a> 131 
+<a id='L132' name='L132'></a> 132         <strong class='reserved'>default</strong>:
+<a id='L133' name='L133'></a> 133             <strong class='reserved'>return</strong> <a href='../D/2102.html' title='Multiple defined in 2 places.'>empty</a>;
+<a id='L134' name='L134'></a> 134     <em class='brace'>}</em>
+<a id='L135' name='L135'></a> 135 <em class='brace'>}</em>
+<a id='L136' name='L136'></a> 136 
+<a id='L137' name='L137'></a> 137 
+<a id='L138' name='L138'></a> 138 <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a> <a href='../Y/1514.html' title='Multiple used in 29 places.'>NETLIST_EXPORTER_PSPICE_SIM</a>::<a href='../R/696.html' title='Multiple referred from 3 places.'>GetSheetSimCommand</a>()
+<a id='L139' name='L139'></a> 139 <em class='brace'>{</em>
+<a id='L140' name='L140'></a> 140     <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a> <a href='../Y/7891.html' title='Multiple used in 11 places.'>simCmd</a>;
+<a id='L141' name='L141'></a> 141 
+<a id='L142' name='L142'></a> 142     <a href='../S/299.html#L369' title='Defined at 369 in netlist_exporters/netlist_exporter_pspice.cpp.'>UpdateDirectives</a>( <a href='../S/300.html#L39' title='Defined at 39 in netlist_exporters/netlist_exporter_pspice.h.'>NET_ALL_FLAGS</a> );
+<a id='L143' name='L143'></a> 143 
+<a id='L144' name='L144'></a> 144     <strong class='reserved'>for</strong>( <strong class='reserved'>const</strong> <strong class='reserved'>auto</strong>&amp; <a href='../Y/4142.html' title='Multiple used in 48 places.'>dir</a> : <a href='../Y/717.html' title='Multiple used in 3 places.'>GetDirectives</a>() )
+<a id='L145' name='L145'></a> 145     <em class='brace'>{</em>
+<a id='L146' name='L146'></a> 146         <strong class='reserved'>if</strong>( <a href='../Y/1254.html' title='Multiple used in 3 places.'>IsSimCommand</a>( <a href='../Y/4142.html' title='Multiple used in 48 places.'>dir</a> ) )
+<a id='L147' name='L147'></a> 147             <a href='../Y/7891.html' title='Multiple used in 11 places.'>simCmd</a> += <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>::<a href='../D/501.html' title='Multiple defined in 7 places.'>Format</a>( "%s\r\n", <a href='../Y/4142.html' title='Multiple used in 48 places.'>dir</a> );
+<a id='L148' name='L148'></a> 148     <em class='brace'>}</em>
+<a id='L149' name='L149'></a> 149 
+<a id='L150' name='L150'></a> 150     <strong class='reserved'>return</strong> <a href='../Y/7891.html' title='Multiple used in 11 places.'>simCmd</a>;
+<a id='L151' name='L151'></a> 151 <em class='brace'>}</em>
+<a id='L152' name='L152'></a> 152 
+<a id='L153' name='L153'></a> 153 
+<a id='L154' name='L154'></a> 154 <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a> <a href='../Y/1514.html' title='Multiple used in 29 places.'>NETLIST_EXPORTER_PSPICE_SIM</a>::<a href='../R/730.html' title='Multiple referred from 3 places.'>GetUsedSimCommand</a>()
+<a id='L155' name='L155'></a> 155 <em class='brace'>{</em>
+<a id='L156' name='L156'></a> 156     <strong class='reserved'>return</strong> <a href='../Y/6265.html' title='Multiple used in 26 places.'>m_simCommand</a>.<a href='../Y/1197.html' title='Multiple used in 258 places.'>IsEmpty</a>() ? <a href='../S/402.html#L138' title='Defined at 138 in sim/netlist_exporter_pspice_sim.cpp.'>GetSheetSimCommand</a>() : <a href='../Y/6265.html' title='Multiple used in 26 places.'>m_simCommand</a>;
+<a id='L157' name='L157'></a> 157 <em class='brace'>}</em>
+<a id='L158' name='L158'></a> 158 
+<a id='L159' name='L159'></a> 159 
+<a id='L160' name='L160'></a> 160 <a href='../S/415.html#L29' title='Defined at 29 in sim/sim_types.h.'>SIM_TYPE</a> <a href='../Y/1514.html' title='Multiple used in 29 places.'>NETLIST_EXPORTER_PSPICE_SIM</a>::<a href='../R/701.html' title='Multiple referred from 10 places.'>GetSimType</a>()
+<a id='L161' name='L161'></a> 161 <em class='brace'>{</em>
+<a id='L162' name='L162'></a> 162     <strong class='reserved'>return</strong> <a href='../S/402.html#L166' title='Defined at 166 in sim/netlist_exporter_pspice_sim.cpp.'>CommandToSimType</a>( <a href='../S/402.html#L154' title='Defined at 154 in sim/netlist_exporter_pspice_sim.cpp.'>GetUsedSimCommand</a>() );
+<a id='L163' name='L163'></a> 163 <em class='brace'>}</em>
+<a id='L164' name='L164'></a> 164 
+<a id='L165' name='L165'></a> 165 
+<a id='L166' name='L166'></a> 166 <a href='../S/415.html#L29' title='Defined at 29 in sim/sim_types.h.'>SIM_TYPE</a> <a href='../Y/1514.html' title='Multiple used in 29 places.'>NETLIST_EXPORTER_PSPICE_SIM</a>::<a href='../R/187.html' title='Multiple referred from 4 places.'>CommandToSimType</a>( <strong class='reserved'>const</strong> <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&amp; <a href='../Y/2793.html' title='Multiple used in 15 places.'>aCmd</a> )
+<a id='L167' name='L167'></a> 167 <em class='brace'>{</em>
+<a id='L168' name='L168'></a> 168     <strong class='reserved'>const</strong> <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8368.html' title='Multiple used in 470 places.'>vector</a>&lt;<a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/7156.html' title='Multiple used in 66 places.'>pair</a>&lt;<a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>, <a href='../S/415.html#L29' title='Defined at 29 in sim/sim_types.h.'>SIM_TYPE</a>&gt;&gt; <a href='../Y/7892.html' title='Multiple used in 2 places.'>simCmds</a> = <em class='brace'>{</em>
+<a id='L169' name='L169'></a> 169         <em class='brace'>{</em> "^.ac\\M.*", <a href='../S/415.html#L32' title='Defined at 32 in sim/sim_types.h.'>ST_AC</a> <em class='brace'>}</em>,
+<a id='L170' name='L170'></a> 170         <em class='brace'>{</em> "^.dc\\M.*", <a href='../S/415.html#L33' title='Defined at 33 in sim/sim_types.h.'>ST_DC</a> <em class='brace'>}</em>,
+<a id='L171' name='L171'></a> 171         <em class='brace'>{</em> "^.tran\\M.*", <a href='../S/415.html#L40' title='Defined at 40 in sim/sim_types.h.'>ST_TRANSIENT</a> <em class='brace'>}</em>,
+<a id='L172' name='L172'></a> 172         <em class='brace'>{</em> "^.op\\M.*", <a href='../S/415.html#L36' title='Defined at 36 in sim/sim_types.h.'>ST_OP</a> <em class='brace'>}</em>,
+<a id='L173' name='L173'></a> 173         <em class='brace'>{</em> "^.disto\\M.*", <a href='../S/415.html#L34' title='Defined at 34 in sim/sim_types.h.'>ST_DISTORTION</a> <em class='brace'>}</em>,
+<a id='L174' name='L174'></a> 174         <em class='brace'>{</em> "^.noise\\M.*", <a href='../S/415.html#L35' title='Defined at 35 in sim/sim_types.h.'>ST_NOISE</a> <em class='brace'>}</em>,
+<a id='L175' name='L175'></a> 175         <em class='brace'>{</em> "^.pz\\M.*", <a href='../S/415.html#L37' title='Defined at 37 in sim/sim_types.h.'>ST_POLE_ZERO</a> <em class='brace'>}</em>,
+<a id='L176' name='L176'></a> 176         <em class='brace'>{</em> "^.sens\\M.*", <a href='../S/415.html#L38' title='Defined at 38 in sim/sim_types.h.'>ST_SENSITIVITY</a> <em class='brace'>}</em>,
+<a id='L177' name='L177'></a> 177         <em class='brace'>{</em> "^.tf\\M.*", <a href='../S/415.html#L39' title='Defined at 39 in sim/sim_types.h.'>ST_TRANS_FUNC</a> <em class='brace'>}</em> <em class='brace'>}</em>;
+<a id='L178' name='L178'></a> 178     <a href='../Y/8841.html' title='Multiple used in 7 places.'>wxRegEx</a> <a href='../Y/7891.html' title='Multiple used in 11 places.'>simCmd</a>;
+<a id='L179' name='L179'></a> 179 
+<a id='L180' name='L180'></a> 180     <strong class='reserved'>for</strong>( <strong class='reserved'>const</strong> <strong class='reserved'>auto</strong>&amp; <a href='../Y/3776.html' title='Multiple used in 77 places.'>c</a> : <a href='../Y/7892.html' title='Multiple used in 2 places.'>simCmds</a> )
+<a id='L181' name='L181'></a> 181     <em class='brace'>{</em>
+<a id='L182' name='L182'></a> 182         <a href='../Y/7891.html' title='Multiple used in 11 places.'>simCmd</a>.Compile( <a href='../Y/3776.html' title='Multiple used in 77 places.'>c</a>.<a href='../Y/4486.html' title='Multiple used in 132 places.'>first</a>, <a href='../Y/8833.html' title='Multiple used in 4 places.'>wxRE_ADVANCED</a> | wxRE_NOSUB | wxRE_ICASE );
+<a id='L183' name='L183'></a> 183 
+<a id='L184' name='L184'></a> 184         <strong class='reserved'>if</strong>( <a href='../Y/7891.html' title='Multiple used in 11 places.'>simCmd</a>.<a href='../D/1061.html' title='Multiple defined in 6 places.'>Matches</a>( <a href='../Y/2793.html' title='Multiple used in 15 places.'>aCmd</a> ) )
+<a id='L185' name='L185'></a> 185             <strong class='reserved'>return</strong> <a href='../Y/3776.html' title='Multiple used in 77 places.'>c</a>.<a href='../Y/7750.html' title='Multiple used in 200 places.'>second</a>;
+<a id='L186' name='L186'></a> 186     <em class='brace'>}</em>
+<a id='L187' name='L187'></a> 187 
+<a id='L188' name='L188'></a> 188     <strong class='reserved'>return</strong> <a href='../S/415.html#L31' title='Defined at 31 in sim/sim_types.h.'>ST_UNKNOWN</a>;
+<a id='L189' name='L189'></a> 189 <em class='brace'>}</em>
+<a id='L190' name='L190'></a> 190 
+<a id='L191' name='L191'></a> 191 
+<a id='L192' name='L192'></a> 192 <strong class='reserved'>bool</strong> <a href='../Y/1514.html' title='Multiple used in 29 places.'>NETLIST_EXPORTER_PSPICE_SIM</a>::<a href='../R/1330.html' title='Multiple referred from 2 places.'>ParseDCCommand</a>( <strong class='reserved'>const</strong> <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&amp; <a href='../Y/2793.html' title='Multiple used in 15 places.'>aCmd</a>, <a href='../S/403.html#L37' title='Defined at 37 in sim/netlist_exporter_pspice_sim.h.'>SPICE_DC_PARAMS</a>* <a href='../Y/3340.html' title='Multiple used in 6 places.'>aSource1</a>,
+<a id='L193' name='L193'></a> 193                                                   <a href='../S/403.html#L37' title='Defined at 37 in sim/netlist_exporter_pspice_sim.h.'>SPICE_DC_PARAMS</a>* <a href='../Y/3341.html' title='Multiple used in 6 places.'>aSource2</a> )
+<a id='L194' name='L194'></a> 194 <em class='brace'>{</em>
+<a id='L195' name='L195'></a> 195     <strong class='reserved'>if</strong>( !<a href='../Y/2793.html' title='Multiple used in 15 places.'>aCmd</a>.<a href='../Y/1429.html' title='Multiple used in 42 places.'>Lower</a>().<a href='../Y/2339.html' title='Multiple used in 26 places.'>StartsWith</a>( ".dc" ) )
+<a id='L196' name='L196'></a> 196         <strong class='reserved'>return</strong> <strong class='reserved'>false</strong>;
+<a id='L197' name='L197'></a> 197 
+<a id='L198' name='L198'></a> 198     <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a> <a href='../Y/3866.html' title='Multiple used in 10 places.'>cmd</a> = <a href='../Y/2793.html' title='Multiple used in 15 places.'>aCmd</a>.<a href='../Y/1488.html' title='Multiple used in 2 places.'>Mid</a>( 3 ).<a href='../Y/2582.html' title='Multiple used in 25 places.'>Trim</a>().<a href='../Y/2582.html' title='Multiple used in 25 places.'>Trim</a>( <strong class='reserved'>false</strong> );
+<a id='L199' name='L199'></a> 199 
+<a id='L200' name='L200'></a> 200     <a href='../Y/8907.html' title='Multiple used in 15 places.'>wxStringTokenizer</a> <a href='../Y/8206.html' title='Multiple used in 45 places.'>tokens</a>( <a href='../Y/3866.html' title='Multiple used in 10 places.'>cmd</a> );
+<a id='L201' name='L201'></a> 201 
+<a id='L202' name='L202'></a> 202     <a href='../Y/7913.html' title='Multiple used in 143 places.'>size_t</a> <a href='../Y/7002.html' title='Multiple used in 32 places.'>num</a> = <a href='../Y/8206.html' title='Multiple used in 45 places.'>tokens</a>.<a href='../Y/257.html' title='Multiple used in 5 places.'>CountTokens</a>();
+<a id='L203' name='L203'></a> 203 
+<a id='L204' name='L204'></a> 204     <strong class='reserved'>if</strong>( <a href='../Y/7002.html' title='Multiple used in 32 places.'>num</a> != 4 &amp;&amp; <a href='../Y/7002.html' title='Multiple used in 32 places.'>num</a> != 8 )
+<a id='L205' name='L205'></a> 205         <strong class='reserved'>return</strong> <strong class='reserved'>false</strong>;
+<a id='L206' name='L206'></a> 206 
+<a id='L207' name='L207'></a> 207     <a href='../Y/3340.html' title='Multiple used in 6 places.'>aSource1</a>-&gt;<a href='../Y/6285.html' title='Multiple used in 5 places.'>m_source</a> = <a href='../Y/8206.html' title='Multiple used in 45 places.'>tokens</a>.<a href='../Y/864.html' title='Multiple used in 70 places.'>GetNextToken</a>();
+<a id='L208' name='L208'></a> 208     <a href='../Y/3340.html' title='Multiple used in 6 places.'>aSource1</a>-&gt;<a href='../Y/6628.html' title='Multiple used in 4 places.'>m_vstart</a> = <a href='../S/419.html#L36' title='Defined at 36 in sim/spice_value.cpp.'>SPICE_VALUE</a>( <a href='../Y/8206.html' title='Multiple used in 45 places.'>tokens</a>.<a href='../Y/864.html' title='Multiple used in 70 places.'>GetNextToken</a>() );
+<a id='L209' name='L209'></a> 209     <a href='../Y/3340.html' title='Multiple used in 6 places.'>aSource1</a>-&gt;<a href='../Y/6617.html' title='Multiple used in 4 places.'>m_vend</a> = <a href='../S/419.html#L36' title='Defined at 36 in sim/spice_value.cpp.'>SPICE_VALUE</a>( <a href='../Y/8206.html' title='Multiple used in 45 places.'>tokens</a>.<a href='../Y/864.html' title='Multiple used in 70 places.'>GetNextToken</a>() );
+<a id='L210' name='L210'></a> 210     <a href='../Y/3340.html' title='Multiple used in 6 places.'>aSource1</a>-&gt;<a href='../Y/6625.html' title='Multiple used in 5 places.'>m_vincrement</a> = <a href='../S/419.html#L36' title='Defined at 36 in sim/spice_value.cpp.'>SPICE_VALUE</a>( <a href='../Y/8206.html' title='Multiple used in 45 places.'>tokens</a>.<a href='../Y/864.html' title='Multiple used in 70 places.'>GetNextToken</a>() );
+<a id='L211' name='L211'></a> 211 
+<a id='L212' name='L212'></a> 212     <strong class='reserved'>if</strong>( <a href='../Y/7002.html' title='Multiple used in 32 places.'>num</a> == 8 )
+<a id='L213' name='L213'></a> 213     <em class='brace'>{</em>
+<a id='L214' name='L214'></a> 214         <a href='../Y/3341.html' title='Multiple used in 6 places.'>aSource2</a>-&gt;<a href='../Y/6285.html' title='Multiple used in 5 places.'>m_source</a> = <a href='../Y/8206.html' title='Multiple used in 45 places.'>tokens</a>.<a href='../Y/864.html' title='Multiple used in 70 places.'>GetNextToken</a>();
+<a id='L215' name='L215'></a> 215         <a href='../Y/3341.html' title='Multiple used in 6 places.'>aSource2</a>-&gt;<a href='../Y/6628.html' title='Multiple used in 4 places.'>m_vstart</a> = <a href='../S/419.html#L36' title='Defined at 36 in sim/spice_value.cpp.'>SPICE_VALUE</a>( <a href='../Y/8206.html' title='Multiple used in 45 places.'>tokens</a>.<a href='../Y/864.html' title='Multiple used in 70 places.'>GetNextToken</a>() );
+<a id='L216' name='L216'></a> 216         <a href='../Y/3341.html' title='Multiple used in 6 places.'>aSource2</a>-&gt;<a href='../Y/6617.html' title='Multiple used in 4 places.'>m_vend</a> = <a href='../S/419.html#L36' title='Defined at 36 in sim/spice_value.cpp.'>SPICE_VALUE</a>( <a href='../Y/8206.html' title='Multiple used in 45 places.'>tokens</a>.<a href='../Y/864.html' title='Multiple used in 70 places.'>GetNextToken</a>() );
+<a id='L217' name='L217'></a> 217         <a href='../Y/3341.html' title='Multiple used in 6 places.'>aSource2</a>-&gt;<a href='../Y/6625.html' title='Multiple used in 5 places.'>m_vincrement</a> = <a href='../S/419.html#L36' title='Defined at 36 in sim/spice_value.cpp.'>SPICE_VALUE</a>( <a href='../Y/8206.html' title='Multiple used in 45 places.'>tokens</a>.<a href='../Y/864.html' title='Multiple used in 70 places.'>GetNextToken</a>() );
+<a id='L218' name='L218'></a> 218     <em class='brace'>}</em>
+<a id='L219' name='L219'></a> 219 
+<a id='L220' name='L220'></a> 220     <strong class='reserved'>return</strong> <strong class='reserved'>true</strong>;
+<a id='L221' name='L221'></a> 221 <em class='brace'>}</em>
+<a id='L222' name='L222'></a> 222 
+<a id='L223' name='L223'></a> 223 
+<a id='L224' name='L224'></a> 224 <strong class='reserved'>void</strong> <a href='../Y/1514.html' title='Multiple used in 29 places.'>NETLIST_EXPORTER_PSPICE_SIM</a>::<a href='../R/2568.html' title='Multiple referred from 4 places.'>writeDirectives</a>( <a href='../Y/1557.html' title='Multiple used in 66 places.'>OUTPUTFORMATTER</a>* <a href='../Y/2945.html' title='Multiple used in 214 places.'>aFormatter</a>, <strong class='reserved'>unsigned</strong> <a href='../Y/2829.html' title='Multiple used in 42 places.'>aCtl</a> ) <strong class='reserved'>const</strong>
+<a id='L225' name='L225'></a> 225 <em class='brace'>{</em>
+<a id='L226' name='L226'></a> 226     <em class='comment'>// Add a directive to obtain currents</em>
+<a id='L227' name='L227'></a> 227     <em class='comment'>//aFormatter-&gt;Print( 0, ".options savecurrents\n" );        // does not work :(</em>
+<a id='L228' name='L228'></a> 228 
+<a id='L229' name='L229'></a> 229     <strong class='reserved'>for</strong>( <strong class='reserved'>const</strong> <strong class='reserved'>auto</strong>&amp; <a href='../Y/4848.html' title='Multiple used in 1338 places.'>item</a> : <a href='../Y/989.html' title='Multiple used in 6 places.'>GetSpiceItems</a>() )
+<a id='L230' name='L230'></a> 230     <em class='brace'>{</em>
+<a id='L231' name='L231'></a> 231         <strong class='reserved'>for</strong>( <strong class='reserved'>const</strong> <strong class='reserved'>auto</strong>&amp; <a href='../Y/4008.html' title='Multiple used in 44 places.'>current</a> :
+<a id='L232' name='L232'></a> 232                 <a href='../Y/1514.html' title='Multiple used in 29 places.'>NETLIST_EXPORTER_PSPICE_SIM</a>::<a href='../S/402.html#L107' title='Defined at 107 in sim/netlist_exporter_pspice_sim.cpp.'>GetCurrents</a>( (<a href='../S/300.html#L52' title='Defined at 52 in netlist_exporters/netlist_exporter_pspice.h.'>SPICE_PRIMITIVE</a>) <a href='../Y/4848.html' title='Multiple used in 1338 places.'>item</a>.<a href='../Y/6078.html' title='Multiple used in 7 places.'>m_primitive</a> ) )
+<a id='L233' name='L233'></a> 233         <em class='brace'>{</em>
+<a id='L234' name='L234'></a> 234             <strong class='reserved'>if</strong>( !<a href='../Y/4848.html' title='Multiple used in 1338 places.'>item</a>.<a href='../Y/5626.html' title='Multiple used in 4 places.'>m_enabled</a> )
+<a id='L235' name='L235'></a> 235                 <strong class='reserved'>continue</strong>;
+<a id='L236' name='L236'></a> 236 
+<a id='L237' name='L237'></a> 237             <em class='comment'>/// @todo is it required to switch to lowercase</em>
+<a id='L238' name='L238'></a> 238             <a href='../Y/2945.html' title='Multiple used in 214 places.'>aFormatter</a>-&gt;<a href='../D/1400.html' title='Multiple defined in 18 places.'>Print</a>( 0, ".save %s\n",
+<a id='L239' name='L239'></a> 239                     (<strong class='reserved'>const</strong> <strong class='reserved'>char</strong>*) <a href='../S/402.html#L29' title='Defined at 29 in sim/netlist_exporter_pspice_sim.cpp.'>ComponentToVector</a>( <a href='../Y/4848.html' title='Multiple used in 1338 places.'>item</a>.<a href='../Y/6149.html' title='Multiple used in 12 places.'>m_refName</a>, <a href='../S/415.html#L48' title='Defined at 48 in sim/sim_types.h.'>SPT_CURRENT</a>, <a href='../Y/4008.html' title='Multiple used in 44 places.'>current</a> )
+<a id='L240' name='L240'></a> 240                             .<a href='../Y/3781.html' title='Multiple used in 185 places.'>c_str</a>() );
+<a id='L241' name='L241'></a> 241         <em class='brace'>}</em>
+<a id='L242' name='L242'></a> 242     <em class='brace'>}</em>
+<a id='L243' name='L243'></a> 243 
+<a id='L244' name='L244'></a> 244     <em class='comment'>// If we print out .save directives for currents, then it needs to be done for voltages as well</em>
+<a id='L245' name='L245'></a> 245     <strong class='reserved'>for</strong>( <strong class='reserved'>const</strong> <strong class='reserved'>auto</strong>&amp; <a href='../Y/6854.html' title='Multiple used in 5 places.'>netMap</a> : <a href='../Y/855.html' title='Multiple used in 5 places.'>GetNetIndexMap</a>() )
+<a id='L246' name='L246'></a> 246     <em class='brace'>{</em>
+<a id='L247' name='L247'></a> 247         <em class='comment'>// the "0" and the "GND" nets are automaticallly saved internally by ngspice.</em>
+<a id='L248' name='L248'></a> 248         <em class='comment'>// Skip them</em>
+<a id='L249' name='L249'></a> 249         <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a> <a href='../Y/6871.html' title='Multiple used in 15 places.'>netname</a> = <a href='../S/402.html#L29' title='Defined at 29 in sim/netlist_exporter_pspice_sim.cpp.'>ComponentToVector</a>( <a href='../Y/6854.html' title='Multiple used in 5 places.'>netMap</a>.<a href='../Y/4486.html' title='Multiple used in 132 places.'>first</a>, <a href='../S/415.html#L47' title='Defined at 47 in sim/sim_types.h.'>SPT_VOLTAGE</a> );
+<a id='L250' name='L250'></a> 250 
+<a id='L251' name='L251'></a> 251         <strong class='reserved'>if</strong>( <a href='../Y/6871.html' title='Multiple used in 15 places.'>netname</a> == "V(0)" || <a href='../Y/6871.html' title='Multiple used in 15 places.'>netname</a> == "V(GND)" )
+<a id='L252' name='L252'></a> 252             <strong class='reserved'>continue</strong>;
+<a id='L253' name='L253'></a> 253 
+<a id='L254' name='L254'></a> 254         <a href='../Y/2945.html' title='Multiple used in 214 places.'>aFormatter</a>-&gt;<a href='../D/1400.html' title='Multiple defined in 18 places.'>Print</a>( 0, ".save %s\n", (<strong class='reserved'>const</strong> <strong class='reserved'>char</strong>*) <a href='../Y/6871.html' title='Multiple used in 15 places.'>netname</a>.<a href='../Y/3781.html' title='Multiple used in 185 places.'>c_str</a>() );
+<a id='L255' name='L255'></a> 255     <em class='brace'>}</em>
+<a id='L256' name='L256'></a> 256 
+<a id='L257' name='L257'></a> 257     <strong class='reserved'>if</strong>( <a href='../Y/6265.html' title='Multiple used in 26 places.'>m_simCommand</a>.<a href='../Y/1197.html' title='Multiple used in 258 places.'>IsEmpty</a>() )
+<a id='L258' name='L258'></a> 258     <em class='brace'>{</em>
+<a id='L259' name='L259'></a> 259         <em class='comment'>// Fallback to the default behavior and just write all directives</em>
+<a id='L260' name='L260'></a> 260         <a href='../Y/1513.html' title='Multiple used in 28 places.'>NETLIST_EXPORTER_PSPICE</a>::<a href='../D/2624.html' title='Multiple defined in 2 places.'>writeDirectives</a>( <a href='../Y/2945.html' title='Multiple used in 214 places.'>aFormatter</a>, <a href='../Y/2829.html' title='Multiple used in 42 places.'>aCtl</a> );
+<a id='L261' name='L261'></a> 261     <em class='brace'>}</em>
+<a id='L262' name='L262'></a> 262     <strong class='reserved'>else</strong>
+<a id='L263' name='L263'></a> 263     <em class='brace'>{</em>
+<a id='L264' name='L264'></a> 264         <em class='comment'>// Dump all directives but simulation commands</em>
+<a id='L265' name='L265'></a> 265         <strong class='reserved'>for</strong>( <strong class='reserved'>const</strong> <strong class='reserved'>auto</strong>&amp; <a href='../Y/4142.html' title='Multiple used in 48 places.'>dir</a> : <a href='../Y/717.html' title='Multiple used in 3 places.'>GetDirectives</a>() )
+<a id='L266' name='L266'></a> 266         <em class='brace'>{</em>
+<a id='L267' name='L267'></a> 267             <strong class='reserved'>if</strong>( !<a href='../Y/1254.html' title='Multiple used in 3 places.'>IsSimCommand</a>( <a href='../Y/4142.html' title='Multiple used in 48 places.'>dir</a> ) )
+<a id='L268' name='L268'></a> 268                 <a href='../Y/2945.html' title='Multiple used in 214 places.'>aFormatter</a>-&gt;<a href='../D/1400.html' title='Multiple defined in 18 places.'>Print</a>( 0, "%s\n", (<strong class='reserved'>const</strong> <strong class='reserved'>char</strong>*) <a href='../Y/4142.html' title='Multiple used in 48 places.'>dir</a>.<a href='../Y/3781.html' title='Multiple used in 185 places.'>c_str</a>() );
+<a id='L269' name='L269'></a> 269         <em class='brace'>}</em>
+<a id='L270' name='L270'></a> 270 
+<a id='L271' name='L271'></a> 271         <em class='comment'>// Finish with our custom simulation command</em>
+<a id='L272' name='L272'></a> 272         <a href='../Y/2945.html' title='Multiple used in 214 places.'>aFormatter</a>-&gt;<a href='../D/1400.html' title='Multiple defined in 18 places.'>Print</a>( 0, "%s\n", (<strong class='reserved'>const</strong> <strong class='reserved'>char</strong>*) <a href='../Y/6265.html' title='Multiple used in 26 places.'>m_simCommand</a>.<a href='../Y/3781.html' title='Multiple used in 185 places.'>c_str</a>() );
+<a id='L273' name='L273'></a> 273     <em class='brace'>}</em>
+<a id='L274' name='L274'></a> 274 <em class='brace'>}</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L29'>[^]</a><a href='#L224'>[v]</a><a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

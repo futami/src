@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>collector</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/442.html#L471'>collector</a>         471 tools/ee_selection_tool.cpp     EE_COLLECTOR collector;</span>
+<span class='curline'><a href='../S/442.html#L473'>collector</a>         473 tools/ee_selection_tool.cpp     collector.m_Threshold = KiROUND( getView()-&gt;ToWorld( HITTEST_THRESHOLD_PIXELS ) );</span>
+<span class='curline'><a href='../S/442.html#L482'>collector</a>         482 tools/ee_selection_tool.cpp         collector.Collect( part-&gt;GetDrawItems(), aFilterList, (wxPoint) aWhere, m_unit, m_convert );</span>
+<span class='curline'><a href='../S/442.html#L485'>collector</a>         485 tools/ee_selection_tool.cpp         collector.Collect( m_frame-&gt;GetScreen(), aFilterList, (wxPoint) aWhere, m_unit, m_convert );</span>
+<span class='curline'><a href='../S/442.html#L488'>collector</a>         488 tools/ee_selection_tool.cpp     for( int i = collector.GetCount() - 1; i &gt;= 0; --i )</span>
+<span class='curline'><a href='../S/442.html#L490'>collector</a>         490 tools/ee_selection_tool.cpp         if( !Selectable( collector[ i ] ) )</span>
+<span class='curline'><a href='../S/442.html#L492'>collector</a>         492 tools/ee_selection_tool.cpp             collector.Remove( i );</span>
+<span class='curline'><a href='../S/442.html#L496'>collector</a>         496 tools/ee_selection_tool.cpp         if( aCheckLocked &amp;&amp; collector[ i ]-&gt;IsLocked() )</span>
+<span class='curline'><a href='../S/442.html#L498'>collector</a>         498 tools/ee_selection_tool.cpp             collector.Remove( i );</span>
+<span class='curline'><a href='../S/442.html#L503'>collector</a>         503 tools/ee_selection_tool.cpp         if( collector[ i ]-&gt;Type() == SCH_LINE_T )</span>
+<span class='curline'><a href='../S/442.html#L505'>collector</a>         505 tools/ee_selection_tool.cpp             SCH_LINE* line = (SCH_LINE*) collector[ i ];</span>
+<span class='curline'><a href='../S/442.html#L508'>collector</a>         508 tools/ee_selection_tool.cpp             if( HitTestPoints( line-&gt;GetStartPoint(), (wxPoint) aWhere, collector.m_Threshold ) )</span>
+<span class='curline'><a href='../S/442.html#L510'>collector</a>         510 tools/ee_selection_tool.cpp             else if (HitTestPoints( line-&gt;GetEndPoint(), (wxPoint) aWhere, collector.m_Threshold ) )</span>
+<span class='curline'><a href='../S/442.html#L520'>collector</a>         520 tools/ee_selection_tool.cpp     if( collector.GetCount() &gt; 1 &amp;&amp; !m_skip_heuristics )</span>
+<span class='curline'><a href='../S/442.html#L522'>collector</a>         522 tools/ee_selection_tool.cpp         GuessSelectionCandidates( collector, aWhere );</span>
+<span class='curline'><a href='../S/442.html#L526'>collector</a>         526 tools/ee_selection_tool.cpp     if( collector.GetCount() &gt; 1 )</span>
+<span class='curline'><a href='../S/442.html#L528'>collector</a>         528 tools/ee_selection_tool.cpp         collector.m_MenuTitle = wxEmptyString;</span>
+<span class='curline'><a href='../S/442.html#L530'>collector</a>         530 tools/ee_selection_tool.cpp         m_toolMgr-&gt;RunAction( EE_ACTIONS::selectionMenu, true, &amp;collector );</span>
+<span class='curline'><a href='../S/442.html#L532'>collector</a>         532 tools/ee_selection_tool.cpp         if( collector.m_MenuCancelled )</span>
+<span class='curline'><a href='../S/442.html#L547'>collector</a>         547 tools/ee_selection_tool.cpp     if( collector.GetCount() &gt; 0 )</span>
+<span class='curline'><a href='../S/442.html#L549'>collector</a>         549 tools/ee_selection_tool.cpp         for( int i = 0; i &lt; collector.GetCount(); ++i )</span>
+<span class='curline'><a href='../S/442.html#L551'>collector</a>         551 tools/ee_selection_tool.cpp             if( aSubtract || ( aExclusiveOr &amp;&amp; collector[i]-&gt;IsSelected() ) )</span>
+<span class='curline'><a href='../S/442.html#L553'>collector</a>         553 tools/ee_selection_tool.cpp                 unselect( collector[i] );</span>
+<span class='curline'><a href='../S/442.html#L558'>collector</a>         558 tools/ee_selection_tool.cpp                 select( collector[i] );</span>
+<span class='curline'><a href='../S/442.html#L568'>collector</a>         568 tools/ee_selection_tool.cpp         if( aItem &amp;&amp; collector.GetCount() == 1 )</span>
+<span class='curline'><a href='../S/442.html#L569'>collector</a>         569 tools/ee_selection_tool.cpp             *aItem = collector[0];</span>
+<span class='curline'><a href='../S/442.html#L583'>collector</a>         583 tools/ee_selection_tool.cpp void EE_SELECTION_TOOL::GuessSelectionCandidates( EE_COLLECTOR&amp; collector, const VECTOR2I&amp; aPos )</span>
+<span class='curline'><a href='../S/442.html#L591'>collector</a>         591 tools/ee_selection_tool.cpp     for( int i = collector.GetCount() - 1; i &gt;= 0; --i )</span>
+<span class='curline'><a href='../S/442.html#L593'>collector</a>         593 tools/ee_selection_tool.cpp         EDA_ITEM* item = collector[ i ];</span>
+<span class='curline'><a href='../S/442.html#L599'>collector</a>         599 tools/ee_selection_tool.cpp     if( exactHits &gt; 0 &amp;&amp; exactHits &lt; collector.GetCount() )</span>
+<span class='curline'><a href='../S/442.html#L601'>collector</a>         601 tools/ee_selection_tool.cpp         for( int i = collector.GetCount() - 1; i &gt;= 0; --i )</span>
+<span class='curline'><a href='../S/442.html#L603'>collector</a>         603 tools/ee_selection_tool.cpp             EDA_ITEM* item = collector[ i ];</span>
+<span class='curline'><a href='../S/442.html#L606'>collector</a>         606 tools/ee_selection_tool.cpp                 collector.Transfer( item );</span>
+<span class='curline'><a href='../S/442.html#L611'>collector</a>         611 tools/ee_selection_tool.cpp     for( int i = 0; collector.GetCount() == 2 &amp;&amp; i &lt; 2; ++i )</span>
+<span class='curline'><a href='../S/442.html#L613'>collector</a>         613 tools/ee_selection_tool.cpp         EDA_ITEM* item = collector[ i ];</span>
+<span class='curline'><a href='../S/442.html#L614'>collector</a>         614 tools/ee_selection_tool.cpp         EDA_ITEM* other = collector[ ( i + 1 ) % 2 ];</span>
+<span class='curline'><a href='../S/442.html#L617'>collector</a>         617 tools/ee_selection_tool.cpp             collector.Transfer( other );</span>
+<span class='curline'><a href='../S/442.html#L626'>collector</a>         626 tools/ee_selection_tool.cpp     for( int i = 0; collector.GetCount() == 2 &amp;&amp; i &lt; 2; ++i )</span>
+<span class='curline'><a href='../S/442.html#L628'>collector</a>         628 tools/ee_selection_tool.cpp         EDA_ITEM* item = collector[ i ];</span>
+<span class='curline'><a href='../S/442.html#L629'>collector</a>         629 tools/ee_selection_tool.cpp         EDA_ITEM* other = collector[ ( i + 1 ) % 2 ];</span>
+<span class='curline'><a href='../S/442.html#L634'>collector</a>         634 tools/ee_selection_tool.cpp                 collector.Transfer( other );</span>
+<span class='curline'><a href='../S/442.html#L636'>collector</a>         636 tools/ee_selection_tool.cpp                 collector.Transfer( item );</span>
+<span class='curline'><a href='../S/442.html#L641'>collector</a>         641 tools/ee_selection_tool.cpp     for( int i = 0; collector.GetCount() == 2 &amp;&amp; i &lt; 2; ++i )</span>
+<span class='curline'><a href='../S/442.html#L643'>collector</a>         643 tools/ee_selection_tool.cpp         EDA_ITEM* item = collector[ i ];</span>
+<span class='curline'><a href='../S/442.html#L644'>collector</a>         644 tools/ee_selection_tool.cpp         EDA_ITEM* other = collector[ ( i + 1 ) % 2 ];</span>
+<span class='curline'><a href='../S/442.html#L647'>collector</a>         647 tools/ee_selection_tool.cpp             collector.Transfer( other );</span>
+<span class='curline'><a href='../S/442.html#L655'>collector</a>         655 tools/ee_selection_tool.cpp     for( EDA_ITEM* item : collector )</span>
+<span class='curline'><a href='../S/442.html#L665'>collector</a>         665 tools/ee_selection_tool.cpp         for( int j = collector.GetCount() - 1; j &gt;= 0; --j )</span>
+<span class='curline'><a href='../S/442.html#L667'>collector</a>         667 tools/ee_selection_tool.cpp             if( junction &amp;&amp; collector[ j ]-&gt;Type() != SCH_JUNCTION_T )</span>
+<span class='curline'><a href='../S/442.html#L668'>collector</a>         668 tools/ee_selection_tool.cpp                 collector.Transfer( j );</span>
+<span class='curline'><a href='../S/442.html#L670'>collector</a>         670 tools/ee_selection_tool.cpp                 collector.Transfer( j );</span>
+<span class='curline'><a href='../S/442.html#L872'>collector</a>         872 tools/ee_selection_tool.cpp     EE_COLLECTOR collector;</span>
+<span class='curline'><a href='../S/442.html#L879'>collector</a>         879 tools/ee_selection_tool.cpp         collector.m_Threshold = threshold;</span>
+<span class='curline'><a href='../S/442.html#L880'>collector</a>         880 tools/ee_selection_tool.cpp         collector.Collect( m_frame-&gt;GetScreen(), nodeTypes, (wxPoint) aPosition );</span>
+<span class='curline'><a href='../S/442.html#L882'>collector</a>         882 tools/ee_selection_tool.cpp         if( collector.GetCount() &gt; 0 )</span>
+<span class='curline'><a href='../S/442.html#L886'>collector</a>         886 tools/ee_selection_tool.cpp     return collector.GetCount() ? collector[ 0 ] : nullptr;</span>
+<span class='curline'><a href='../S/442.html#L1093'>collector</a>        1093 tools/ee_selection_tool.cpp     EE_COLLECTOR* collector = aEvent.Parameter&lt;EE_COLLECTOR*&gt;();</span>
+<span class='curline'><a href='../S/442.html#L1095'>collector</a>        1095 tools/ee_selection_tool.cpp     if( !doSelectionMenu( collector ) )</span>
+<span class='curline'><a href='../S/442.html#L1096'>collector</a>        1096 tools/ee_selection_tool.cpp         collector-&gt;m_MenuCancelled = true;</span>
+<span class='curline'><a href='../S/443.html#L150'>collector</a>         150 tools/ee_selection_tool.h     void GuessSelectionCandidates( EE_COLLECTOR&amp; collector, const VECTOR2I&amp; aPos );</span>
+<span class='curline'><a href='../S/449.html#L319'>collector</a>         319 tools/lib_edit_tool.cpp             EE_COLLECTOR collector;</span>
+<span class='curline'><a href='../S/449.html#L320'>collector</a>         320 tools/lib_edit_tool.cpp             collector.m_Threshold = KiROUND( getView()-&gt;ToWorld( HITTEST_THRESHOLD_PIXELS ) );</span>
+<span class='curline'><a href='../S/449.html#L321'>collector</a>         321 tools/lib_edit_tool.cpp             collector.Collect( m_frame-&gt;GetScreen(), nonFields, (wxPoint) aPos, m_frame-&gt;GetUnit(),</span>
+<span class='curline'><a href='../S/449.html#L325'>collector</a>         325 tools/lib_edit_tool.cpp             for( int i = collector.GetCount() - 1; i &gt;= 0; --i )</span>
+<span class='curline'><a href='../S/449.html#L327'>collector</a>         327 tools/lib_edit_tool.cpp                 if( !selectionTool-&gt;Selectable( collector[ i ] ) )</span>
+<span class='curline'><a href='../S/449.html#L328'>collector</a>         328 tools/lib_edit_tool.cpp                     collector.Remove( i );</span>
+<span class='curline'><a href='../S/449.html#L331'>collector</a>         331 tools/lib_edit_tool.cpp             if( collector.GetCount() &gt; 1 )</span>
+<span class='curline'><a href='../S/449.html#L332'>collector</a>         332 tools/lib_edit_tool.cpp                 selectionTool-&gt;GuessSelectionCandidates( collector, aPos );</span>
+<span class='curline'><a href='../S/449.html#L334'>collector</a>         334 tools/lib_edit_tool.cpp             EDA_ITEM* item = collector.GetCount() == 1 ? collector[ 0 ] : nullptr;</span>
+<span class='curline'><a href='../S/459.html#L1088'>collector</a>        1088 tools/sch_edit_tool.cpp             EE_COLLECTOR collector;</span>
+<span class='curline'><a href='../S/459.html#L1089'>collector</a>        1089 tools/sch_edit_tool.cpp             collector.m_Threshold = KiROUND( getView()-&gt;ToWorld( HITTEST_THRESHOLD_PIXELS ) );</span>
+<span class='curline'><a href='../S/459.html#L1090'>collector</a>        1090 tools/sch_edit_tool.cpp             collector.Collect( m_frame-&gt;GetScreen(), deletableItems, (wxPoint) aPos );</span>
+<span class='curline'><a href='../S/459.html#L1093'>collector</a>        1093 tools/sch_edit_tool.cpp             selectionTool-&gt;GuessSelectionCandidates( collector, aPos );</span>
+<span class='curline'><a href='../S/459.html#L1095'>collector</a>        1095 tools/sch_edit_tool.cpp             EDA_ITEM* item = collector.GetCount() == 1 ? collector[ 0 ] : nullptr;</span>
+<span class='curline'><a href='../S/457.html#L680'>collector</a>         680 tools/sch_editor_control.cpp             EE_COLLECTOR collector;</span>
+<span class='curline'><a href='../S/457.html#L681'>collector</a>         681 tools/sch_editor_control.cpp             collector.m_Threshold = KiROUND( getView()-&gt;ToWorld( HITTEST_THRESHOLD_PIXELS ) );</span>
+<span class='curline'><a href='../S/457.html#L682'>collector</a>         682 tools/sch_editor_control.cpp             collector.Collect( m_frame-&gt;GetScreen(), wiresAndPins, (wxPoint) aPos );</span>
+<span class='curline'><a href='../S/457.html#L685'>collector</a>         685 tools/sch_editor_control.cpp             selectionTool-&gt;GuessSelectionCandidates( collector, aPos );</span>
+<span class='curline'><a href='../S/457.html#L687'>collector</a>         687 tools/sch_editor_control.cpp             EDA_ITEM* item = collector.GetCount() == 1 ? collector[ 0 ] : nullptr;</span>
+<span class='curline'><a href='../S/457.html#L785'>collector</a>         785 tools/sch_editor_control.cpp             EE_COLLECTOR collector;</span>
+<span class='curline'><a href='../S/457.html#L786'>collector</a>         786 tools/sch_editor_control.cpp             collector.m_Threshold = KiROUND( getView()-&gt;ToWorld( HITTEST_THRESHOLD_PIXELS ) );</span>
+<span class='curline'><a href='../S/457.html#L787'>collector</a>         787 tools/sch_editor_control.cpp             collector.Collect( m_frame-&gt;GetScreen(), fieldsAndComponents, (wxPoint) aPos );</span>
+<span class='curline'><a href='../S/457.html#L790'>collector</a>         790 tools/sch_editor_control.cpp             selectionTool-&gt;GuessSelectionCandidates( collector, aPos );</span>
+<span class='curline'><a href='../S/457.html#L792'>collector</a>         792 tools/sch_editor_control.cpp             EDA_ITEM* item = collector.GetCount() == 1 ? collector[ 0 ] : nullptr;</span>
+</pre>
+</body>
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>dialogs/dialog_spice_model.h</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/480.html'>dialogs</a>/dialog_spice_model.h</h2>
+<em class='comment'>/* [&lt;][&gt;][^][v][top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'><a href='../J/135.html' title='Multiple included from 3 places.'>INCLUDED FROM</a></h2>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * This program source code file is part of KiCad, a free EDA CAD application.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 2016-2017 CERN</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> * @author Maciej Suminski &lt;maciej.suminski@cern.ch&gt;</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> *</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> * This program is free software; you can redistribute it and/or</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * modify it under the terms of the GNU General Public License</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * as published by the Free Software Foundation; either version 3</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> * of the License, or (at your option) any later version.</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> *</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> * This program is distributed in the hope that it will be useful,</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> * GNU General Public License for more details.</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> *</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> * You should have received a copy of the GNU General Public License</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * along with this program; if not, you may find one here:</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> * https://www.gnu.org/licenses/gpl-3.0.html</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> * or you may search the http://www.gnu.org website for the version 3 license,</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'> * or you may write to the Free Software Foundation, Inc.,</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'> * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'> */</em>
+<a id='L24' name='L24'></a>  24 
+<a id='L25' name='L25'></a>  25 <em class='sharp'>#ifndef</em> <a href='../S/167.html#L26' title='Defined at 26 in dialogs/dialog_spice_model.h.'>DIALOG_SPICE_MODEL_H</a>
+<a id='L26' name='L26'></a>  26 <em class='sharp'>#define</em> <a href='../S/167.html#L25' title='Referred from 25 in dialogs/dialog_spice_model.h.'>DIALOG_SPICE_MODEL_H</a>
+<a id='L27' name='L27'></a>  27 
+<a id='L28' name='L28'></a>  28 <em class='sharp'>#include</em> "<a href='170.html'>dialog_spice_model_base.h</a>"
+<a id='L29' name='L29'></a>  29 <em class='sharp'>#include</em> "<a href='300.html'>netlist_exporter_pspice.h</a>"
+<a id='L30' name='L30'></a>  30 
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#include</em> &lt;<a href='420.html'>sim/spice_value.h</a>&gt;
+<a id='L32' name='L32'></a>  32 <em class='sharp'>#include</em> &lt;<a href='349.html'>sch_component.h</a>&gt;
+<a id='L33' name='L33'></a>  33 <em class='sharp'>#include</em> &lt;<a href='359.html'>sch_field.h</a>&gt;
+<a id='L34' name='L34'></a>  34 <em class='sharp'>#include</em> &lt;<a href='274.html'>lib_field.h</a>&gt;
+<a id='L35' name='L35'></a>  35 
+<a id='L36' name='L36'></a>  36 <em class='sharp'>#include</em> &lt;wx/valnum.h&gt;
+<a id='L37' name='L37'></a>  37 
+<a id='L38' name='L38'></a>  38 <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../Y/319.html' title='Multiple used in 24 places.'>DIALOG_SPICE_MODEL</a> : <a href='../Y/7469.html' title='Multiple used in 431 places.'>public</a> <a href='../D/310.html' title='Multiple defined in 2 places.'>DIALOG_SPICE_MODEL_BASE</a>
+<a id='L39' name='L39'></a>  39 <em class='brace'>{</em>
+<a id='L40' name='L40'></a>  40 <a href='../Y/7469.html' title='Multiple used in 431 places.'>public</a>:
+<a id='L41' name='L41'></a>  41     <a href='../Y/319.html' title='Multiple used in 24 places.'>DIALOG_SPICE_MODEL</a>( <a href='../Y/8956.html' title='Multiple used in 200 places.'>wxWindow</a>* <a href='../Y/3169.html' title='Multiple used in 321 places.'>aParent</a>, <a href='../D/1520.html' title='Multiple defined in 4 places.'>SCH_COMPONENT</a>&amp; <a href='../Y/2808.html' title='Multiple used in 179 places.'>aComponent</a>, <a href='../S/349.html#L77' title='Defined at 77 in sch_component.h.'>SCH_FIELDS</a>* aSchFields );
+<a id='L42' name='L42'></a>  42     <a href='../Y/319.html' title='Multiple used in 24 places.'>DIALOG_SPICE_MODEL</a>( <a href='../Y/8956.html' title='Multiple used in 200 places.'>wxWindow</a>* <a href='../Y/3169.html' title='Multiple used in 321 places.'>aParent</a>, <a href='../D/1520.html' title='Multiple defined in 4 places.'>SCH_COMPONENT</a>&amp; <a href='../Y/2808.html' title='Multiple used in 179 places.'>aComponent</a>, <a href='../S/274.html#L218' title='Defined at 218 in lib_field.h.'>LIB_FIELDS</a>* aLibFields );
+<a id='L43' name='L43'></a>  43 
+<a id='L44' name='L44'></a>  44 <a href='../Y/7425.html' title='Multiple used in 187 places.'>private</a>:
+<a id='L45' name='L45'></a>  45     <em class='comment'>/**</em>
+<a id='L46' name='L46'></a>  46 <em class='comment'>     * Parse a string describing a power source, so appropriate settings are checked in the dialog</em>
+<a id='L47' name='L47'></a>  47 <em class='comment'>     * @param aModel contains the string to be parse (e.g. sin(0 1 10k))</em>
+<a id='L48' name='L48'></a>  48 <em class='comment'>     * @return True if the input string was parsed without errors.</em>
+<a id='L49' name='L49'></a>  49 <em class='comment'>     */</em>
+<a id='L50' name='L50'></a>  50     <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../S/166.html#L441' title='Defined at 441 in dialogs/dialog_spice_model.cpp.'>parsePowerSource</a>( <strong class='reserved'>const</strong> <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&amp; <a href='../Y/3093.html' title='Multiple used in 6 places.'>aModel</a> );
+<a id='L51' name='L51'></a>  51 
+<a id='L52' name='L52'></a>  52     <em class='comment'>/**</em>
+<a id='L53' name='L53'></a>  53 <em class='comment'>     * Generates a string to describe power source parameters, basing on the current selection.</em>
+<a id='L54' name='L54'></a>  54 <em class='comment'>     * If there are missing fields, it will not modify the target string.</em>
+<a id='L55' name='L55'></a>  55 <em class='comment'>     * @param aTarget is the destination for the generated string.</em>
+<a id='L56' name='L56'></a>  56 <em class='comment'>     * @return True if the string was saved successfully.</em>
+<a id='L57' name='L57'></a>  57 <em class='comment'>     */</em>
+<a id='L58' name='L58'></a>  58     <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../S/166.html#L622' title='Defined at 622 in dialogs/dialog_spice_model.cpp.'>generatePowerSource</a>( <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&amp; <a href='../Y/3380.html' title='Multiple used in 12 places.'>aTarget</a> ) <strong class='reserved'>const</strong>;
+<a id='L59' name='L59'></a>  59 
+<a id='L60' name='L60'></a>  60     <em class='comment'>/**</em>
+<a id='L61' name='L61'></a>  61 <em class='comment'>     * Loads a list of components (.model and .subckt) from a spice library</em>
+<a id='L62' name='L62'></a>  62 <em class='comment'>     * file and adds them to a combo box.</em>
+<a id='L63' name='L63'></a>  63 <em class='comment'>     * @param aComboBox is the target combo box</em>
+<a id='L64' name='L64'></a>  64 <em class='comment'>     * @param aFilePath is path to the library file</em>
+<a id='L65' name='L65'></a>  65 <em class='comment'>     */</em>
+<a id='L66' name='L66'></a>  66     <strong class='reserved'>void</strong> <a href='../D/2241.html' title='Multiple defined in 2 places.'>loadLibrary</a>( <strong class='reserved'>const</strong> <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&amp; <a href='../Y/2913.html' title='Multiple used in 16 places.'>aFilePath</a> );
+<a id='L67' name='L67'></a>  67 
+<a id='L68' name='L68'></a>  68     <em class='comment'>/**</em>
+<a id='L69' name='L69'></a>  69 <em class='comment'>     * Returns or creates a field in the edited schematic fields vector.</em>
+<a id='L70' name='L70'></a>  70 <em class='comment'>     * @param aFieldType is an SPICE_FIELD enum value.</em>
+<a id='L71' name='L71'></a>  71 <em class='comment'>     * @return Requested field.</em>
+<a id='L72' name='L72'></a>  72 <em class='comment'>     */</em>
+<a id='L73' name='L73'></a>  73     <a href='../S/358.html#L65' title='Defined at 65 in sch_field.cpp.'>SCH_FIELD</a>&amp; <a href='../S/166.html#L899' title='Defined at 899 in dialogs/dialog_spice_model.cpp.'>getSchField</a>( <strong class='reserved'>int</strong> <a href='../Y/2907.html' title='Multiple used in 6 places.'>aFieldType</a> );
+<a id='L74' name='L74'></a>  74     <a href='../D/977.html' title='Multiple defined in 4 places.'>LIB_FIELD</a>&amp; <a href='../S/166.html#L917' title='Defined at 917 in dialogs/dialog_spice_model.cpp.'>getLibField</a>( <strong class='reserved'>int</strong> <a href='../Y/2907.html' title='Multiple used in 6 places.'>aFieldType</a> );
+<a id='L75' name='L75'></a>  75 
+<a id='L76' name='L76'></a>  76     <em class='comment'>/**</em>
+<a id='L77' name='L77'></a>  77 <em class='comment'>     * Adds a value to the PWL values list.</em>
+<a id='L78' name='L78'></a>  78 <em class='comment'>     * @param aTime is the time value.</em>
+<a id='L79' name='L79'></a>  79 <em class='comment'>     * @param aValue is the source value at the given time.</em>
+<a id='L80' name='L80'></a>  80 <em class='comment'>     * @return True if request has completed successfully, false if the data is invalid.</em>
+<a id='L81' name='L81'></a>  81 <em class='comment'>     */</em>
+<a id='L82' name='L82'></a>  82     <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../S/166.html#L941' title='Defined at 941 in dialogs/dialog_spice_model.cpp.'>addPwlValue</a>( <strong class='reserved'>const</strong> <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&amp; <a href='../Y/3395.html' title='Multiple used in 4 places.'>aTime</a>, <strong class='reserved'>const</strong> <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&amp; <a href='../Y/3428.html' title='Multiple used in 69 places.'>aValue</a> );
+<a id='L83' name='L83'></a>  83 
+<a id='L84' name='L84'></a>  84     <a href='../Y/8381.html' title='Multiple used in 381 places.'>virtual</a> <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../D/1876.html' title='Multiple defined in 33 places.'>TransferDataFromWindow</a>() <a href='../Y/7123.html' title='Multiple used in 1177 places.'>override</a>;
+<a id='L85' name='L85'></a>  85     <a href='../Y/8381.html' title='Multiple used in 381 places.'>virtual</a> <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../D/1878.html' title='Multiple defined in 31 places.'>TransferDataToWindow</a>() <a href='../Y/7123.html' title='Multiple used in 1177 places.'>override</a>;
+<a id='L86' name='L86'></a>  86 
+<a id='L87' name='L87'></a>  87     <em class='comment'>// The default dialog Validate() calls the validators of all widgets.</em>
+<a id='L88' name='L88'></a>  88     <em class='comment'>// This is not what we want; We want only validators of the selected page</em>
+<a id='L89' name='L89'></a>  89     <em class='comment'>// of the notbooks. So disable the wxDialog::Validate(), and let our</em>
+<a id='L90' name='L90'></a>  90     <em class='comment'>// TransferDataFromWindow doing the job.</em>
+<a id='L91' name='L91'></a>  91     <a href='../Y/8381.html' title='Multiple used in 381 places.'>virtual</a> <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../D/1928.html' title='Multiple defined in 5 places.'>Validate</a>() <a href='../Y/7123.html' title='Multiple used in 1177 places.'>override</a>
+<a id='L92' name='L92'></a>  92     <em class='brace'>{</em>
+<a id='L93' name='L93'></a>  93         <strong class='reserved'>return</strong> <a href='../Y/8254.html' title='Multiple used in 93 places.'>true</a>;
+<a id='L94' name='L94'></a>  94     <em class='brace'>}</em>
+<a id='L95' name='L95'></a>  95 
+<a id='L96' name='L96'></a>  96     <a href='../Y/8381.html' title='Multiple used in 381 places.'>virtual</a> <strong class='reserved'>void</strong> <a href='../Y/7060.html' title='Multiple used in 8 places.'>onInitDlg</a>( <a href='../Y/8731.html' title='Multiple used in 14 places.'>wxInitDialogEvent</a>&amp; <a href='../Y/4329.html' title='Multiple used in 688 places.'>event</a> ) <a href='../Y/7123.html' title='Multiple used in 1177 places.'>override</a>
+<a id='L97' name='L97'></a>  97     <em class='brace'>{</em>
+<a id='L98' name='L98'></a>  98         <em class='comment'>// Call the default wxDialog handler of a wxInitDialogEvent</em>
+<a id='L99' name='L99'></a>  99         <a href='../D/1878.html' title='Multiple defined in 31 places.'>TransferDataToWindow</a>();
+<a id='L100' name='L100'></a> 100 
+<a id='L101' name='L101'></a> 101         <em class='comment'>// Now all widgets have the size fixed, call FinishDialogSettings</em>
+<a id='L102' name='L102'></a> 102         <a href='../Y/552.html' title='Multiple used in 31 places.'>FinishDialogSettings</a>();
+<a id='L103' name='L103'></a> 103     <em class='brace'>}</em>
+<a id='L104' name='L104'></a> 104 
+<a id='L105' name='L105'></a> 105     <em class='comment'>/**</em>
+<a id='L106' name='L106'></a> 106 <em class='comment'>     * Initializes the internal settings</em>
+<a id='L107' name='L107'></a> 107 <em class='comment'>     */</em>
+<a id='L108' name='L108'></a> 108     <strong class='reserved'>void</strong> <a href='../D/872.html' title='Multiple defined in 16 places.'>Init</a>();
+<a id='L109' name='L109'></a> 109 
+<a id='L110' name='L110'></a> 110     <em class='comment'>/**</em>
+<a id='L111' name='L111'></a> 111 <em class='comment'>     * Display a note info about pin order</em>
+<a id='L112' name='L112'></a> 112 <em class='comment'>     */</em>
+<a id='L113' name='L113'></a> 113     <strong class='reserved'>void</strong> <a href='../S/166.html#L404' title='Defined at 404 in dialogs/dialog_spice_model.cpp.'>showPinOrderNote</a>( <strong class='reserved'>int</strong> <a href='../Y/3094.html' title='Multiple used in 3 places.'>aModelType</a> );
+<a id='L114' name='L114'></a> 114 
+<a id='L115' name='L115'></a> 115     <em class='comment'>// Event handlers</em>
+<a id='L116' name='L116'></a> 116     <strong class='reserved'>void</strong> <a href='../S/166.html#L968' title='Defined at 968 in dialogs/dialog_spice_model.cpp.'>onSelectLibrary</a>( <a href='../Y/8519.html' title='Multiple used in 531 places.'>wxCommandEvent</a>&amp; <a href='../Y/4329.html' title='Multiple used in 688 places.'>event</a> ) <a href='../Y/7123.html' title='Multiple used in 1177 places.'>override</a>;
+<a id='L117' name='L117'></a> 117     <strong class='reserved'>void</strong> <a href='../S/166.html#L995' title='Defined at 995 in dialogs/dialog_spice_model.cpp.'>onModelSelected</a>( <a href='../Y/8519.html' title='Multiple used in 531 places.'>wxCommandEvent</a>&amp; <a href='../Y/4329.html' title='Multiple used in 688 places.'>event</a> ) <a href='../Y/7123.html' title='Multiple used in 1177 places.'>override</a>;
+<a id='L118' name='L118'></a> 118     <strong class='reserved'>void</strong> <a href='../S/166.html#L1024' title='Defined at 1024 in dialogs/dialog_spice_model.cpp.'>onPwlAdd</a>( <a href='../Y/8519.html' title='Multiple used in 531 places.'>wxCommandEvent</a>&amp; <a href='../Y/4329.html' title='Multiple used in 688 places.'>event</a> ) <a href='../Y/7123.html' title='Multiple used in 1177 places.'>override</a>;
+<a id='L119' name='L119'></a> 119     <strong class='reserved'>void</strong> <a href='../S/166.html#L1030' title='Defined at 1030 in dialogs/dialog_spice_model.cpp.'>onPwlRemove</a>( <a href='../Y/8519.html' title='Multiple used in 531 places.'>wxCommandEvent</a>&amp; <a href='../Y/4329.html' title='Multiple used in 688 places.'>event</a> ) <a href='../Y/7123.html' title='Multiple used in 1177 places.'>override</a>;
+<a id='L120' name='L120'></a> 120     <strong class='reserved'>void</strong> <a href='../S/166.html#L1037' title='Defined at 1037 in dialogs/dialog_spice_model.cpp.'>onRandomSourceType</a>( <a href='../Y/8519.html' title='Multiple used in 531 places.'>wxCommandEvent</a>&amp; <a href='../Y/4329.html' title='Multiple used in 688 places.'>event</a> ) <a href='../Y/7123.html' title='Multiple used in 1177 places.'>override</a>;
+<a id='L121' name='L121'></a> 121     <strong class='reserved'>void</strong> <a href='../S/166.html#L1016' title='Defined at 1016 in dialogs/dialog_spice_model.cpp.'>onTypeSelected</a>( <a href='../Y/8519.html' title='Multiple used in 531 places.'>wxCommandEvent</a>&amp; <a href='../Y/4329.html' title='Multiple used in 688 places.'>event</a> ) <a href='../Y/7123.html' title='Multiple used in 1177 places.'>override</a>;
+<a id='L122' name='L122'></a> 122 
+<a id='L123' name='L123'></a> 123     <em class='comment'>///&gt; Edited component</em>
+<a id='L124' name='L124'></a> 124     <a href='../D/1520.html' title='Multiple defined in 4 places.'>SCH_COMPONENT</a>&amp; <a href='../S/2.html#L127' title='Defined at 127 in autoplace_fields.cpp.'>m_component</a>;
+<a id='L125' name='L125'></a> 125 
+<a id='L126' name='L126'></a> 126     <em class='comment'>///&gt; Fields from the component properties dialog</em>
+<a id='L127' name='L127'></a> 127     <a href='../S/349.html#L77' title='Defined at 77 in sch_component.h.'>SCH_FIELDS</a>* <a href='../Y/6194.html' title='Multiple used in 11 places.'>m_schfields</a>;
+<a id='L128' name='L128'></a> 128     <a href='../S/274.html#L218' title='Defined at 218 in lib_field.h.'>LIB_FIELDS</a>* <a href='../Y/5829.html' title='Multiple used in 13 places.'>m_libfields</a>;
+<a id='L129' name='L129'></a> 129     <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../Y/6588.html' title='Multiple used in 6 places.'>m_useSchFields</a>;
+<a id='L130' name='L130'></a> 130 
+<a id='L131' name='L131'></a> 131     <em class='comment'>///&gt; Temporary field values</em>
+<a id='L132' name='L132'></a> 132     <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/6664.html' title='Multiple used in 68 places.'>map</a>&lt;<strong class='reserved'>int</strong>, <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&gt; <a href='../Y/5656.html' title='Multiple used in 27 places.'>m_fieldsTmp</a>;
+<a id='L133' name='L133'></a> 133 
+<a id='L134' name='L134'></a> 134     <strong class='reserved'>struct</strong> <a href='../R/1024.html' title='Multiple referred from 6 places.'>MODEL</a>
+<a id='L135' name='L135'></a> 135     <em class='brace'>{</em>
+<a id='L136' name='L136'></a> 136         <em class='comment'>///&gt; Line number in the library file</em>
+<a id='L137' name='L137'></a> 137         <strong class='reserved'>int</strong> <a href='../Y/5047.html' title='Multiple used in 671 places.'>line</a>;
+<a id='L138' name='L138'></a> 138 
+<a id='L139' name='L139'></a> 139         <em class='comment'>///&gt; Type of the device</em>
+<a id='L140' name='L140'></a> 140         <a href='../S/300.html#L52' title='Defined at 52 in netlist_exporters/netlist_exporter_pspice.h.'>SPICE_PRIMITIVE</a> <a href='../Y/6750.html' title='Multiple used in 30 places.'>model</a>;
+<a id='L141' name='L141'></a> 141 
+<a id='L142' name='L142'></a> 142         <em class='comment'>///&gt; Convert string to model</em>
+<a id='L143' name='L143'></a> 143         <strong class='reserved'>static</strong> <a href='../S/300.html#L52' title='Defined at 52 in netlist_exporters/netlist_exporter_pspice.h.'>SPICE_PRIMITIVE</a> <a href='../S/166.html#L1072' title='Defined at 1072 in dialogs/dialog_spice_model.cpp.'>parseModelType</a>( <strong class='reserved'>const</strong> <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&amp; <a href='../Y/3428.html' title='Multiple used in 69 places.'>aValue</a> );
+<a id='L144' name='L144'></a> 144 
+<a id='L145' name='L145'></a> 145         <a href='../S/167.html#L134' title='Defined at 134 in dialogs/dialog_spice_model.h.'>MODEL</a>( <strong class='reserved'>int</strong> <a href='../Y/3067.html' title='Multiple used in 97 places.'>aLine</a>, <strong class='reserved'>enum</strong> <a href='../S/300.html#L52' title='Defined at 52 in netlist_exporters/netlist_exporter_pspice.h.'>SPICE_PRIMITIVE</a> <a href='../Y/3093.html' title='Multiple used in 6 places.'>aModel</a> )
+<a id='L146' name='L146'></a> 146             : <a href='../Y/5047.html' title='Multiple used in 671 places.'>line</a>( <a href='../Y/3067.html' title='Multiple used in 97 places.'>aLine</a> ), <a href='../Y/6750.html' title='Multiple used in 30 places.'>model</a>( <a href='../Y/3093.html' title='Multiple used in 6 places.'>aModel</a> )
+<a id='L147' name='L147'></a> 147         <em class='brace'>{</em>
+<a id='L148' name='L148'></a> 148         <em class='brace'>}</em>
+<a id='L149' name='L149'></a> 149     <em class='brace'>}</em>;
+<a id='L150' name='L150'></a> 150 
+<a id='L151' name='L151'></a> 151     <em class='comment'>///&gt; Models available in the selected library file</em>
+<a id='L152' name='L152'></a> 152     <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/6664.html' title='Multiple used in 68 places.'>map</a>&lt;<a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>, <a href='../S/167.html#L134' title='Defined at 134 in dialogs/dialog_spice_model.h.'>MODEL</a>&gt; <a href='../Y/5874.html' title='Multiple used in 7 places.'>m_models</a>;
+<a id='L153' name='L153'></a> 153 
+<a id='L154' name='L154'></a> 154     <em class='comment'>///&gt; Column identifiers for PWL power source value list</em>
+<a id='L155' name='L155'></a> 155     <strong class='reserved'>long</strong> <a href='../Y/6105.html' title='Multiple used in 4 places.'>m_pwlTimeCol</a>, <a href='../Y/6108.html' title='Multiple used in 4 places.'>m_pwlValueCol</a>;
+<a id='L156' name='L156'></a> 156 
+<a id='L157' name='L157'></a> 157     <a href='../Y/1891.html' title='Multiple used in 8 places.'>SPICE_VALIDATOR</a> <a href='../Y/6293.html' title='Multiple used in 15 places.'>m_spiceValidator</a>;
+<a id='L158' name='L158'></a> 158     <a href='../Y/1891.html' title='Multiple used in 8 places.'>SPICE_VALIDATOR</a> <a href='../S/161.html#L42' title='Defined at 42 in dialogs/dialog_sim_settings.cpp.'>m_spiceEmptyValidator</a>;
+<a id='L159' name='L159'></a> 159     <a href='../Y/8932.html' title='Multiple used in 6 places.'>wxTextValidator</a> <a href='../D/2307.html' title='Multiple defined in 2 places.'>m_notEmptyValidator</a>;
+<a id='L160' name='L160'></a> 160 <em class='brace'>}</em>;
+<a id='L161' name='L161'></a> 161 
+<a id='L162' name='L162'></a> 162 <em class='sharp'>#endif</em> <em class='comment'>/* DIALOG_SPICE_MODEL_H */</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;][^][v]<a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

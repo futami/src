@@ -1,0 +1,515 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>CMakeLists.txt</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/CMakeLists.txt</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a># Add all the warnings to the files
+<a id='L2' name='L2'></a>if( COMPILER_SUPPORTS_WARNINGS )
+<a id='L3' name='L3'></a>    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${WARN_FLAGS_CXX}")
+<a id='L4' name='L4'></a>    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${WARN_FLAGS_C}")
+<a id='L5' name='L5'></a>endif()
+<a id='L6' name='L6'></a>
+<a id='L7' name='L7'></a>add_definitions( -DEESCHEMA )
+<a id='L8' name='L8'></a>
+<a id='L9' name='L9'></a>if( KICAD_SPICE )
+<a id='L10' name='L10'></a>    set( INC_AFTER ${INC_AFTER} ${NGSPICE_INCLUDE_DIR} )
+<a id='L11' name='L11'></a>
+<a id='L12' name='L12'></a>    # Find out the exact libngspice file name
+<a id='L13' name='L13'></a>    get_filename_component( NGSPICE_DLL_REALPATH "${NGSPICE_DLL}" REALPATH )
+<a id='L14' name='L14'></a>    get_filename_component( NGSPICE_DLL_FILE "${NGSPICE_DLL_REALPATH}" NAME )
+<a id='L15' name='L15'></a>
+<a id='L16' name='L16'></a>    set_property( SOURCE sim/ngspice.cpp
+<a id='L17' name='L17'></a>        APPEND PROPERTY COMPILE_DEFINITIONS
+<a id='L18' name='L18'></a>        NGSPICE_DLL_FILE="${NGSPICE_DLL_FILE}"
+<a id='L19' name='L19'></a>        )
+<a id='L20' name='L20'></a>endif()
+<a id='L21' name='L21'></a>
+<a id='L22' name='L22'></a>include_directories( BEFORE ${INC_BEFORE} )
+<a id='L23' name='L23'></a>include_directories(
+<a id='L24' name='L24'></a>    ./dialogs
+<a id='L25' name='L25'></a>    ./netlist_exporters
+<a id='L26' name='L26'></a>    ./widgets
+<a id='L27' name='L27'></a>    ./libedit
+<a id='L28' name='L28'></a>    ./libview
+<a id='L29' name='L29'></a>    ./tools
+<a id='L30' name='L30'></a>    ${CMAKE_SOURCE_DIR}/common
+<a id='L31' name='L31'></a>    ${CMAKE_SOURCE_DIR}/common/dialogs
+<a id='L32' name='L32'></a>    ${CMAKE_SOURCE_DIR}/libs/sexpr/include
+<a id='L33' name='L33'></a>    ${INC_AFTER}
+<a id='L34' name='L34'></a>    )
+<a id='L35' name='L35'></a>
+<a id='L36' name='L36'></a>set( EESCHEMA_DLGS
+<a id='L37' name='L37'></a>    dialogs/dialog_annotate.cpp
+<a id='L38' name='L38'></a>    dialogs/dialog_annotate_base.cpp
+<a id='L39' name='L39'></a>    dialogs/dialog_bom.cpp
+<a id='L40' name='L40'></a>    dialogs/dialog_bom_base.cpp
+<a id='L41' name='L41'></a>    dialogs/dialog_bus_manager.cpp
+<a id='L42' name='L42'></a>    dialogs/dialog_fields_editor_global.cpp
+<a id='L43' name='L43'></a>    dialogs/dialog_fields_editor_global_base.cpp
+<a id='L44' name='L44'></a>    dialogs/dialog_choose_component.cpp
+<a id='L45' name='L45'></a>    dialogs/dialog_edit_component_in_lib.cpp
+<a id='L46' name='L46'></a>    dialogs/dialog_edit_component_in_lib_base.cpp
+<a id='L47' name='L47'></a>    dialogs/dialog_edit_component_in_schematic.cpp
+<a id='L48' name='L48'></a>    dialogs/dialog_edit_component_in_schematic_base.cpp
+<a id='L49' name='L49'></a>    dialogs/dialog_edit_components_libid.cpp
+<a id='L50' name='L50'></a>    dialogs/dialog_edit_components_libid_base.cpp
+<a id='L51' name='L51'></a>    dialogs/dialog_edit_label.cpp
+<a id='L52' name='L52'></a>    dialogs/dialog_edit_label_base.cpp
+<a id='L53' name='L53'></a>    dialogs/dialog_edit_line_style.cpp
+<a id='L54' name='L54'></a>    dialogs/dialog_edit_line_style_base.cpp
+<a id='L55' name='L55'></a>    dialogs/dialog_edit_one_field.cpp
+<a id='L56' name='L56'></a>    dialogs/dialog_edit_sheet_pin.cpp
+<a id='L57' name='L57'></a>    dialogs/dialog_edit_sheet_pin_base.cpp
+<a id='L58' name='L58'></a>    dialogs/dialog_erc.cpp
+<a id='L59' name='L59'></a>    dialogs/dialog_erc_base.cpp
+<a id='L60' name='L60'></a>    dialogs/dialog_global_sym_lib_table_config.cpp
+<a id='L61' name='L61'></a>    dialogs/dialog_global_edit_text_and_graphics.cpp
+<a id='L62' name='L62'></a>    dialogs/dialog_global_edit_text_and_graphics_base.cpp
+<a id='L63' name='L63'></a>    dialogs/dialog_junction_props.cpp
+<a id='L64' name='L64'></a>    dialogs/dialog_junction_props_base.cpp
+<a id='L65' name='L65'></a>    dialogs/dialog_lib_edit_draw_item.cpp
+<a id='L66' name='L66'></a>    dialogs/dialog_lib_edit_draw_item_base.cpp
+<a id='L67' name='L67'></a>    dialogs/dialog_lib_edit_pin.cpp
+<a id='L68' name='L68'></a>    dialogs/dialog_lib_edit_pin_base.cpp
+<a id='L69' name='L69'></a>    dialogs/dialog_lib_edit_pin_table.cpp
+<a id='L70' name='L70'></a>    dialogs/dialog_lib_edit_pin_table_base.cpp
+<a id='L71' name='L71'></a>    dialogs/dialog_lib_edit_text.cpp
+<a id='L72' name='L72'></a>    dialogs/dialog_lib_edit_text_base.cpp
+<a id='L73' name='L73'></a>    dialogs/dialog_lib_new_component.cpp
+<a id='L74' name='L74'></a>    dialogs/dialog_lib_new_component_base.cpp
+<a id='L75' name='L75'></a>    dialogs/dialog_migrate_buses.cpp
+<a id='L76' name='L76'></a>    dialogs/dialog_migrate_buses_base.cpp
+<a id='L77' name='L77'></a>    dialogs/dialog_netlist.cpp
+<a id='L78' name='L78'></a>    dialogs/dialog_netlist_base.cpp
+<a id='L79' name='L79'></a>    dialogs/dialog_paste_special.cpp
+<a id='L80' name='L80'></a>    dialogs/dialog_paste_special_base.cpp
+<a id='L81' name='L81'></a>    dialogs/dialog_plot_schematic.cpp
+<a id='L82' name='L82'></a>    dialogs/dialog_plot_schematic_base.cpp
+<a id='L83' name='L83'></a>    dialogs/dialog_print_using_printer.cpp
+<a id='L84' name='L84'></a>    dialogs/dialog_print_using_printer_base.cpp
+<a id='L85' name='L85'></a>    dialogs/dialog_rescue_each.cpp
+<a id='L86' name='L86'></a>    dialogs/dialog_rescue_each_base.cpp
+<a id='L87' name='L87'></a>    dialogs/dialog_edit_sheet_pin.cpp
+<a id='L88' name='L88'></a>    dialogs/dialog_sch_import_settings.cpp
+<a id='L89' name='L89'></a>    dialogs/dialog_sch_import_settings_base.cpp
+<a id='L90' name='L90'></a>    dialogs/dialog_sch_sheet_props.cpp
+<a id='L91' name='L91'></a>    dialogs/dialog_sch_sheet_props_base.cpp
+<a id='L92' name='L92'></a>    dialogs/dialog_schematic_find.cpp
+<a id='L93' name='L93'></a>    dialogs/dialog_schematic_find_base.cpp
+<a id='L94' name='L94'></a>    dialogs/dialog_schematic_setup.cpp
+<a id='L95' name='L95'></a>    dialogs/dialog_symbol_remap.cpp
+<a id='L96' name='L96'></a>    dialogs/dialog_symbol_remap_base.cpp
+<a id='L97' name='L97'></a>    dialogs/dialog_update_fields.cpp
+<a id='L98' name='L98'></a>    dialogs/dialog_update_fields_base.cpp
+<a id='L99' name='L99'></a>    dialogs/dialog_update_from_pcb.cpp
+<a id='L100' name='L100'></a>    dialogs/dialog_update_from_pcb_base.cpp
+<a id='L101' name='L101'></a>    dialogs/panel_eeschema_color_settings.cpp
+<a id='L102' name='L102'></a>    dialogs/panel_eeschema_template_fieldnames.cpp
+<a id='L103' name='L103'></a>    dialogs/panel_eeschema_template_fieldnames_base.cpp
+<a id='L104' name='L104'></a>    dialogs/panel_eeschema_display_options.cpp
+<a id='L105' name='L105'></a>    dialogs/panel_eeschema_display_options_base.cpp
+<a id='L106' name='L106'></a>    dialogs/panel_eeschema_settings.cpp
+<a id='L107' name='L107'></a>    dialogs/panel_eeschema_settings_base.cpp
+<a id='L108' name='L108'></a>    dialogs/panel_libedit_settings.cpp
+<a id='L109' name='L109'></a>    dialogs/panel_libedit_settings_base.cpp
+<a id='L110' name='L110'></a>    dialogs/panel_libedit_color_settings.cpp
+<a id='L111' name='L111'></a>    dialogs/panel_libedit_color_settings_base.cpp
+<a id='L112' name='L112'></a>    dialogs/panel_setup_formatting.cpp
+<a id='L113' name='L113'></a>    dialogs/panel_setup_formatting_base.cpp
+<a id='L114' name='L114'></a>    dialogs/panel_setup_pinmap.cpp
+<a id='L115' name='L115'></a>    dialogs/panel_setup_pinmap_base.cpp
+<a id='L116' name='L116'></a>    dialogs/panel_sym_lib_table.cpp
+<a id='L117' name='L117'></a>    dialogs/panel_sym_lib_table_base.cpp
+<a id='L118' name='L118'></a>    )
+<a id='L119' name='L119'></a>
+<a id='L120' name='L120'></a>set( EESCHEMA_WIDGETS
+<a id='L121' name='L121'></a>    widgets/pin_shape_combobox.cpp
+<a id='L122' name='L122'></a>    widgets/pin_type_combobox.cpp
+<a id='L123' name='L123'></a>    widgets/symbol_preview_widget.cpp
+<a id='L124' name='L124'></a>    widgets/symbol_tree_pane.cpp
+<a id='L125' name='L125'></a>    )
+<a id='L126' name='L126'></a>
+<a id='L127' name='L127'></a>
+<a id='L128' name='L128'></a>set ( EESCHEMA_LIBEDIT_SRCS
+<a id='L129' name='L129'></a>    libedit/libedit.cpp
+<a id='L130' name='L130'></a>    libedit/libedit_plot_component.cpp
+<a id='L131' name='L131'></a>    libedit/libedit_settings.cpp
+<a id='L132' name='L132'></a>    libedit/libedit_undo_redo.cpp
+<a id='L133' name='L133'></a>    libedit/lib_edit_frame.cpp
+<a id='L134' name='L134'></a>    libedit/menubar_libedit.cpp
+<a id='L135' name='L135'></a>    libedit/symbedit.cpp
+<a id='L136' name='L136'></a>    libedit/toolbars_libedit.cpp
+<a id='L137' name='L137'></a>    libedit/lib_export.cpp
+<a id='L138' name='L138'></a>    libedit/lib_manager.cpp
+<a id='L139' name='L139'></a>
+<a id='L140' name='L140'></a>)
+<a id='L141' name='L141'></a>set( EESCHEMA_SRCS
+<a id='L142' name='L142'></a>    ${EESCHEMA_DLGS}
+<a id='L143' name='L143'></a>    ${EESCHEMA_WIDGETS}
+<a id='L144' name='L144'></a>    ${EESCHEMA_LIBEDIT_SRCS}
+<a id='L145' name='L145'></a>    bom_plugins.cpp
+<a id='L146' name='L146'></a>    sch_view.cpp
+<a id='L147' name='L147'></a>    sch_painter.cpp
+<a id='L148' name='L148'></a>    annotate.cpp
+<a id='L149' name='L149'></a>    autoplace_fields.cpp
+<a id='L150' name='L150'></a>    bus_alias.cpp
+<a id='L151' name='L151'></a>    bus-wire-junction.cpp
+<a id='L152' name='L152'></a>    class_libentry.cpp
+<a id='L153' name='L153'></a>    class_library.cpp
+<a id='L154' name='L154'></a>    cmp_library_lexer.cpp
+<a id='L155' name='L155'></a>    component_references_lister.cpp
+<a id='L156' name='L156'></a>    connection_graph.cpp
+<a id='L157' name='L157'></a>    cross-probing.cpp
+<a id='L158' name='L158'></a>    eeschema_config.cpp
+<a id='L159' name='L159'></a>    eeschema_settings.cpp
+<a id='L160' name='L160'></a>    erc.cpp
+<a id='L161' name='L161'></a>    erc_item.cpp
+<a id='L162' name='L162'></a>    erc_settings.cpp
+<a id='L163' name='L163'></a>    fields_grid_table.cpp
+<a id='L164' name='L164'></a>    files-io.cpp
+<a id='L165' name='L165'></a>    generate_alias_info.cpp
+<a id='L166' name='L166'></a>    getpart.cpp
+<a id='L167' name='L167'></a>    hierarch.cpp
+<a id='L168' name='L168'></a>    lib_arc.cpp
+<a id='L169' name='L169'></a>    lib_bezier.cpp
+<a id='L170' name='L170'></a>    lib_circle.cpp
+<a id='L171' name='L171'></a>    lib_item.cpp
+<a id='L172' name='L172'></a>    lib_field.cpp
+<a id='L173' name='L173'></a>    lib_pin.cpp
+<a id='L174' name='L174'></a>    lib_polyline.cpp
+<a id='L175' name='L175'></a>    lib_rectangle.cpp
+<a id='L176' name='L176'></a>    lib_text.cpp
+<a id='L177' name='L177'></a>    lib_view_frame.cpp
+<a id='L178' name='L178'></a>    libarch.cpp
+<a id='L179' name='L179'></a>    menubar.cpp
+<a id='L180' name='L180'></a>    netlist_generator.cpp
+<a id='L181' name='L181'></a>    netlist_object_list.cpp
+<a id='L182' name='L182'></a>    netlist_object.cpp
+<a id='L183' name='L183'></a>    pin_number.cpp
+<a id='L184' name='L184'></a>    pin_shape.cpp
+<a id='L185' name='L185'></a>    pin_type.cpp
+<a id='L186' name='L186'></a>    plot_schematic_DXF.cpp
+<a id='L187' name='L187'></a>    plot_schematic_HPGL.cpp
+<a id='L188' name='L188'></a>    plot_schematic_PDF.cpp
+<a id='L189' name='L189'></a>    plot_schematic_PS.cpp
+<a id='L190' name='L190'></a>    plot_schematic_SVG.cpp
+<a id='L191' name='L191'></a>    sch_draw_panel.cpp
+<a id='L192' name='L192'></a>    project_rescue.cpp
+<a id='L193' name='L193'></a>    sch_base_frame.cpp
+<a id='L194' name='L194'></a>    sch_bitmap.cpp
+<a id='L195' name='L195'></a>    sch_bus_entry.cpp
+<a id='L196' name='L196'></a>    ee_collectors.cpp
+<a id='L197' name='L197'></a>    sch_component.cpp
+<a id='L198' name='L198'></a>    sch_connection.cpp
+<a id='L199' name='L199'></a>    sch_eagle_plugin.cpp
+<a id='L200' name='L200'></a>    sch_field.cpp
+<a id='L201' name='L201'></a>    sch_io_mgr.cpp
+<a id='L202' name='L202'></a>    sch_item.cpp
+<a id='L203' name='L203'></a>    sch_junction.cpp
+<a id='L204' name='L204'></a>    sch_legacy_plugin.cpp
+<a id='L205' name='L205'></a>    sch_line.cpp
+<a id='L206' name='L206'></a>    sch_marker.cpp
+<a id='L207' name='L207'></a>    sch_no_connect.cpp
+<a id='L208' name='L208'></a>    sch_pin.cpp
+<a id='L209' name='L209'></a>    sch_plugin.cpp
+<a id='L210' name='L210'></a>    sch_preview_panel.cpp
+<a id='L211' name='L211'></a>    sch_screen.cpp
+<a id='L212' name='L212'></a>    sch_sexpr_parser.cpp
+<a id='L213' name='L213'></a>    sch_sexpr_plugin.cpp
+<a id='L214' name='L214'></a>    sch_sheet.cpp
+<a id='L215' name='L215'></a>    sch_sheet_path.cpp
+<a id='L216' name='L216'></a>    sch_sheet_pin.cpp
+<a id='L217' name='L217'></a>    sch_text.cpp
+<a id='L218' name='L218'></a>    sch_validators.cpp
+<a id='L219' name='L219'></a>    schematic.cpp
+<a id='L220' name='L220'></a>    schematic_settings.cpp
+<a id='L221' name='L221'></a>    schematic_undo_redo.cpp
+<a id='L222' name='L222'></a>    sch_edit_frame.cpp
+<a id='L223' name='L223'></a>    sheet.cpp
+<a id='L224' name='L224'></a>    symbol_lib_table.cpp
+<a id='L225' name='L225'></a>    symbol_tree_model_adapter.cpp
+<a id='L226' name='L226'></a>    symbol_tree_synchronizing_adapter.cpp
+<a id='L227' name='L227'></a>    toolbars_lib_view.cpp
+<a id='L228' name='L228'></a>    toolbars_sch_editor.cpp
+<a id='L229' name='L229'></a>    transform.cpp
+<a id='L230' name='L230'></a>
+<a id='L231' name='L231'></a>    netlist_exporters/netlist_exporter.cpp
+<a id='L232' name='L232'></a>    netlist_exporters/netlist_exporter_cadstar.cpp
+<a id='L233' name='L233'></a>    netlist_exporters/netlist_exporter_generic.cpp
+<a id='L234' name='L234'></a>    netlist_exporters/netlist_exporter_kicad.cpp
+<a id='L235' name='L235'></a>    netlist_exporters/netlist_exporter_orcadpcb2.cpp
+<a id='L236' name='L236'></a>    netlist_exporters/netlist_exporter_pspice.cpp
+<a id='L237' name='L237'></a>
+<a id='L238' name='L238'></a>    tools/backannotate.cpp
+<a id='L239' name='L239'></a>    tools/backanno.cpp
+<a id='L240' name='L240'></a>    tools/ee_actions.cpp
+<a id='L241' name='L241'></a>    tools/ee_inspection_tool.cpp
+<a id='L242' name='L242'></a>    tools/ee_point_editor.cpp
+<a id='L243' name='L243'></a>    tools/ee_selection.cpp
+<a id='L244' name='L244'></a>    tools/ee_selection_tool.cpp
+<a id='L245' name='L245'></a>    tools/lib_control.cpp
+<a id='L246' name='L246'></a>    tools/lib_drawing_tools.cpp
+<a id='L247' name='L247'></a>    tools/lib_edit_tool.cpp
+<a id='L248' name='L248'></a>    tools/lib_move_tool.cpp
+<a id='L249' name='L249'></a>    tools/lib_pin_tool.cpp
+<a id='L250' name='L250'></a>    tools/sch_drawing_tools.cpp
+<a id='L251' name='L251'></a>    tools/sch_edit_tool.cpp
+<a id='L252' name='L252'></a>    tools/sch_editor_control.cpp
+<a id='L253' name='L253'></a>    tools/sch_line_wire_bus_tool.cpp
+<a id='L254' name='L254'></a>    tools/sch_move_tool.cpp
+<a id='L255' name='L255'></a>    )
+<a id='L256' name='L256'></a>
+<a id='L257' name='L257'></a>
+<a id='L258' name='L258'></a>set( EESCHEMA_COMMON_SRCS
+<a id='L259' name='L259'></a>    ${CMAKE_SOURCE_DIR}/common/dialogs/dialog_page_settings.cpp
+<a id='L260' name='L260'></a>    ${CMAKE_SOURCE_DIR}/common/dialogs/panel_gal_display_options.cpp
+<a id='L261' name='L261'></a>    ${CMAKE_SOURCE_DIR}/common/dialogs/panel_setup_severities.cpp
+<a id='L262' name='L262'></a>    ${CMAKE_SOURCE_DIR}/common/common.cpp
+<a id='L263' name='L263'></a>    ${CMAKE_SOURCE_DIR}/common/base_screen.cpp
+<a id='L264' name='L264'></a>    ${CMAKE_SOURCE_DIR}/common/base_units.cpp
+<a id='L265' name='L265'></a>    ${CMAKE_SOURCE_DIR}/common/eda_text.cpp
+<a id='L266' name='L266'></a>    ${CMAKE_SOURCE_DIR}/common/page_info.cpp
+<a id='L267' name='L267'></a>    )
+<a id='L268' name='L268'></a>
+<a id='L269' name='L269'></a>
+<a id='L270' name='L270'></a>if( KICAD_SPICE )
+<a id='L271' name='L271'></a>    set( EESCHEMA_SRCS
+<a id='L272' name='L272'></a>        ${EESCHEMA_SRCS}
+<a id='L273' name='L273'></a>        sim/netlist_exporter_pspice_sim.cpp
+<a id='L274' name='L274'></a>        sim/ngspice.cpp
+<a id='L275' name='L275'></a>        sim/sim_plot_frame.cpp
+<a id='L276' name='L276'></a>        sim/sim_plot_frame_base.cpp
+<a id='L277' name='L277'></a>        sim/sim_plot_panel.cpp
+<a id='L278' name='L278'></a>        sim/sim_panel_base.cpp
+<a id='L279' name='L279'></a>        sim/spice_simulator.cpp
+<a id='L280' name='L280'></a>        sim/spice_value.cpp
+<a id='L281' name='L281'></a>        simulation_cursors.cpp
+<a id='L282' name='L282'></a>        dialogs/dialog_signal_list.cpp
+<a id='L283' name='L283'></a>        dialogs/dialog_signal_list_base.cpp
+<a id='L284' name='L284'></a>        dialogs/dialog_sim_settings.cpp
+<a id='L285' name='L285'></a>        dialogs/dialog_sim_settings_base.cpp
+<a id='L286' name='L286'></a>        dialogs/dialog_spice_model.cpp
+<a id='L287' name='L287'></a>        dialogs/dialog_spice_model_base.cpp
+<a id='L288' name='L288'></a>        widgets/tuner_slider.cpp
+<a id='L289' name='L289'></a>        widgets/tuner_slider_base.cpp
+<a id='L290' name='L290'></a>    )
+<a id='L291' name='L291'></a>endif()
+<a id='L292' name='L292'></a>
+<a id='L293' name='L293'></a>
+<a id='L294' name='L294'></a>if( MINGW )
+<a id='L295' name='L295'></a>    # EESCHEMA_RESOURCES variable is set by the macro.
+<a id='L296' name='L296'></a>    mingw_resource_compiler( eeschema )
+<a id='L297' name='L297'></a>else()
+<a id='L298' name='L298'></a>    set( EESCHEMA_RESOURCES eeschema.rc )
+<a id='L299' name='L299'></a>endif()
+<a id='L300' name='L300'></a>
+<a id='L301' name='L301'></a># Create a C++ compilable string initializer containing markdown text into a *.h file:
+<a id='L302' name='L302'></a>add_custom_command(
+<a id='L303' name='L303'></a>    OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/dialogs/dialog_bom_help_md.h
+<a id='L304' name='L304'></a>    COMMAND ${CMAKE_COMMAND}
+<a id='L305' name='L305'></a>        -DinputFile=${CMAKE_CURRENT_SOURCE_DIR}/dialogs/dialog_bom_help.md
+<a id='L306' name='L306'></a>        -DoutputFile=${CMAKE_CURRENT_SOURCE_DIR}/dialogs/dialog_bom_help_md.h
+<a id='L307' name='L307'></a>        -P ${CMAKE_MODULE_PATH}/markdown2C.cmake
+<a id='L308' name='L308'></a>    DEPENDS ${CMAKE_MODULE_PATH}/markdown2C.cmake ${CMAKE_CURRENT_SOURCE_DIR}/dialogs/dialog_bom_help.md
+<a id='L309' name='L309'></a>    COMMENT "creating ${CMAKE_CURRENT_SOURCE_DIR}/dialogs/dialog_bom_help_md.h
+<a id='L310' name='L310'></a>       from ${CMAKE_CURRENT_SOURCE_DIR}/dialogs/dialog_bom_help.md"
+<a id='L311' name='L311'></a>    )
+<a id='L312' name='L312'></a>
+<a id='L313' name='L313'></a>set_source_files_properties( dialogs/dialog_bom.cpp
+<a id='L314' name='L314'></a>    PROPERTIES
+<a id='L315' name='L315'></a>        OBJECT_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/dialogs/dialog_bom_help_md.h
+<a id='L316' name='L316'></a>    )
+<a id='L317' name='L317'></a>
+<a id='L318' name='L318'></a>if( APPLE )
+<a id='L319' name='L319'></a>    # setup bundle
+<a id='L320' name='L320'></a>    set( EESCHEMA_RESOURCES eeschema.icns eeschema_doc.icns )
+<a id='L321' name='L321'></a>    set_source_files_properties( "${CMAKE_CURRENT_SOURCE_DIR}/eeschema.icns" PROPERTIES
+<a id='L322' name='L322'></a>        MACOSX_PACKAGE_LOCATION Resources
+<a id='L323' name='L323'></a>        )
+<a id='L324' name='L324'></a>    set_source_files_properties( "${CMAKE_CURRENT_SOURCE_DIR}/eeschema_doc.icns"  PROPERTIES
+<a id='L325' name='L325'></a>        MACOSX_PACKAGE_LOCATION Resources
+<a id='L326' name='L326'></a>        )
+<a id='L327' name='L327'></a>    set( MACOSX_BUNDLE_ICON_FILE eeschema.icns )
+<a id='L328' name='L328'></a>    set( MACOSX_BUNDLE_GUI_IDENTIFIER org.kicad-pcb.kicad )
+<a id='L329' name='L329'></a>    set( MACOSX_BUNDLE_NAME eeschema )
+<a id='L330' name='L330'></a>endif()
+<a id='L331' name='L331'></a>
+<a id='L332' name='L332'></a>
+<a id='L333' name='L333'></a>add_executable( eeschema WIN32 MACOSX_BUNDLE
+<a id='L334' name='L334'></a>    ${CMAKE_SOURCE_DIR}/common/single_top.cpp
+<a id='L335' name='L335'></a>    ${CMAKE_SOURCE_DIR}/common/pgm_base.cpp
+<a id='L336' name='L336'></a>    ${EESCHEMA_RESOURCES}
+<a id='L337' name='L337'></a>    )
+<a id='L338' name='L338'></a>set_source_files_properties( ${CMAKE_SOURCE_DIR}/common/single_top.cpp PROPERTIES
+<a id='L339' name='L339'></a>    COMPILE_DEFINITIONS "TOP_FRAME=FRAME_SCH;PGM_DATA_FILE_EXT=\"sch\";BUILD_KIWAY_DLL"
+<a id='L340' name='L340'></a>    )
+<a id='L341' name='L341'></a>target_link_libraries( eeschema
+<a id='L342' name='L342'></a>    #singletop  # replaces common, giving us restrictive control and link warnings.
+<a id='L343' name='L343'></a>    # There's way too much crap coming in from common yet.
+<a id='L344' name='L344'></a>    gal
+<a id='L345' name='L345'></a>    common
+<a id='L346' name='L346'></a>    ${wxWidgets_LIBRARIES}
+<a id='L347' name='L347'></a>    )
+<a id='L348' name='L348'></a>
+<a id='L349' name='L349'></a># the main Eeschema program, in DSO form.
+<a id='L350' name='L350'></a>add_library( eeschema_kiface_objects OBJECT
+<a id='L351' name='L351'></a>    ${EESCHEMA_SRCS}
+<a id='L352' name='L352'></a>    ${EESCHEMA_COMMON_SRCS}
+<a id='L353' name='L353'></a>    )
+<a id='L354' name='L354'></a>
+<a id='L355' name='L355'></a># CMake &lt;3.9 can't link anything to object libraries,
+<a id='L356' name='L356'></a># but we only need include directories, as we will link the kiface MODULE
+<a id='L357' name='L357'></a>target_include_directories( eeschema_kiface_objects PUBLIC
+<a id='L358' name='L358'></a>    ${CMAKE_CURRENT_SOURCE_DIR}
+<a id='L359' name='L359'></a>    $&lt;TARGET_PROPERTY:common,INTERFACE_INCLUDE_DIRECTORIES&gt;
+<a id='L360' name='L360'></a>)
+<a id='L361' name='L361'></a>
+<a id='L362' name='L362'></a># Since we're not using target_link_libraries, we need to explicitly
+<a id='L363' name='L363'></a># declare the dependency
+<a id='L364' name='L364'></a>add_dependencies( eeschema_kiface_objects common )
+<a id='L365' name='L365'></a>
+<a id='L366' name='L366'></a>add_library( eeschema_kiface MODULE
+<a id='L367' name='L367'></a>    eeschema.cpp
+<a id='L368' name='L368'></a>    $&lt;TARGET_OBJECTS:eeschema_kiface_objects&gt;
+<a id='L369' name='L369'></a>    )
+<a id='L370' name='L370'></a>
+<a id='L371' name='L371'></a>target_include_directories( eeschema_kiface PUBLIC
+<a id='L372' name='L372'></a>    $&lt;TARGET_PROPERTY:eeschema_kiface_objects,INTERFACE_INCLUDE_DIRECTORIES&gt;
+<a id='L373' name='L373'></a>)
+<a id='L374' name='L374'></a>
+<a id='L375' name='L375'></a>target_link_libraries( eeschema_kiface
+<a id='L376' name='L376'></a>    common
+<a id='L377' name='L377'></a>    sexpr
+<a id='L378' name='L378'></a>    markdown_lib
+<a id='L379' name='L379'></a>    ${wxWidgets_LIBRARIES}
+<a id='L380' name='L380'></a>    ${GDI_PLUS_LIBRARIES}
+<a id='L381' name='L381'></a>    )
+<a id='L382' name='L382'></a>
+<a id='L383' name='L383'></a>if( KICAD_SPICE )
+<a id='L384' name='L384'></a>    target_link_libraries( eeschema_kiface
+<a id='L385' name='L385'></a>        ${NGSPICE_LIBRARY}
+<a id='L386' name='L386'></a>        )
+<a id='L387' name='L387'></a>endif()
+<a id='L388' name='L388'></a>
+<a id='L389' name='L389'></a>set_target_properties( eeschema_kiface PROPERTIES
+<a id='L390' name='L390'></a>    # Decorate OUTPUT_NAME with PREFIX and SUFFIX, creating something like
+<a id='L391' name='L391'></a>    # _eeschema.so, _eeschema.dll, or _eeschema.kiface
+<a id='L392' name='L392'></a>    OUTPUT_NAME     eeschema
+<a id='L393' name='L393'></a>    PREFIX          ${KIFACE_PREFIX}
+<a id='L394' name='L394'></a>    SUFFIX          ${KIFACE_SUFFIX}
+<a id='L395' name='L395'></a>    )
+<a id='L396' name='L396'></a>
+<a id='L397' name='L397'></a># The KIFACE is in eeschema.cpp, export it:
+<a id='L398' name='L398'></a>set_source_files_properties( eeschema.cpp PROPERTIES
+<a id='L399' name='L399'></a>    COMPILE_DEFINITIONS     "BUILD_KIWAY_DLL;COMPILING_DLL"
+<a id='L400' name='L400'></a>    )
+<a id='L401' name='L401'></a>
+<a id='L402' name='L402'></a># if building eeschema, then also build eeschema_kiface if out of date.
+<a id='L403' name='L403'></a>add_dependencies( eeschema eeschema_kiface )
+<a id='L404' name='L404'></a>
+<a id='L405' name='L405'></a>if( MAKE_LINK_MAPS )
+<a id='L406' name='L406'></a>    # generate link map with cross reference
+<a id='L407' name='L407'></a>    set_target_properties( eeschema_kiface PROPERTIES
+<a id='L408' name='L408'></a>        LINK_FLAGS "-Wl,-cref,-Map=${KIFACE_PREFIX}eeschema${KIFACE_SUFFIX}.map"
+<a id='L409' name='L409'></a>        )
+<a id='L410' name='L410'></a>    set_target_properties( eeschema PROPERTIES
+<a id='L411' name='L411'></a>        LINK_FLAGS "-Wl,-cref,-Map=eeschema.map"
+<a id='L412' name='L412'></a>        )
+<a id='L413' name='L413'></a>endif()
+<a id='L414' name='L414'></a>
+<a id='L415' name='L415'></a># these 2 binaries are a matched set, keep them together:
+<a id='L416' name='L416'></a>if( APPLE )
+<a id='L417' name='L417'></a>    set_target_properties( eeschema PROPERTIES
+<a id='L418' name='L418'></a>        MACOSX_BUNDLE_INFO_PLIST ${PROJECT_BINARY_DIR}/eeschema/Info.plist
+<a id='L419' name='L419'></a>        )
+<a id='L420' name='L420'></a>
+<a id='L421' name='L421'></a>    # puts binaries into the *.app bundle while linking
+<a id='L422' name='L422'></a>    set_target_properties( eeschema_kiface PROPERTIES
+<a id='L423' name='L423'></a>        LIBRARY_OUTPUT_DIRECTORY ${OSX_BUNDLE_BUILD_KIFACE_DIR}
+<a id='L424' name='L424'></a>        )
+<a id='L425' name='L425'></a>    # put individual bundle outside of main bundle as a first step
+<a id='L426' name='L426'></a>    # will be pulled into the main bundle when creating main bundle
+<a id='L427' name='L427'></a>    install( TARGETS eeschema
+<a id='L428' name='L428'></a>        DESTINATION ${KICAD_BIN}
+<a id='L429' name='L429'></a>        COMPONENT binary
+<a id='L430' name='L430'></a>        )
+<a id='L431' name='L431'></a>
+<a id='L432' name='L432'></a>    install( CODE "
+<a id='L433' name='L433'></a>            # override default embedded path settings
+<a id='L434' name='L434'></a>            ${OSX_BUNDLE_OVERRIDE_PATHS}
+<a id='L435' name='L435'></a>
+<a id='L436' name='L436'></a>            # do all the work
+<a id='L437' name='L437'></a>            include( BundleUtilities )
+<a id='L438' name='L438'></a>            fixup_bundle( ${KICAD_BIN}/eeschema.app/Contents/MacOS/eeschema
+<a id='L439' name='L439'></a>                \"\"
+<a id='L440' name='L440'></a>                \"\"
+<a id='L441' name='L441'></a>                )
+<a id='L442' name='L442'></a>            " COMPONENT Runtime
+<a id='L443' name='L443'></a>        )
+<a id='L444' name='L444'></a>
+<a id='L445' name='L445'></a>    if( KICAD_SPICE )
+<a id='L446' name='L446'></a>        # bundle libngspice, codemodels and scripts
+<a id='L447' name='L447'></a>        get_filename_component( REAL_LIBNGSPICE ${NGSPICE_LIBRARY} REALPATH )
+<a id='L448' name='L448'></a>        get_filename_component( LIBNGSPICE_PATH ${REAL_LIBNGSPICE} DIRECTORY )
+<a id='L449' name='L449'></a>        install( FILES "${REAL_LIBNGSPICE}"
+<a id='L450' name='L450'></a>                 DESTINATION "${OSX_BUNDLE_INSTALL_PLUGIN_DIR}/sim" )
+<a id='L451' name='L451'></a>        install( DIRECTORY "${LIBNGSPICE_PATH}/ngspice"
+<a id='L452' name='L452'></a>                 DESTINATION "${OSX_BUNDLE_INSTALL_PLUGIN_DIR}/sim" )
+<a id='L453' name='L453'></a>        install( DIRECTORY "${LIBNGSPICE_PATH}/../share/ngspice/scripts"
+<a id='L454' name='L454'></a>                 DESTINATION "${OSX_BUNDLE_INSTALL_PLUGIN_DIR}/sim/ngspice" )
+<a id='L455' name='L455'></a>    endif()
+<a id='L456' name='L456'></a>else()
+<a id='L457' name='L457'></a>    install( TARGETS eeschema
+<a id='L458' name='L458'></a>        DESTINATION ${KICAD_BIN}
+<a id='L459' name='L459'></a>        COMPONENT binary
+<a id='L460' name='L460'></a>        )
+<a id='L461' name='L461'></a>    install( TARGETS eeschema_kiface
+<a id='L462' name='L462'></a>        # actual filename subject to change at milestone C)
+<a id='L463' name='L463'></a>        # modular-kicad blueprint.
+<a id='L464' name='L464'></a>        DESTINATION ${KICAD_BIN}
+<a id='L465' name='L465'></a>        COMPONENT binary
+<a id='L466' name='L466'></a>        )
+<a id='L467' name='L467'></a>endif()
+<a id='L468' name='L468'></a>
+<a id='L469' name='L469'></a># auto-generate cmp_library_lexer.h and cmp_library_keywords.cpp for the component
+<a id='L470' name='L470'></a># library format.
+<a id='L471' name='L471'></a>make_lexer(
+<a id='L472' name='L472'></a>    eeschema_kiface_objects
+<a id='L473' name='L473'></a>    cmp_library.keywords
+<a id='L474' name='L474'></a>    cmp_library_lexer.h
+<a id='L475' name='L475'></a>    cmp_library_keywords.cpp
+<a id='L476' name='L476'></a>    TLIB_T
+<a id='L477' name='L477'></a>    )
+<a id='L478' name='L478'></a>
+<a id='L479' name='L479'></a>make_lexer(
+<a id='L480' name='L480'></a>    eeschema_kiface_objects
+<a id='L481' name='L481'></a>    dialogs/dialog_bom_cfg.keywords
+<a id='L482' name='L482'></a>    dialogs/dialog_bom_cfg_lexer.h
+<a id='L483' name='L483'></a>    dialogs/dialog_bom_cfg_keywords.cpp
+<a id='L484' name='L484'></a>    T_BOMCFG_T
+<a id='L485' name='L485'></a>    )
+<a id='L486' name='L486'></a>
+<a id='L487' name='L487'></a>make_lexer(
+<a id='L488' name='L488'></a>    eeschema_kiface_objects
+<a id='L489' name='L489'></a>    schematic.keywords
+<a id='L490' name='L490'></a>    schematic_lexer.h
+<a id='L491' name='L491'></a>    schematic_keywords.cpp
+<a id='L492' name='L492'></a>    TSCHEMATIC_T
+<a id='L493' name='L493'></a>    )
+<a id='L494' name='L494'></a>
+<a id='L495' name='L495'></a>add_subdirectory( plugins )
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a> */</em>
+</body>
+</html>

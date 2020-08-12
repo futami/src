@@ -1,0 +1,159 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>netlist_exporters/netlist_exporter_generic.h</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/482.html'>netlist_exporters</a>/netlist_exporter_generic.h</h2>
+<em class='comment'>/* [&lt;][&gt;][^][v][top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'><a href='../J/249.html' title='Multiple included from 4 places.'>INCLUDED FROM</a></h2>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * This program source code file is part of KiCad, a free EDA CAD application.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 1992-2013 jp.charras at wanadoo.fr</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> * Copyright (C) 2013 SoftPLC Corporation, Dick Hollenbeck &lt;dick@softplc.com&gt;</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> * Copyright (C) 1992-2020 KiCad Developers</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> *</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * This program is free software; you can redistribute it and/or</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * modify it under the terms of the GNU General Public License</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> * as published by the Free Software Foundation; either version 2</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> * of the License, or (at your option) any later version.</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> *</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * This program is distributed in the hope that it will be useful,</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> * GNU General Public License for more details.</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> *</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * You should have received a copy of the GNU General Public License</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> * along with this program; if not, you may find one here:</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'> * or you may search the http://www.gnu.org website for the version 2 license,</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'> * or you may write to the Free Software Foundation, Inc.,</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'> * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA</em>
+<a id='L24' name='L24'></a>  24 <em class='comment'> */</em>
+<a id='L25' name='L25'></a>  25 
+<a id='L26' name='L26'></a>  26 <em class='sharp'>#ifndef</em> <a href='../S/294.html#L27' title='Defined at 27 in netlist_exporters/netlist_exporter_generic.h.'>NETLIST_EXPORT_GENERIC_H</a>
+<a id='L27' name='L27'></a>  27 <em class='sharp'>#define</em> <a href='../S/294.html#L26' title='Referred from 26 in netlist_exporters/netlist_exporter_generic.h.'>NETLIST_EXPORT_GENERIC_H</a>
+<a id='L28' name='L28'></a>  28 
+<a id='L29' name='L29'></a>  29 <em class='sharp'>#include</em> &lt;<a href='290.html'>netlist_exporter.h</a>&gt;
+<a id='L30' name='L30'></a>  30 
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#include</em> &lt;project.h&gt;
+<a id='L32' name='L32'></a>  32 <em class='sharp'>#include</em> &lt;xnode.h&gt;      <em class='comment'>// also nests: &lt;wx/xml/xml.h&gt;</em>
+<a id='L33' name='L33'></a>  33 
+<a id='L34' name='L34'></a>  34 <em class='sharp'>#include</em> &lt;<a href='357.html'>sch_edit_frame.h</a>&gt;
+<a id='L35' name='L35'></a>  35 
+<a id='L36' name='L36'></a>  36 <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../Y/160.html' title='Multiple used in 50 places.'>CONNECTION_GRAPH</a>;
+<a id='L37' name='L37'></a>  37 <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../S/423.html#L89' title='Defined at 89 in symbol_lib_table.cpp.'>SYMBOL_LIB_TABLE</a>;
+<a id='L38' name='L38'></a>  38 
+<a id='L39' name='L39'></a>  39 <em class='sharp'>#define</em> <a href='../S/301.html#L88' title='Referred from 88 in netlist_generator.cpp.'>GENERIC_INTERMEDIATE_NETLIST_EXT</a> <a href='../Y/8911.html' title='Multiple used in 490 places.'>wxT</a>( "xml" )
+<a id='L40' name='L40'></a>  40 
+<a id='L41' name='L41'></a>  41 <em class='comment'>/**</em>
+<a id='L42' name='L42'></a>  42 <em class='comment'> * A set of bits which control the totality of the tree built by makeRoot()</em>
+<a id='L43' name='L43'></a>  43 <em class='comment'> */</em>
+<a id='L44' name='L44'></a>  44 <strong class='reserved'>enum</strong> GNL_T
+<a id='L45' name='L45'></a>  45 <em class='brace'>{</em>
+<a id='L46' name='L46'></a>  46     <a href='../R/497.html' title='Multiple referred from 2 places.'>GNL_LIBRARIES</a>   = 1 &lt;&lt; 0,
+<a id='L47' name='L47'></a>  47     <a href='../R/495.html' title='Multiple referred from 2 places.'>GNL_COMPONENTS</a>  = 1 &lt;&lt; 1,
+<a id='L48' name='L48'></a>  48     <a href='../R/501.html' title='Multiple referred from 2 places.'>GNL_PARTS</a>       = 1 &lt;&lt; 2,
+<a id='L49' name='L49'></a>  49     <a href='../R/496.html' title='Multiple referred from 2 places.'>GNL_HEADER</a>      = 1 &lt;&lt; 3,
+<a id='L50' name='L50'></a>  50     <a href='../R/498.html' title='Multiple referred from 2 places.'>GNL_NETS</a>        = 1 &lt;&lt; 4,
+<a id='L51' name='L51'></a>  51     <a href='../R/500.html' title='Multiple referred from 3 places.'>GNL_OPT_KICAD</a>   = 1 &lt;&lt; 5,
+<a id='L52' name='L52'></a>  52     <a href='../R/499.html' title='Multiple referred from 2 places.'>GNL_OPT_BOM</a>     = 1 &lt;&lt; 6,
+<a id='L53' name='L53'></a>  53 <em class='brace'>}</em>;
+<a id='L54' name='L54'></a>  54 
+<a id='L55' name='L55'></a>  55 
+<a id='L56' name='L56'></a>  56 <em class='comment'>/**</em>
+<a id='L57' name='L57'></a>  57 <em class='comment'> * Generate a generic XML based netlist file.</em>
+<a id='L58' name='L58'></a>  58 <em class='comment'> *</em>
+<a id='L59' name='L59'></a>  59 <em class='comment'> * This allows using XSLT or other methods to transform the XML to other netlist formats</em>
+<a id='L60' name='L60'></a>  60 <em class='comment'> * outside of the C++ codebase.</em>
+<a id='L61' name='L61'></a>  61 <em class='comment'> */</em>
+<a id='L62' name='L62'></a>  62 <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../Y/1510.html' title='Multiple used in 14 places.'>NETLIST_EXPORTER_GENERIC</a> : <a href='../Y/7469.html' title='Multiple used in 431 places.'>public</a> <a href='../Y/1508.html' title='Multiple used in 18 places.'>NETLIST_EXPORTER</a>
+<a id='L63' name='L63'></a>  63 <em class='brace'>{</em>
+<a id='L64' name='L64'></a>  64 <a href='../Y/7425.html' title='Multiple used in 187 places.'>private</a>:
+<a id='L65' name='L65'></a>  65     <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/7807.html' title='Multiple used in 38 places.'>set</a>&lt; <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a> &gt;  <a href='../Y/5830.html' title='Multiple used in 9 places.'>m_libraries</a>;    <em class='comment'>///&lt; Set of library nicknames.</em>
+<a id='L66' name='L66'></a>  66 
+<a id='L67' name='L67'></a>  67 <a href='../Y/7469.html' title='Multiple used in 431 places.'>public</a>:
+<a id='L68' name='L68'></a>  68     <a href='../Y/1510.html' title='Multiple used in 14 places.'>NETLIST_EXPORTER_GENERIC</a>( <a href='../S/336.html#L42' title='Defined at 42 in schematic.cpp.'>SCHEMATIC</a>* <a href='../Y/3282.html' title='Multiple used in 78 places.'>aSchematic</a> ) :
+<a id='L69' name='L69'></a>  69         <a href='../Y/1508.html' title='Multiple used in 18 places.'>NETLIST_EXPORTER</a>( <a href='../Y/3282.html' title='Multiple used in 78 places.'>aSchematic</a> )
+<a id='L70' name='L70'></a>  70     <em class='brace'>{</em><em class='brace'>}</em>
+<a id='L71' name='L71'></a>  71 
+<a id='L72' name='L72'></a>  72     <em class='comment'>/**</em>
+<a id='L73' name='L73'></a>  73 <em class='comment'>     * Write generic netlist to \a aOutFileName.</em>
+<a id='L74' name='L74'></a>  74 <em class='comment'>     *</em>
+<a id='L75' name='L75'></a>  75 <em class='comment'>     * @param aOutFileName is the file name to write.</em>
+<a id='L76' name='L76'></a>  76 <em class='comment'>     * @param aNetlistOptions are the options used to control the netlist output.</em>
+<a id='L77' name='L77'></a>  77 <em class='comment'>     *</em>
+<a id='L78' name='L78'></a>  78 <em class='comment'>     * @return true if the netlist was written successfully.</em>
+<a id='L79' name='L79'></a>  79 <em class='comment'>     */</em>
+<a id='L80' name='L80'></a>  80     <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../D/1942.html' title='Multiple defined in 5 places.'>WriteNetlist</a>( <strong class='reserved'>const</strong> <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&amp; <a href='../Y/3160.html' title='Multiple used in 18 places.'>aOutFileName</a>, <strong class='reserved'>unsigned</strong> <a href='../Y/3115.html' title='Multiple used in 17 places.'>aNetlistOptions</a> ) <a href='../Y/7123.html' title='Multiple used in 1177 places.'>override</a>;
+<a id='L81' name='L81'></a>  81 
+<a id='L82' name='L82'></a>  82 <em class='sharp'>#define</em> <a href='../R/494.html' title='Multiple referred from 5 places.'>GNL_ALL</a>     ( <a href='../S/294.html#L46' title='Defined at 46 in netlist_exporters/netlist_exporter_generic.h.'>GNL_LIBRARIES</a> | <a href='../S/294.html#L47' title='Defined at 47 in netlist_exporters/netlist_exporter_generic.h.'>GNL_COMPONENTS</a> | <a href='../S/294.html#L48' title='Defined at 48 in netlist_exporters/netlist_exporter_generic.h.'>GNL_PARTS</a> | <a href='../S/294.html#L49' title='Defined at 49 in netlist_exporters/netlist_exporter_generic.h.'>GNL_HEADER</a> | <a href='../S/294.html#L50' title='Defined at 50 in netlist_exporters/netlist_exporter_generic.h.'>GNL_NETS</a> )
+<a id='L83' name='L83'></a>  83 
+<a id='L84' name='L84'></a>  84 <a href='../Y/7455.html' title='Multiple used in 93 places.'>protected</a>:
+<a id='L85' name='L85'></a>  85    <em class='comment'>/**</em>
+<a id='L86' name='L86'></a>  86 <em class='comment'>     * A convenience function that creates a new XNODE with an optional textual child.</em>
+<a id='L87' name='L87'></a>  87 <em class='comment'>     * It also provides some insulation from a possible change in XML library.</em>
+<a id='L88' name='L88'></a>  88 <em class='comment'>     *</em>
+<a id='L89' name='L89'></a>  89 <em class='comment'>     * @param aName is the name to associate with a new node of type wxXML_ELEMENT_NODE.</em>
+<a id='L90' name='L90'></a>  90 <em class='comment'>     * @param aTextualContent is optional, and if given is the text to include in a child</em>
+<a id='L91' name='L91'></a>  91 <em class='comment'>     *   of the returned node, and has type wxXML_TEXT_NODE.</em>
+<a id='L92' name='L92'></a>  92 <em class='comment'>     */</em>
+<a id='L93' name='L93'></a>  93     <a href='../Y/2697.html' title='Multiple used in 42 places.'>XNODE</a>* <a href='../S/293.html#L605' title='Defined at 605 in netlist_exporters/netlist_exporter_generic.cpp.'>node</a>( <strong class='reserved'>const</strong> <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&amp; <a href='../Y/3100.html' title='Multiple used in 141 places.'>aName</a>, <strong class='reserved'>const</strong> <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&amp; <a href='../Y/3394.html' title='Multiple used in 4 places.'>aTextualContent</a> = <a href='../Y/8613.html' title='Multiple used in 339 places.'>wxEmptyString</a> );
+<a id='L94' name='L94'></a>  94 
+<a id='L95' name='L95'></a>  95     <em class='comment'>/**</em>
+<a id='L96' name='L96'></a>  96 <em class='comment'>     * Build the entire document tree for the generic export.  This is factored</em>
+<a id='L97' name='L97'></a>  97 <em class='comment'>     * out here so we can write the tree in either S-expression file format</em>
+<a id='L98' name='L98'></a>  98 <em class='comment'>     * or in XML if we put the tree built here into a wxXmlDocument.</em>
+<a id='L99' name='L99'></a>  99 <em class='comment'>     * @param aCtl - a bitset or-ed together from GNL_ENUM values</em>
+<a id='L100' name='L100'></a> 100 <em class='comment'>     * @return XNODE* - the root nodes</em>
+<a id='L101' name='L101'></a> 101 <em class='comment'>     */</em>
+<a id='L102' name='L102'></a> 102     <a href='../Y/2697.html' title='Multiple used in 42 places.'>XNODE</a>* <a href='../S/293.html#L51' title='Defined at 51 in netlist_exporters/netlist_exporter_generic.cpp.'>makeRoot</a>( <strong class='reserved'>int</strong> <a href='../Y/2829.html' title='Multiple used in 42 places.'>aCtl</a> = <a href='../S/294.html#L82' title='Defined at 82 in netlist_exporters/netlist_exporter_generic.h.'>GNL_ALL</a> );
+<a id='L103' name='L103'></a> 103 
+<a id='L104' name='L104'></a> 104     <em class='comment'>/**</em>
+<a id='L105' name='L105'></a> 105 <em class='comment'>     * @return XNODE* - returns a sub-tree holding all the schematic components.</em>
+<a id='L106' name='L106'></a> 106 <em class='comment'>     */</em>
+<a id='L107' name='L107'></a> 107     <a href='../Y/2697.html' title='Multiple used in 42 places.'>XNODE</a>* <a href='../S/293.html#L196' title='Defined at 196 in netlist_exporters/netlist_exporter_generic.cpp.'>makeComponents</a>( <strong class='reserved'>unsigned</strong> <a href='../Y/2829.html' title='Multiple used in 42 places.'>aCtl</a> );
+<a id='L108' name='L108'></a> 108 
+<a id='L109' name='L109'></a> 109     <em class='comment'>/**</em>
+<a id='L110' name='L110'></a> 110 <em class='comment'>     * Fills out a project "design" header into an XML node.</em>
+<a id='L111' name='L111'></a> 111 <em class='comment'>     * @return XNODE* - the design header</em>
+<a id='L112' name='L112'></a> 112 <em class='comment'>     */</em>
+<a id='L113' name='L113'></a> 113     <a href='../Y/2697.html' title='Multiple used in 42 places.'>XNODE</a>* <a href='../S/293.html#L284' title='Defined at 284 in netlist_exporters/netlist_exporter_generic.cpp.'>makeDesignHeader</a>();
+<a id='L114' name='L114'></a> 114 
+<a id='L115' name='L115'></a> 115     <em class='comment'>/**</em>
+<a id='L116' name='L116'></a> 116 <em class='comment'>     * Fill out an XML node with the unique library parts and returns it.</em>
+<a id='L117' name='L117'></a> 117 <em class='comment'>     * @return XNODE* - the library parts nodes</em>
+<a id='L118' name='L118'></a> 118 <em class='comment'>     */</em>
+<a id='L119' name='L119'></a> 119     <a href='../Y/2697.html' title='Multiple used in 42 places.'>XNODE</a>* <a href='../S/293.html#L400' title='Defined at 400 in netlist_exporters/netlist_exporter_generic.cpp.'>makeLibParts</a>();
+<a id='L120' name='L120'></a> 120 
+<a id='L121' name='L121'></a> 121     <em class='comment'>/**</em>
+<a id='L122' name='L122'></a> 122 <em class='comment'>     * Fill out an XML node with a list of nets and returns it.</em>
+<a id='L123' name='L123'></a> 123 <em class='comment'>     * @return XNODE* - the list of nets nodes</em>
+<a id='L124' name='L124'></a> 124 <em class='comment'>     */</em>
+<a id='L125' name='L125'></a> 125     <a href='../Y/2697.html' title='Multiple used in 42 places.'>XNODE</a>* <a href='../S/293.html#L503' title='Defined at 503 in netlist_exporters/netlist_exporter_generic.cpp.'>makeListOfNets</a>();
+<a id='L126' name='L126'></a> 126 
+<a id='L127' name='L127'></a> 127     <em class='comment'>/**</em>
+<a id='L128' name='L128'></a> 128 <em class='comment'>     * Fill out an XML node with a list of used libraries and returns it.</em>
+<a id='L129' name='L129'></a> 129 <em class='comment'>     * Must have called makeGenericLibParts() before this function.</em>
+<a id='L130' name='L130'></a> 130 <em class='comment'>     * @return XNODE* - the library nodes</em>
+<a id='L131' name='L131'></a> 131 <em class='comment'>     */</em>
+<a id='L132' name='L132'></a> 132     <a href='../Y/2697.html' title='Multiple used in 42 places.'>XNODE</a>* <a href='../S/293.html#L376' title='Defined at 376 in netlist_exporters/netlist_exporter_generic.cpp.'>makeLibraries</a>();
+<a id='L133' name='L133'></a> 133 
+<a id='L134' name='L134'></a> 134     <strong class='reserved'>void</strong> <a href='../S/293.html#L89' title='Defined at 89 in netlist_exporters/netlist_exporter_generic.cpp.'>addComponentFields</a>(  <a href='../Y/2697.html' title='Multiple used in 42 places.'>XNODE</a>* <a href='../Y/8980.html' title='Multiple used in 14 places.'>xcomp</a>, <a href='../D/1520.html' title='Multiple defined in 4 places.'>SCH_COMPONENT</a>* <a href='../Y/3911.html' title='Multiple used in 154 places.'>comp</a>, <a href='../D/1563.html' title='Multiple defined in 2 places.'>SCH_SHEET_PATH</a>* <a href='../Y/3309.html' title='Multiple used in 268 places.'>aSheet</a> );
+<a id='L135' name='L135'></a> 135 <em class='brace'>}</em>;
+<a id='L136' name='L136'></a> 136 
+<a id='L137' name='L137'></a> 137 <em class='sharp'>#endif</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;][^][v]<a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

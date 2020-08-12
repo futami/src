@@ -1,0 +1,272 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>netlist_generator.cpp</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/netlist_generator.cpp</h2>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L46'>[^]</a><a href='#L215'>[v]</a>[top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L46' title='Defined at 46.'>WriteNetListFile</a></li>
+<li><a href='#L162' title='Defined at 162.'>ReadyToNetlist</a></li>
+<li><a href='#L202' title='Defined at 202.'>sendNetlistToCvpcb</a></li>
+<li><a href='#L215' title='Defined at 215.'>BuildNetListBase</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * This program source code file is part of KiCad, a free EDA CAD application.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 1992-2018 jp.charras at wanadoo.fr</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> * Copyright (C) 2013 SoftPLC Corporation, Dick Hollenbeck &lt;dick@softplc.com&gt;</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> * Copyright (C) 1992-2020 KiCad Developers, see change_log.txt for contributors.</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> *</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * This program is free software; you can redistribute it and/or</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * modify it under the terms of the GNU General Public License</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> * as published by the Free Software Foundation; either version 2</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> * of the License, or (at your option) any later version.</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> *</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * This program is distributed in the hope that it will be useful,</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> * GNU General Public License for more details.</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> *</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * You should have received a copy of the GNU General Public License</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> * along with this program; if not, you may find one here:</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'> * or you may search the http://www.gnu.org website for the version 2 license,</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'> * or you may write to the Free Software Foundation, Inc.,</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'> * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA</em>
+<a id='L24' name='L24'></a>  24 <em class='comment'> */</em>
+<a id='L25' name='L25'></a>  25 
+<a id='L26' name='L26'></a>  26 <em class='sharp'>#include</em> &lt;fctsys.h&gt;
+<a id='L27' name='L27'></a>  27 <em class='sharp'>#include</em> &lt;kicad_string.h&gt;
+<a id='L28' name='L28'></a>  28 <em class='sharp'>#include</em> &lt;gestfich.h&gt;
+<a id='L29' name='L29'></a>  29 <em class='sharp'>#include</em> &lt;pgm_base.h&gt;
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#include</em> &lt;<a href='357.html'>sch_edit_frame.h</a>&gt;
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#include</em> &lt;<a href='337.html'>schematic.h</a>&gt;
+<a id='L32' name='L32'></a>  32 <em class='sharp'>#include</em> &lt;reporter.h&gt;
+<a id='L33' name='L33'></a>  33 <em class='sharp'>#include</em> &lt;confirm.h&gt;
+<a id='L34' name='L34'></a>  34 <em class='sharp'>#include</em> &lt;kiway.h&gt;
+<a id='L35' name='L35'></a>  35 <em class='sharp'>#include</em> &lt;<a href='238.html'>erc.h</a>&gt;
+<a id='L36' name='L36'></a>  36 
+<a id='L37' name='L37'></a>  37 <em class='sharp'>#include</em> &lt;<a href='288.html'>netlist.h</a>&gt;
+<a id='L38' name='L38'></a>  38 <em class='sharp'>#include</em> &lt;<a href='290.html'>netlist_exporter.h</a>&gt;
+<a id='L39' name='L39'></a>  39 <em class='sharp'>#include</em> &lt;<a href='298.html'>netlist_exporter_orcadpcb2.h</a>&gt;
+<a id='L40' name='L40'></a>  40 <em class='sharp'>#include</em> &lt;<a href='292.html'>netlist_exporter_cadstar.h</a>&gt;
+<a id='L41' name='L41'></a>  41 <em class='sharp'>#include</em> &lt;<a href='300.html'>netlist_exporter_pspice.h</a>&gt;
+<a id='L42' name='L42'></a>  42 <em class='sharp'>#include</em> &lt;<a href='296.html'>netlist_exporter_kicad.h</a>&gt;
+<a id='L43' name='L43'></a>  43 <em class='sharp'>#include</em> &lt;<a href='294.html'>netlist_exporter_generic.h</a>&gt;
+<a id='L44' name='L44'></a>  44 
+<a id='L45' name='L45'></a>  45 
+<a id='L46' name='L46'></a>  46 <strong class='reserved'>bool</strong> <a href='../S/356.html#L299' title='Defined at 299 in sch_edit_frame.cpp.'>SCH_EDIT_FRAME</a>::<a href='../R/1892.html' title='Multiple referred from 3 places.'>WriteNetListFile</a>( <strong class='reserved'>int</strong> <a href='../Y/2943.html' title='Multiple used in 3 places.'>aFormat</a>, <strong class='reserved'>const</strong> <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&amp; <a href='../Y/2952.html' title='Multiple used in 13 places.'>aFullFileName</a>,
+<a id='L47' name='L47'></a>  47                                        <strong class='reserved'>unsigned</strong> <a href='../Y/3115.html' title='Multiple used in 17 places.'>aNetlistOptions</a>, <a href='../Y/1732.html' title='Multiple used in 36 places.'>REPORTER</a>* <a href='../Y/3257.html' title='Multiple used in 84 places.'>aReporter</a> )
+<a id='L48' name='L48'></a>  48 <em class='brace'>{</em>
+<a id='L49' name='L49'></a>  49     <em class='comment'>// Ensure all power symbols have a valid reference</em>
+<a id='L50' name='L50'></a>  50     <a href='../D/1699.html' title='Multiple defined in 3 places.'>Schematic</a>().<a href='../S/384.html#L936' title='Defined at 936 in sch_screen.cpp.'>GetSheets</a>().<a href='../S/392.html#L604' title='Defined at 604 in sch_sheet_path.cpp.'>AnnotatePowerSymbols</a>();
+<a id='L51' name='L51'></a>  51 
+<a id='L52' name='L52'></a>  52     <em class='comment'>// Ensure the netlist data is up to date:</em>
+<a id='L53' name='L53'></a>  53     <a href='../S/356.html#L1011' title='Defined at 1011 in sch_edit_frame.cpp.'>RecalculateConnections</a>( <a href='../S/357.html#L109' title='Defined at 109 in sch_edit_frame.h.'>NO_CLEANUP</a> );
+<a id='L54' name='L54'></a>  54 
+<a id='L55' name='L55'></a>  55     <strong class='reserved'>if</strong>( !<a href='../S/301.html#L162' title='Defined at 162 in netlist_generator.cpp.'>ReadyToNetlist</a>( <strong class='reserved'>false</strong> ) )
+<a id='L56' name='L56'></a>  56         <strong class='reserved'>return</strong> <strong class='reserved'>false</strong>;
+<a id='L57' name='L57'></a>  57 
+<a id='L58' name='L58'></a>  58     <strong class='reserved'>bool</strong> <a href='../Y/7575.html' title='Multiple used in 76 places.'>res</a> = <strong class='reserved'>true</strong>;
+<a id='L59' name='L59'></a>  59     <strong class='reserved'>bool</strong> <a href='../Y/4340.html' title='Multiple used in 3 places.'>executeCommandLine</a> = <strong class='reserved'>false</strong>;
+<a id='L60' name='L60'></a>  60 
+<a id='L61' name='L61'></a>  61     <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>    <a href='../Y/4451.html' title='Multiple used in 94 places.'>fileName</a> = <a href='../Y/2952.html' title='Multiple used in 13 places.'>aFullFileName</a>;
+<a id='L62' name='L62'></a>  62 
+<a id='L63' name='L63'></a>  63     <a href='../Y/1508.html' title='Multiple used in 18 places.'>NETLIST_EXPORTER</a> *<a href='../Y/4707.html' title='Multiple used in 8 places.'>helper</a>;
+<a id='L64' name='L64'></a>  64 
+<a id='L65' name='L65'></a>  65     <a href='../S/336.html#L42' title='Defined at 42 in schematic.cpp.'>SCHEMATIC</a>* <a href='../Y/7710.html' title='Multiple used in 30 places.'>sch</a> = &amp;<a href='../D/1699.html' title='Multiple defined in 3 places.'>Schematic</a>();
+<a id='L66' name='L66'></a>  66 
+<a id='L67' name='L67'></a>  67     <strong class='reserved'>switch</strong>( <a href='../Y/2943.html' title='Multiple used in 3 places.'>aFormat</a> )
+<a id='L68' name='L68'></a>  68     <em class='brace'>{</em>
+<a id='L69' name='L69'></a>  69     <strong class='reserved'>case</strong> <a href='../S/288.html#L37' title='Defined at 37 in netlist.h.'>NET_TYPE_PCBNEW</a>:
+<a id='L70' name='L70'></a>  70         <a href='../Y/4707.html' title='Multiple used in 8 places.'>helper</a> = <strong class='reserved'>new</strong> <a href='../Y/1511.html' title='Multiple used in 7 places.'>NETLIST_EXPORTER_KICAD</a>( <a href='../Y/7710.html' title='Multiple used in 30 places.'>sch</a> );
+<a id='L71' name='L71'></a>  71         <strong class='reserved'>break</strong>;
+<a id='L72' name='L72'></a>  72 
+<a id='L73' name='L73'></a>  73     <strong class='reserved'>case</strong> <a href='../S/288.html#L38' title='Defined at 38 in netlist.h.'>NET_TYPE_ORCADPCB2</a>:
+<a id='L74' name='L74'></a>  74         <a href='../Y/4707.html' title='Multiple used in 8 places.'>helper</a> = <strong class='reserved'>new</strong> <a href='../Y/1512.html' title='Multiple used in 4 places.'>NETLIST_EXPORTER_ORCADPCB2</a>( <a href='../Y/7710.html' title='Multiple used in 30 places.'>sch</a> );
+<a id='L75' name='L75'></a>  75         <strong class='reserved'>break</strong>;
+<a id='L76' name='L76'></a>  76 
+<a id='L77' name='L77'></a>  77     <strong class='reserved'>case</strong> <a href='../S/288.html#L39' title='Defined at 39 in netlist.h.'>NET_TYPE_CADSTAR</a>:
+<a id='L78' name='L78'></a>  78         <a href='../Y/4707.html' title='Multiple used in 8 places.'>helper</a> = <strong class='reserved'>new</strong> <a href='../Y/1509.html' title='Multiple used in 5 places.'>NETLIST_EXPORTER_CADSTAR</a>( <a href='../Y/7710.html' title='Multiple used in 30 places.'>sch</a> );
+<a id='L79' name='L79'></a>  79         <strong class='reserved'>break</strong>;
+<a id='L80' name='L80'></a>  80 
+<a id='L81' name='L81'></a>  81     <strong class='reserved'>case</strong> <a href='../S/288.html#L40' title='Defined at 40 in netlist.h.'>NET_TYPE_SPICE</a>:
+<a id='L82' name='L82'></a>  82         <a href='../Y/4707.html' title='Multiple used in 8 places.'>helper</a> = <strong class='reserved'>new</strong> <a href='../Y/1513.html' title='Multiple used in 28 places.'>NETLIST_EXPORTER_PSPICE</a>( <a href='../Y/7710.html' title='Multiple used in 30 places.'>sch</a> );
+<a id='L83' name='L83'></a>  83         <strong class='reserved'>break</strong>;
+<a id='L84' name='L84'></a>  84 
+<a id='L85' name='L85'></a>  85     <strong class='reserved'>default</strong>:
+<a id='L86' name='L86'></a>  86         <em class='brace'>{</em>
+<a id='L87' name='L87'></a>  87             <a href='../Y/8647.html' title='Multiple used in 186 places.'>wxFileName</a>  <a href='../Y/8171.html' title='Multiple used in 3 places.'>tmpFile</a> = <a href='../Y/4451.html' title='Multiple used in 94 places.'>fileName</a>;
+<a id='L88' name='L88'></a>  88             <a href='../Y/8171.html' title='Multiple used in 3 places.'>tmpFile</a>.<a href='../Y/2038.html' title='Multiple used in 37 places.'>SetExt</a>( <a href='../S/294.html#L39' title='Defined at 39 in netlist_exporters/netlist_exporter_generic.h.'>GENERIC_INTERMEDIATE_NETLIST_EXT</a> );
+<a id='L89' name='L89'></a>  89             <a href='../Y/4451.html' title='Multiple used in 94 places.'>fileName</a> = <a href='../Y/8171.html' title='Multiple used in 3 places.'>tmpFile</a>.<a href='../Y/766.html' title='Multiple used in 221 places.'>GetFullPath</a>();
+<a id='L90' name='L90'></a>  90 
+<a id='L91' name='L91'></a>  91             <a href='../Y/4707.html' title='Multiple used in 8 places.'>helper</a> = <strong class='reserved'>new</strong> <a href='../Y/1510.html' title='Multiple used in 14 places.'>NETLIST_EXPORTER_GENERIC</a>( <a href='../Y/7710.html' title='Multiple used in 30 places.'>sch</a> );
+<a id='L92' name='L92'></a>  92             <a href='../Y/4340.html' title='Multiple used in 3 places.'>executeCommandLine</a> = <strong class='reserved'>true</strong>;
+<a id='L93' name='L93'></a>  93         <em class='brace'>}</em>
+<a id='L94' name='L94'></a>  94         <strong class='reserved'>break</strong>;
+<a id='L95' name='L95'></a>  95     <em class='brace'>}</em>
+<a id='L96' name='L96'></a>  96 
+<a id='L97' name='L97'></a>  97     <a href='../Y/7575.html' title='Multiple used in 76 places.'>res</a> = <a href='../Y/4707.html' title='Multiple used in 8 places.'>helper</a>-&gt;<a href='../D/1942.html' title='Multiple defined in 5 places.'>WriteNetlist</a>( <a href='../Y/4451.html' title='Multiple used in 94 places.'>fileName</a>, <a href='../Y/3115.html' title='Multiple used in 17 places.'>aNetlistOptions</a> );
+<a id='L98' name='L98'></a>  98     <strong class='reserved'>delete</strong> <a href='../Y/4707.html' title='Multiple used in 8 places.'>helper</a>;
+<a id='L99' name='L99'></a>  99 
+<a id='L100' name='L100'></a> 100     <em class='comment'>// If user provided a plugin command line, execute it.</em>
+<a id='L101' name='L101'></a> 101     <strong class='reserved'>if</strong>( <a href='../Y/4340.html' title='Multiple used in 3 places.'>executeCommandLine</a> &amp;&amp; <a href='../Y/7575.html' title='Multiple used in 76 places.'>res</a> &amp;&amp; !<a href='../Y/5902.html' title='Multiple used in 5 places.'>m_netListerCommand</a>.<a href='../Y/1197.html' title='Multiple used in 258 places.'>IsEmpty</a>() )
+<a id='L102' name='L102'></a> 102     <em class='brace'>{</em>
+<a id='L103' name='L103'></a> 103         <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a> <a href='../Y/7431.html' title='Multiple used in 2 places.'>prj_dir</a> = <a href='../Y/1700.html' title='Multiple used in 175 places.'>Prj</a>().<a href='../Y/934.html' title='Multiple used in 35 places.'>GetProjectPath</a>();
+<a id='L104' name='L104'></a> 104 
+<a id='L105' name='L105'></a> 105         <em class='comment'>// build full command line from user's format string, e.g.:</em>
+<a id='L106' name='L106'></a> 106         <em class='comment'>// "xsltproc -o %O /usr/local/lib/kicad/plugins/netlist_form_pads-pcb.xsl %I"</em>
+<a id='L107' name='L107'></a> 107         <em class='comment'>// becomes, after the user selects /tmp/s1.net as the output file from the file dialog:</em>
+<a id='L108' name='L108'></a> 108         <em class='comment'>// "xsltproc -o /tmp/s1.net /usr/local/lib/kicad/plugins/netlist_form_pads-pcb.xsl /tmp/s1.xml"</em>
+<a id='L109' name='L109'></a> 109         <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a> <a href='../Y/3907.html' title='Multiple used in 4 places.'>commandLine</a> = <a href='../Y/1508.html' title='Multiple used in 18 places.'>NETLIST_EXPORTER</a>::<a href='../S/289.html#L41' title='Defined at 41 in netlist_exporters/netlist_exporter.cpp.'>MakeCommandLine</a>( <a href='../Y/5902.html' title='Multiple used in 5 places.'>m_netListerCommand</a>,
+<a id='L110' name='L110'></a> 110                 <a href='../Y/4451.html' title='Multiple used in 94 places.'>fileName</a>, <a href='../Y/2952.html' title='Multiple used in 13 places.'>aFullFileName</a>,
+<a id='L111' name='L111'></a> 111                 <a href='../Y/7431.html' title='Multiple used in 2 places.'>prj_dir</a>.<a href='../Y/2351.html' title='Multiple used in 2 places.'>SubString</a>( 0, <a href='../Y/7431.html' title='Multiple used in 2 places.'>prj_dir</a>.<a href='../Y/1408.html' title='Multiple used in 9 places.'>Len</a>() - 2 )       <em class='comment'>// strip trailing '/'</em>
+<a id='L112' name='L112'></a> 112                 );
+<a id='L113' name='L113'></a> 113 
+<a id='L114' name='L114'></a> 114         <strong class='reserved'>if</strong>( <a href='../Y/3257.html' title='Multiple used in 84 places.'>aReporter</a> )
+<a id='L115' name='L115'></a> 115         <em class='brace'>{</em>
+<a id='L116' name='L116'></a> 116             <a href='../Y/8453.html' title='Multiple used in 140 places.'>wxArrayString</a> <a href='../Y/7119.html' title='Multiple used in 5 places.'>output</a>, <a href='../Y/4324.html' title='Multiple used in 8 places.'>errors</a>;
+<a id='L117' name='L117'></a> 117             <strong class='reserved'>int</strong> <a href='../Y/4129.html' title='Multiple used in 5 places.'>diag</a> = wxExecute( <a href='../Y/3907.html' title='Multiple used in 4 places.'>commandLine</a>, <a href='../Y/7119.html' title='Multiple used in 5 places.'>output</a>, <a href='../Y/4324.html' title='Multiple used in 8 places.'>errors</a>, <a href='../Y/5635.html' title='Multiple used in 6 places.'>m_exec_flags</a> );
+<a id='L118' name='L118'></a> 118 
+<a id='L119' name='L119'></a> 119             <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a> <a href='../Y/6788.html' title='Multiple used in 619 places.'>msg</a>;
+<a id='L120' name='L120'></a> 120 
+<a id='L121' name='L121'></a> 121             <a href='../Y/6788.html' title='Multiple used in 619 places.'>msg</a> &lt;&lt; <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Run command:" ) &lt;&lt; <a href='../Y/8911.html' title='Multiple used in 490 places.'>wxT</a>( "\n" ) &lt;&lt; <a href='../Y/3907.html' title='Multiple used in 4 places.'>commandLine</a> &lt;&lt; <a href='../Y/8911.html' title='Multiple used in 490 places.'>wxT</a>( "\n\n" );
+<a id='L122' name='L122'></a> 122 
+<a id='L123' name='L123'></a> 123             <a href='../Y/3257.html' title='Multiple used in 84 places.'>aReporter</a>-&gt;<a href='../Y/1774.html' title='Multiple used in 13 places.'>ReportHead</a>( <a href='../Y/6788.html' title='Multiple used in 619 places.'>msg</a>, <a href='../Y/1738.html' title='Multiple used in 17 places.'>RPT_SEVERITY_ACTION</a> );
+<a id='L124' name='L124'></a> 124 
+<a id='L125' name='L125'></a> 125             <strong class='reserved'>if</strong>( <a href='../Y/4129.html' title='Multiple used in 5 places.'>diag</a> != 0 )
+<a id='L126' name='L126'></a> 126                 <a href='../Y/3257.html' title='Multiple used in 84 places.'>aReporter</a>-&gt;<a href='../Y/1775.html' title='Multiple used in 27 places.'>ReportTail</a>( <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>::<a href='../D/501.html' title='Multiple defined in 7 places.'>Format</a>(
+<a id='L127' name='L127'></a> 127                                        <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>("Command error. Return code %d" ), <a href='../Y/4129.html' title='Multiple used in 5 places.'>diag</a> ),
+<a id='L128' name='L128'></a> 128                                        <a href='../Y/1740.html' title='Multiple used in 48 places.'>RPT_SEVERITY_ERROR</a> );
+<a id='L129' name='L129'></a> 129             <strong class='reserved'>else</strong>
+<a id='L130' name='L130'></a> 130                 <a href='../Y/3257.html' title='Multiple used in 84 places.'>aReporter</a>-&gt;<a href='../Y/1775.html' title='Multiple used in 27 places.'>ReportTail</a>( <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Success" ), <a href='../Y/1743.html' title='Multiple used in 22 places.'>RPT_SEVERITY_INFO</a> );
+<a id='L131' name='L131'></a> 131 
+<a id='L132' name='L132'></a> 132             <strong class='reserved'>if</strong>( <a href='../Y/7119.html' title='Multiple used in 5 places.'>output</a>.<a href='../S/241.html#L265' title='Defined at 265 in erc_settings.cpp.'>GetCount</a>() )
+<a id='L133' name='L133'></a> 133             <em class='brace'>{</em>
+<a id='L134' name='L134'></a> 134                 <a href='../Y/6788.html' title='Multiple used in 619 places.'>msg</a>.<a href='../Y/460.html' title='Multiple used in 49 places.'>Empty</a>();
+<a id='L135' name='L135'></a> 135                 <a href='../Y/6788.html' title='Multiple used in 619 places.'>msg</a> &lt;&lt; <a href='../Y/8911.html' title='Multiple used in 490 places.'>wxT</a>( "\n" ) &lt;&lt; <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Info messages:" ) &lt;&lt; <a href='../Y/8911.html' title='Multiple used in 490 places.'>wxT</a>( "\n" );
+<a id='L136' name='L136'></a> 136                 <a href='../Y/3257.html' title='Multiple used in 84 places.'>aReporter</a>-&gt;<a href='../S/408.html#L65' title='Defined at 65 in sim/sim_plot_frame.cpp.'>Report</a>( <a href='../Y/6788.html' title='Multiple used in 619 places.'>msg</a>, <a href='../Y/1743.html' title='Multiple used in 22 places.'>RPT_SEVERITY_INFO</a> );
+<a id='L137' name='L137'></a> 137 
+<a id='L138' name='L138'></a> 138                 <strong class='reserved'>for</strong>( <strong class='reserved'>unsigned</strong> <a href='../Y/4748.html' title='Multiple used in 400 places.'>ii</a> = 0; <a href='../Y/4748.html' title='Multiple used in 400 places.'>ii</a> &lt; <a href='../Y/7119.html' title='Multiple used in 5 places.'>output</a>.<a href='../S/241.html#L265' title='Defined at 265 in erc_settings.cpp.'>GetCount</a>(); <a href='../Y/4748.html' title='Multiple used in 400 places.'>ii</a>++ )
+<a id='L139' name='L139'></a> 139                     <a href='../Y/3257.html' title='Multiple used in 84 places.'>aReporter</a>-&gt;<a href='../S/408.html#L65' title='Defined at 65 in sim/sim_plot_frame.cpp.'>Report</a>( <a href='../Y/7119.html' title='Multiple used in 5 places.'>output</a>[<a href='../Y/4748.html' title='Multiple used in 400 places.'>ii</a>] + <a href='../Y/8911.html' title='Multiple used in 490 places.'>wxT</a>( "\n" ), <a href='../Y/1743.html' title='Multiple used in 22 places.'>RPT_SEVERITY_INFO</a> );
+<a id='L140' name='L140'></a> 140             <em class='brace'>}</em>
+<a id='L141' name='L141'></a> 141 
+<a id='L142' name='L142'></a> 142             <strong class='reserved'>if</strong>( <a href='../Y/4324.html' title='Multiple used in 8 places.'>errors</a>.<a href='../S/241.html#L265' title='Defined at 265 in erc_settings.cpp.'>GetCount</a>() )
+<a id='L143' name='L143'></a> 143             <em class='brace'>{</em>
+<a id='L144' name='L144'></a> 144                 <a href='../Y/6788.html' title='Multiple used in 619 places.'>msg</a>.<a href='../Y/460.html' title='Multiple used in 49 places.'>Empty</a>();
+<a id='L145' name='L145'></a> 145                 <a href='../Y/6788.html' title='Multiple used in 619 places.'>msg</a> &lt;&lt; <a href='../Y/8911.html' title='Multiple used in 490 places.'>wxT</a>("\n") &lt;&lt; <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Error messages:" ) &lt;&lt; <a href='../Y/8911.html' title='Multiple used in 490 places.'>wxT</a>( "\n" );
+<a id='L146' name='L146'></a> 146                 <a href='../Y/3257.html' title='Multiple used in 84 places.'>aReporter</a>-&gt;<a href='../S/408.html#L65' title='Defined at 65 in sim/sim_plot_frame.cpp.'>Report</a>( <a href='../Y/6788.html' title='Multiple used in 619 places.'>msg</a>, <a href='../Y/1743.html' title='Multiple used in 22 places.'>RPT_SEVERITY_INFO</a> );
+<a id='L147' name='L147'></a> 147 
+<a id='L148' name='L148'></a> 148                 <strong class='reserved'>for</strong>( <strong class='reserved'>unsigned</strong> <a href='../Y/4748.html' title='Multiple used in 400 places.'>ii</a> = 0; <a href='../Y/4748.html' title='Multiple used in 400 places.'>ii</a> &lt; <a href='../Y/4324.html' title='Multiple used in 8 places.'>errors</a>.<a href='../S/241.html#L265' title='Defined at 265 in erc_settings.cpp.'>GetCount</a>(); <a href='../Y/4748.html' title='Multiple used in 400 places.'>ii</a>++ )
+<a id='L149' name='L149'></a> 149                     <a href='../Y/3257.html' title='Multiple used in 84 places.'>aReporter</a>-&gt;<a href='../S/408.html#L65' title='Defined at 65 in sim/sim_plot_frame.cpp.'>Report</a>( <a href='../Y/4324.html' title='Multiple used in 8 places.'>errors</a>[<a href='../Y/4748.html' title='Multiple used in 400 places.'>ii</a>] + <a href='../Y/8911.html' title='Multiple used in 490 places.'>wxT</a>( "\n" ), <a href='../Y/1740.html' title='Multiple used in 48 places.'>RPT_SEVERITY_ERROR</a> );
+<a id='L150' name='L150'></a> 150             <em class='brace'>}</em>
+<a id='L151' name='L151'></a> 151         <em class='brace'>}</em>
+<a id='L152' name='L152'></a> 152         <strong class='reserved'>else</strong>
+<a id='L153' name='L153'></a> 153             ProcessExecute( <a href='../Y/3907.html' title='Multiple used in 4 places.'>commandLine</a>, <a href='../Y/5635.html' title='Multiple used in 6 places.'>m_exec_flags</a> );
+<a id='L154' name='L154'></a> 154 
+<a id='L155' name='L155'></a> 155         <a href='../Y/336.html' title='Multiple used in 3 places.'>DefaultExecFlags</a>(); <em class='comment'>// Reset flags to default after executing</em>
+<a id='L156' name='L156'></a> 156     <em class='brace'>}</em>
+<a id='L157' name='L157'></a> 157 
+<a id='L158' name='L158'></a> 158     <strong class='reserved'>return</strong> <a href='../Y/7575.html' title='Multiple used in 76 places.'>res</a>;
+<a id='L159' name='L159'></a> 159 <em class='brace'>}</em>
+<a id='L160' name='L160'></a> 160 
+<a id='L161' name='L161'></a> 161 
+<a id='L162' name='L162'></a> 162 <strong class='reserved'>bool</strong> <a href='../S/356.html#L299' title='Defined at 299 in sch_edit_frame.cpp.'>SCH_EDIT_FRAME</a>::<a href='../R/1397.html' title='Multiple referred from 7 places.'>ReadyToNetlist</a>( <strong class='reserved'>bool</strong> <a href='../Y/3330.html' title='Multiple used in 4 places.'>aSilent</a>, <strong class='reserved'>bool</strong> <a href='../Y/3331.html' title='Multiple used in 3 places.'>aSilentAnnotate</a> )
+<a id='L163' name='L163'></a> 163 <em class='brace'>{</em>
+<a id='L164' name='L164'></a> 164     <em class='comment'>// Ensure all power symbols have a valid reference</em>
+<a id='L165' name='L165'></a> 165     <a href='../D/1699.html' title='Multiple defined in 3 places.'>Schematic</a>().<a href='../S/384.html#L936' title='Defined at 936 in sch_screen.cpp.'>GetSheets</a>().<a href='../S/392.html#L604' title='Defined at 604 in sch_sheet_path.cpp.'>AnnotatePowerSymbols</a>();
+<a id='L166' name='L166'></a> 166 
+<a id='L167' name='L167'></a> 167     <em class='comment'>// Components must be annotated</em>
+<a id='L168' name='L168'></a> 168     <strong class='reserved'>if</strong>( <a href='../S/1.html#L261' title='Defined at 261 in annotate.cpp.'>CheckAnnotate</a>( <a href='../Y/1528.html' title='Multiple used in 5 places.'>NULL_REPORTER</a>::<a href='../S/392.html#L66' title='Defined at 66 in sch_sheet_path.cpp.'>GetInstance</a>(), <strong class='reserved'>false</strong> ) )
+<a id='L169' name='L169'></a> 169     <em class='brace'>{</em>
+<a id='L170' name='L170'></a> 170         <strong class='reserved'>if</strong>( <a href='../Y/3331.html' title='Multiple used in 3 places.'>aSilentAnnotate</a> )
+<a id='L171' name='L171'></a> 171         <em class='brace'>{</em>
+<a id='L172' name='L172'></a> 172             <a href='../S/1.html#L100' title='Defined at 100 in annotate.cpp.'>AnnotateComponents</a>( <strong class='reserved'>true</strong>, <a href='../S/357.html#L86' title='Defined at 86 in sch_edit_frame.h.'>UNSORTED</a>, <a href='../S/357.html#L93' title='Defined at 93 in sch_edit_frame.h.'>INCREMENTAL_BY_REF</a>, 0, <strong class='reserved'>false</strong>, <strong class='reserved'>false</strong>, <strong class='reserved'>true</strong>,
+<a id='L173' name='L173'></a> 173                                 <a href='../Y/1528.html' title='Multiple used in 5 places.'>NULL_REPORTER</a>::<a href='../S/392.html#L66' title='Defined at 66 in sch_sheet_path.cpp.'>GetInstance</a>() );
+<a id='L174' name='L174'></a> 174         <em class='brace'>}</em>
+<a id='L175' name='L175'></a> 175         <strong class='reserved'>else</strong>
+<a id='L176' name='L176'></a> 176         <em class='brace'>{</em>
+<a id='L177' name='L177'></a> 177             <strong class='reserved'>if</strong>( <a href='../Y/3330.html' title='Multiple used in 4 places.'>aSilent</a> )
+<a id='L178' name='L178'></a> 178                 <strong class='reserved'>return</strong> <strong class='reserved'>false</strong>;
+<a id='L179' name='L179'></a> 179 
+<a id='L180' name='L180'></a> 180             <em class='comment'>// Schematic must be annotated: call Annotate dialog and tell the user why.</em>
+<a id='L181' name='L181'></a> 181             <a href='../S/20.html#L275' title='Defined at 275 in dialogs/dialog_annotate.cpp.'>ModalAnnotate</a>(
+<a id='L182' name='L182'></a> 182                     <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Exporting the netlist requires a completely annotated schematic." ) );
+<a id='L183' name='L183'></a> 183 
+<a id='L184' name='L184'></a> 184             <strong class='reserved'>if</strong>( <a href='../S/1.html#L261' title='Defined at 261 in annotate.cpp.'>CheckAnnotate</a>( <a href='../Y/1528.html' title='Multiple used in 5 places.'>NULL_REPORTER</a>::<a href='../S/392.html#L66' title='Defined at 66 in sch_sheet_path.cpp.'>GetInstance</a>(), <strong class='reserved'>false</strong> ) )
+<a id='L185' name='L185'></a> 185                 <strong class='reserved'>return</strong> <strong class='reserved'>false</strong>;
+<a id='L186' name='L186'></a> 186         <em class='brace'>}</em>
+<a id='L187' name='L187'></a> 187     <em class='brace'>}</em>
+<a id='L188' name='L188'></a> 188 
+<a id='L189' name='L189'></a> 189     <em class='comment'>// Test duplicate sheet names:</em>
+<a id='L190' name='L190'></a> 190     <a href='../Y/430.html' title='Multiple used in 12 places.'>ERC_TESTER</a> <a href='../Y/4306.html' title='Multiple used in 13 places.'>erc</a>( &amp;<a href='../D/1699.html' title='Multiple defined in 3 places.'>Schematic</a>() );
+<a id='L191' name='L191'></a> 191 
+<a id='L192' name='L192'></a> 192     <strong class='reserved'>if</strong>( <a href='../Y/4306.html' title='Multiple used in 13 places.'>erc</a>.<a href='../S/237.html#L101' title='Defined at 101 in erc.cpp.'>TestDuplicateSheetNames</a>( <strong class='reserved'>false</strong> ) &gt; 0 )
+<a id='L193' name='L193'></a> 193     <em class='brace'>{</em>
+<a id='L194' name='L194'></a> 194         <strong class='reserved'>if</strong>( <a href='../Y/3330.html' title='Multiple used in 4 places.'>aSilent</a> || !<a href='../Y/1235.html' title='Multiple used in 12 places.'>IsOK</a>( <strong class='reserved'>this</strong>, <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Error: duplicate sheet names. Continue?" ) ) )
+<a id='L195' name='L195'></a> 195             <strong class='reserved'>return</strong> <strong class='reserved'>false</strong>;
+<a id='L196' name='L196'></a> 196     <em class='brace'>}</em>
+<a id='L197' name='L197'></a> 197 
+<a id='L198' name='L198'></a> 198     <strong class='reserved'>return</strong> <strong class='reserved'>true</strong>;
+<a id='L199' name='L199'></a> 199 <em class='brace'>}</em>
+<a id='L200' name='L200'></a> 200 
+<a id='L201' name='L201'></a> 201 
+<a id='L202' name='L202'></a> 202 <strong class='reserved'>void</strong> <a href='../S/356.html#L299' title='Defined at 299 in sch_edit_frame.cpp.'>SCH_EDIT_FRAME</a>::<a href='../R/2486.html' title='Multiple referred from 2 places.'>sendNetlistToCvpcb</a>()
+<a id='L203' name='L203'></a> 203 <em class='brace'>{</em>
+<a id='L204' name='L204'></a> 204     <a href='../Y/1511.html' title='Multiple used in 7 places.'>NETLIST_EXPORTER_KICAD</a> <a href='../Y/4376.html' title='Multiple used in 4 places.'>exporter</a>( &amp;<a href='../D/1699.html' title='Multiple defined in 3 places.'>Schematic</a>() );
+<a id='L205' name='L205'></a> 205     <a href='../Y/1896.html' title='Multiple used in 10 places.'>STRING_FORMATTER</a>       <a href='../Y/4532.html' title='Multiple used in 53 places.'>formatter</a>;
+<a id='L206' name='L206'></a> 206 
+<a id='L207' name='L207'></a> 207     <em class='comment'>// @todo : trim GNL_ALL down to minimum for CVPCB</em>
+<a id='L208' name='L208'></a> 208     <a href='../Y/4376.html' title='Multiple used in 4 places.'>exporter</a>.<a href='../D/501.html' title='Multiple defined in 7 places.'>Format</a>( &amp;<a href='../Y/4532.html' title='Multiple used in 53 places.'>formatter</a>, <a href='../S/294.html#L82' title='Defined at 82 in netlist_exporters/netlist_exporter_generic.h.'>GNL_ALL</a> );
+<a id='L209' name='L209'></a> 209 
+<a id='L210' name='L210'></a> 210     <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8004.html' title='Multiple used in 145 places.'>string</a> <a href='../Y/7134.html' title='Multiple used in 17 places.'>packet</a> = <a href='../Y/4532.html' title='Multiple used in 53 places.'>formatter</a>.<a href='../Y/996.html' title='Multiple used in 21 places.'>GetString</a>();  <em class='comment'>// an abbreviated "kicad" (s-expr) netlist</em>
+<a id='L211' name='L211'></a> 211     <a href='../Y/1303.html' title='Multiple used in 43 places.'>Kiway</a>().<a href='../Y/496.html' title='Multiple used in 9 places.'>ExpressMail</a>( <a href='../Y/516.html' title='Multiple used in 3 places.'>FRAME_CVPCB</a>, MAIL_EESCHEMA_NETLIST, <a href='../Y/7134.html' title='Multiple used in 17 places.'>packet</a>, <strong class='reserved'>this</strong> );
+<a id='L212' name='L212'></a> 212 <em class='brace'>}</em>
+<a id='L213' name='L213'></a> 213 
+<a id='L214' name='L214'></a> 214 
+<a id='L215' name='L215'></a> 215 <a href='../S/304.html#L42' title='Defined at 42 in netlist_object_list.cpp.'>NETLIST_OBJECT_LIST</a>* <a href='../S/356.html#L299' title='Defined at 299 in sch_edit_frame.cpp.'>SCH_EDIT_FRAME</a>::<a href='../R/89.html' title='Multiple referred from 3 places.'>BuildNetListBase</a>( <strong class='reserved'>bool</strong> <a href='../Y/8325.html' title='Multiple used in 4 places.'>updateStatusText</a> )
+<a id='L216' name='L216'></a> 216 <em class='brace'>{</em>
+<a id='L217' name='L217'></a> 217     <em class='comment'>// Ensure netlist is up to date</em>
+<a id='L218' name='L218'></a> 218     <a href='../S/356.html#L1011' title='Defined at 1011 in sch_edit_frame.cpp.'>RecalculateConnections</a>( <a href='../S/357.html#L109' title='Defined at 109 in sch_edit_frame.h.'>NO_CLEANUP</a> );
+<a id='L219' name='L219'></a> 219 
+<a id='L220' name='L220'></a> 220     <em class='comment'>// I own this list until I return it to the new owner.</em>
+<a id='L221' name='L221'></a> 221     <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8293.html' title='Multiple used in 145 places.'>unique_ptr</a>&lt;<a href='../S/304.html#L42' title='Defined at 42 in netlist_object_list.cpp.'>NETLIST_OBJECT_LIST</a>&gt; <a href='../Y/7594.html' title='Multiple used in 242 places.'>ret</a>( <strong class='reserved'>new</strong> <a href='../S/304.html#L42' title='Defined at 42 in netlist_object_list.cpp.'>NETLIST_OBJECT_LIST</a>() );
+<a id='L222' name='L222'></a> 222 
+<a id='L223' name='L223'></a> 223     <em class='comment'>// Creates the flattened sheet list:</em>
+<a id='L224' name='L224'></a> 224     <a href='../S/392.html#L411' title='Defined at 411 in sch_sheet_path.cpp.'>SCH_SHEET_LIST</a> <a href='../Y/3321.html' title='Multiple used in 6 places.'>aSheets</a> = <a href='../D/1699.html' title='Multiple defined in 3 places.'>Schematic</a>().<a href='../S/384.html#L936' title='Defined at 936 in sch_screen.cpp.'>GetSheets</a>();
+<a id='L225' name='L225'></a> 225 
+<a id='L226' name='L226'></a> 226     <em class='comment'>// Build netlist info</em>
+<a id='L227' name='L227'></a> 227     <strong class='reserved'>bool</strong> <a href='../Y/8039.html' title='Multiple used in 34 places.'>success</a> = <a href='../Y/7594.html' title='Multiple used in 242 places.'>ret</a>-&gt;<a href='../S/304.html#L74' title='Defined at 74 in netlist_object_list.cpp.'>BuildNetListInfo</a>( <a href='../Y/3321.html' title='Multiple used in 6 places.'>aSheets</a> );
+<a id='L228' name='L228'></a> 228 
+<a id='L229' name='L229'></a> 229     <strong class='reserved'>if</strong>( !<a href='../Y/8039.html' title='Multiple used in 34 places.'>success</a> )
+<a id='L230' name='L230'></a> 230     <em class='brace'>{</em>
+<a id='L231' name='L231'></a> 231         <strong class='reserved'>if</strong>( <a href='../Y/8325.html' title='Multiple used in 4 places.'>updateStatusText</a> )
+<a id='L232' name='L232'></a> 232             <a href='../S/471.html#L105' title='Defined at 105 in widgets/symbol_preview_widget.cpp.'>SetStatusText</a>( <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "No Objects" ) );
+<a id='L233' name='L233'></a> 233         <strong class='reserved'>return</strong> <a href='../Y/7594.html' title='Multiple used in 242 places.'>ret</a>.<a href='../Y/7546.html' title='Multiple used in 72 places.'>release</a>();
+<a id='L234' name='L234'></a> 234     <em class='brace'>}</em>
+<a id='L235' name='L235'></a> 235 
+<a id='L236' name='L236'></a> 236     <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a> <a href='../Y/6788.html' title='Multiple used in 619 places.'>msg</a> = <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>::<a href='../D/501.html' title='Multiple defined in 7 places.'>Format</a>( <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Net count = %d" ), <strong class='reserved'>int</strong>( <a href='../Y/7594.html' title='Multiple used in 242 places.'>ret</a>-&gt;<a href='../S/223.html#L115' title='Defined at 115 in dialogs/panel_sym_lib_table.cpp.'>size</a>() ) );
+<a id='L237' name='L237'></a> 237 
+<a id='L238' name='L238'></a> 238     <strong class='reserved'>if</strong>( <a href='../Y/8325.html' title='Multiple used in 4 places.'>updateStatusText</a> )
+<a id='L239' name='L239'></a> 239          <a href='../S/471.html#L105' title='Defined at 105 in widgets/symbol_preview_widget.cpp.'>SetStatusText</a>( <a href='../Y/6788.html' title='Multiple used in 619 places.'>msg</a> );
+<a id='L240' name='L240'></a> 240 
+<a id='L241' name='L241'></a> 241     <strong class='reserved'>return</strong> <a href='../Y/7594.html' title='Multiple used in 242 places.'>ret</a>.<a href='../Y/7546.html' title='Multiple used in 72 places.'>release</a>();
+<a id='L242' name='L242'></a> 242 <em class='brace'>}</em>
+<a id='L243' name='L243'></a> 243 
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L46'>[^]</a><a href='#L215'>[v]</a><a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

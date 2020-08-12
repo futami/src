@@ -1,0 +1,519 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>connection_graph.h</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/connection_graph.h</h2>
+<em class='comment'>/* [&lt;][&gt;][^][v][top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'><a href='../J/15.html' title='Multiple included from 20 places.'>INCLUDED FROM</a></h2>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * This program source code file is part of KiCad, a free EDA CAD application.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 2018 CERN</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> * @author Jon Evans &lt;jon@craftyjon.com&gt;</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> *</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> * This program is free software; you can redistribute it and/or</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * modify it under the terms of the GNU General Public License</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * as published by the Free Software Foundation; either version 2</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> * of the License, or (at your option) any later version.</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> *</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> * This program is distributed in the hope that it will be useful,</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> * GNU General Public License for more details.</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> *</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> * You should have received a copy of the GNU General Public License along</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> */</em>
+<a id='L20' name='L20'></a>  20 
+<a id='L21' name='L21'></a>  21 <em class='sharp'>#ifndef</em> <a href='../S/17.html#L22' title='Defined at 22 in connection_graph.h.'>_CONNECTION_GRAPH_H</a>
+<a id='L22' name='L22'></a>  22 <em class='sharp'>#define</em> <a href='../S/17.html#L21' title='Referred from 21 in connection_graph.h.'>_CONNECTION_GRAPH_H</a>
+<a id='L23' name='L23'></a>  23 
+<a id='L24' name='L24'></a>  24 <em class='sharp'>#include</em> &lt;mutex&gt;
+<a id='L25' name='L25'></a>  25 <em class='sharp'>#include</em> &lt;vector&gt;
+<a id='L26' name='L26'></a>  26 
+<a id='L27' name='L27'></a>  27 <em class='sharp'>#include</em> &lt;common.h&gt;
+<a id='L28' name='L28'></a>  28 <em class='sharp'>#include</em> &lt;<a href='242.html'>erc_settings.h</a>&gt;
+<a id='L29' name='L29'></a>  29 <em class='sharp'>#include</em> &lt;<a href='351.html'>sch_connection.h</a>&gt;
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#include</em> &lt;<a href='364.html'>sch_item.h</a>&gt;
+<a id='L31' name='L31'></a>  31 
+<a id='L32' name='L32'></a>  32 
+<a id='L33' name='L33'></a>  33 <em class='sharp'>#ifdef</em> <a href='../Y/285.html' title='Multiple used in 43 places.'>DEBUG</a>
+<a id='L34' name='L34'></a>  34 <em class='comment'>// Uncomment this line to enable connectivity debugging features</em>
+<a id='L35' name='L35'></a>  35 <em class='comment'>// #define CONNECTIVITY_DEBUG</em>
+<a id='L36' name='L36'></a>  36 <em class='sharp'>#endif</em>
+<a id='L37' name='L37'></a>  37 
+<a id='L38' name='L38'></a>  38 
+<a id='L39' name='L39'></a>  39 <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../Y/160.html' title='Multiple used in 50 places.'>CONNECTION_GRAPH</a>;
+<a id='L40' name='L40'></a>  40 <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../S/336.html#L42' title='Defined at 42 in schematic.cpp.'>SCHEMATIC</a>;
+<a id='L41' name='L41'></a>  41 <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../S/356.html#L299' title='Defined at 299 in sch_edit_frame.cpp.'>SCH_EDIT_FRAME</a>;
+<a id='L42' name='L42'></a>  42 <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../S/395.html#L1094' title='Defined at 1094 in sch_text.cpp.'>SCH_HIERLABEL</a>;
+<a id='L43' name='L43'></a>  43 <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../S/377.html#L37' title='Defined at 37 in sch_pin.cpp.'>SCH_PIN</a>;
+<a id='L44' name='L44'></a>  44 <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../Y/1854.html' title='Multiple used in 121 places.'>SCH_SHEET_PIN</a>;
+<a id='L45' name='L45'></a>  45 
+<a id='L46' name='L46'></a>  46 
+<a id='L47' name='L47'></a>  47 <em class='comment'>/**</em>
+<a id='L48' name='L48'></a>  48 <em class='comment'> * A subgraph is a set of items that are electrically connected on a single sheet.</em>
+<a id='L49' name='L49'></a>  49 <em class='comment'> *</em>
+<a id='L50' name='L50'></a>  50 <em class='comment'> * For example, a label connected to a wire and so on.</em>
+<a id='L51' name='L51'></a>  51 <em class='comment'> * A net is composed of one or more subgraphs.</em>
+<a id='L52' name='L52'></a>  52 <em class='comment'> *</em>
+<a id='L53' name='L53'></a>  53 <em class='comment'> * A set of items that appears to be physically connected may actually be more</em>
+<a id='L54' name='L54'></a>  54 <em class='comment'> * than one subgraph, because some items don't connect electrically.</em>
+<a id='L55' name='L55'></a>  55 <em class='comment'> *</em>
+<a id='L56' name='L56'></a>  56 <em class='comment'> * For example, multiple bus wires can come together at a junction but have</em>
+<a id='L57' name='L57'></a>  57 <em class='comment'> * different labels on each branch.  Each label+wire branch is its own subgraph.</em>
+<a id='L58' name='L58'></a>  58 <em class='comment'> *</em>
+<a id='L59' name='L59'></a>  59 <em class='comment'> */</em>
+<a id='L60' name='L60'></a>  60 <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../Y/161.html' title='Multiple used in 100 places.'>CONNECTION_SUBGRAPH</a>
+<a id='L61' name='L61'></a>  61 <em class='brace'>{</em>
+<a id='L62' name='L62'></a>  62 <a href='../Y/7469.html' title='Multiple used in 431 places.'>public</a>:
+<a id='L63' name='L63'></a>  63     <strong class='reserved'>enum</strong> <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../Y/1627.html' title='Multiple used in 25 places.'>PRIORITY</a>
+<a id='L64' name='L64'></a>  64     <em class='brace'>{</em>
+<a id='L65' name='L65'></a>  65         <a href='../Y/1125.html' title='Multiple used in 2 places.'>INVALID</a> = -1,
+<a id='L66' name='L66'></a>  66         <a href='../S/40.html#L43' title='Defined at 43 in dialogs/dialog_edit_component_in_lib.h.'>NONE</a>    = 0,
+<a id='L67' name='L67'></a>  67         <a href='../Y/1615.html' title='Multiple used in 25 places.'>PIN</a>,
+<a id='L68' name='L68'></a>  68         <a href='../Y/1880.html' title='Multiple used in 3 places.'>SHEET_PIN</a>,
+<a id='L69' name='L69'></a>  69         <a href='../Y/1073.html' title='Multiple used in 4 places.'>HIER_LABEL</a>,
+<a id='L70' name='L70'></a>  70         <a href='../Y/1393.html' title='Multiple used in 2 places.'>LOCAL_LABEL</a>,
+<a id='L71' name='L71'></a>  71         <a href='../Y/1624.html' title='Multiple used in 8 places.'>POWER_PIN</a>,
+<a id='L72' name='L72'></a>  72         <a href='../Y/579.html' title='Multiple used in 2 places.'>GLOBAL</a>
+<a id='L73' name='L73'></a>  73     <em class='brace'>}</em>;
+<a id='L74' name='L74'></a>  74 
+<a id='L75' name='L75'></a>  75     explicit <a href='../Y/161.html' title='Multiple used in 100 places.'>CONNECTION_SUBGRAPH</a>( <a href='../Y/160.html' title='Multiple used in 50 places.'>CONNECTION_GRAPH</a>* <a href='../Y/2965.html' title='Multiple used in 10 places.'>aGraph</a> ) :
+<a id='L76' name='L76'></a>  76               <a href='../D/2291.html' title='Multiple defined in 2 places.'>m_graph</a>( <a href='../Y/2965.html' title='Multiple used in 10 places.'>aGraph</a> ),
+<a id='L77' name='L77'></a>  77               <a href='../Y/5600.html' title='Multiple used in 26 places.'>m_dirty</a>( <a href='../Y/4387.html' title='Multiple used in 97 places.'>false</a> ),
+<a id='L78' name='L78'></a>  78               <a href='../Y/5322.html' title='Multiple used in 14 places.'>m_absorbed</a>( <a href='../Y/4387.html' title='Multiple used in 97 places.'>false</a> ),
+<a id='L79' name='L79'></a>  79               <a href='../Y/5323.html' title='Multiple used in 7 places.'>m_absorbed_by</a>( <a href='../Y/7001.html' title='Multiple used in 622 places.'>nullptr</a> ),
+<a id='L80' name='L80'></a>  80               <a href='../Y/5518.html' title='Multiple used in 30 places.'>m_code</a>( -1 ),
+<a id='L81' name='L81'></a>  81               <a href='../Y/5885.html' title='Multiple used in 8 places.'>m_multiple_drivers</a>( <a href='../Y/4387.html' title='Multiple used in 97 places.'>false</a> ),
+<a id='L82' name='L82'></a>  82               <a href='../Y/6488.html' title='Multiple used in 11 places.'>m_strong_driver</a>( <a href='../Y/4387.html' title='Multiple used in 97 places.'>false</a> ),
+<a id='L83' name='L83'></a>  83               <a href='../Y/5844.html' title='Multiple used in 5 places.'>m_local_driver</a>( <a href='../Y/4387.html' title='Multiple used in 97 places.'>false</a> ),
+<a id='L84' name='L84'></a>  84               <a href='../Y/5926.html' title='Multiple used in 11 places.'>m_no_connect</a>( <a href='../Y/7001.html' title='Multiple used in 622 places.'>nullptr</a> ),
+<a id='L85' name='L85'></a>  85               <a href='../Y/5413.html' title='Multiple used in 3 places.'>m_bus_entry</a>( <a href='../Y/7001.html' title='Multiple used in 622 places.'>nullptr</a> ),
+<a id='L86' name='L86'></a>  86               <a href='../Y/5610.html' title='Multiple used in 39 places.'>m_driver</a>( <a href='../Y/7001.html' title='Multiple used in 622 places.'>nullptr</a> ),
+<a id='L87' name='L87'></a>  87               <a href='../Y/5611.html' title='Multiple used in 56 places.'>m_driver_connection</a>( <a href='../Y/7001.html' title='Multiple used in 622 places.'>nullptr</a> ),
+<a id='L88' name='L88'></a>  88               <a href='../Y/5734.html' title='Multiple used in 6 places.'>m_hier_parent</a>( <a href='../Y/7001.html' title='Multiple used in 622 places.'>nullptr</a> )
+<a id='L89' name='L89'></a>  89     <em class='brace'>{</em><em class='brace'>}</em>
+<a id='L90' name='L90'></a>  90 
+<a id='L91' name='L91'></a>  91     ~<a href='../Y/161.html' title='Multiple used in 100 places.'>CONNECTION_SUBGRAPH</a>() = <strong class='reserved'>default</strong>;
+<a id='L92' name='L92'></a>  92 
+<a id='L93' name='L93'></a>  93     <em class='comment'>/**</em>
+<a id='L94' name='L94'></a>  94 <em class='comment'>     * Determines which potential driver should drive the subgraph.</em>
+<a id='L95' name='L95'></a>  95 <em class='comment'>     *</em>
+<a id='L96' name='L96'></a>  96 <em class='comment'>     * If multiple possible drivers exist, picks one according to the priority.</em>
+<a id='L97' name='L97'></a>  97 <em class='comment'>     * If multiple "winners" exist, returns false and sets m_driver to nullptr.</em>
+<a id='L98' name='L98'></a>  98 <em class='comment'>     *</em>
+<a id='L99' name='L99'></a>  99 <em class='comment'>     * @param aCreateMarkers controls whether ERC markers should be added for conflicts</em>
+<a id='L100' name='L100'></a> 100 <em class='comment'>     * @return true if m_driver was set, or false if a conflict occurred</em>
+<a id='L101' name='L101'></a> 101 <em class='comment'>     */</em>
+<a id='L102' name='L102'></a> 102     <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../S/16.html#L53' title='Defined at 53 in connection_graph.cpp.'>ResolveDrivers</a>( <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../Y/2826.html' title='Multiple used in 4 places.'>aCreateMarkers</a> = <a href='../Y/4387.html' title='Multiple used in 97 places.'>false</a> );
+<a id='L103' name='L103'></a> 103 
+<a id='L104' name='L104'></a> 104     <em class='comment'>/**</em>
+<a id='L105' name='L105'></a> 105 <em class='comment'>     * Returns the fully-qualified net name for this subgraph (if one exists)</em>
+<a id='L106' name='L106'></a> 106 <em class='comment'>     */</em>
+<a id='L107' name='L107'></a> 107     <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a> <a href='../D/648.html' title='Multiple defined in 2 places.'>GetNetName</a>() <strong class='reserved'>const</strong>;
+<a id='L108' name='L108'></a> 108 
+<a id='L109' name='L109'></a> 109     <em class='comment'>/// Returns all the bus labels attached to this subgraph (if any)</em>
+<a id='L110' name='L110'></a> 110     <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8368.html' title='Multiple used in 470 places.'>vector</a>&lt;<a href='../D/1533.html' title='Multiple defined in 3 places.'>SCH_ITEM</a>*&gt; <a href='../S/16.html#L209' title='Defined at 209 in connection_graph.cpp.'>GetBusLabels</a>() <strong class='reserved'>const</strong>;
+<a id='L111' name='L111'></a> 111 
+<a id='L112' name='L112'></a> 112     <em class='comment'>/// Returns the candidate net name for a driver</em>
+<a id='L113' name='L113'></a> 113     <strong class='reserved'>const</strong> <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&amp; <a href='../S/16.html#L237' title='Defined at 237 in connection_graph.cpp.'>GetNameForDriver</a>( <a href='../D/1533.html' title='Multiple defined in 3 places.'>SCH_ITEM</a>* <a href='../Y/3005.html' title='Multiple used in 689 places.'>aItem</a> );
+<a id='L114' name='L114'></a> 114 
+<a id='L115' name='L115'></a> 115     <em class='comment'>/// Combines another subgraph on the same sheet into this one.</em>
+<a id='L116' name='L116'></a> 116     <strong class='reserved'>void</strong> <a href='../S/16.html#L270' title='Defined at 270 in connection_graph.cpp.'>Absorb</a>( <a href='../Y/161.html' title='Multiple used in 100 places.'>CONNECTION_SUBGRAPH</a>* <a href='../Y/3157.html' title='Multiple used in 152 places.'>aOther</a> );
+<a id='L117' name='L117'></a> 117 
+<a id='L118' name='L118'></a> 118     <em class='comment'>/// Adds a new item to the subgraph</em>
+<a id='L119' name='L119'></a> 119     <strong class='reserved'>void</strong> <a href='../S/16.html#L293' title='Defined at 293 in connection_graph.cpp.'>AddItem</a>( <a href='../D/1533.html' title='Multiple defined in 3 places.'>SCH_ITEM</a>* <a href='../Y/3005.html' title='Multiple used in 689 places.'>aItem</a> );
+<a id='L120' name='L120'></a> 120 
+<a id='L121' name='L121'></a> 121     <em class='comment'>/// Updates all items to match the driver connection</em>
+<a id='L122' name='L122'></a> 122     <strong class='reserved'>void</strong> <a href='../S/16.html#L307' title='Defined at 307 in connection_graph.cpp.'>UpdateItemConnections</a>();
+<a id='L123' name='L123'></a> 123 
+<a id='L124' name='L124'></a> 124     <em class='comment'>/**</em>
+<a id='L125' name='L125'></a> 125 <em class='comment'>     * Returns the priority (higher is more important) of a candidate driver</em>
+<a id='L126' name='L126'></a> 126 <em class='comment'>     *</em>
+<a id='L127' name='L127'></a> 127 <em class='comment'>     * 0: Invalid driver</em>
+<a id='L128' name='L128'></a> 128 <em class='comment'>     * 1: Component pin</em>
+<a id='L129' name='L129'></a> 129 <em class='comment'>     * 2: Hierarchical sheet pin</em>
+<a id='L130' name='L130'></a> 130 <em class='comment'>     * 3: Hierarchical label</em>
+<a id='L131' name='L131'></a> 131 <em class='comment'>     * 4: Local label</em>
+<a id='L132' name='L132'></a> 132 <em class='comment'>     * 5: Power pin</em>
+<a id='L133' name='L133'></a> 133 <em class='comment'>     * 6: Global label</em>
+<a id='L134' name='L134'></a> 134 <em class='comment'>     *</em>
+<a id='L135' name='L135'></a> 135 <em class='comment'>     * @param aDriver is the item to inspect</em>
+<a id='L136' name='L136'></a> 136 <em class='comment'>     * @return a PRIORITY</em>
+<a id='L137' name='L137'></a> 137 <em class='comment'>     */</em>
+<a id='L138' name='L138'></a> 138     <strong class='reserved'>static</strong> <a href='../Y/1627.html' title='Multiple used in 25 places.'>PRIORITY</a> <a href='../S/16.html#L334' title='Defined at 334 in connection_graph.cpp.'>GetDriverPriority</a>( <a href='../D/1533.html' title='Multiple defined in 3 places.'>SCH_ITEM</a>* <a href='../Y/2863.html' title='Multiple used in 5 places.'>aDriver</a> );
+<a id='L139' name='L139'></a> 139 
+<a id='L140' name='L140'></a> 140     <a href='../Y/160.html' title='Multiple used in 50 places.'>CONNECTION_GRAPH</a>* <a href='../D/2291.html' title='Multiple defined in 2 places.'>m_graph</a>;
+<a id='L141' name='L141'></a> 141 
+<a id='L142' name='L142'></a> 142     <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../Y/5600.html' title='Multiple used in 26 places.'>m_dirty</a>;
+<a id='L143' name='L143'></a> 143 
+<a id='L144' name='L144'></a> 144     <em class='comment'>/// True if this subgraph has been absorbed into another.  No pointers here are safe if so!</em>
+<a id='L145' name='L145'></a> 145     <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../Y/5322.html' title='Multiple used in 14 places.'>m_absorbed</a>;
+<a id='L146' name='L146'></a> 146 
+<a id='L147' name='L147'></a> 147     <em class='comment'>/// If this subgraph is absorbed, points to the absorbing (and valid) subgraph</em>
+<a id='L148' name='L148'></a> 148     <a href='../Y/161.html' title='Multiple used in 100 places.'>CONNECTION_SUBGRAPH</a>* <a href='../Y/5323.html' title='Multiple used in 7 places.'>m_absorbed_by</a>;
+<a id='L149' name='L149'></a> 149 
+<a id='L150' name='L150'></a> 150     <strong class='reserved'>long</strong> <a href='../Y/5518.html' title='Multiple used in 30 places.'>m_code</a>;
+<a id='L151' name='L151'></a> 151 
+<a id='L152' name='L152'></a> 152     <em class='comment'>/**</em>
+<a id='L153' name='L153'></a> 153 <em class='comment'>     * True if this subgraph contains more than one driver that should be</em>
+<a id='L154' name='L154'></a> 154 <em class='comment'>     * shorted together in the netlist.  For example, two labels or</em>
+<a id='L155' name='L155'></a> 155 <em class='comment'>     * two power ports.</em>
+<a id='L156' name='L156'></a> 156 <em class='comment'>     */</em>
+<a id='L157' name='L157'></a> 157     <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../Y/5885.html' title='Multiple used in 8 places.'>m_multiple_drivers</a>;
+<a id='L158' name='L158'></a> 158 
+<a id='L159' name='L159'></a> 159     <em class='comment'>/// True if the driver is "strong": a label or power object</em>
+<a id='L160' name='L160'></a> 160     <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../Y/6488.html' title='Multiple used in 11 places.'>m_strong_driver</a>;
+<a id='L161' name='L161'></a> 161 
+<a id='L162' name='L162'></a> 162     <em class='comment'>/// True if the driver is a local (i.e. non-global) type</em>
+<a id='L163' name='L163'></a> 163     <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../Y/5844.html' title='Multiple used in 5 places.'>m_local_driver</a>;
+<a id='L164' name='L164'></a> 164 
+<a id='L165' name='L165'></a> 165     <em class='comment'>/// No-connect item in graph, if any</em>
+<a id='L166' name='L166'></a> 166     <a href='../D/1533.html' title='Multiple defined in 3 places.'>SCH_ITEM</a>* <a href='../Y/5926.html' title='Multiple used in 11 places.'>m_no_connect</a>;
+<a id='L167' name='L167'></a> 167 
+<a id='L168' name='L168'></a> 168     <em class='comment'>/// Bus entry in graph, if any</em>
+<a id='L169' name='L169'></a> 169     <a href='../D/1533.html' title='Multiple defined in 3 places.'>SCH_ITEM</a>* <a href='../Y/5413.html' title='Multiple used in 3 places.'>m_bus_entry</a>;
+<a id='L170' name='L170'></a> 170 
+<a id='L171' name='L171'></a> 171     <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8368.html' title='Multiple used in 470 places.'>vector</a>&lt;<a href='../D/1533.html' title='Multiple defined in 3 places.'>SCH_ITEM</a>*&gt; <a href='../Y/5778.html' title='Multiple used in 52 places.'>m_items</a>;
+<a id='L172' name='L172'></a> 172 
+<a id='L173' name='L173'></a> 173     <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8368.html' title='Multiple used in 470 places.'>vector</a>&lt;<a href='../D/1533.html' title='Multiple defined in 3 places.'>SCH_ITEM</a>*&gt; <a href='../Y/5614.html' title='Multiple used in 9 places.'>m_drivers</a>;
+<a id='L174' name='L174'></a> 174 
+<a id='L175' name='L175'></a> 175     <a href='../D/1533.html' title='Multiple defined in 3 places.'>SCH_ITEM</a>* <a href='../Y/5610.html' title='Multiple used in 39 places.'>m_driver</a>;
+<a id='L176' name='L176'></a> 176 
+<a id='L177' name='L177'></a> 177     <a href='../D/1563.html' title='Multiple defined in 2 places.'>SCH_SHEET_PATH</a> <a href='../Y/6231.html' title='Multiple used in 98 places.'>m_sheet</a>;
+<a id='L178' name='L178'></a> 178 
+<a id='L179' name='L179'></a> 179     <em class='comment'>/// Cache for driver connection</em>
+<a id='L180' name='L180'></a> 180     <a href='../Y/1804.html' title='Multiple used in 119 places.'>SCH_CONNECTION</a>* <a href='../Y/5611.html' title='Multiple used in 56 places.'>m_driver_connection</a>;
+<a id='L181' name='L181'></a> 181 
+<a id='L182' name='L182'></a> 182     <em class='comment'>/**</em>
+<a id='L183' name='L183'></a> 183 <em class='comment'>     * If a subgraph is a bus, this map contains links between the bus members and any</em>
+<a id='L184' name='L184'></a> 184 <em class='comment'>     * local sheet neighbors with the same connection name.</em>
+<a id='L185' name='L185'></a> 185 <em class='comment'>     *</em>
+<a id='L186' name='L186'></a> 186 <em class='comment'>     * For example, if this subgraph is a bus D[7..0], and on the same sheet there is</em>
+<a id='L187' name='L187'></a> 187 <em class='comment'>     * a net with label D7, this map will contain an entry for the D7 bus member, and</em>
+<a id='L188' name='L188'></a> 188 <em class='comment'>     * the vector will contain a pointer to the D7 net subgraph.</em>
+<a id='L189' name='L189'></a> 189 <em class='comment'>     */</em>
+<a id='L190' name='L190'></a> 190     <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8312.html' title='Multiple used in 14 places.'>unordered_map</a>&lt; <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/7820.html' title='Multiple used in 71 places.'>shared_ptr</a>&lt;<a href='../Y/1804.html' title='Multiple used in 119 places.'>SCH_CONNECTION</a>&gt;,
+<a id='L191' name='L191'></a> 191                         <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8313.html' title='Multiple used in 10 places.'>unordered_set</a>&lt;<a href='../Y/161.html' title='Multiple used in 100 places.'>CONNECTION_SUBGRAPH</a>*&gt; &gt; <a href='../Y/5416.html' title='Multiple used in 4 places.'>m_bus_neighbors</a>;
+<a id='L192' name='L192'></a> 192 
+<a id='L193' name='L193'></a> 193     <em class='comment'>/**</em>
+<a id='L194' name='L194'></a> 194 <em class='comment'>     * If this is a net, this vector contains links to any same-sheet buses that contain it.</em>
+<a id='L195' name='L195'></a> 195 <em class='comment'>     * The string key is the name of the connection that forms the link (which isn't necessarily</em>
+<a id='L196' name='L196'></a> 196 <em class='comment'>     * the same as the name of the connection driving this subgraph)</em>
+<a id='L197' name='L197'></a> 197 <em class='comment'>     */</em>
+<a id='L198' name='L198'></a> 198     <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8312.html' title='Multiple used in 14 places.'>unordered_map</a>&lt; <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/7820.html' title='Multiple used in 71 places.'>shared_ptr</a>&lt;<a href='../Y/1804.html' title='Multiple used in 119 places.'>SCH_CONNECTION</a>&gt;,
+<a id='L199' name='L199'></a> 199                         <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8313.html' title='Multiple used in 10 places.'>unordered_set</a>&lt;<a href='../Y/161.html' title='Multiple used in 100 places.'>CONNECTION_SUBGRAPH</a>*&gt; &gt; <a href='../Y/5417.html' title='Multiple used in 5 places.'>m_bus_parents</a>;
+<a id='L200' name='L200'></a> 200 
+<a id='L201' name='L201'></a> 201     <em class='comment'>// Cache for lookup of any hierarchical (sheet) pins on this subgraph (for referring down)</em>
+<a id='L202' name='L202'></a> 202     <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8368.html' title='Multiple used in 470 places.'>vector</a>&lt;<a href='../Y/1854.html' title='Multiple used in 121 places.'>SCH_SHEET_PIN</a>*&gt; <a href='../Y/5735.html' title='Multiple used in 6 places.'>m_hier_pins</a>;
+<a id='L203' name='L203'></a> 203 
+<a id='L204' name='L204'></a> 204     <em class='comment'>// Cache for lookup of any hierarchical ports on this subgraph (for referring up)</em>
+<a id='L205' name='L205'></a> 205     <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8368.html' title='Multiple used in 470 places.'>vector</a>&lt;<a href='../S/395.html#L1094' title='Defined at 1094 in sch_text.cpp.'>SCH_HIERLABEL</a>*&gt; <a href='../Y/5736.html' title='Multiple used in 7 places.'>m_hier_ports</a>;
+<a id='L206' name='L206'></a> 206 
+<a id='L207' name='L207'></a> 207     <em class='comment'>// If not null, this indicates the subgraph on a higher level sheet that is linked to this one</em>
+<a id='L208' name='L208'></a> 208     <a href='../Y/161.html' title='Multiple used in 100 places.'>CONNECTION_SUBGRAPH</a>* <a href='../Y/5734.html' title='Multiple used in 6 places.'>m_hier_parent</a>;
+<a id='L209' name='L209'></a> 209 
+<a id='L210' name='L210'></a> 210     <em class='comment'>/// A cache of escaped netnames from schematic items</em>
+<a id='L211' name='L211'></a> 211     <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8312.html' title='Multiple used in 14 places.'>unordered_map</a>&lt;<a href='../D/1533.html' title='Multiple defined in 3 places.'>SCH_ITEM</a>*, <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&gt; <a href='../Y/5612.html' title='Multiple used in 6 places.'>m_driver_name_cache</a>;
+<a id='L212' name='L212'></a> 212 <em class='brace'>}</em>;
+<a id='L213' name='L213'></a> 213 
+<a id='L214' name='L214'></a> 214 <em class='comment'>/// Associates a net code with the final name of a net</em>
+<a id='L215' name='L215'></a> 215 <strong class='reserved'>typedef</strong> <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/7156.html' title='Multiple used in 66 places.'>pair</a>&lt;<a href='../R/2578.html' title='Multiple referred from 2547 places.'>wxString</a>, <strong class='reserved'>int</strong>&gt; NET_NAME_CODE;
+<a id='L216' name='L216'></a> 216 
+<a id='L217' name='L217'></a> 217 <em class='comment'>/// Associates a NET_CODE_NAME with all the subgraphs in that net</em>
+<a id='L218' name='L218'></a> 218 <strong class='reserved'>typedef</strong> <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/6664.html' title='Multiple used in 68 places.'>map</a>&lt;NET_NAME_CODE, <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8368.html' title='Multiple used in 470 places.'>vector</a>&lt;<a href='../Y/161.html' title='Multiple used in 100 places.'>CONNECTION_SUBGRAPH</a>*&gt;&gt; <a href='../R/1071.html' title='Multiple referred from 2 places.'>NET_MAP</a>;
+<a id='L219' name='L219'></a> 219 
+<a id='L220' name='L220'></a> 220 <em class='comment'>/**</em>
+<a id='L221' name='L221'></a> 221 <em class='comment'> * Calculates the connectivity of a schematic and generates netlists</em>
+<a id='L222' name='L222'></a> 222 <em class='comment'> */</em>
+<a id='L223' name='L223'></a> 223 <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../Y/160.html' title='Multiple used in 50 places.'>CONNECTION_GRAPH</a>
+<a id='L224' name='L224'></a> 224 <em class='brace'>{</em>
+<a id='L225' name='L225'></a> 225 <a href='../Y/7469.html' title='Multiple used in 431 places.'>public</a>:
+<a id='L226' name='L226'></a> 226     <a href='../Y/160.html' title='Multiple used in 50 places.'>CONNECTION_GRAPH</a>( <a href='../S/336.html#L42' title='Defined at 42 in schematic.cpp.'>SCHEMATIC</a>* <a href='../Y/3282.html' title='Multiple used in 78 places.'>aSchematic</a> = <a href='../Y/7001.html' title='Multiple used in 622 places.'>nullptr</a> ) :
+<a id='L227' name='L227'></a> 227               <a href='../Y/5806.html' title='Multiple used in 4 places.'>m_last_net_code</a>( 1 ),
+<a id='L228' name='L228'></a> 228               <a href='../Y/5805.html' title='Multiple used in 4 places.'>m_last_bus_code</a>( 1 ),
+<a id='L229' name='L229'></a> 229               <a href='../Y/5807.html' title='Multiple used in 5 places.'>m_last_subgraph_code</a>( 1 ),
+<a id='L230' name='L230'></a> 230               <a href='../S/375.html#L156' title='Defined at 156 in sch_painter.cpp.'>m_schematic</a>( <a href='../Y/3282.html' title='Multiple used in 78 places.'>aSchematic</a> )
+<a id='L231' name='L231'></a> 231     <em class='brace'>{</em><em class='brace'>}</em>
+<a id='L232' name='L232'></a> 232 
+<a id='L233' name='L233'></a> 233     ~<a href='../Y/160.html' title='Multiple used in 50 places.'>CONNECTION_GRAPH</a>()
+<a id='L234' name='L234'></a> 234     <em class='brace'>{</em>
+<a id='L235' name='L235'></a> 235         <a href='../D/1483.html' title='Multiple defined in 6 places.'>Reset</a>();
+<a id='L236' name='L236'></a> 236     <em class='brace'>}</em>
+<a id='L237' name='L237'></a> 237 
+<a id='L238' name='L238'></a> 238     <strong class='reserved'>void</strong> <a href='../D/1483.html' title='Multiple defined in 6 places.'>Reset</a>();
+<a id='L239' name='L239'></a> 239 
+<a id='L240' name='L240'></a> 240     <strong class='reserved'>void</strong> <a href='../Y/2201.html' title='Multiple used in 3 places.'>SetSchematic</a>( <a href='../S/336.html#L42' title='Defined at 42 in schematic.cpp.'>SCHEMATIC</a>* <a href='../Y/3282.html' title='Multiple used in 78 places.'>aSchematic</a> )
+<a id='L241' name='L241'></a> 241     <em class='brace'>{</em>
+<a id='L242' name='L242'></a> 242         <a href='../S/375.html#L156' title='Defined at 156 in sch_painter.cpp.'>m_schematic</a> = <a href='../Y/3282.html' title='Multiple used in 78 places.'>aSchematic</a>;
+<a id='L243' name='L243'></a> 243     <em class='brace'>}</em>
+<a id='L244' name='L244'></a> 244 
+<a id='L245' name='L245'></a> 245     <em class='comment'>/**</em>
+<a id='L246' name='L246'></a> 246 <em class='comment'>     * Updates the connection graph for the given list of sheets.</em>
+<a id='L247' name='L247'></a> 247 <em class='comment'>     *</em>
+<a id='L248' name='L248'></a> 248 <em class='comment'>     * @param aSheetList is the list of possibly modified sheets</em>
+<a id='L249' name='L249'></a> 249 <em class='comment'>     * @param aUnconditional is true if an unconditional full recalculation should be done</em>
+<a id='L250' name='L250'></a> 250 <em class='comment'>     */</em>
+<a id='L251' name='L251'></a> 251     <strong class='reserved'>void</strong> <a href='../S/16.html#L387' title='Defined at 387 in connection_graph.cpp.'>Recalculate</a>( <strong class='reserved'>const</strong> <a href='../S/392.html#L411' title='Defined at 411 in sch_sheet_path.cpp.'>SCH_SHEET_LIST</a>&amp; <a href='../Y/3314.html' title='Multiple used in 3 places.'>aSheetList</a>, <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../Y/3411.html' title='Multiple used in 4 places.'>aUnconditional</a> = <a href='../Y/4387.html' title='Multiple used in 97 places.'>false</a> );
+<a id='L252' name='L252'></a> 252 
+<a id='L253' name='L253'></a> 253     <em class='comment'>/**</em>
+<a id='L254' name='L254'></a> 254 <em class='comment'>     * Returns a bus alias pointer for the given name if it exists (from cache)</em>
+<a id='L255' name='L255'></a> 255 <em class='comment'>     *</em>
+<a id='L256' name='L256'></a> 256 <em class='comment'>     * CONNECTION_GRAPH caches these, they are owned by the SCH_SCREEN that</em>
+<a id='L257' name='L257'></a> 257 <em class='comment'>     * the alias was defined on.  The cache is only used to update the graph.</em>
+<a id='L258' name='L258'></a> 258 <em class='comment'>     */</em>
+<a id='L259' name='L259'></a> 259     <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/7820.html' title='Multiple used in 71 places.'>shared_ptr</a>&lt;<a href='../D/73.html' title='Multiple defined in 2 places.'>BUS_ALIAS</a>&gt; <a href='../D/544.html' title='Multiple defined in 2 places.'>GetBusAlias</a>( <strong class='reserved'>const</strong> <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&amp; <a href='../Y/3100.html' title='Multiple used in 141 places.'>aName</a> );
+<a id='L260' name='L260'></a> 260 
+<a id='L261' name='L261'></a> 261     <em class='comment'>/**</em>
+<a id='L262' name='L262'></a> 262 <em class='comment'>     * Determines which subgraphs have more than one conflicting bus label.</em>
+<a id='L263' name='L263'></a> 263 <em class='comment'>     *</em>
+<a id='L264' name='L264'></a> 264 <em class='comment'>     * @see DIALOG_MIGRATE_BUSES</em>
+<a id='L265' name='L265'></a> 265 <em class='comment'>     * @return a list of subgraphs that need migration</em>
+<a id='L266' name='L266'></a> 266 <em class='comment'>     */</em>
+<a id='L267' name='L267'></a> 267 
+<a id='L268' name='L268'></a> 268     <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8368.html' title='Multiple used in 470 places.'>vector</a>&lt;<strong class='reserved'>const</strong> <a href='../Y/161.html' title='Multiple used in 100 places.'>CONNECTION_SUBGRAPH</a>*&gt; <a href='../S/16.html#L1932' title='Defined at 1932 in connection_graph.cpp.'>GetBusesNeedingMigration</a>();
+<a id='L269' name='L269'></a> 269 
+<a id='L270' name='L270'></a> 270     <em class='comment'>/**</em>
+<a id='L271' name='L271'></a> 271 <em class='comment'>     * Runs electrical rule checks on the connectivity graph.</em>
+<a id='L272' name='L272'></a> 272 <em class='comment'>     *</em>
+<a id='L273' name='L273'></a> 273 <em class='comment'>     * Precondition: graph is up-to-date</em>
+<a id='L274' name='L274'></a> 274 <em class='comment'>     *</em>
+<a id='L275' name='L275'></a> 275 <em class='comment'>     * @return the number of errors found</em>
+<a id='L276' name='L276'></a> 276 <em class='comment'>     */</em>
+<a id='L277' name='L277'></a> 277     <strong class='reserved'>int</strong> <a href='../D/1502.html' title='Multiple defined in 2 places.'>RunERC</a>();
+<a id='L278' name='L278'></a> 278 
+<a id='L279' name='L279'></a> 279     <strong class='reserved'>const</strong> <a href='../S/17.html#L218' title='Defined at 218 in connection_graph.h.'>NET_MAP</a>&amp; <a href='../Y/857.html' title='Multiple used in 3 places.'>GetNetMap</a>() <strong class='reserved'>const</strong> <em class='brace'>{</em> <strong class='reserved'>return</strong> <a href='../Y/5907.html' title='Multiple used in 6 places.'>m_net_code_to_subgraphs_map</a>; <em class='brace'>}</em>
+<a id='L280' name='L280'></a> 280 
+<a id='L281' name='L281'></a> 281     <em class='comment'>/**</em>
+<a id='L282' name='L282'></a> 282 <em class='comment'>     * Returns the subgraph for a given net name on a given sheet</em>
+<a id='L283' name='L283'></a> 283 <em class='comment'>     * @param aNetName is the local net name to look for</em>
+<a id='L284' name='L284'></a> 284 <em class='comment'>     * @param aPath is a sheet path to look on</em>
+<a id='L285' name='L285'></a> 285 <em class='comment'>     * @return the subgraph matching the query, or nullptr if none is found</em>
+<a id='L286' name='L286'></a> 286 <em class='comment'>     */</em>
+<a id='L287' name='L287'></a> 287     <a href='../Y/161.html' title='Multiple used in 100 places.'>CONNECTION_SUBGRAPH</a>* <a href='../S/16.html#L1980' title='Defined at 1980 in connection_graph.cpp.'>FindSubgraphByName</a>( <strong class='reserved'>const</strong> <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&amp; <a href='../Y/3110.html' title='Multiple used in 28 places.'>aNetName</a>,
+<a id='L288' name='L288'></a> 288                                              <strong class='reserved'>const</strong> <a href='../D/1563.html' title='Multiple defined in 2 places.'>SCH_SHEET_PATH</a>&amp; <a href='../Y/3177.html' title='Multiple used in 72 places.'>aPath</a> );
+<a id='L289' name='L289'></a> 289 
+<a id='L290' name='L290'></a> 290     <em class='comment'>/**</em>
+<a id='L291' name='L291'></a> 291 <em class='comment'>     * Retrieves a subgraph for the given net name, if one exists.</em>
+<a id='L292' name='L292'></a> 292 <em class='comment'>     * Searches every sheet</em>
+<a id='L293' name='L293'></a> 293 <em class='comment'>     * @param aNetName is the full net name to search for</em>
+<a id='L294' name='L294'></a> 294 <em class='comment'>     * @return the subgraph matching the query, or nullptr if none is found</em>
+<a id='L295' name='L295'></a> 295 <em class='comment'>     */</em>
+<a id='L296' name='L296'></a> 296     <a href='../Y/161.html' title='Multiple used in 100 places.'>CONNECTION_SUBGRAPH</a>* <a href='../S/16.html#L1999' title='Defined at 1999 in connection_graph.cpp.'>FindFirstSubgraphByName</a>( <strong class='reserved'>const</strong> <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&amp; <a href='../Y/3110.html' title='Multiple used in 28 places.'>aNetName</a> );
+<a id='L297' name='L297'></a> 297 
+<a id='L298' name='L298'></a> 298     <a href='../Y/161.html' title='Multiple used in 100 places.'>CONNECTION_SUBGRAPH</a>* <a href='../S/16.html#L2010' title='Defined at 2010 in connection_graph.cpp.'>GetSubgraphForItem</a>( <a href='../D/1533.html' title='Multiple defined in 3 places.'>SCH_ITEM</a>* <a href='../Y/3005.html' title='Multiple used in 689 places.'>aItem</a> );
+<a id='L299' name='L299'></a> 299 
+<a id='L300' name='L300'></a> 300     <em class='comment'>// TODO(JE) Remove this when pressure valve is removed</em>
+<a id='L301' name='L301'></a> 301     <strong class='reserved'>static</strong> <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../Y/5345.html' title='Multiple used in 11 places.'>m_allowRealTime</a>;
+<a id='L302' name='L302'></a> 302 
+<a id='L303' name='L303'></a> 303 <a href='../Y/7425.html' title='Multiple used in 187 places.'>private</a>:
+<a id='L304' name='L304'></a> 304 
+<a id='L305' name='L305'></a> 305     <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8368.html' title='Multiple used in 470 places.'>vector</a>&lt;<a href='../D/1533.html' title='Multiple defined in 3 places.'>SCH_ITEM</a>*&gt; <a href='../Y/5778.html' title='Multiple used in 52 places.'>m_items</a>;
+<a id='L306' name='L306'></a> 306 
+<a id='L307' name='L307'></a> 307     <em class='comment'>// The owner of all CONNECTION_SUBGRAPH objects</em>
+<a id='L308' name='L308'></a> 308     <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8368.html' title='Multiple used in 470 places.'>vector</a>&lt;<a href='../Y/161.html' title='Multiple used in 100 places.'>CONNECTION_SUBGRAPH</a>*&gt; <a href='../Y/6490.html' title='Multiple used in 12 places.'>m_subgraphs</a>;
+<a id='L309' name='L309'></a> 309 
+<a id='L310' name='L310'></a> 310     <em class='comment'>// Cache of a subset of m_subgraphs</em>
+<a id='L311' name='L311'></a> 311     <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8368.html' title='Multiple used in 470 places.'>vector</a>&lt;<a href='../Y/161.html' title='Multiple used in 100 places.'>CONNECTION_SUBGRAPH</a>*&gt; <a href='../Y/5613.html' title='Multiple used in 14 places.'>m_driver_subgraphs</a>;
+<a id='L312' name='L312'></a> 312 
+<a id='L313' name='L313'></a> 313     <em class='comment'>// Cache to lookup subgraphs in m_driver_subgraphs by sheet path</em>
+<a id='L314' name='L314'></a> 314     <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8312.html' title='Multiple used in 14 places.'>unordered_map</a>&lt;<a href='../D/1563.html' title='Multiple defined in 2 places.'>SCH_SHEET_PATH</a>,
+<a id='L315' name='L315'></a> 315                        <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8368.html' title='Multiple used in 470 places.'>vector</a>&lt;<a href='../Y/161.html' title='Multiple used in 100 places.'>CONNECTION_SUBGRAPH</a>*&gt;&gt; <a href='../Y/6237.html' title='Multiple used in 11 places.'>m_sheet_to_subgraphs_map</a>;
+<a id='L316' name='L316'></a> 316 
+<a id='L317' name='L317'></a> 317     <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8368.html' title='Multiple used in 470 places.'>vector</a>&lt;<a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/7156.html' title='Multiple used in 66 places.'>pair</a>&lt;<a href='../D/1563.html' title='Multiple defined in 2 places.'>SCH_SHEET_PATH</a>, <a href='../S/377.html#L37' title='Defined at 37 in sch_pin.cpp.'>SCH_PIN</a>*&gt;&gt; <a href='../Y/5757.html' title='Multiple used in 4 places.'>m_invisible_power_pins</a>;
+<a id='L318' name='L318'></a> 318 
+<a id='L319' name='L319'></a> 319     <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8312.html' title='Multiple used in 14 places.'>unordered_map</a>&lt; <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>, <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/7820.html' title='Multiple used in 71 places.'>shared_ptr</a>&lt;<a href='../D/73.html' title='Multiple defined in 2 places.'>BUS_ALIAS</a>&gt; &gt; <a href='../Y/5410.html' title='Multiple used in 5 places.'>m_bus_alias_cache</a>;
+<a id='L320' name='L320'></a> 320 
+<a id='L321' name='L321'></a> 321     <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/6664.html' title='Multiple used in 68 places.'>map</a>&lt;<a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>, <strong class='reserved'>int</strong>&gt; <a href='../Y/5909.html' title='Multiple used in 5 places.'>m_net_name_to_code_map</a>;
+<a id='L322' name='L322'></a> 322 
+<a id='L323' name='L323'></a> 323     <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/6664.html' title='Multiple used in 68 places.'>map</a>&lt;<a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>, <strong class='reserved'>int</strong>&gt; <a href='../Y/5415.html' title='Multiple used in 5 places.'>m_bus_name_to_code_map</a>;
+<a id='L324' name='L324'></a> 324 
+<a id='L325' name='L325'></a> 325     <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/6664.html' title='Multiple used in 68 places.'>map</a>&lt;<a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>, <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8368.html' title='Multiple used in 470 places.'>vector</a>&lt;<strong class='reserved'>const</strong> <a href='../Y/161.html' title='Multiple used in 100 places.'>CONNECTION_SUBGRAPH</a>*&gt;&gt; <a href='../Y/5708.html' title='Multiple used in 5 places.'>m_global_label_cache</a>;
+<a id='L326' name='L326'></a> 326 
+<a id='L327' name='L327'></a> 327     <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/6664.html' title='Multiple used in 68 places.'>map</a>&lt; <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/7156.html' title='Multiple used in 66 places.'>pair</a>&lt;<a href='../D/1563.html' title='Multiple defined in 2 places.'>SCH_SHEET_PATH</a>, <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&gt;,
+<a id='L328' name='L328'></a> 328               <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8368.html' title='Multiple used in 470 places.'>vector</a>&lt;<strong class='reserved'>const</strong> <a href='../Y/161.html' title='Multiple used in 100 places.'>CONNECTION_SUBGRAPH</a>*&gt; &gt; <a href='../Y/5845.html' title='Multiple used in 5 places.'>m_local_label_cache</a>;
+<a id='L329' name='L329'></a> 329 
+<a id='L330' name='L330'></a> 330     <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8312.html' title='Multiple used in 14 places.'>unordered_map</a>&lt;<a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>,
+<a id='L331' name='L331'></a> 331                        <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8368.html' title='Multiple used in 470 places.'>vector</a>&lt;<a href='../Y/161.html' title='Multiple used in 100 places.'>CONNECTION_SUBGRAPH</a>*&gt;&gt; <a href='../Y/5910.html' title='Multiple used in 22 places.'>m_net_name_to_subgraphs_map</a>;
+<a id='L332' name='L332'></a> 332 
+<a id='L333' name='L333'></a> 333     <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/6664.html' title='Multiple used in 68 places.'>map</a>&lt;<a href='../D/1533.html' title='Multiple defined in 3 places.'>SCH_ITEM</a>*, <a href='../Y/161.html' title='Multiple used in 100 places.'>CONNECTION_SUBGRAPH</a>*&gt; <a href='../Y/5777.html' title='Multiple used in 6 places.'>m_item_to_subgraph_map</a>;
+<a id='L334' name='L334'></a> 334 
+<a id='L335' name='L335'></a> 335     <a href='../S/17.html#L218' title='Defined at 218 in connection_graph.h.'>NET_MAP</a> <a href='../Y/5907.html' title='Multiple used in 6 places.'>m_net_code_to_subgraphs_map</a>;
+<a id='L336' name='L336'></a> 336 
+<a id='L337' name='L337'></a> 337     <strong class='reserved'>int</strong> <a href='../Y/5806.html' title='Multiple used in 4 places.'>m_last_net_code</a>;
+<a id='L338' name='L338'></a> 338 
+<a id='L339' name='L339'></a> 339     <strong class='reserved'>int</strong> <a href='../Y/5805.html' title='Multiple used in 4 places.'>m_last_bus_code</a>;
+<a id='L340' name='L340'></a> 340 
+<a id='L341' name='L341'></a> 341     <strong class='reserved'>int</strong> <a href='../Y/5807.html' title='Multiple used in 5 places.'>m_last_subgraph_code</a>;
+<a id='L342' name='L342'></a> 342 
+<a id='L343' name='L343'></a> 343     <a href='../S/336.html#L42' title='Defined at 42 in schematic.cpp.'>SCHEMATIC</a>* <a href='../S/375.html#L156' title='Defined at 156 in sch_painter.cpp.'>m_schematic</a>;     <em class='comment'>///&lt; The schematic this graph represents</em>
+<a id='L344' name='L344'></a> 344 
+<a id='L345' name='L345'></a> 345     <em class='comment'>/**</em>
+<a id='L346' name='L346'></a> 346 <em class='comment'>     * Updates the graphical connectivity between items (i.e. where they touch)</em>
+<a id='L347' name='L347'></a> 347 <em class='comment'>     * The items passed in must be on the same sheet.</em>
+<a id='L348' name='L348'></a> 348 <em class='comment'>     *</em>
+<a id='L349' name='L349'></a> 349 <em class='comment'>     * In the first phase, all items in aItemList have their connections</em>
+<a id='L350' name='L350'></a> 350 <em class='comment'>     * initialized for the given sheet (since they may have connections on more</em>
+<a id='L351' name='L351'></a> 351 <em class='comment'>     * than one sheet, and each needs to be calculated individually).  The</em>
+<a id='L352' name='L352'></a> 352 <em class='comment'>     * graphical connection points for the item are added to a map that stores</em>
+<a id='L353' name='L353'></a> 353 <em class='comment'>     * (x, y) -&gt; [list of items].</em>
+<a id='L354' name='L354'></a> 354 <em class='comment'>     *</em>
+<a id='L355' name='L355'></a> 355 <em class='comment'>     * Any item that is stored in the list of items that have a connection point</em>
+<a id='L356' name='L356'></a> 356 <em class='comment'>     * at a given (x, y) location will eventually be electrically connected.</em>
+<a id='L357' name='L357'></a> 357 <em class='comment'>     * This means that we can't store SCH_COMPONENTs in this map -- we must store</em>
+<a id='L358' name='L358'></a> 358 <em class='comment'>     * a structure that links a specific pin on a component back to that</em>
+<a id='L359' name='L359'></a> 359 <em class='comment'>     * component: a SCH_PIN_CONNECTION.  This wrapper class is a convenience for</em>
+<a id='L360' name='L360'></a> 360 <em class='comment'>     * linking a pin and component to a specific (x, y) point.</em>
+<a id='L361' name='L361'></a> 361 <em class='comment'>     *</em>
+<a id='L362' name='L362'></a> 362 <em class='comment'>     * In the second phase, we iterate over each value in the map, which is a</em>
+<a id='L363' name='L363'></a> 363 <em class='comment'>     * vector of items that have overlapping connection points.  After some</em>
+<a id='L364' name='L364'></a> 364 <em class='comment'>     * checks to ensure that the items should actually connect, the items are</em>
+<a id='L365' name='L365'></a> 365 <em class='comment'>     * linked together using ConnectedItems().</em>
+<a id='L366' name='L366'></a> 366 <em class='comment'>     *</em>
+<a id='L367' name='L367'></a> 367 <em class='comment'>     * As a side effect, items are loaded into m_items for BuildConnectionGraph()</em>
+<a id='L368' name='L368'></a> 368 <em class='comment'>     *</em>
+<a id='L369' name='L369'></a> 369 <em class='comment'>     * @param aSheet is the path to the sheet of all items in the list</em>
+<a id='L370' name='L370'></a> 370 <em class='comment'>     * @param aItemList is a list of items to consider</em>
+<a id='L371' name='L371'></a> 371 <em class='comment'>     */</em>
+<a id='L372' name='L372'></a> 372     <strong class='reserved'>void</strong> <a href='../S/16.html#L442' title='Defined at 442 in connection_graph.cpp.'>updateItemConnectivity</a>( <strong class='reserved'>const</strong> <a href='../D/1563.html' title='Multiple defined in 2 places.'>SCH_SHEET_PATH</a>&amp; <a href='../Y/3309.html' title='Multiple used in 268 places.'>aSheet</a>,
+<a id='L373' name='L373'></a> 373                                  <strong class='reserved'>const</strong> <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8368.html' title='Multiple used in 470 places.'>vector</a>&lt;<a href='../D/1533.html' title='Multiple defined in 3 places.'>SCH_ITEM</a>*&gt;&amp; <a href='../Y/3011.html' title='Multiple used in 56 places.'>aItemList</a> );
+<a id='L374' name='L374'></a> 374 
+<a id='L375' name='L375'></a> 375     <em class='comment'>/**</em>
+<a id='L376' name='L376'></a> 376 <em class='comment'>     * Generates the connection graph (after all item connectivity has been updated)</em>
+<a id='L377' name='L377'></a> 377 <em class='comment'>     *</em>
+<a id='L378' name='L378'></a> 378 <em class='comment'>     * In the first phase, the algorithm iterates over all items, and then over</em>
+<a id='L379' name='L379'></a> 379 <em class='comment'>     * all items that are connected (graphically) to each item, placing them into</em>
+<a id='L380' name='L380'></a> 380 <em class='comment'>     * CONNECTION_SUBGRAPHs.  Items that can potentially drive connectivity (i.e.</em>
+<a id='L381' name='L381'></a> 381 <em class='comment'>     * labels, pins, etc.) are added to the m_drivers vector of the subgraph.</em>
+<a id='L382' name='L382'></a> 382 <em class='comment'>     *</em>
+<a id='L383' name='L383'></a> 383 <em class='comment'>     * In the second phase, each subgraph is resolved.  To resolve a subgraph,</em>
+<a id='L384' name='L384'></a> 384 <em class='comment'>     * the driver is first selected by CONNECTION_SUBGRAPH::ResolveDrivers(),</em>
+<a id='L385' name='L385'></a> 385 <em class='comment'>     * and then the connection for the chosen driver is propagated to all the</em>
+<a id='L386' name='L386'></a> 386 <em class='comment'>     * other items in the subgraph.</em>
+<a id='L387' name='L387'></a> 387 <em class='comment'>     */</em>
+<a id='L388' name='L388'></a> 388     <strong class='reserved'>void</strong> <a href='../S/16.html#L659' title='Defined at 659 in connection_graph.cpp.'>buildConnectionGraph</a>();
+<a id='L389' name='L389'></a> 389 
+<a id='L390' name='L390'></a> 390     <em class='comment'>/**</em>
+<a id='L391' name='L391'></a> 391 <em class='comment'>     * Helper to assign a new net code to a connection</em>
+<a id='L392' name='L392'></a> 392 <em class='comment'>     *</em>
+<a id='L393' name='L393'></a> 393 <em class='comment'>     * @return the assigned code</em>
+<a id='L394' name='L394'></a> 394 <em class='comment'>     */</em>
+<a id='L395' name='L395'></a> 395     <strong class='reserved'>int</strong> <a href='../S/16.html#L1503' title='Defined at 1503 in connection_graph.cpp.'>assignNewNetCode</a>( <a href='../Y/1804.html' title='Multiple used in 119 places.'>SCH_CONNECTION</a>&amp; <a href='../Y/2815.html' title='Multiple used in 18 places.'>aConnection</a> );
+<a id='L396' name='L396'></a> 396 
+<a id='L397' name='L397'></a> 397     <em class='comment'>/**</em>
+<a id='L398' name='L398'></a> 398 <em class='comment'>     * Ensures all members of the bus connection have a valid net code assigned</em>
+<a id='L399' name='L399'></a> 399 <em class='comment'>     * @param aConnection is a bus connection</em>
+<a id='L400' name='L400'></a> 400 <em class='comment'>     */</em>
+<a id='L401' name='L401'></a> 401     <strong class='reserved'>void</strong> <a href='../S/16.html#L1523' title='Defined at 1523 in connection_graph.cpp.'>assignNetCodesToBus</a>( <a href='../Y/1804.html' title='Multiple used in 119 places.'>SCH_CONNECTION</a>* <a href='../Y/2815.html' title='Multiple used in 18 places.'>aConnection</a> );
+<a id='L402' name='L402'></a> 402 
+<a id='L403' name='L403'></a> 403     <em class='comment'>/**</em>
+<a id='L404' name='L404'></a> 404 <em class='comment'>     * Updates all neighbors of a subgraph with this one's connectivity info</em>
+<a id='L405' name='L405'></a> 405 <em class='comment'>     *</em>
+<a id='L406' name='L406'></a> 406 <em class='comment'>     * If this subgraph contains hierarchical links, this method will descent the</em>
+<a id='L407' name='L407'></a> 407 <em class='comment'>     * hierarchy and propagate the connectivity across all linked sheets.</em>
+<a id='L408' name='L408'></a> 408 <em class='comment'>     */</em>
+<a id='L409' name='L409'></a> 409     <strong class='reserved'>void</strong> <a href='../S/16.html#L1544' title='Defined at 1544 in connection_graph.cpp.'>propagateToNeighbors</a>( <a href='../Y/161.html' title='Multiple used in 100 places.'>CONNECTION_SUBGRAPH</a>* <a href='../Y/3363.html' title='Multiple used in 65 places.'>aSubgraph</a> );
+<a id='L410' name='L410'></a> 410 
+<a id='L411' name='L411'></a> 411     <em class='comment'>/**</em>
+<a id='L412' name='L412'></a> 412 <em class='comment'>     * Search for a matching bus member inside a bus connection</em>
+<a id='L413' name='L413'></a> 413 <em class='comment'>     *</em>
+<a id='L414' name='L414'></a> 414 <em class='comment'>     * For bus groups, this returns a bus member that matches aSearch by name.</em>
+<a id='L415' name='L415'></a> 415 <em class='comment'>     * For bus vectors, this returns a bus member that matches by vector index.</em>
+<a id='L416' name='L416'></a> 416 <em class='comment'>     *</em>
+<a id='L417' name='L417'></a> 417 <em class='comment'>     * @param aBusConnection is the bus connection to search</em>
+<a id='L418' name='L418'></a> 418 <em class='comment'>     * @param aSearch is the net connection to search for</em>
+<a id='L419' name='L419'></a> 419 <em class='comment'>     * @returns a member of aBusConnection that matches aSearch</em>
+<a id='L420' name='L420'></a> 420 <em class='comment'>     */</em>
+<a id='L421' name='L421'></a> 421     <strong class='reserved'>static</strong> <a href='../Y/1804.html' title='Multiple used in 119 places.'>SCH_CONNECTION</a>* <a href='../S/16.html#L1855' title='Defined at 1855 in connection_graph.cpp.'>matchBusMember</a>( <a href='../Y/1804.html' title='Multiple used in 119 places.'>SCH_CONNECTION</a>* <a href='../Y/2770.html' title='Multiple used in 6 places.'>aBusConnection</a>,
+<a id='L422' name='L422'></a> 422                                            <a href='../Y/1804.html' title='Multiple used in 119 places.'>SCH_CONNECTION</a>* <a href='../Y/3287.html' title='Multiple used in 5 places.'>aSearch</a> );
+<a id='L423' name='L423'></a> 423 
+<a id='L424' name='L424'></a> 424     <em class='comment'>/**</em>
+<a id='L425' name='L425'></a> 425 <em class='comment'>     * Builds a new default connection for the given item based on its properties.</em>
+<a id='L426' name='L426'></a> 426 <em class='comment'>     * Handles strong drivers (power pins and labels) only</em>
+<a id='L427' name='L427'></a> 427 <em class='comment'>     *</em>
+<a id='L428' name='L428'></a> 428 <em class='comment'>     * @param aItem is an item that can generate a connection name</em>
+<a id='L429' name='L429'></a> 429 <em class='comment'>     * @param aSubgraph is used to determine the sheet to use and retrieve the cached name</em>
+<a id='L430' name='L430'></a> 430 <em class='comment'>     * @return a connection generated from the item, or nullptr if item is not valid</em>
+<a id='L431' name='L431'></a> 431 <em class='comment'>     */</em>
+<a id='L432' name='L432'></a> 432     <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/7820.html' title='Multiple used in 71 places.'>shared_ptr</a>&lt;<a href='../Y/1804.html' title='Multiple used in 119 places.'>SCH_CONNECTION</a>&gt; <a href='../S/16.html#L1816' title='Defined at 1816 in connection_graph.cpp.'>getDefaultConnection</a>( <a href='../D/1533.html' title='Multiple defined in 3 places.'>SCH_ITEM</a>* <a href='../Y/3005.html' title='Multiple used in 689 places.'>aItem</a>,
+<a id='L433' name='L433'></a> 433                                                           <a href='../Y/161.html' title='Multiple used in 100 places.'>CONNECTION_SUBGRAPH</a>* <a href='../Y/3363.html' title='Multiple used in 65 places.'>aSubgraph</a> );
+<a id='L434' name='L434'></a> 434 
+<a id='L435' name='L435'></a> 435     <strong class='reserved'>void</strong> <a href='../S/16.html#L1907' title='Defined at 1907 in connection_graph.cpp.'>recacheSubgraphName</a>( <a href='../Y/161.html' title='Multiple used in 100 places.'>CONNECTION_SUBGRAPH</a>* <a href='../Y/3363.html' title='Multiple used in 65 places.'>aSubgraph</a>, <strong class='reserved'>const</strong> <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&amp; <a href='../Y/3142.html' title='Multiple used in 27 places.'>aOldName</a> );
+<a id='L436' name='L436'></a> 436 
+<a id='L437' name='L437'></a> 437     <em class='comment'>/**</em>
+<a id='L438' name='L438'></a> 438 <em class='comment'>     * Checks one subgraph for conflicting connections between net and bus labels</em>
+<a id='L439' name='L439'></a> 439 <em class='comment'>     *</em>
+<a id='L440' name='L440'></a> 440 <em class='comment'>     * For example, a net wire connected to a bus port/pin, or vice versa</em>
+<a id='L441' name='L441'></a> 441 <em class='comment'>     *</em>
+<a id='L442' name='L442'></a> 442 <em class='comment'>     * @param  aSubgraph      is the subgraph to examine</em>
+<a id='L443' name='L443'></a> 443 <em class='comment'>     * @return                true for no errors, false for errors</em>
+<a id='L444' name='L444'></a> 444 <em class='comment'>     */</em>
+<a id='L445' name='L445'></a> 445     <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../S/16.html#L2078' title='Defined at 2078 in connection_graph.cpp.'>ercCheckBusToNetConflicts</a>( <strong class='reserved'>const</strong> <a href='../Y/161.html' title='Multiple used in 100 places.'>CONNECTION_SUBGRAPH</a>* <a href='../Y/3363.html' title='Multiple used in 65 places.'>aSubgraph</a> );
+<a id='L446' name='L446'></a> 446 
+<a id='L447' name='L447'></a> 447     <em class='comment'>/**</em>
+<a id='L448' name='L448'></a> 448 <em class='comment'>     * Checks one subgraph for conflicting connections between two bus items</em>
+<a id='L449' name='L449'></a> 449 <em class='comment'>     *</em>
+<a id='L450' name='L450'></a> 450 <em class='comment'>     * For example, a labeled bus wire connected to a hierarchical sheet pin</em>
+<a id='L451' name='L451'></a> 451 <em class='comment'>     * where the labeled bus doesn't contain any of the same bus members as the</em>
+<a id='L452' name='L452'></a> 452 <em class='comment'>     * sheet pin</em>
+<a id='L453' name='L453'></a> 453 <em class='comment'>     *</em>
+<a id='L454' name='L454'></a> 454 <em class='comment'>     * @param  aSubgraph      is the subgraph to examine</em>
+<a id='L455' name='L455'></a> 455 <em class='comment'>     * @return                true for no errors, false for errors</em>
+<a id='L456' name='L456'></a> 456 <em class='comment'>     */</em>
+<a id='L457' name='L457'></a> 457     <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../S/16.html#L2134' title='Defined at 2134 in connection_graph.cpp.'>ercCheckBusToBusConflicts</a>( <strong class='reserved'>const</strong> <a href='../Y/161.html' title='Multiple used in 100 places.'>CONNECTION_SUBGRAPH</a>* <a href='../Y/3363.html' title='Multiple used in 65 places.'>aSubgraph</a> );
+<a id='L458' name='L458'></a> 458 
+<a id='L459' name='L459'></a> 459     <em class='comment'>/**</em>
+<a id='L460' name='L460'></a> 460 <em class='comment'>     * Checks one subgraph for conflicting bus entry to bus connections</em>
+<a id='L461' name='L461'></a> 461 <em class='comment'>     *</em>
+<a id='L462' name='L462'></a> 462 <em class='comment'>     * For example, a wire with label "A0" is connected to a bus labeled "D[8..0]"</em>
+<a id='L463' name='L463'></a> 463 <em class='comment'>     *</em>
+<a id='L464' name='L464'></a> 464 <em class='comment'>     * Will also check for mistakes related to bus group names, for example:</em>
+<a id='L465' name='L465'></a> 465 <em class='comment'>     * A bus group named "USB{DP DM}" should have bus entry connections like</em>
+<a id='L466' name='L466'></a> 466 <em class='comment'>     * "USB.DP" but someone might accidentally just enter "DP"</em>
+<a id='L467' name='L467'></a> 467 <em class='comment'>     *</em>
+<a id='L468' name='L468'></a> 468 <em class='comment'>     * @param  aSubgraph      is the subgraph to examine</em>
+<a id='L469' name='L469'></a> 469 <em class='comment'>     * @return                true for no errors, false for errors</em>
+<a id='L470' name='L470'></a> 470 <em class='comment'>     */</em>
+<a id='L471' name='L471'></a> 471     <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../S/16.html#L2203' title='Defined at 2203 in connection_graph.cpp.'>ercCheckBusToBusEntryConflicts</a>( <strong class='reserved'>const</strong> <a href='../Y/161.html' title='Multiple used in 100 places.'>CONNECTION_SUBGRAPH</a>* <a href='../Y/3363.html' title='Multiple used in 65 places.'>aSubgraph</a> );
+<a id='L472' name='L472'></a> 472 
+<a id='L473' name='L473'></a> 473     <em class='comment'>/**</em>
+<a id='L474' name='L474'></a> 474 <em class='comment'>     * Checks one subgraph for proper presence or absence of no-connect symbols</em>
+<a id='L475' name='L475'></a> 475 <em class='comment'>     *</em>
+<a id='L476' name='L476'></a> 476 <em class='comment'>     * A pin with a no-connect symbol should not have any connections</em>
+<a id='L477' name='L477'></a> 477 <em class='comment'>     * A pin without a no-connect symbol should have at least one connection</em>
+<a id='L478' name='L478'></a> 478 <em class='comment'>     *</em>
+<a id='L479' name='L479'></a> 479 <em class='comment'>     * @param  aSubgraph      is the subgraph to examine</em>
+<a id='L480' name='L480'></a> 480 <em class='comment'>     * @return                true for no errors, false for errors</em>
+<a id='L481' name='L481'></a> 481 <em class='comment'>     */</em>
+<a id='L482' name='L482'></a> 482     <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../S/16.html#L2283' title='Defined at 2283 in connection_graph.cpp.'>ercCheckNoConnects</a>( <strong class='reserved'>const</strong> <a href='../Y/161.html' title='Multiple used in 100 places.'>CONNECTION_SUBGRAPH</a>* <a href='../Y/3363.html' title='Multiple used in 65 places.'>aSubgraph</a> );
+<a id='L483' name='L483'></a> 483 
+<a id='L484' name='L484'></a> 484     <em class='comment'>/**</em>
+<a id='L485' name='L485'></a> 485 <em class='comment'>     * Checks one subgraph for proper connection of labels</em>
+<a id='L486' name='L486'></a> 486 <em class='comment'>     *</em>
+<a id='L487' name='L487'></a> 487 <em class='comment'>     * Labels should be connected to something</em>
+<a id='L488' name='L488'></a> 488 <em class='comment'>     *</em>
+<a id='L489' name='L489'></a> 489 <em class='comment'>     * @param  aSubgraph      is the subgraph to examine</em>
+<a id='L490' name='L490'></a> 490 <em class='comment'>     * @param  aCheckGlobalLabels is true if global labels should be checked for loneliness</em>
+<a id='L491' name='L491'></a> 491 <em class='comment'>     * @return                true for no errors, false for errors</em>
+<a id='L492' name='L492'></a> 492 <em class='comment'>     */</em>
+<a id='L493' name='L493'></a> 493     <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../S/16.html#L2402' title='Defined at 2402 in connection_graph.cpp.'>ercCheckLabels</a>( <strong class='reserved'>const</strong> <a href='../Y/161.html' title='Multiple used in 100 places.'>CONNECTION_SUBGRAPH</a>* <a href='../Y/3363.html' title='Multiple used in 65 places.'>aSubgraph</a> );
+<a id='L494' name='L494'></a> 494 
+<a id='L495' name='L495'></a> 495 <em class='brace'>}</em>;
+<a id='L496' name='L496'></a> 496 
+<a id='L497' name='L497'></a> 497 <em class='sharp'>#endif</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;][^][v]<a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>plugins/python_scripts/round_value_robin.py</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/483.html'>plugins</a>/<a href='../files/484.html'>python_scripts</a>/round_value_robin.py</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>#
+<a id='L2' name='L2'></a># Example python script to generate an equivalent XML document from XML input
+<a id='L3' name='L3'></a>#
+<a id='L4' name='L4'></a># Example: Round value robin, XML to XML conversion with partial value monging
+<a id='L5' name='L5'></a>#
+<a id='L6' name='L6'></a>
+<a id='L7' name='L7'></a>from __future__ import print_function
+<a id='L8' name='L8'></a>
+<a id='L9' name='L9'></a># Import the KiCad python helper module and the csv formatter
+<a id='L10' name='L10'></a>import kicad_netlist_reader
+<a id='L11' name='L11'></a>import sys
+<a id='L12' name='L12'></a>
+<a id='L13' name='L13'></a>def checkvalue(self):
+<a id='L14' name='L14'></a>    """Check values, and replace with preferred/consistent values"""
+<a id='L15' name='L15'></a>    ref = self.getRef()
+<a id='L16' name='L16'></a>    r = ref.split("R")
+<a id='L17' name='L17'></a>    c = ref.split("C")
+<a id='L18' name='L18'></a>    v = self.getValue()
+<a id='L19' name='L19'></a>
+<a id='L20' name='L20'></a>    # Common to all values - convert decimation if necessary
+<a id='L21' name='L21'></a>    dec = v.split(",")
+<a id='L22' name='L22'></a>    if (len(dec) == 2):
+<a id='L23' name='L23'></a>        newval = dec[0] + "." + dec[1]
+<a id='L24' name='L24'></a>        self.setValue(newval)
+<a id='L25' name='L25'></a>        v = self.getValue()
+<a id='L26' name='L26'></a>
+<a id='L27' name='L27'></a>    if len(r) == 2 and r[1].isdigit():
+<a id='L28' name='L28'></a>        # This is a resistor - make values consistent
+<a id='L29' name='L29'></a>        # If the value is a pure value, add R to the end of the value
+<a id='L30' name='L30'></a>        if v.isdigit():
+<a id='L31' name='L31'></a>            i = int(v)
+<a id='L32' name='L32'></a>            if (i &gt; 1000000):
+<a id='L33' name='L33'></a>                i = i / 1000000
+<a id='L34' name='L34'></a>                v = str(i) + "M"
+<a id='L35' name='L35'></a>            if (i &gt; 1000):
+<a id='L36' name='L36'></a>                i = i / 1000
+<a id='L37' name='L37'></a>                v = str(i) + "K"
+<a id='L38' name='L38'></a>            else:
+<a id='L39' name='L39'></a>                v = str(i) + "R"
+<a id='L40' name='L40'></a>
+<a id='L41' name='L41'></a>            self.setValue(v)
+<a id='L42' name='L42'></a>        else:
+<a id='L43' name='L43'></a>            # Get the multiplier character
+<a id='L44' name='L44'></a>            multiplier = v[len(v) - 1]
+<a id='L45' name='L45'></a>            v = v.strip(multiplier)
+<a id='L46' name='L46'></a>            v = v.split(".")
+<a id='L47' name='L47'></a>            if (len(v) == 2):
+<a id='L48' name='L48'></a>                newval = v[0] + multiplier + v[1]
+<a id='L49' name='L49'></a>                self.setValue(newval)
+<a id='L50' name='L50'></a>                v = self.getValue()
+<a id='L51' name='L51'></a>
+<a id='L52' name='L52'></a>
+<a id='L53' name='L53'></a>
+<a id='L54' name='L54'></a># Give components a new method for checking the values (this could easily be a
+<a id='L55' name='L55'></a># Company Part Number generator method instead)
+<a id='L56' name='L56'></a>kicad_netlist_reader.comp.checkvalue = checkvalue
+<a id='L57' name='L57'></a>
+<a id='L58' name='L58'></a># Generate an instance of a generic netlist, and load the netlist tree from
+<a id='L59' name='L59'></a># the command line option. If the file doesn't exist, execution will stop
+<a id='L60' name='L60'></a>net = kicad_netlist_reader.netlist(sys.argv[1])
+<a id='L61' name='L61'></a>
+<a id='L62' name='L62'></a># Open a file to write to, if the file cannot be opened output to stdout
+<a id='L63' name='L63'></a># instead
+<a id='L64' name='L64'></a>try:
+<a id='L65' name='L65'></a>    f = open(sys.argv[2], 'w')
+<a id='L66' name='L66'></a>except IOError:
+<a id='L67' name='L67'></a>    e = "Can't open output file for writing: " + sys.argv[2]
+<a id='L68' name='L68'></a>    print(__file__, ":", e, file=sys.stderr)
+<a id='L69' name='L69'></a>    f = sys.stdout
+<a id='L70' name='L70'></a>
+<a id='L71' name='L71'></a>for c in net.components:
+<a id='L72' name='L72'></a>    c.checkvalue()
+<a id='L73' name='L73'></a>
+<a id='L74' name='L74'></a>print(net.formatXML(), file=f)
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a> */</em>
+</body>
+</html>

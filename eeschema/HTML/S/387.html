@@ -1,0 +1,260 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>sch_sexpr_parser.h</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/sch_sexpr_parser.h</h2>
+<em class='comment'>/* [&lt;][&gt;][^][v][top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'><a href='../J/318.html' title='Multiple included from 2 places.'>INCLUDED FROM</a></h2>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * This program source code file is part of KiCad, a free EDA CAD application.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 2020 CERN</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> *</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> * @author Wayne Stambaugh &lt;stambaughw@gmail.com&gt;</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> *</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * This program is free software; you can redistribute it and/or</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * modify it under the terms of the GNU General Public License</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> * as published by the Free Software Foundation; either version 2</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> * of the License, or (at your option) any later version.</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> *</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * This program is distributed in the hope that it will be useful,</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> * GNU General Public License for more details.</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> *</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * You should have received a copy of the GNU General Public License</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> * along with this program; if not, you may find one here:</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'> * or you may search the http://www.gnu.org website for the version 2 license,</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'> * or you may write to the Free Software Foundation, Inc.,</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'> * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA</em>
+<a id='L24' name='L24'></a>  24 <em class='comment'> */</em>
+<a id='L25' name='L25'></a>  25 
+<a id='L26' name='L26'></a>  26 <em class='comment'>/**</em>
+<a id='L27' name='L27'></a>  27 <em class='comment'> * @file sch_sexpr_parser.h</em>
+<a id='L28' name='L28'></a>  28 <em class='comment'> * @brief Schematic and symbol library s-expression file format parser definitions.</em>
+<a id='L29' name='L29'></a>  29 <em class='comment'> */</em>
+<a id='L30' name='L30'></a>  30 
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#ifndef</em> <a href='../S/387.html#L32' title='Defined at 32 in sch_sexpr_parser.h.'>__SCH_SEXPR_PARSER_H__</a>
+<a id='L32' name='L32'></a>  32 <em class='sharp'>#define</em> <a href='../S/387.html#L31' title='Referred from 31 in sch_sexpr_parser.h.'>__SCH_SEXPR_PARSER_H__</a>
+<a id='L33' name='L33'></a>  33 
+<a id='L34' name='L34'></a>  34 <em class='sharp'>#include</em> &lt;convert_to_biu.h&gt;                      <em class='comment'>// IU_PER_MM</em>
+<a id='L35' name='L35'></a>  35 <em class='sharp'>#include</em> &lt;math/util.h&gt;                           <em class='comment'>// KiROUND, Clamp</em>
+<a id='L36' name='L36'></a>  36 
+<a id='L37' name='L37'></a>  37 <em class='sharp'>#include</em> &lt;<a href='11.html'>class_library.h</a>&gt;
+<a id='L38' name='L38'></a>  38 <em class='sharp'>#include</em> &lt;schematic_lexer.h&gt;
+<a id='L39' name='L39'></a>  39 <em class='sharp'>#include</em> &lt;<a href='360.html'>sch_file_versions.h</a>&gt;
+<a id='L40' name='L40'></a>  40 <em class='sharp'>#include</em> &lt;<a href='19.html'>default_values.h</a>&gt;    <em class='comment'>// For some default values</em>
+<a id='L41' name='L41'></a>  41 
+<a id='L42' name='L42'></a>  42 
+<a id='L43' name='L43'></a>  43 <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../S/267.html#L50' title='Defined at 50 in lib_arc.cpp.'>LIB_ARC</a>;
+<a id='L44' name='L44'></a>  44 <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../S/269.html#L41' title='Defined at 41 in lib_bezier.cpp.'>LIB_BEZIER</a>;
+<a id='L45' name='L45'></a>  45 <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../S/271.html#L42' title='Defined at 42 in lib_circle.cpp.'>LIB_CIRCLE</a>;
+<a id='L46' name='L46'></a>  46 <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../D/979.html' title='Multiple defined in 2 places.'>LIB_ITEM</a>;
+<a id='L47' name='L47'></a>  47 <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../S/349.html#L74' title='Defined at 74 in sch_component.h.'>LIB_PIN</a>;
+<a id='L48' name='L48'></a>  48 <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../S/279.html#L42' title='Defined at 42 in lib_polyline.cpp.'>LIB_POLYLINE</a>;
+<a id='L49' name='L49'></a>  49 <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../Y/1381.html' title='Multiple used in 62 places.'>LIB_TEXT</a>;
+<a id='L50' name='L50'></a>  50 <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../Y/1583.html' title='Multiple used in 37 places.'>PAGE_INFO</a>;
+<a id='L51' name='L51'></a>  51 <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../D/1515.html' title='Multiple defined in 2 places.'>SCH_BITMAP</a>;
+<a id='L52' name='L52'></a>  52 <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../S/346.html#L52' title='Defined at 52 in sch_bus_entry.cpp.'>SCH_BUS_WIRE_ENTRY</a>;
+<a id='L53' name='L53'></a>  53 <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../D/1520.html' title='Multiple defined in 4 places.'>SCH_COMPONENT</a>;
+<a id='L54' name='L54'></a>  54 <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../S/358.html#L65' title='Defined at 65 in sch_field.cpp.'>SCH_FIELD</a>;
+<a id='L55' name='L55'></a>  55 <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../S/365.html#L46' title='Defined at 46 in sch_junction.cpp.'>SCH_JUNCTION</a>;
+<a id='L56' name='L56'></a>  56 <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../D/1539.html' title='Multiple defined in 2 places.'>SCH_LINE</a>;
+<a id='L57' name='L57'></a>  57 <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../S/373.html#L44' title='Defined at 44 in sch_no_connect.cpp.'>SCH_NO_CONNECT</a>;
+<a id='L58' name='L58'></a>  58 <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../S/384.html#L85' title='Defined at 85 in sch_screen.cpp.'>SCH_SCREEN</a>;
+<a id='L59' name='L59'></a>  59 <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../D/1561.html' title='Multiple defined in 3 places.'>SCH_SHEET</a>;
+<a id='L60' name='L60'></a>  60 <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../Y/1854.html' title='Multiple used in 121 places.'>SCH_SHEET_PIN</a>;
+<a id='L61' name='L61'></a>  61 <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../Y/1857.html' title='Multiple used in 140 places.'>SCH_TEXT</a>;
+<a id='L62' name='L62'></a>  62 <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../Y/2381.html' title='Multiple used in 18 places.'>TITLE_BLOCK</a>;
+<a id='L63' name='L63'></a>  63 
+<a id='L64' name='L64'></a>  64 
+<a id='L65' name='L65'></a>  65 <em class='comment'>/**</em>
+<a id='L66' name='L66'></a>  66 <em class='comment'> * Simple container to manage fill parameters.</em>
+<a id='L67' name='L67'></a>  67 <em class='comment'> */</em>
+<a id='L68' name='L68'></a>  68 <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../Y/509.html' title='Multiple used in 9 places.'>FILL_PARAMS</a>
+<a id='L69' name='L69'></a>  69 <em class='brace'>{</em>
+<a id='L70' name='L70'></a>  70 <a href='../Y/7469.html' title='Multiple used in 431 places.'>public</a>:
+<a id='L71' name='L71'></a>  71     <a href='../Y/510.html' title='Multiple used in 11 places.'>FILL_T</a> <a href='../Y/5153.html' title='Multiple used in 10 places.'>m_FillType</a>;
+<a id='L72' name='L72'></a>  72     <a href='../Y/145.html' title='Multiple used in 169 places.'>COLOR4D</a> <a href='../Y/5121.html' title='Multiple used in 4 places.'>m_Color</a>;
+<a id='L73' name='L73'></a>  73 <em class='brace'>}</em>;
+<a id='L74' name='L74'></a>  74 
+<a id='L75' name='L75'></a>  75 
+<a id='L76' name='L76'></a>  76 <em class='comment'>/**</em>
+<a id='L77' name='L77'></a>  77 <em class='comment'> * Object to parser s-expression symbol library and schematic file formats.</em>
+<a id='L78' name='L78'></a>  78 <em class='comment'> */</em>
+<a id='L79' name='L79'></a>  79 <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../Y/1853.html' title='Multiple used in 43 places.'>SCH_SEXPR_PARSER</a> : <a href='../Y/7469.html' title='Multiple used in 431 places.'>public</a> <a href='../Y/1796.html' title='Multiple used in 33 places.'>SCHEMATIC_LEXER</a>
+<a id='L80' name='L80'></a>  80 <em class='brace'>{</em>
+<a id='L81' name='L81'></a>  81     <strong class='reserved'>int</strong> <a href='../Y/6164.html' title='Multiple used in 11 places.'>m_requiredVersion</a>;  <em class='comment'>///&lt; Set to the symbol library file version required.</em>
+<a id='L82' name='L82'></a>  82     <strong class='reserved'>int</strong> <a href='../Y/5644.html' title='Multiple used in 35 places.'>m_fieldId</a>;          <em class='comment'>///&lt; The current field ID.</em>
+<a id='L83' name='L83'></a>  83     <strong class='reserved'>int</strong> <a href='../S/247.html#L62' title='Defined at 62 in generate_alias_info.cpp.'>m_unit</a>;             <em class='comment'>///&lt; The current unit being parsed.</em>
+<a id='L84' name='L84'></a>  84     <strong class='reserved'>int</strong> <a href='../D/2271.html' title='Multiple defined in 2 places.'>m_convert</a>;          <em class='comment'>///&lt; The current body style being parsed.</em>
+<a id='L85' name='L85'></a>  85     <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a> <a href='../Y/6504.html' title='Multiple used in 6 places.'>m_symbolName</a>;  <em class='comment'>///&lt; The current symbol name.</em>
+<a id='L86' name='L86'></a>  86 
+<a id='L87' name='L87'></a>  87     <strong class='reserved'>void</strong> <a href='../S/386.html#L632' title='Defined at 632 in sch_sexpr_parser.cpp.'>parseHeader</a>( <a href='../Y/2396.html' title='Multiple used in 6 places.'>TSCHEMATIC_T</a>::<a href='../Y/2361.html' title='Multiple used in 77 places.'>T</a> <a href='../Y/2969.html' title='Multiple used in 3 places.'>aHeaderType</a>, <strong class='reserved'>int</strong> <a href='../Y/2916.html' title='Multiple used in 13 places.'>aFileVersion</a> );
+<a id='L88' name='L88'></a>  88 
+<a id='L89' name='L89'></a>  89     <strong class='reserved'>inline</strong> <strong class='reserved'>long</strong> <a href='../S/367.html#L198' title='Defined at 198 in sch_legacy_plugin.cpp.'>parseHex</a>()
+<a id='L90' name='L90'></a>  90     <em class='brace'>{</em>
+<a id='L91' name='L91'></a>  91         <a href='../Y/1546.html' title='Multiple used in 135 places.'>NextTok</a>();
+<a id='L92' name='L92'></a>  92         <strong class='reserved'>return</strong> <a href='../Y/8022.html' title='Multiple used in 3 places.'>strtol</a>( <a href='../Y/267.html' title='Multiple used in 5 places.'>CurText</a>(), <a href='../Y/1527.html' title='Multiple used in 775 places.'>NULL</a>, 16 );
+<a id='L93' name='L93'></a>  93     <em class='brace'>}</em>
+<a id='L94' name='L94'></a>  94 
+<a id='L95' name='L95'></a>  95     <strong class='reserved'>inline</strong> <strong class='reserved'>int</strong> <a href='../S/367.html#L156' title='Defined at 156 in sch_legacy_plugin.cpp.'>parseInt</a>()
+<a id='L96' name='L96'></a>  96     <em class='brace'>{</em>
+<a id='L97' name='L97'></a>  97         <strong class='reserved'>return</strong> (<strong class='reserved'>int</strong>)<a href='../Y/8022.html' title='Multiple used in 3 places.'>strtol</a>( <a href='../Y/267.html' title='Multiple used in 5 places.'>CurText</a>(), <a href='../Y/1527.html' title='Multiple used in 775 places.'>NULL</a>, 10 );
+<a id='L98' name='L98'></a>  98     <em class='brace'>}</em>
+<a id='L99' name='L99'></a>  99 
+<a id='L100' name='L100'></a> 100     <strong class='reserved'>inline</strong> <strong class='reserved'>int</strong> <a href='../S/367.html#L156' title='Defined at 156 in sch_legacy_plugin.cpp.'>parseInt</a>( <strong class='reserved'>const</strong> <strong class='reserved'>char</strong>* <a href='../Y/2896.html' title='Multiple used in 6 places.'>aExpected</a> )
+<a id='L101' name='L101'></a> 101     <em class='brace'>{</em>
+<a id='L102' name='L102'></a> 102         <a href='../Y/1533.html' title='Multiple used in 2 places.'>NeedNUMBER</a>( <a href='../Y/2896.html' title='Multiple used in 6 places.'>aExpected</a> );
+<a id='L103' name='L103'></a> 103         <strong class='reserved'>return</strong> <a href='../S/367.html#L156' title='Defined at 156 in sch_legacy_plugin.cpp.'>parseInt</a>();
+<a id='L104' name='L104'></a> 104     <em class='brace'>}</em>
+<a id='L105' name='L105'></a> 105 
+<a id='L106' name='L106'></a> 106     <em class='comment'>/**</em>
+<a id='L107' name='L107'></a> 107 <em class='comment'>     * Parse the current token as an ASCII numeric string with possible leading</em>
+<a id='L108' name='L108'></a> 108 <em class='comment'>     * whitespace into a double precision floating point number.</em>
+<a id='L109' name='L109'></a> 109 <em class='comment'>     *</em>
+<a id='L110' name='L110'></a> 110 <em class='comment'>     * @throw IO_ERROR if an error occurs attempting to convert the current token.</em>
+<a id='L111' name='L111'></a> 111 <em class='comment'>     * @return The result of the parsed token.</em>
+<a id='L112' name='L112'></a> 112 <em class='comment'>     */</em>
+<a id='L113' name='L113'></a> 113     <strong class='reserved'>double</strong> <a href='../D/2435.html' title='Multiple defined in 2 places.'>parseDouble</a>();
+<a id='L114' name='L114'></a> 114 
+<a id='L115' name='L115'></a> 115     <strong class='reserved'>inline</strong> <strong class='reserved'>double</strong> <a href='../D/2435.html' title='Multiple defined in 2 places.'>parseDouble</a>( <strong class='reserved'>const</strong> <strong class='reserved'>char</strong>* <a href='../Y/2896.html' title='Multiple used in 6 places.'>aExpected</a> )
+<a id='L116' name='L116'></a> 116     <em class='brace'>{</em>
+<a id='L117' name='L117'></a> 117         <a href='../Y/1533.html' title='Multiple used in 2 places.'>NeedNUMBER</a>( <a href='../Y/2896.html' title='Multiple used in 6 places.'>aExpected</a> );
+<a id='L118' name='L118'></a> 118         <strong class='reserved'>return</strong> <a href='../D/2435.html' title='Multiple defined in 2 places.'>parseDouble</a>();
+<a id='L119' name='L119'></a> 119     <em class='brace'>}</em>
+<a id='L120' name='L120'></a> 120 
+<a id='L121' name='L121'></a> 121     <strong class='reserved'>inline</strong> <strong class='reserved'>double</strong> <a href='../D/2435.html' title='Multiple defined in 2 places.'>parseDouble</a>( <a href='../Y/2396.html' title='Multiple used in 6 places.'>TSCHEMATIC_T</a>::<a href='../Y/2361.html' title='Multiple used in 77 places.'>T</a> <a href='../Y/3399.html' title='Multiple used in 4 places.'>aToken</a> )
+<a id='L122' name='L122'></a> 122     <em class='brace'>{</em>
+<a id='L123' name='L123'></a> 123         <strong class='reserved'>return</strong> <a href='../D/2435.html' title='Multiple defined in 2 places.'>parseDouble</a>( <a href='../Y/1030.html' title='Multiple used in 2 places.'>GetTokenText</a>( <a href='../Y/3399.html' title='Multiple used in 4 places.'>aToken</a> ) );
+<a id='L124' name='L124'></a> 124     <em class='brace'>}</em>
+<a id='L125' name='L125'></a> 125 
+<a id='L126' name='L126'></a> 126     <strong class='reserved'>inline</strong> <strong class='reserved'>int</strong> <a href='../Y/7173.html' title='Multiple used in 24 places.'>parseInternalUnits</a>()
+<a id='L127' name='L127'></a> 127     <em class='brace'>{</em>
+<a id='L128' name='L128'></a> 128         <strong class='reserved'>auto</strong> <a href='../Y/7599.html' title='Multiple used in 13 places.'>retval</a> = <a href='../D/2435.html' title='Multiple defined in 2 places.'>parseDouble</a>() * <a href='../Y/1143.html' title='Multiple used in 4 places.'>IU_PER_MM</a>;
+<a id='L129' name='L129'></a> 129 
+<a id='L130' name='L130'></a> 130         <em class='comment'>// Schematic internal units are represented as integers.  Any values that are</em>
+<a id='L131' name='L131'></a> 131         <em class='comment'>// larger or smaller than the schematic units represent undefined behavior for</em>
+<a id='L132' name='L132'></a> 132         <em class='comment'>// the system.  Limit values to the largest that can be displayed on the screen.</em>
+<a id='L133' name='L133'></a> 133         <strong class='reserved'>double</strong> <a href='../Y/4799.html' title='Multiple used in 4 places.'>int_limit</a> = <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/7015.html' title='Multiple used in 4 places.'>numeric_limits</a>&lt;<strong class='reserved'>int</strong>&gt;::<a href='../Y/6674.html' title='Multiple used in 130 places.'>max</a>() * 0.7071; <em class='comment'>// 0.7071 = roughly 1/sqrt(2)</em>
+<a id='L134' name='L134'></a> 134 
+<a id='L135' name='L135'></a> 135         <strong class='reserved'>return</strong> <a href='../Y/1299.html' title='Multiple used in 51 places.'>KiROUND</a>( <a href='../Y/190.html' title='Multiple used in 5 places.'>Clamp</a>&lt;<strong class='reserved'>double</strong>&gt;( -<a href='../Y/4799.html' title='Multiple used in 4 places.'>int_limit</a>, <a href='../Y/7599.html' title='Multiple used in 13 places.'>retval</a>, <a href='../Y/4799.html' title='Multiple used in 4 places.'>int_limit</a> ) );
+<a id='L136' name='L136'></a> 136     <em class='brace'>}</em>
+<a id='L137' name='L137'></a> 137 
+<a id='L138' name='L138'></a> 138     <strong class='reserved'>inline</strong> <strong class='reserved'>int</strong> <a href='../Y/7173.html' title='Multiple used in 24 places.'>parseInternalUnits</a>( <strong class='reserved'>const</strong> <strong class='reserved'>char</strong>* <a href='../Y/2896.html' title='Multiple used in 6 places.'>aExpected</a> )
+<a id='L139' name='L139'></a> 139     <em class='brace'>{</em>
+<a id='L140' name='L140'></a> 140         <strong class='reserved'>auto</strong> <a href='../Y/7599.html' title='Multiple used in 13 places.'>retval</a> = <a href='../D/2435.html' title='Multiple defined in 2 places.'>parseDouble</a>( <a href='../Y/2896.html' title='Multiple used in 6 places.'>aExpected</a> ) * <a href='../Y/1143.html' title='Multiple used in 4 places.'>IU_PER_MM</a>;
+<a id='L141' name='L141'></a> 141 
+<a id='L142' name='L142'></a> 142         <strong class='reserved'>double</strong> <a href='../Y/4799.html' title='Multiple used in 4 places.'>int_limit</a> = <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/7015.html' title='Multiple used in 4 places.'>numeric_limits</a>&lt;<strong class='reserved'>int</strong>&gt;::<a href='../Y/6674.html' title='Multiple used in 130 places.'>max</a>() * 0.7071;
+<a id='L143' name='L143'></a> 143 
+<a id='L144' name='L144'></a> 144         <strong class='reserved'>return</strong> <a href='../Y/1299.html' title='Multiple used in 51 places.'>KiROUND</a>( <a href='../Y/190.html' title='Multiple used in 5 places.'>Clamp</a>&lt;<strong class='reserved'>double</strong>&gt;( -<a href='../Y/4799.html' title='Multiple used in 4 places.'>int_limit</a>, <a href='../Y/7599.html' title='Multiple used in 13 places.'>retval</a>, <a href='../Y/4799.html' title='Multiple used in 4 places.'>int_limit</a> ) );
+<a id='L145' name='L145'></a> 145     <em class='brace'>}</em>
+<a id='L146' name='L146'></a> 146 
+<a id='L147' name='L147'></a> 147     <strong class='reserved'>inline</strong> <strong class='reserved'>int</strong> <a href='../Y/7173.html' title='Multiple used in 24 places.'>parseInternalUnits</a>( <a href='../Y/2396.html' title='Multiple used in 6 places.'>TSCHEMATIC_T</a>::<a href='../Y/2361.html' title='Multiple used in 77 places.'>T</a> <a href='../Y/3399.html' title='Multiple used in 4 places.'>aToken</a> )
+<a id='L148' name='L148'></a> 148     <em class='brace'>{</em>
+<a id='L149' name='L149'></a> 149         <strong class='reserved'>return</strong> <a href='../Y/7173.html' title='Multiple used in 24 places.'>parseInternalUnits</a>( <a href='../Y/1030.html' title='Multiple used in 2 places.'>GetTokenText</a>( <a href='../Y/3399.html' title='Multiple used in 4 places.'>aToken</a> ) );
+<a id='L150' name='L150'></a> 150     <em class='brace'>}</em>
+<a id='L151' name='L151'></a> 151 
+<a id='L152' name='L152'></a> 152     <strong class='reserved'>inline</strong> <a href='../Y/8819.html' title='Multiple used in 1271 places.'>wxPoint</a> <a href='../Y/7174.html' title='Multiple used in 24 places.'>parseXY</a>()
+<a id='L153' name='L153'></a> 153     <em class='brace'>{</em>
+<a id='L154' name='L154'></a> 154         <a href='../Y/8819.html' title='Multiple used in 1271 places.'>wxPoint</a> <a href='../Y/9005.html' title='Multiple used in 4 places.'>xy</a>;
+<a id='L155' name='L155'></a> 155 
+<a id='L156' name='L156'></a> 156         <a href='../Y/9005.html' title='Multiple used in 4 places.'>xy</a>.<a href='../Y/8967.html' title='Multiple used in 647 places.'>x</a> = <a href='../Y/7173.html' title='Multiple used in 24 places.'>parseInternalUnits</a>( "X coordinate" );
+<a id='L157' name='L157'></a> 157         <a href='../Y/9005.html' title='Multiple used in 4 places.'>xy</a>.<a href='../Y/9006.html' title='Multiple used in 589 places.'>y</a> = <a href='../Y/7173.html' title='Multiple used in 24 places.'>parseInternalUnits</a>( "Y coordinate" );
+<a id='L158' name='L158'></a> 158 
+<a id='L159' name='L159'></a> 159         <strong class='reserved'>return</strong> <a href='../Y/9005.html' title='Multiple used in 4 places.'>xy</a>;
+<a id='L160' name='L160'></a> 160     <em class='brace'>}</em>
+<a id='L161' name='L161'></a> 161 
+<a id='L162' name='L162'></a> 162     <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../S/386.html#L71' title='Defined at 71 in sch_sexpr_parser.cpp.'>parseBool</a>();
+<a id='L163' name='L163'></a> 163 
+<a id='L164' name='L164'></a> 164     <em class='comment'>/**</em>
+<a id='L165' name='L165'></a> 165 <em class='comment'>     * Parse stroke definition \a aStroke.</em>
+<a id='L166' name='L166'></a> 166 <em class='comment'>     *</em>
+<a id='L167' name='L167'></a> 167 <em class='comment'>     * @param aStrokeDef A reference to the #STROKE_PARAMS structure to write to.</em>
+<a id='L168' name='L168'></a> 168 <em class='comment'>     */</em>
+<a id='L169' name='L169'></a> 169     <strong class='reserved'>void</strong> <a href='../S/386.html#L416' title='Defined at 416 in sch_sexpr_parser.cpp.'>parseStroke</a>( <a href='../Y/1898.html' title='Multiple used in 18 places.'>STROKE_PARAMS</a>&amp; <a href='../Y/3359.html' title='Multiple used in 21 places.'>aStroke</a> );
+<a id='L170' name='L170'></a> 170 
+<a id='L171' name='L171'></a> 171     <strong class='reserved'>void</strong> <a href='../S/386.html#L481' title='Defined at 481 in sch_sexpr_parser.cpp.'>parseFill</a>( <a href='../Y/509.html' title='Multiple used in 9 places.'>FILL_PARAMS</a>&amp; <a href='../Y/2918.html' title='Multiple used in 28 places.'>aFill</a> );
+<a id='L172' name='L172'></a> 172 
+<a id='L173' name='L173'></a> 173     <strong class='reserved'>void</strong> <a href='../S/386.html#L537' title='Defined at 537 in sch_sexpr_parser.cpp.'>parseEDA_TEXT</a>( <a href='../S/283.html#L49' title='Defined at 49 in lib_text.cpp.'>EDA_TEXT</a>* <a href='../Y/3390.html' title='Multiple used in 166 places.'>aText</a> );
+<a id='L174' name='L174'></a> 174     <strong class='reserved'>void</strong> <a href='../S/386.html#L665' title='Defined at 665 in sch_sexpr_parser.cpp.'>parsePinNames</a>( <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8293.html' title='Multiple used in 145 places.'>unique_ptr</a>&lt;<a href='../D/983.html' title='Multiple defined in 2 places.'>LIB_PART</a>&gt;&amp; <a href='../Y/3367.html' title='Multiple used in 104 places.'>aSymbol</a> );
+<a id='L175' name='L175'></a> 175 
+<a id='L176' name='L176'></a> 176     <strong class='reserved'>void</strong> <a href='../S/386.html#L702' title='Defined at 702 in sch_sexpr_parser.cpp.'>parseProperty</a>( <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8293.html' title='Multiple used in 145 places.'>unique_ptr</a>&lt;<a href='../D/983.html' title='Multiple defined in 2 places.'>LIB_PART</a>&gt;&amp; <a href='../Y/3367.html' title='Multiple used in 104 places.'>aSymbol</a> );
+<a id='L177' name='L177'></a> 177 
+<a id='L178' name='L178'></a> 178     <a href='../S/267.html#L50' title='Defined at 50 in lib_arc.cpp.'>LIB_ARC</a>* <a href='../S/386.html#L827' title='Defined at 827 in sch_sexpr_parser.cpp.'>parseArc</a>();
+<a id='L179' name='L179'></a> 179     <a href='../S/269.html#L41' title='Defined at 41 in lib_bezier.cpp.'>LIB_BEZIER</a>* <a href='../S/386.html#L950' title='Defined at 950 in sch_sexpr_parser.cpp.'>parseBezier</a>();
+<a id='L180' name='L180'></a> 180     <a href='../S/271.html#L42' title='Defined at 42 in lib_circle.cpp.'>LIB_CIRCLE</a>* <a href='../S/386.html#L1015' title='Defined at 1015 in sch_sexpr_parser.cpp.'>parseCircle</a>();
+<a id='L181' name='L181'></a> 181     <a href='../S/349.html#L74' title='Defined at 74 in sch_component.h.'>LIB_PIN</a>* <a href='../S/386.html#L1072' title='Defined at 1072 in sch_sexpr_parser.cpp.'>parsePin</a>();
+<a id='L182' name='L182'></a> 182     <a href='../S/279.html#L42' title='Defined at 42 in lib_polyline.cpp.'>LIB_POLYLINE</a>* <a href='../S/386.html#L1312' title='Defined at 1312 in sch_sexpr_parser.cpp.'>parsePolyLine</a>();
+<a id='L183' name='L183'></a> 183     <a href='../S/281.html#L41' title='Defined at 41 in lib_rectangle.cpp.'>LIB_RECTANGLE</a>* <a href='../S/386.html#L1377' title='Defined at 1377 in sch_sexpr_parser.cpp.'>parseRectangle</a>();
+<a id='L184' name='L184'></a> 184     <a href='../Y/1381.html' title='Multiple used in 62 places.'>LIB_TEXT</a>* <a href='../S/386.html#L1434' title='Defined at 1434 in sch_sexpr_parser.cpp.'>parseText</a>();
+<a id='L185' name='L185'></a> 185 
+<a id='L186' name='L186'></a> 186     <strong class='reserved'>void</strong> <a href='../S/386.html#L1485' title='Defined at 1485 in sch_sexpr_parser.cpp.'>parsePAGE_INFO</a>( <a href='../Y/1583.html' title='Multiple used in 37 places.'>PAGE_INFO</a>&amp; <a href='../Y/3164.html' title='Multiple used in 14 places.'>aPageInfo</a> );
+<a id='L187' name='L187'></a> 187     <strong class='reserved'>void</strong> <a href='../S/386.html#L1538' title='Defined at 1538 in sch_sexpr_parser.cpp.'>parseTITLE_BLOCK</a>( <a href='../Y/2381.html' title='Multiple used in 18 places.'>TITLE_BLOCK</a>&amp; <a href='../Y/3397.html' title='Multiple used in 19 places.'>aTitleBlock</a> );
+<a id='L188' name='L188'></a> 188     <strong class='reserved'>void</strong> <a href='../S/386.html#L1809' title='Defined at 1809 in sch_sexpr_parser.cpp.'>parseSchSymbolInstances</a>( <a href='../S/384.html#L85' title='Defined at 85 in sch_screen.cpp.'>SCH_SCREEN</a>* <a href='../Y/3286.html' title='Multiple used in 237 places.'>aScreen</a> );
+<a id='L189' name='L189'></a> 189 
+<a id='L190' name='L190'></a> 190     <a href='../Y/1854.html' title='Multiple used in 121 places.'>SCH_SHEET_PIN</a>* <a href='../S/386.html#L1722' title='Defined at 1722 in sch_sexpr_parser.cpp.'>parseSchSheetPin</a>( <a href='../D/1561.html' title='Multiple defined in 3 places.'>SCH_SHEET</a>* <a href='../Y/3309.html' title='Multiple used in 268 places.'>aSheet</a> );
+<a id='L191' name='L191'></a> 191     <a href='../S/358.html#L65' title='Defined at 65 in sch_field.cpp.'>SCH_FIELD</a>* <a href='../S/386.html#L1644' title='Defined at 1644 in sch_sexpr_parser.cpp.'>parseSchField</a>( <a href='../D/1533.html' title='Multiple defined in 3 places.'>SCH_ITEM</a>* <a href='../Y/3169.html' title='Multiple used in 321 places.'>aParent</a> );
+<a id='L192' name='L192'></a> 192     <a href='../D/1520.html' title='Multiple defined in 4 places.'>SCH_COMPONENT</a>* <a href='../S/386.html#L2043' title='Defined at 2043 in sch_sexpr_parser.cpp.'>parseSchematicSymbol</a>();
+<a id='L193' name='L193'></a> 193     <a href='../D/1515.html' title='Multiple defined in 2 places.'>SCH_BITMAP</a>* <a href='../S/386.html#L2233' title='Defined at 2233 in sch_sexpr_parser.cpp.'>parseImage</a>();
+<a id='L194' name='L194'></a> 194     <a href='../D/1561.html' title='Multiple defined in 3 places.'>SCH_SHEET</a>* <a href='../S/386.html#L2302' title='Defined at 2302 in sch_sexpr_parser.cpp.'>parseSheet</a>();
+<a id='L195' name='L195'></a> 195     <a href='../S/365.html#L46' title='Defined at 46 in sch_junction.cpp.'>SCH_JUNCTION</a>* <a href='../S/386.html#L2401' title='Defined at 2401 in sch_sexpr_parser.cpp.'>parseJunction</a>();
+<a id='L196' name='L196'></a> 196     <a href='../S/373.html#L44' title='Defined at 44 in sch_no_connect.cpp.'>SCH_NO_CONNECT</a>* <a href='../S/386.html#L2451' title='Defined at 2451 in sch_sexpr_parser.cpp.'>parseNoConnect</a>();
+<a id='L197' name='L197'></a> 197     <a href='../S/346.html#L52' title='Defined at 52 in sch_bus_entry.cpp.'>SCH_BUS_WIRE_ENTRY</a>* <a href='../S/386.html#L2482' title='Defined at 2482 in sch_sexpr_parser.cpp.'>parseBusEntry</a>();
+<a id='L198' name='L198'></a> 198     <a href='../D/1539.html' title='Multiple defined in 2 places.'>SCH_LINE</a>* <a href='../S/386.html#L2530' title='Defined at 2530 in sch_sexpr_parser.cpp.'>parseLine</a>();
+<a id='L199' name='L199'></a> 199     <a href='../Y/1857.html' title='Multiple used in 140 places.'>SCH_TEXT</a>* <a href='../S/386.html#L2589' title='Defined at 2589 in sch_sexpr_parser.cpp.'>parseSchText</a>();
+<a id='L200' name='L200'></a> 200     <strong class='reserved'>void</strong> <a href='../S/386.html#L2673' title='Defined at 2673 in sch_sexpr_parser.cpp.'>parseBusAlias</a>( <a href='../S/384.html#L85' title='Defined at 85 in sch_screen.cpp.'>SCH_SCREEN</a>* <a href='../Y/3286.html' title='Multiple used in 237 places.'>aScreen</a> );
+<a id='L201' name='L201'></a> 201 
+<a id='L202' name='L202'></a> 202 <a href='../Y/7469.html' title='Multiple used in 431 places.'>public</a>:
+<a id='L203' name='L203'></a> 203     <a href='../Y/1853.html' title='Multiple used in 43 places.'>SCH_SEXPR_PARSER</a>( <a href='../Y/1391.html' title='Multiple used in 73 places.'>LINE_READER</a>* <a href='../Y/3068.html' title='Multiple used in 3 places.'>aLineReader</a> = <a href='../Y/7001.html' title='Multiple used in 622 places.'>nullptr</a> );
+<a id='L204' name='L204'></a> 204 
+<a id='L205' name='L205'></a> 205     <strong class='reserved'>void</strong> <a href='../S/386.html#L92' title='Defined at 92 in sch_sexpr_parser.cpp.'>ParseLib</a>( <a href='../S/11.html#L177' title='Defined at 177 in class_library.h.'>LIB_PART_MAP</a>&amp; <a href='../Y/3370.html' title='Multiple used in 8 places.'>aSymbolLibMap</a> );
+<a id='L206' name='L206'></a> 206 
+<a id='L207' name='L207'></a> 207     <a href='../D/983.html' title='Multiple defined in 2 places.'>LIB_PART</a>* <a href='../S/386.html#L122' title='Defined at 122 in sch_sexpr_parser.cpp.'>ParseSymbol</a>( <a href='../S/11.html#L177' title='Defined at 177 in class_library.h.'>LIB_PART_MAP</a>&amp; <a href='../Y/3370.html' title='Multiple used in 8 places.'>aSymbolLibMap</a>,
+<a id='L208' name='L208'></a> 208                            <strong class='reserved'>int</strong> <a href='../Y/2916.html' title='Multiple used in 13 places.'>aFileVersion</a> = <a href='../S/360.html#L35' title='Defined at 35 in sch_file_versions.h.'>SEXPR_SYMBOL_LIB_FILE_VERSION</a> );
+<a id='L209' name='L209'></a> 209 
+<a id='L210' name='L210'></a> 210     <a href='../D/979.html' title='Multiple defined in 2 places.'>LIB_ITEM</a>* <a href='../S/386.html#L346' title='Defined at 346 in sch_sexpr_parser.cpp.'>ParseDrawItem</a>();
+<a id='L211' name='L211'></a> 211 
+<a id='L212' name='L212'></a> 212     <em class='comment'>/**</em>
+<a id='L213' name='L213'></a> 213 <em class='comment'>     * Parse the internal #LINE_READER object into \a aSheet.</em>
+<a id='L214' name='L214'></a> 214 <em class='comment'>     *</em>
+<a id='L215' name='L215'></a> 215 <em class='comment'>     * When \a aIsCopyableOnly is true, only schematic objects that are viewable on the canvas</em>
+<a id='L216' name='L216'></a> 216 <em class='comment'>     * for copy and paste purposes are parsed.  Other schematic content such as bus definitions</em>
+<a id='L217' name='L217'></a> 217 <em class='comment'>     * or instance data will throw an #IO_ERROR exception.</em>
+<a id='L218' name='L218'></a> 218 <em class='comment'>     *</em>
+<a id='L219' name='L219'></a> 219 <em class='comment'>     * When \a aIsCopyableOnly is false, full schematic file parsing is performed.</em>
+<a id='L220' name='L220'></a> 220 <em class='comment'>     *</em>
+<a id='L221' name='L221'></a> 221 <em class='comment'>     * @note This does not load any sub-sheets or decent complex sheet hierarchies.</em>
+<a id='L222' name='L222'></a> 222 <em class='comment'>     *</em>
+<a id='L223' name='L223'></a> 223 <em class='comment'>     * @param aSheet The #SCH_SHEET object to store the parsed schematic file.</em>
+<a id='L224' name='L224'></a> 224 <em class='comment'>     * @param aIsCopyableOnly Load only the schematic objects that can be copied into \a aSheet</em>
+<a id='L225' name='L225'></a> 225 <em class='comment'>     *                        if true.  Otherwise, load the full schematic file format.</em>
+<a id='L226' name='L226'></a> 226 <em class='comment'>     * @param aFileVersion The schematic file version to parser.  Defaults to the schematic</em>
+<a id='L227' name='L227'></a> 227 <em class='comment'>     *                     file being parsed when \a aIsCopyableOnly is false.</em>
+<a id='L228' name='L228'></a> 228 <em class='comment'>     */</em>
+<a id='L229' name='L229'></a> 229     <strong class='reserved'>void</strong> <a href='../S/386.html#L1871' title='Defined at 1871 in sch_sexpr_parser.cpp.'>ParseSchematic</a>( <a href='../D/1561.html' title='Multiple defined in 3 places.'>SCH_SHEET</a>* <a href='../Y/3309.html' title='Multiple used in 268 places.'>aSheet</a>, <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> aIsCopyablyOnly = <a href='../Y/4387.html' title='Multiple used in 97 places.'>false</a>,
+<a id='L230' name='L230'></a> 230                          <strong class='reserved'>int</strong> <a href='../Y/2916.html' title='Multiple used in 13 places.'>aFileVersion</a> = <a href='../S/360.html#L54' title='Defined at 54 in sch_file_versions.h.'>SEXPR_SCHEMATIC_FILE_VERSION</a> );
+<a id='L231' name='L231'></a> 231 
+<a id='L232' name='L232'></a> 232     <em class='comment'>/**</em>
+<a id='L233' name='L233'></a> 233 <em class='comment'>     * Return whether a version number, if any was parsed, was too recent</em>
+<a id='L234' name='L234'></a> 234 <em class='comment'>     */</em>
+<a id='L235' name='L235'></a> 235     <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../S/386.html#L86' title='Defined at 86 in sch_sexpr_parser.cpp.'>IsTooRecent</a>() <strong class='reserved'>const</strong>;
+<a id='L236' name='L236'></a> 236 <em class='brace'>}</em>;
+<a id='L237' name='L237'></a> 237 
+<a id='L238' name='L238'></a> 238 <em class='sharp'>#endif</em>    <em class='comment'>// __SCH_SEXPR_PARSER_H__</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;][^][v]<a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

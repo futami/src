@@ -1,0 +1,143 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>plugins/xsl_scripts/netlist_form_cadstar.xsl</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/483.html'>plugins</a>/<a href='../files/485.html'>xsl_scripts</a>/netlist_form_cadstar.xsl</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>&lt;?xml version="1.0" encoding="ISO-8859-1"?&gt;
+<a id='L2' name='L2'></a>&lt;!--XSL style sheet to EESCHEMA Generic Netlist Format to CADSTAR netlist format
+<a id='L3' name='L3'></a>    Copyright (C) 2010, SoftPLC Corporation.
+<a id='L4' name='L4'></a>    GPL v2.
+<a id='L5' name='L5'></a>
+<a id='L6' name='L6'></a>    How to use:
+<a id='L7' name='L7'></a>         see eeschema.pdf, chapter 14
+<a id='L8' name='L8'></a>--&gt;
+<a id='L9' name='L9'></a>
+<a id='L10' name='L10'></a>&lt;!DOCTYPE xsl:stylesheet [
+<a id='L11' name='L11'></a>  &lt;!ENTITY nl  "&amp;#xd;&amp;#xa;"&gt; &lt;!--new line CR, LF --&gt;
+<a id='L12' name='L12'></a>]&gt;
+<a id='L13' name='L13'></a>
+<a id='L14' name='L14'></a>&lt;xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"&gt;
+<a id='L15' name='L15'></a>&lt;xsl:output method="text" omit-xml-declaration="yes" indent="no"/&gt;
+<a id='L16' name='L16'></a>
+<a id='L17' name='L17'></a>&lt;!-- Netlist header --&gt;
+<a id='L18' name='L18'></a>&lt;xsl:template match="/export"&gt;
+<a id='L19' name='L19'></a>    &lt;xsl:text&gt;.HEA&amp;nl;&lt;/xsl:text&gt;
+<a id='L20' name='L20'></a>    &lt;xsl:apply-templates select="design/date"/&gt;  &lt;!-- Generate line .TIM &lt;time&gt; --&gt;
+<a id='L21' name='L21'></a>    &lt;xsl:apply-templates select="design/tool"/&gt;  &lt;!-- Generate line .APP &lt;eeschema version&gt; --&gt;
+<a id='L22' name='L22'></a>    &lt;xsl:text&gt;&amp;nl;&lt;/xsl:text&gt;
+<a id='L23' name='L23'></a>    &lt;xsl:apply-templates select="components/comp"/&gt;  &lt;!-- Generate list of components --&gt;
+<a id='L24' name='L24'></a>    &lt;xsl:text&gt;&amp;nl;&amp;nl;&lt;/xsl:text&gt;
+<a id='L25' name='L25'></a>    &lt;xsl:apply-templates select="nets/net"/&gt;          &lt;!-- Generate list of nets and connections --&gt;
+<a id='L26' name='L26'></a>    &lt;xsl:text&gt;&amp;nl;.END&amp;nl;&lt;/xsl:text&gt;
+<a id='L27' name='L27'></a>&lt;/xsl:template&gt;
+<a id='L28' name='L28'></a>
+<a id='L29' name='L29'></a> &lt;!-- Generate line .APP "eeschema (2010-08-17 BZR 2450)-unstable" --&gt;
+<a id='L30' name='L30'></a>&lt;xsl:template match="tool"&gt;
+<a id='L31' name='L31'></a>    &lt;xsl:text&gt;.APP "&lt;/xsl:text&gt;
+<a id='L32' name='L32'></a>    &lt;xsl:apply-templates/&gt;
+<a id='L33' name='L33'></a>    &lt;xsl:text&gt;"&amp;nl;&lt;/xsl:text&gt;
+<a id='L34' name='L34'></a>&lt;/xsl:template&gt;
+<a id='L35' name='L35'></a>
+<a id='L36' name='L36'></a> &lt;!-- Generate line .TIM 20/08/2010 10:45:33 --&gt;
+<a id='L37' name='L37'></a>&lt;xsl:template match="date"&gt;
+<a id='L38' name='L38'></a>    &lt;xsl:text&gt;.TIM &lt;/xsl:text&gt;
+<a id='L39' name='L39'></a>    &lt;xsl:apply-templates/&gt;
+<a id='L40' name='L40'></a>    &lt;xsl:text&gt;&amp;nl;&lt;/xsl:text&gt;
+<a id='L41' name='L41'></a>&lt;/xsl:template&gt;
+<a id='L42' name='L42'></a>
+<a id='L43' name='L43'></a>&lt;!-- for each component --&gt;
+<a id='L44' name='L44'></a>&lt;!-- create lines like
+<a id='L45' name='L45'></a>    .ADD_COM U3 "74LS541"   (when no footprint name specified)
+<a id='L46' name='L46'></a>    .ADD_COM JP1 "CONN_8X2" "pin_array_8x2" "pin_array_8x2"   (with a specified footprint name)
+<a id='L47' name='L47'></a>--&gt;
+<a id='L48' name='L48'></a>&lt;xsl:template match="comp"&gt;
+<a id='L49' name='L49'></a>    &lt;xsl:text&gt;.ADD_COM &lt;/xsl:text&gt;
+<a id='L50' name='L50'></a>    &lt;xsl:value-of select="@ref"/&gt;
+<a id='L51' name='L51'></a>    &lt;xsl:text&gt; &lt;/xsl:text&gt;
+<a id='L52' name='L52'></a>    &lt;xsl:choose&gt;
+<a id='L53' name='L53'></a>        &lt;xsl:when test = "value != '' "&gt;
+<a id='L54' name='L54'></a>            &lt;xsl:text&gt;"&lt;/xsl:text&gt; &lt;xsl:apply-templates select="value"/&gt; &lt;xsl:text&gt;"&lt;/xsl:text&gt;
+<a id='L55' name='L55'></a>        &lt;/xsl:when&gt;
+<a id='L56' name='L56'></a>        &lt;xsl:otherwise&gt;
+<a id='L57' name='L57'></a>            &lt;xsl:text&gt;""&lt;/xsl:text&gt;
+<a id='L58' name='L58'></a>        &lt;/xsl:otherwise&gt;
+<a id='L59' name='L59'></a>    &lt;/xsl:choose&gt;
+<a id='L60' name='L60'></a>    &lt;xsl:text&gt;&amp;nl;&lt;/xsl:text&gt;
+<a id='L61' name='L61'></a>&lt;/xsl:template&gt;
+<a id='L62' name='L62'></a>
+<a id='L63' name='L63'></a>&lt;!-- for each net --&gt;
+<a id='L64' name='L64'></a>&lt;!-- create lines like
+<a id='L65' name='L65'></a>.ADD_TER U3.9 "/PC-RST"
+<a id='L66' name='L66'></a>.TER     U3.8
+<a id='L67' name='L67'></a>         BUS1.2
+<a id='L68' name='L68'></a>.ADD_TER BUS1.14 "/PC-IOR"
+<a id='L69' name='L69'></a>.TER     U3.7
+<a id='L70' name='L70'></a>--&gt;
+<a id='L71' name='L71'></a>&lt;xsl:template match="net"&gt;
+<a id='L72' name='L72'></a>    &lt;!-- nets are output only if there is more than one pin in net --&gt;
+<a id='L73' name='L73'></a>    &lt;xsl:if test="count(node)&gt;1"&gt;
+<a id='L74' name='L74'></a>    &lt;xsl:variable name="netname"&gt;
+<a id='L75' name='L75'></a>        &lt;xsl:text&gt;"&lt;/xsl:text&gt;
+<a id='L76' name='L76'></a>        &lt;xsl:choose&gt;
+<a id='L77' name='L77'></a>            &lt;xsl:when test = "@name != '' "&gt;
+<a id='L78' name='L78'></a>                &lt;xsl:value-of select="@name"/&gt;
+<a id='L79' name='L79'></a>            &lt;/xsl:when&gt;
+<a id='L80' name='L80'></a>            &lt;xsl:otherwise&gt;
+<a id='L81' name='L81'></a>                &lt;xsl:text&gt;N-&lt;/xsl:text&gt;
+<a id='L82' name='L82'></a>                &lt;xsl:value-of select="@code"/&gt;
+<a id='L83' name='L83'></a>        &lt;/xsl:otherwise&gt;
+<a id='L84' name='L84'></a>        &lt;/xsl:choose&gt;
+<a id='L85' name='L85'></a>        &lt;xsl:text&gt;"&amp;nl;&lt;/xsl:text&gt;
+<a id='L86' name='L86'></a>        &lt;/xsl:variable&gt;
+<a id='L87' name='L87'></a>        &lt;xsl:apply-templates select="node" mode="first"/&gt;
+<a id='L88' name='L88'></a>        &lt;xsl:value-of select="$netname"/&gt;
+<a id='L89' name='L89'></a>        &lt;xsl:apply-templates select="node" mode="others"/&gt;
+<a id='L90' name='L90'></a>    &lt;/xsl:if&gt;
+<a id='L91' name='L91'></a>&lt;/xsl:template&gt;
+<a id='L92' name='L92'></a>
+<a id='L93' name='L93'></a>&lt;!-- for each node --&gt;
+<a id='L94' name='L94'></a>&lt;xsl:template match="node" mode="first"&gt;
+<a id='L95' name='L95'></a>    &lt;xsl:if test="position()=1"&gt;
+<a id='L96' name='L96'></a>       &lt;xsl:text&gt;.ADD_TER &lt;/xsl:text&gt;
+<a id='L97' name='L97'></a>    &lt;xsl:value-of select="@ref"/&gt;
+<a id='L98' name='L98'></a>    &lt;xsl:text&gt;.&lt;/xsl:text&gt;
+<a id='L99' name='L99'></a>    &lt;xsl:value-of select="@pin"/&gt;
+<a id='L100' name='L100'></a>    &lt;xsl:text&gt; &lt;/xsl:text&gt;
+<a id='L101' name='L101'></a>    &lt;/xsl:if&gt;
+<a id='L102' name='L102'></a>&lt;/xsl:template&gt;
+<a id='L103' name='L103'></a>
+<a id='L104' name='L104'></a>&lt;xsl:template match="node" mode="others"&gt;
+<a id='L105' name='L105'></a>    &lt;xsl:choose&gt;
+<a id='L106' name='L106'></a>        &lt;xsl:when test='position()=1'&gt;
+<a id='L107' name='L107'></a>        &lt;/xsl:when&gt;
+<a id='L108' name='L108'></a>        &lt;xsl:when test='position()=2'&gt;
+<a id='L109' name='L109'></a>           &lt;xsl:text&gt;.TER     &lt;/xsl:text&gt;
+<a id='L110' name='L110'></a>        &lt;/xsl:when&gt;
+<a id='L111' name='L111'></a>        &lt;xsl:otherwise&gt;
+<a id='L112' name='L112'></a>           &lt;xsl:text&gt;         &lt;/xsl:text&gt;
+<a id='L113' name='L113'></a>        &lt;/xsl:otherwise&gt;
+<a id='L114' name='L114'></a>    &lt;/xsl:choose&gt;
+<a id='L115' name='L115'></a>    &lt;xsl:if test="position()&gt;1"&gt;
+<a id='L116' name='L116'></a>        &lt;xsl:value-of select="@ref"/&gt;
+<a id='L117' name='L117'></a>        &lt;xsl:text&gt;.&lt;/xsl:text&gt;
+<a id='L118' name='L118'></a>        &lt;xsl:value-of select="@pin"/&gt;
+<a id='L119' name='L119'></a>        &lt;xsl:text&gt;&amp;nl;&lt;/xsl:text&gt;
+<a id='L120' name='L120'></a>    &lt;/xsl:if&gt;
+<a id='L121' name='L121'></a>&lt;/xsl:template&gt;
+<a id='L122' name='L122'></a>
+<a id='L123' name='L123'></a>&lt;/xsl:stylesheet&gt;
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a> */</em>
+</body>
+</html>

@@ -1,0 +1,709 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>tools/ee_actions.cpp</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/484.html'>tools</a>/ee_actions.cpp</h2>
+<em class='comment'>/* [&lt;][&gt;][^][v][top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * This program source code file is part of KiCad, a free EDA CAD application.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 2019 CERN</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> * Copyright (C) 2019 KiCad Developers, see AUTHORS.txt for contributors.</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> *</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> * This program is free software; you can redistribute it and/or</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * modify it under the terms of the GNU General Public License</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * as published by the Free Software Foundation; either version 2</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> * of the License, or (at your option) any later version.</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> *</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> * This program is distributed in the hope that it will be useful,</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> * GNU General Public License for more details.</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> *</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> * You should have received a copy of the GNU General Public License</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * along with this program; if not, you may find one here:</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> * or you may search the http://www.gnu.org website for the version 2 license,</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'> * or you may write to the Free Software Foundation, Inc.,</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'> * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'> */</em>
+<a id='L24' name='L24'></a>  24 
+<a id='L25' name='L25'></a>  25 <em class='sharp'>#include</em> &lt;tool/tool_action.h&gt;
+<a id='L26' name='L26'></a>  26 <em class='sharp'>#include</em> &lt;bitmaps.h&gt;
+<a id='L27' name='L27'></a>  27 <em class='sharp'>#include</em> &lt;<a href='435.html'>tools/ee_actions.h</a>&gt;
+<a id='L28' name='L28'></a>  28 <em class='sharp'>#include</em> &lt;core/typeinfo.h&gt;
+<a id='L29' name='L29'></a>  29 <em class='sharp'>#include</em> &lt;layers_id_colors_and_visibility.h&gt;
+<a id='L30' name='L30'></a>  30 
+<a id='L31' name='L31'></a>  31 
+<a id='L32' name='L32'></a>  32 <em class='comment'>// Actions, being statically-defined, require specialized I18N handling.  We continue to</em>
+<a id='L33' name='L33'></a>  33 <em class='comment'>// use the _() macro so that string harvesting by the I18N framework doesn't have to be</em>
+<a id='L34' name='L34'></a>  34 <em class='comment'>// specialized, but we don't translate on initialization and instead do it in the getters.</em>
+<a id='L35' name='L35'></a>  35 
+<a id='L36' name='L36'></a>  36 <em class='sharp'>#undef</em> <a href='../R/1895.html' title='Multiple referred from 2011 places.'>_</a>
+<a id='L37' name='L37'></a>  37 <em class='sharp'>#define</em> <a href='../R/1895.html' title='Multiple referred from 2011 places.'>_</a>(<a href='../Y/7652.html' title='Multiple used in 22 places.'>s</a>) <a href='../Y/7652.html' title='Multiple used in 22 places.'>s</a>
+<a id='L38' name='L38'></a>  38 
+<a id='L39' name='L39'></a>  39 
+<a id='L40' name='L40'></a>  40 <em class='comment'>// EE_INSPECTION_TOOL</em>
+<a id='L41' name='L41'></a>  41 <em class='comment'>//</em>
+<a id='L42' name='L42'></a>  42 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7648.html' title='Multiple used in 8 places.'>runERC</a>( "eeschema.InspectionTool.runERC",
+<a id='L43' name='L43'></a>  43         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L44' name='L44'></a>  44         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Electrical Rules Checker" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Perform electrical rules check" ),
+<a id='L45' name='L45'></a>  45         <a href='../Y/4311.html' title='Multiple used in 2 places.'>erc_xpm</a> );
+<a id='L46' name='L46'></a>  46 
+<a id='L47' name='L47'></a>  47 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7649.html' title='Multiple used in 4 places.'>runSimulation</a>( "eeschema.EditorControl.runSimulation",
+<a id='L48' name='L48'></a>  48         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L49' name='L49'></a>  49         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Simulator..." ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Simulate circuit in SPICE" ),
+<a id='L50' name='L50'></a>  50         <a href='../Y/7905.html' title='Multiple used in 3 places.'>simulator_xpm</a> );
+<a id='L51' name='L51'></a>  51 
+<a id='L52' name='L52'></a>  52 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7862.html' title='Multiple used in 9 places.'>showDatasheet</a>( "eeschema.InspectionTool.showDatasheet",
+<a id='L53' name='L53'></a>  53         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>,
+<a id='L54' name='L54'></a>  54         'D', <a href='../Y/1348.html' title='Multiple used in 32 places.'>LEGACY_HK_NAME</a>( "Show Datasheet" ),
+<a id='L55' name='L55'></a>  55         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Show Datasheet" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Opens the datasheet in a browser" ),
+<a id='L56' name='L56'></a>  56         datasheet_xpm );
+<a id='L57' name='L57'></a>  57 
+<a id='L58' name='L58'></a>  58 
+<a id='L59' name='L59'></a>  59 <em class='comment'>// EE_POINT_EDITOR</em>
+<a id='L60' name='L60'></a>  60 <em class='comment'>//</em>
+<a id='L61' name='L61'></a>  61 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7361.html' title='Multiple used in 4 places.'>pointEditorAddCorner</a>( "eeschema.PointEditor.addCorner",
+<a id='L62' name='L62'></a>  62         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L63' name='L63'></a>  63         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Create Corner" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Create a corner" ),
+<a id='L64' name='L64'></a>  64         add_corner_xpm );
+<a id='L65' name='L65'></a>  65 
+<a id='L66' name='L66'></a>  66 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7362.html' title='Multiple used in 4 places.'>pointEditorRemoveCorner</a>( "eeschema.PointEditor.removeCorner",
+<a id='L67' name='L67'></a>  67         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L68' name='L68'></a>  68         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Remove Corner" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Remove corner" ),
+<a id='L69' name='L69'></a>  69         <a href='../Y/4098.html' title='Multiple used in 3 places.'>delete_xpm</a> );
+<a id='L70' name='L70'></a>  70 
+<a id='L71' name='L71'></a>  71 
+<a id='L72' name='L72'></a>  72 <em class='comment'>// EE_SELECTION_TOOL</em>
+<a id='L73' name='L73'></a>  73 <em class='comment'>//</em>
+<a id='L74' name='L74'></a>  74 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7799.html' title='Multiple used in 4 places.'>selectionActivate</a>( "eeschema.InteractiveSelection",
+<a id='L75' name='L75'></a>  75         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "", "", "",      <em class='comment'>// No description, not shown anywhere</em>
+<a id='L76' name='L76'></a>  76         <a href='../Y/7001.html' title='Multiple used in 622 places.'>nullptr</a>, <a href='../Y/6.html' title='Multiple used in 31 places.'>AF_ACTIVATE</a> );
+<a id='L77' name='L77'></a>  77 
+<a id='L78' name='L78'></a>  78 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7784.html' title='Multiple used in 4 places.'>selectNode</a>( "eeschema.InteractiveSelection.SelectNode",
+<a id='L79' name='L79'></a>  79         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>,
+<a id='L80' name='L80'></a>  80         <a href='../Y/1450.html' title='Multiple used in 22 places.'>MD_ALT</a> + '3', <a href='../Y/1348.html' title='Multiple used in 32 places.'>LEGACY_HK_NAME</a>( "Select Node" ),
+<a id='L81' name='L81'></a>  81         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Select Node" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Select a connection item under the cursor" ) );
+<a id='L82' name='L82'></a>  82 
+<a id='L83' name='L83'></a>  83 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7783.html' title='Multiple used in 5 places.'>selectConnection</a>( "eeschema.InteractiveSelection.SelectConnection",
+<a id='L84' name='L84'></a>  84         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>,
+<a id='L85' name='L85'></a>  85         <a href='../Y/1450.html' title='Multiple used in 22 places.'>MD_ALT</a> + '4', <a href='../Y/1348.html' title='Multiple used in 32 places.'>LEGACY_HK_NAME</a>( "Select Connection" ),
+<a id='L86' name='L86'></a>  86         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Select Connection" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Select a complete connection" ) );
+<a id='L87' name='L87'></a>  87 
+<a id='L88' name='L88'></a>  88 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7802.html' title='Multiple used in 4 places.'>selectionMenu</a>( "eeschema.InteractiveSelection.SelectionMenu",
+<a id='L89' name='L89'></a>  89         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a> );
+<a id='L90' name='L90'></a>  90 
+<a id='L91' name='L91'></a>  91 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/3476.html' title='Multiple used in 7 places.'>addItemToSel</a>( "eeschema.InteractiveSelection.AddItemToSel",
+<a id='L92' name='L92'></a>  92         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a> );
+<a id='L93' name='L93'></a>  93 
+<a id='L94' name='L94'></a>  94 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/3477.html' title='Multiple used in 6 places.'>addItemsToSel</a>( "eeschema.InteractiveSelection.AddItemsToSel",
+<a id='L95' name='L95'></a>  95         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a> );
+<a id='L96' name='L96'></a>  96 
+<a id='L97' name='L97'></a>  97 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7552.html' title='Multiple used in 4 places.'>removeItemFromSel</a>( "eeschema.InteractiveSelection.RemoveItemFromSel",
+<a id='L98' name='L98'></a>  98         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a> );
+<a id='L99' name='L99'></a>  99 
+<a id='L100' name='L100'></a> 100 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7553.html' title='Multiple used in 3 places.'>removeItemsFromSel</a>( "eeschema.InteractiveSelection.RemoveItemsFromSel",
+<a id='L101' name='L101'></a> 101         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a> );
+<a id='L102' name='L102'></a> 102 
+<a id='L103' name='L103'></a> 103 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/3849.html' title='Multiple used in 65 places.'>clearSelection</a>( "eeschema.InteractiveSelection.ClearSelection",
+<a id='L104' name='L104'></a> 104         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a> );
+<a id='L105' name='L105'></a> 105 
+<a id='L106' name='L106'></a> 106 
+<a id='L107' name='L107'></a> 107 <em class='comment'>// LIB_CONTROL</em>
+<a id='L108' name='L108'></a> 108 <em class='comment'>//</em>
+<a id='L109' name='L109'></a> 109 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/6918.html' title='Multiple used in 15 places.'>newSymbol</a>( "eeschema.SymbolLibraryControl.newSymbol",
+<a id='L110' name='L110'></a> 110         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L111' name='L111'></a> 111         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "New Symbol..." ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Create a new symbol" ),
+<a id='L112' name='L112'></a> 112         new_component_xpm );
+<a id='L113' name='L113'></a> 113 
+<a id='L114' name='L114'></a> 114 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/4246.html' title='Multiple used in 5 places.'>editSymbol</a>( "eeschema.SymbolLibraryControl.editSymbol",
+<a id='L115' name='L115'></a> 115         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L116' name='L116'></a> 116         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Edit" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Show selected symbol on editor canvas" ),
+<a id='L117' name='L117'></a> 117         <a href='../Y/4261.html' title='Multiple used in 2 places.'>edit_xpm</a> );
+<a id='L118' name='L118'></a> 118 
+<a id='L119' name='L119'></a> 119 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/4213.html' title='Multiple used in 4 places.'>duplicateSymbol</a>( "eeschema.SymbolLibraryControl.duplicateSymbol",
+<a id='L120' name='L120'></a> 120         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L121' name='L121'></a> 121         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Duplicate" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Make a copy of the selected symbol" ),
+<a id='L122' name='L122'></a> 122         duplicate_xpm );
+<a id='L123' name='L123'></a> 123 
+<a id='L124' name='L124'></a> 124 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/4095.html' title='Multiple used in 5 places.'>deleteSymbol</a>( "eeschema.SymbolLibraryControl.deleteSymbol",
+<a id='L125' name='L125'></a> 125         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L126' name='L126'></a> 126         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Delete" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Remove the selected symbol from its library" ),
+<a id='L127' name='L127'></a> 127         <a href='../Y/4098.html' title='Multiple used in 3 places.'>delete_xpm</a> );
+<a id='L128' name='L128'></a> 128 
+<a id='L129' name='L129'></a> 129 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/4035.html' title='Multiple used in 6 places.'>cutSymbol</a>( "eeschema.SymbolLibraryControl.cutSymbol",
+<a id='L130' name='L130'></a> 130         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L131' name='L131'></a> 131         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Cut" ), "",
+<a id='L132' name='L132'></a> 132         cut_xpm );
+<a id='L133' name='L133'></a> 133 
+<a id='L134' name='L134'></a> 134 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/3972.html' title='Multiple used in 5 places.'>copySymbol</a>( "eeschema.SymbolLibraryControl.copySymbol",
+<a id='L135' name='L135'></a> 135         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L136' name='L136'></a> 136         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Copy" ), "",
+<a id='L137' name='L137'></a> 137         <a href='../Y/3974.html' title='Multiple used in 2 places.'>copy_xpm</a> );
+<a id='L138' name='L138'></a> 138 
+<a id='L139' name='L139'></a> 139 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7202.html' title='Multiple used in 5 places.'>pasteSymbol</a>( "eeschema.SymbolLibraryControl.pasteSymbol",
+<a id='L140' name='L140'></a> 140         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L141' name='L141'></a> 141         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Paste Symbol" ), "",
+<a id='L142' name='L142'></a> 142         paste_xpm );
+<a id='L143' name='L143'></a> 143 
+<a id='L144' name='L144'></a> 144 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/4767.html' title='Multiple used in 6 places.'>importSymbol</a>( "eeschema.SymbolLibraryControl.importSymbol",
+<a id='L145' name='L145'></a> 145         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L146' name='L146'></a> 146         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Import Symbol..." ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Import a symbol to the current library" ),
+<a id='L147' name='L147'></a> 147         <a href='../Y/4771.html' title='Multiple used in 2 places.'>import_part_xpm</a> );
+<a id='L148' name='L148'></a> 148 
+<a id='L149' name='L149'></a> 149 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/4357.html' title='Multiple used in 5 places.'>exportSymbol</a>( "eeschema.SymbolLibraryControl.exportSymbol",
+<a id='L150' name='L150'></a> 150         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L151' name='L151'></a> 151         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Export..." ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Export a symbol to a new library file" ),
+<a id='L152' name='L152'></a> 152         export_part_xpm );
+<a id='L153' name='L153'></a> 153 
+<a id='L154' name='L154'></a> 154 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/3479.html' title='Multiple used in 6 places.'>addSymbolToSchematic</a>( "eeschema.SymbolLibraryControl.addSymbolToSchematic",
+<a id='L155' name='L155'></a> 155         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L156' name='L156'></a> 156         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add Symbol to Schematic" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add Symbol to Schematic" ),
+<a id='L157' name='L157'></a> 157         <a href='../Y/4375.html' title='Multiple used in 6 places.'>export_xpm</a> );
+<a id='L158' name='L158'></a> 158 
+<a id='L159' name='L159'></a> 159 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7865.html' title='Multiple used in 6 places.'>showElectricalTypes</a>( "eeschema.SymbolLibraryControl.showElectricalTypes",
+<a id='L160' name='L160'></a> 160         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L161' name='L161'></a> 161         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Show Pin Electrical Types" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Annotate pins with their electrical types" ),
+<a id='L162' name='L162'></a> 162         pin_show_etype_xpm );
+<a id='L163' name='L163'></a> 163 
+<a id='L164' name='L164'></a> 164 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7861.html' title='Multiple used in 6 places.'>showComponentTree</a>( "eeschema.SymbolLibraryControl.showComponentTree",
+<a id='L165' name='L165'></a> 165         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L166' name='L166'></a> 166         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Show Symbol Tree" ), "",
+<a id='L167' name='L167'></a> 167         search_tree_xpm );
+<a id='L168' name='L168'></a> 168 
+<a id='L169' name='L169'></a> 169 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/4359.html' title='Multiple used in 4 places.'>exportSymbolView</a>( "eeschema.SymbolLibraryControl.exportSymbolView",
+<a id='L170' name='L170'></a> 170         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L171' name='L171'></a> 171         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Export View as PNG..." ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Create PNG file from the current view" ),
+<a id='L172' name='L172'></a> 172         plot_xpm );
+<a id='L173' name='L173'></a> 173 
+<a id='L174' name='L174'></a> 174 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/4358.html' title='Multiple used in 4 places.'>exportSymbolAsSVG</a>( "eeschema.SymbolLibraryControl.exportSymbolAsSVG",
+<a id='L175' name='L175'></a> 175         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L176' name='L176'></a> 176         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Export Symbol as SVG..." ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Create SVG file from the current symbol" ),
+<a id='L177' name='L177'></a> 177         plot_svg_xpm );
+<a id='L178' name='L178'></a> 178 
+<a id='L179' name='L179'></a> 179 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/8202.html' title='Multiple used in 5 places.'>toggleSyncedPinsMode</a>( "eeschema.SymbolLibraryControl.toggleSyncedPinsMode",
+<a id='L180' name='L180'></a> 180         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L181' name='L181'></a> 181         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Synchronized Pins Edit Mode" ),
+<a id='L182' name='L182'></a> 182         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Synchronized Pins Edit Mode\n"
+<a id='L183' name='L183'></a> 183            "When enabled propagates all changes (except pin numbers) to other units.\n"
+<a id='L184' name='L184'></a> 184            "Enabled by default for multiunit parts with interchangeable units." ),
+<a id='L185' name='L185'></a> 185         pin2pin_xpm );
+<a id='L186' name='L186'></a> 186 
+<a id='L187' name='L187'></a> 187 
+<a id='L188' name='L188'></a> 188 <em class='comment'>// LIB_DRAWING_TOOLS</em>
+<a id='L189' name='L189'></a> 189 <em class='comment'>//</em>
+<a id='L190' name='L190'></a> 190 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7324.html' title='Multiple used in 6 places.'>placeSymbolPin</a>( "eeschema.SymbolDrawing.placeSymbolPin",
+<a id='L191' name='L191'></a> 191         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>,
+<a id='L192' name='L192'></a> 192         'P', <a href='../Y/1348.html' title='Multiple used in 32 places.'>LEGACY_HK_NAME</a>( "Create Pin" ),
+<a id='L193' name='L193'></a> 193         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add Pin" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add a pin" ),
+<a id='L194' name='L194'></a> 194         pin_xpm, <a href='../Y/6.html' title='Multiple used in 31 places.'>AF_ACTIVATE</a>, (<strong class='reserved'>void</strong>*) <a href='../Y/1371.html' title='Multiple used in 31 places.'>LIB_PIN_T</a> );
+<a id='L195' name='L195'></a> 195 
+<a id='L196' name='L196'></a> 196 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7325.html' title='Multiple used in 6 places.'>placeSymbolText</a>( "eeschema.SymbolDrawing.placeSymbolText",
+<a id='L197' name='L197'></a> 197         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L198' name='L198'></a> 198         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add Text" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add a text item" ),
+<a id='L199' name='L199'></a> 199         <a href='../Y/8133.html' title='Multiple used in 6 places.'>text_xpm</a>, <a href='../Y/6.html' title='Multiple used in 31 places.'>AF_ACTIVATE</a>, (<strong class='reserved'>void</strong>*) <a href='../Y/1382.html' title='Multiple used in 15 places.'>LIB_TEXT_T</a> );
+<a id='L200' name='L200'></a> 200 
+<a id='L201' name='L201'></a> 201 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/4188.html' title='Multiple used in 6 places.'>drawSymbolRectangle</a>( "eeschema.SymbolDrawing.drawSymbolRectangle",
+<a id='L202' name='L202'></a> 202         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L203' name='L203'></a> 203         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add Rectangle" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add a rectangle" ),
+<a id='L204' name='L204'></a> 204         <a href='../Y/3499.html' title='Multiple used in 2 places.'>add_rectangle_xpm</a>, <a href='../Y/6.html' title='Multiple used in 31 places.'>AF_ACTIVATE</a>, (<strong class='reserved'>void</strong>*) <a href='../Y/1373.html' title='Multiple used in 17 places.'>LIB_RECTANGLE_T</a> );
+<a id='L205' name='L205'></a> 205 
+<a id='L206' name='L206'></a> 206 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/4186.html' title='Multiple used in 6 places.'>drawSymbolCircle</a>( "eeschema.SymbolDrawing.drawSymbolCircle",
+<a id='L207' name='L207'></a> 207         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L208' name='L208'></a> 208         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add Circle" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add a circle" ),
+<a id='L209' name='L209'></a> 209         <a href='../Y/3483.html' title='Multiple used in 2 places.'>add_circle_xpm</a>, <a href='../Y/6.html' title='Multiple used in 31 places.'>AF_ACTIVATE</a>, (<strong class='reserved'>void</strong>*) <a href='../Y/1358.html' title='Multiple used in 17 places.'>LIB_CIRCLE_T</a> );
+<a id='L210' name='L210'></a> 210 
+<a id='L211' name='L211'></a> 211 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/4185.html' title='Multiple used in 6 places.'>drawSymbolArc</a>( "eeschema.SymbolDrawing.drawSymbolArc",
+<a id='L212' name='L212'></a> 212         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L213' name='L213'></a> 213         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add Arc" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add an arc" ),
+<a id='L214' name='L214'></a> 214         <a href='../Y/3480.html' title='Multiple used in 2 places.'>add_arc_xpm</a>, <a href='../Y/6.html' title='Multiple used in 31 places.'>AF_ACTIVATE</a>, (<strong class='reserved'>void</strong>*) <a href='../S/9.html#L51' title='Defined at 51 in class_libentry.h.'>LIB_ARC_T</a> );
+<a id='L215' name='L215'></a> 215 
+<a id='L216' name='L216'></a> 216 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/4187.html' title='Multiple used in 6 places.'>drawSymbolLines</a>( "eeschema.SymbolDrawing.drawSymbolLines",
+<a id='L217' name='L217'></a> 217         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L218' name='L218'></a> 218         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add Lines" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add connected graphic lines" ),
+<a id='L219' name='L219'></a> 219         <a href='../Y/3490.html' title='Multiple used in 2 places.'>add_graphical_segments_xpm</a>, <a href='../Y/6.html' title='Multiple used in 31 places.'>AF_ACTIVATE</a>, (<strong class='reserved'>void</strong>*) <a href='../Y/1372.html' title='Multiple used in 17 places.'>LIB_POLYLINE_T</a> );
+<a id='L220' name='L220'></a> 220 
+<a id='L221' name='L221'></a> 221 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7323.html' title='Multiple used in 5 places.'>placeSymbolAnchor</a>( "eeschema.SymbolDrawing.placeSymbolAnchor",
+<a id='L222' name='L222'></a> 222         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L223' name='L223'></a> 223         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Move Symbol Anchor" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Specify a new location for the symbol anchor" ),
+<a id='L224' name='L224'></a> 224         anchor_xpm, <a href='../Y/6.html' title='Multiple used in 31 places.'>AF_ACTIVATE</a> );
+<a id='L225' name='L225'></a> 225 
+<a id='L226' name='L226'></a> 226 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/4481.html' title='Multiple used in 5 places.'>finishDrawing</a>( "eeschema.SymbolDrawing.finishDrawing",
+<a id='L227' name='L227'></a> 227         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L228' name='L228'></a> 228         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Finish Drawing" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Finish drawing shape" ),
+<a id='L229' name='L229'></a> 229         <a href='../Y/3826.html' title='Multiple used in 6 places.'>checked_ok_xpm</a>, <a href='../Y/7.html' title='Multiple used in 10 places.'>AF_NONE</a> );
+<a id='L230' name='L230'></a> 230 
+<a id='L231' name='L231'></a> 231 
+<a id='L232' name='L232'></a> 232 <em class='comment'>// LIB_PIN_TOOL</em>
+<a id='L233' name='L233'></a> 233 <em class='comment'>//</em>
+<a id='L234' name='L234'></a> 234 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7471.html' title='Multiple used in 5 places.'>pushPinLength</a>( "eeschema.PinEditing.pushPinLength",
+<a id='L235' name='L235'></a> 235         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L236' name='L236'></a> 236         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Push Pin Length" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Copy pin length to other pins in symbol" ),
+<a id='L237' name='L237'></a> 237         <a href='../Y/7276.html' title='Multiple used in 3 places.'>pin_size_to_xpm</a> );
+<a id='L238' name='L238'></a> 238 
+<a id='L239' name='L239'></a> 239 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7472.html' title='Multiple used in 5 places.'>pushPinNameSize</a>( "eeschema.PinEditing.pushPinNameSize",
+<a id='L240' name='L240'></a> 240         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L241' name='L241'></a> 241         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Push Pin Name Size" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Copy pin name size to other pins in symbol" ),
+<a id='L242' name='L242'></a> 242         <a href='../Y/7276.html' title='Multiple used in 3 places.'>pin_size_to_xpm</a> );
+<a id='L243' name='L243'></a> 243 
+<a id='L244' name='L244'></a> 244 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7473.html' title='Multiple used in 5 places.'>pushPinNumSize</a>( "eeschema.PinEditing.pushPinNumSize",
+<a id='L245' name='L245'></a> 245         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L246' name='L246'></a> 246         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Push Pin Number Size" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Copy pin number size to other pins in symbol" ),
+<a id='L247' name='L247'></a> 247         <a href='../Y/7276.html' title='Multiple used in 3 places.'>pin_size_to_xpm</a> );
+<a id='L248' name='L248'></a> 248 
+<a id='L249' name='L249'></a> 249 
+<a id='L250' name='L250'></a> 250 <em class='comment'>// SCH_DRAWING_TOOLS</em>
+<a id='L251' name='L251'></a> 251 <em class='comment'>//</em>
+<a id='L252' name='L252'></a> 252 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7322.html' title='Multiple used in 8 places.'>placeSymbol</a>( "eeschema.InteractiveDrawing.placeSymbol",
+<a id='L253' name='L253'></a> 253         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>,
+<a id='L254' name='L254'></a> 254         'A', <a href='../Y/1348.html' title='Multiple used in 32 places.'>LEGACY_HK_NAME</a>( "Add Symbol" ),
+<a id='L255' name='L255'></a> 255         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add Symbol" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add a symbol" ),
+<a id='L256' name='L256'></a> 256         <a href='../Y/4771.html' title='Multiple used in 2 places.'>import_part_xpm</a>, <a href='../Y/6.html' title='Multiple used in 31 places.'>AF_ACTIVATE</a> );
+<a id='L257' name='L257'></a> 257 
+<a id='L258' name='L258'></a> 258 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7319.html' title='Multiple used in 7 places.'>placePower</a>( "eeschema.InteractiveDrawing.placePowerPort",
+<a id='L259' name='L259'></a> 259         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>,
+<a id='L260' name='L260'></a> 260         'P', <a href='../Y/1348.html' title='Multiple used in 32 places.'>LEGACY_HK_NAME</a>( "Add Power" ),
+<a id='L261' name='L261'></a> 261         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add Power" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add a power port" ),
+<a id='L262' name='L262'></a> 262         add_power_xpm, <a href='../Y/6.html' title='Multiple used in 31 places.'>AF_ACTIVATE</a> );
+<a id='L263' name='L263'></a> 263 
+<a id='L264' name='L264'></a> 264 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7318.html' title='Multiple used in 6 places.'>placeNoConnect</a>( "eeschema.InteractiveDrawing.placeNoConnect",
+<a id='L265' name='L265'></a> 265         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>,
+<a id='L266' name='L266'></a> 266         'Q', <a href='../Y/1348.html' title='Multiple used in 32 places.'>LEGACY_HK_NAME</a>( "Add No Connect Flag" ),
+<a id='L267' name='L267'></a> 267         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add No Connect Flag" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add a no-connection flag" ),
+<a id='L268' name='L268'></a> 268         <a href='../Y/6982.html' title='Multiple used in 2 places.'>noconn_xpm</a>, <a href='../Y/6.html' title='Multiple used in 31 places.'>AF_ACTIVATE</a>, (<strong class='reserved'>void</strong>*) <a href='../Y/1845.html' title='Multiple used in 26 places.'>SCH_NO_CONNECT_T</a> );
+<a id='L269' name='L269'></a> 269 
+<a id='L270' name='L270'></a> 270 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7315.html' title='Multiple used in 8 places.'>placeJunction</a>( "eeschema.InteractiveDrawing.placeJunction",
+<a id='L271' name='L271'></a> 271         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>,
+<a id='L272' name='L272'></a> 272         'J', <a href='../Y/1348.html' title='Multiple used in 32 places.'>LEGACY_HK_NAME</a>( "Add Junction" ),
+<a id='L273' name='L273'></a> 273         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add Junction" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add a junction" ),
+<a id='L274' name='L274'></a> 274         <a href='../Y/3494.html' title='Multiple used in 2 places.'>add_junction_xpm</a>, <a href='../Y/6.html' title='Multiple used in 31 places.'>AF_ACTIVATE</a>, (<strong class='reserved'>void</strong>*) <a href='../Y/1821.html' title='Multiple used in 44 places.'>SCH_JUNCTION_T</a> );
+<a id='L275' name='L275'></a> 275 
+<a id='L276' name='L276'></a> 276 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7311.html' title='Multiple used in 6 places.'>placeBusWireEntry</a>( "eeschema.InteractiveDrawing.placeBusWireEntry",
+<a id='L277' name='L277'></a> 277         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>,
+<a id='L278' name='L278'></a> 278         'Z', <a href='../Y/1348.html' title='Multiple used in 32 places.'>LEGACY_HK_NAME</a>( "Add Wire Entry" ),
+<a id='L279' name='L279'></a> 279         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add Wire to Bus Entry" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add a wire entry to a bus" ),
+<a id='L280' name='L280'></a> 280         <a href='../Y/3495.html' title='Multiple used in 3 places.'>add_line2bus_xpm</a>, <a href='../Y/6.html' title='Multiple used in 31 places.'>AF_ACTIVATE</a>, (<strong class='reserved'>void</strong>*) <a href='../Y/1801.html' title='Multiple used in 39 places.'>SCH_BUS_WIRE_ENTRY_T</a> );
+<a id='L281' name='L281'></a> 281 
+<a id='L282' name='L282'></a> 282 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7316.html' title='Multiple used in 9 places.'>placeLabel</a>( "eeschema.InteractiveDrawing.placeLabel",
+<a id='L283' name='L283'></a> 283         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>,
+<a id='L284' name='L284'></a> 284         'L', <a href='../Y/1348.html' title='Multiple used in 32 places.'>LEGACY_HK_NAME</a>( "Add Label" ),
+<a id='L285' name='L285'></a> 285         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add Label" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add a net label" ),
+<a id='L286' name='L286'></a> 286         <a href='../Y/3496.html' title='Multiple used in 3 places.'>add_line_label_xpm</a>, <a href='../Y/6.html' title='Multiple used in 31 places.'>AF_ACTIVATE</a>, (<strong class='reserved'>void</strong>*) <a href='../Y/1825.html' title='Multiple used in 54 places.'>SCH_LABEL_T</a> );
+<a id='L287' name='L287'></a> 287 
+<a id='L288' name='L288'></a> 288 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7313.html' title='Multiple used in 9 places.'>placeHierLabel</a>( "eeschema.InteractiveDrawing.placeHierarchicalLabel",
+<a id='L289' name='L289'></a> 289         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>,
+<a id='L290' name='L290'></a> 290         'H', <a href='../Y/1348.html' title='Multiple used in 32 places.'>LEGACY_HK_NAME</a>( "Add Hierarchical Label" ),
+<a id='L291' name='L291'></a> 291         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add Hierarchical Label" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add a hierarchical sheet label" ),
+<a id='L292' name='L292'></a> 292         <a href='../Y/3492.html' title='Multiple used in 3 places.'>add_hierarchical_label_xpm</a>, <a href='../Y/6.html' title='Multiple used in 31 places.'>AF_ACTIVATE</a>, (<strong class='reserved'>void</strong>*) <a href='../Y/1819.html' title='Multiple used in 66 places.'>SCH_HIER_LABEL_T</a> );
+<a id='L293' name='L293'></a> 293 
+<a id='L294' name='L294'></a> 294 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/4183.html' title='Multiple used in 7 places.'>drawSheet</a>( "eeschema.InteractiveDrawing.drawSheet",
+<a id='L295' name='L295'></a> 295         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>,
+<a id='L296' name='L296'></a> 296         'S', <a href='../Y/1348.html' title='Multiple used in 32 places.'>LEGACY_HK_NAME</a>( "Add Sheet" ),
+<a id='L297' name='L297'></a> 297         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add Sheet" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add a hierarchical sheet" ),
+<a id='L298' name='L298'></a> 298         <a href='../Y/3493.html' title='Multiple used in 2 places.'>add_hierarchical_subsheet_xpm</a>, <a href='../Y/6.html' title='Multiple used in 31 places.'>AF_ACTIVATE</a>, (<strong class='reserved'>void</strong>*) <a href='../Y/1856.html' title='Multiple used in 92 places.'>SCH_SHEET_T</a> );
+<a id='L299' name='L299'></a> 299 
+<a id='L300' name='L300'></a> 300 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7321.html' title='Multiple used in 2 places.'>placeSheetPin</a>( "eeschema.InteractiveDrawing.placeSheetPin",
+<a id='L301' name='L301'></a> 301         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L302' name='L302'></a> 302         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add Sheet Pin" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add a sheet pin" ),
+<a id='L303' name='L303'></a> 303         <a href='../Y/3491.html' title='Multiple used in 2 places.'>add_hierar_pin_xpm</a>, <a href='../Y/6.html' title='Multiple used in 31 places.'>AF_ACTIVATE</a>, (<strong class='reserved'>void</strong>*) <a href='../Y/1855.html' title='Multiple used in 61 places.'>SCH_SHEET_PIN_T</a> );
+<a id='L304' name='L304'></a> 304 
+<a id='L305' name='L305'></a> 305 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/4766.html' title='Multiple used in 8 places.'>importSheetPin</a>( "eeschema.InteractiveDrawing.importSheetPin",
+<a id='L306' name='L306'></a> 306         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L307' name='L307'></a> 307         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Import Sheet Pin" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Import a hierarchical sheet pin" ),
+<a id='L308' name='L308'></a> 308         import_hierarchical_label_xpm, <a href='../Y/6.html' title='Multiple used in 31 places.'>AF_ACTIVATE</a>, (<strong class='reserved'>void</strong>*) <a href='../Y/1855.html' title='Multiple used in 61 places.'>SCH_SHEET_PIN_T</a> );
+<a id='L309' name='L309'></a> 309 
+<a id='L310' name='L310'></a> 310 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7312.html' title='Multiple used in 9 places.'>placeGlobalLabel</a>( "eeschema.InteractiveDrawing.placeGlobalLabel",
+<a id='L311' name='L311'></a> 311         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>,
+<a id='L312' name='L312'></a> 312         <a href='../Y/1451.html' title='Multiple used in 4 places.'>MD_CTRL</a> + 'H', <a href='../Y/1348.html' title='Multiple used in 32 places.'>LEGACY_HK_NAME</a>( "Add Global Label" ),
+<a id='L313' name='L313'></a> 313         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add Global Label" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add a global label" ),
+<a id='L314' name='L314'></a> 314         <a href='../Y/3489.html' title='Multiple used in 3 places.'>add_glabel_xpm</a>, <a href='../Y/6.html' title='Multiple used in 31 places.'>AF_ACTIVATE</a>, (<strong class='reserved'>void</strong>*) <a href='../Y/1818.html' title='Multiple used in 63 places.'>SCH_GLOBAL_LABEL_T</a> );
+<a id='L315' name='L315'></a> 315 
+<a id='L316' name='L316'></a> 316 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7320.html' title='Multiple used in 7 places.'>placeSchematicText</a>( "eeschema.InteractiveDrawing.placeSchematicText",
+<a id='L317' name='L317'></a> 317         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>,
+<a id='L318' name='L318'></a> 318         'T', <a href='../Y/1348.html' title='Multiple used in 32 places.'>LEGACY_HK_NAME</a>( "Add Graphic Text" ),
+<a id='L319' name='L319'></a> 319         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add Text" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add text" ),
+<a id='L320' name='L320'></a> 320         <a href='../Y/8133.html' title='Multiple used in 6 places.'>text_xpm</a>, <a href='../Y/6.html' title='Multiple used in 31 places.'>AF_ACTIVATE</a>, (<strong class='reserved'>void</strong>*) <a href='../Y/1858.html' title='Multiple used in 43 places.'>SCH_TEXT_T</a> );
+<a id='L321' name='L321'></a> 321 
+<a id='L322' name='L322'></a> 322 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7314.html' title='Multiple used in 6 places.'>placeImage</a>( "eeschema.InteractiveDrawing.placeImage",
+<a id='L323' name='L323'></a> 323         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L324' name='L324'></a> 324         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add Image" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add bitmap image" ),
+<a id='L325' name='L325'></a> 325         <a href='../Y/4752.html' title='Multiple used in 2 places.'>image_xpm</a>, <a href='../Y/6.html' title='Multiple used in 31 places.'>AF_ACTIVATE</a> );
+<a id='L326' name='L326'></a> 326 
+<a id='L327' name='L327'></a> 327 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/4484.html' title='Multiple used in 3 places.'>finishSheet</a>( "eeschema.InteractiveDrawing.finishSheet",
+<a id='L328' name='L328'></a> 328         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L329' name='L329'></a> 329         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Finish Sheet" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Finish drawing sheet" ),
+<a id='L330' name='L330'></a> 330         <a href='../Y/3826.html' title='Multiple used in 6 places.'>checked_ok_xpm</a>, <a href='../Y/7.html' title='Multiple used in 10 places.'>AF_NONE</a> );
+<a id='L331' name='L331'></a> 331 
+<a id='L332' name='L332'></a> 332 
+<a id='L333' name='L333'></a> 333 <em class='comment'>// SCH_EDIT_TOOL</em>
+<a id='L334' name='L334'></a> 334 <em class='comment'>//</em>
+<a id='L335' name='L335'></a> 335 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7564.html' title='Multiple used in 4 places.'>repeatDrawItem</a>( "eeschema.InteractiveEdit.repeatDrawItem",
+<a id='L336' name='L336'></a> 336         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>,
+<a id='L337' name='L337'></a> 337         WXK_INSERT, <a href='../Y/1348.html' title='Multiple used in 32 places.'>LEGACY_HK_NAME</a>( "Repeat Last Item" ),
+<a id='L338' name='L338'></a> 338         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Repeat Last Item" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Duplicates the last drawn item" ),
+<a id='L339' name='L339'></a> 339         <a href='../Y/7001.html' title='Multiple used in 622 places.'>nullptr</a> );
+<a id='L340' name='L340'></a> 340 
+<a id='L341' name='L341'></a> 341 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7635.html' title='Multiple used in 13 places.'>rotateCW</a>( "eeschema.InteractiveEdit.rotateCW",
+<a id='L342' name='L342'></a> 342         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L343' name='L343'></a> 343         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Rotate Clockwise" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Rotates selected item(s) clockwise" ),
+<a id='L344' name='L344'></a> 344         rotate_cw_xpm );
+<a id='L345' name='L345'></a> 345 
+<a id='L346' name='L346'></a> 346 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7634.html' title='Multiple used in 13 places.'>rotateCCW</a>( "eeschema.InteractiveEdit.rotateCCW",
+<a id='L347' name='L347'></a> 347         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>,
+<a id='L348' name='L348'></a> 348         'R', <a href='../Y/1348.html' title='Multiple used in 32 places.'>LEGACY_HK_NAME</a>( "Rotate Item" ),
+<a id='L349' name='L349'></a> 349         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Rotate" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Rotates selected item(s) counter-clockwise" ),
+<a id='L350' name='L350'></a> 350         rotate_ccw_xpm );
+<a id='L351' name='L351'></a> 351 
+<a id='L352' name='L352'></a> 352 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/6737.html' title='Multiple used in 17 places.'>mirrorX</a>( "eeschema.InteractiveEdit.mirrorX",
+<a id='L353' name='L353'></a> 353         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>,
+<a id='L354' name='L354'></a> 354         'X', <a href='../Y/1348.html' title='Multiple used in 32 places.'>LEGACY_HK_NAME</a>( "Mirror X" ),
+<a id='L355' name='L355'></a> 355         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Mirror Around Horizontal Axis" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Flips selected item(s) from top to bottom" ),
+<a id='L356' name='L356'></a> 356         mirror_v_xpm );
+<a id='L357' name='L357'></a> 357 
+<a id='L358' name='L358'></a> 358 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/6738.html' title='Multiple used in 15 places.'>mirrorY</a>( "eeschema.InteractiveEdit.mirrorY",
+<a id='L359' name='L359'></a> 359         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>,
+<a id='L360' name='L360'></a> 360         'Y', <a href='../Y/1348.html' title='Multiple used in 32 places.'>LEGACY_HK_NAME</a>( "Mirror Y" ),
+<a id='L361' name='L361'></a> 361         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Mirror Around Vertical Axis" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Flips selected item(s) from left to right" ),
+<a id='L362' name='L362'></a> 362         mirror_h_xpm );
+<a id='L363' name='L363'></a> 363 
+<a id='L364' name='L364'></a> 364 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7450.html' title='Multiple used in 27 places.'>properties</a>( "eeschema.InteractiveEdit.properties",
+<a id='L365' name='L365'></a> 365         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>,
+<a id='L366' name='L366'></a> 366         'E', <a href='../Y/1348.html' title='Multiple used in 32 places.'>LEGACY_HK_NAME</a>( "Edit Item" ),
+<a id='L367' name='L367'></a> 367         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Properties..." ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Displays item properties dialog" ),
+<a id='L368' name='L368'></a> 368         <a href='../Y/4261.html' title='Multiple used in 2 places.'>edit_xpm</a> );
+<a id='L369' name='L369'></a> 369 
+<a id='L370' name='L370'></a> 370 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/4245.html' title='Multiple used in 8 places.'>editReference</a>( "eeschema.InteractiveEdit.editReference",
+<a id='L371' name='L371'></a> 371         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>,
+<a id='L372' name='L372'></a> 372         'U', <a href='../Y/1348.html' title='Multiple used in 32 places.'>LEGACY_HK_NAME</a>( "Edit Symbol Reference" ),
+<a id='L373' name='L373'></a> 373         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Edit Reference Designator..." ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Displays reference designator dialog" ),
+<a id='L374' name='L374'></a> 374         <a href='../Y/4256.html' title='Multiple used in 2 places.'>edit_comp_ref_xpm</a> );
+<a id='L375' name='L375'></a> 375 
+<a id='L376' name='L376'></a> 376 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/4252.html' title='Multiple used in 8 places.'>editValue</a>( "eeschema.InteractiveEdit.editValue",
+<a id='L377' name='L377'></a> 377         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>,
+<a id='L378' name='L378'></a> 378         'V', <a href='../Y/1348.html' title='Multiple used in 32 places.'>LEGACY_HK_NAME</a>( "Edit Symbol Value" ),
+<a id='L379' name='L379'></a> 379         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Edit Value..." ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Displays value field dialog" ),
+<a id='L380' name='L380'></a> 380         <a href='../Y/4257.html' title='Multiple used in 2 places.'>edit_comp_value_xpm</a> );
+<a id='L381' name='L381'></a> 381 
+<a id='L382' name='L382'></a> 382 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/4241.html' title='Multiple used in 8 places.'>editFootprint</a>( "eeschema.InteractiveEdit.editFootprint",
+<a id='L383' name='L383'></a> 383         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>,
+<a id='L384' name='L384'></a> 384         'F', <a href='../Y/1348.html' title='Multiple used in 32 places.'>LEGACY_HK_NAME</a>( "Edit Symbol Footprint" ),
+<a id='L385' name='L385'></a> 385         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Edit Footprint..." ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Displays footprint field dialog" ),
+<a id='L386' name='L386'></a> 386         <a href='../Y/4255.html' title='Multiple used in 2 places.'>edit_comp_footprint_xpm</a> );
+<a id='L387' name='L387'></a> 387 
+<a id='L388' name='L388'></a> 388 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/3588.html' title='Multiple used in 5 places.'>autoplaceFields</a>( "eeschema.InteractiveEdit.autoplaceFields",
+<a id='L389' name='L389'></a> 389         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>,
+<a id='L390' name='L390'></a> 390         'O', <a href='../Y/1348.html' title='Multiple used in 32 places.'>LEGACY_HK_NAME</a>( "Autoplace Fields" ),
+<a id='L391' name='L391'></a> 391         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Autoplace Fields" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Runs the automatic placement algorithm on the symbol's fields" ),
+<a id='L392' name='L392'></a> 392         autoplace_fields_xpm );
+<a id='L393' name='L393'></a> 393 
+<a id='L394' name='L394'></a> 394 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/8317.html' title='Multiple used in 4 places.'>updateFieldsFromLibrary</a>( "eeschema.InteractiveEdit.updateFieldsFromLibrary",
+<a id='L395' name='L395'></a> 395         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L396' name='L396'></a> 396         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Update Fields from Library..." ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Sets symbol fields to original library values" ),
+<a id='L397' name='L397'></a> 397         update_fields_xpm );
+<a id='L398' name='L398'></a> 398 
+<a id='L399' name='L399'></a> 399 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/3570.html' title='Multiple used in 4 places.'>assignNetclass</a>( "eeschema.InteractiveEdit.assignNetclass",
+<a id='L400' name='L400'></a> 400         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L401' name='L401'></a> 401         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Assign Netclass..." ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Assign a netclass to the net of the selected wire" ),
+<a id='L402' name='L402'></a> 402         list_nets_xpm );
+<a id='L403' name='L403'></a> 403 
+<a id='L404' name='L404'></a> 404 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/8196.html' title='Multiple used in 6 places.'>toggleDeMorgan</a>( "eeschema.InteractiveEdit.toggleDeMorgan",
+<a id='L405' name='L405'></a> 405         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L406' name='L406'></a> 406         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "DeMorgan Conversion" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Switch between DeMorgan representations" ),
+<a id='L407' name='L407'></a> 407         <a href='../Y/6760.html' title='Multiple used in 2 places.'>morgan2_xpm</a> );
+<a id='L408' name='L408'></a> 408 
+<a id='L409' name='L409'></a> 409 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7864.html' title='Multiple used in 10 places.'>showDeMorganStandard</a>( "eeschema.InteractiveEdit.showDeMorganStandard",
+<a id='L410' name='L410'></a> 410         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L411' name='L411'></a> 411         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "DeMorgan Standard" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Switch to standard DeMorgan representation" ),
+<a id='L412' name='L412'></a> 412         morgan1_xpm );
+<a id='L413' name='L413'></a> 413 
+<a id='L414' name='L414'></a> 414 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7863.html' title='Multiple used in 9 places.'>showDeMorganAlternate</a>( "eeschema.InteractiveEdit.showDeMorganAlternate",
+<a id='L415' name='L415'></a> 415         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L416' name='L416'></a> 416         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "DeMorgan Alternate" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Switch to alternate DeMorgan representation" ),
+<a id='L417' name='L417'></a> 417         <a href='../Y/6760.html' title='Multiple used in 2 places.'>morgan2_xpm</a> );
+<a id='L418' name='L418'></a> 418 
+<a id='L419' name='L419'></a> 419 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/8187.html' title='Multiple used in 5 places.'>toLabel</a>( "eeschema.InteractiveEdit.toLabel",
+<a id='L420' name='L420'></a> 420         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L421' name='L421'></a> 421         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Change to Label" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Change existing item to a label" ),
+<a id='L422' name='L422'></a> 422         <a href='../Y/3496.html' title='Multiple used in 3 places.'>add_line_label_xpm</a>, <a href='../Y/7.html' title='Multiple used in 10 places.'>AF_NONE</a>, (<strong class='reserved'>void</strong>*) <a href='../Y/1825.html' title='Multiple used in 54 places.'>SCH_LABEL_T</a> );
+<a id='L423' name='L423'></a> 423 
+<a id='L424' name='L424'></a> 424 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/8184.html' title='Multiple used in 5 places.'>toHLabel</a>( "eeschema.InteractiveEdit.toHLabel",
+<a id='L425' name='L425'></a> 425         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L426' name='L426'></a> 426         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Change to Hierarchical Label" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Change existing item to a hierarchical label" ),
+<a id='L427' name='L427'></a> 427         <a href='../Y/3492.html' title='Multiple used in 3 places.'>add_hierarchical_label_xpm</a>, <a href='../Y/7.html' title='Multiple used in 10 places.'>AF_NONE</a>, (<strong class='reserved'>void</strong>*) <a href='../Y/1819.html' title='Multiple used in 66 places.'>SCH_HIER_LABEL_T</a> );
+<a id='L428' name='L428'></a> 428 
+<a id='L429' name='L429'></a> 429 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/8181.html' title='Multiple used in 5 places.'>toGLabel</a>( "eeschema.InteractiveEdit.toGLabel",
+<a id='L430' name='L430'></a> 430         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L431' name='L431'></a> 431         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Change to Global Label" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Change existing item to a global label" ),
+<a id='L432' name='L432'></a> 432         <a href='../Y/3489.html' title='Multiple used in 3 places.'>add_glabel_xpm</a>, <a href='../Y/7.html' title='Multiple used in 10 places.'>AF_NONE</a>, (<strong class='reserved'>void</strong>*) <a href='../Y/1818.html' title='Multiple used in 63 places.'>SCH_GLOBAL_LABEL_T</a> );
+<a id='L433' name='L433'></a> 433 
+<a id='L434' name='L434'></a> 434 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/8190.html' title='Multiple used in 5 places.'>toText</a>( "eeschema.InteractiveEdit.toText",
+<a id='L435' name='L435'></a> 435         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L436' name='L436'></a> 436         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Change to Text" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Change existing item to a text comment" ),
+<a id='L437' name='L437'></a> 437         <a href='../Y/8133.html' title='Multiple used in 6 places.'>text_xpm</a>, <a href='../Y/7.html' title='Multiple used in 10 places.'>AF_NONE</a>, (<strong class='reserved'>void</strong>*) <a href='../Y/1858.html' title='Multiple used in 43 places.'>SCH_TEXT_T</a> );
+<a id='L438' name='L438'></a> 438 
+<a id='L439' name='L439'></a> 439 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/3845.html' title='Multiple used in 5 places.'>cleanupSheetPins</a>( "eeschema.InteractiveEdit.cleanupSheetPins",
+<a id='L440' name='L440'></a> 440         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L441' name='L441'></a> 441         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Cleanup Sheet Pins" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Delete unreferenced sheet pins" ),
+<a id='L442' name='L442'></a> 442         <a href='../Y/7001.html' title='Multiple used in 622 places.'>nullptr</a> );
+<a id='L443' name='L443'></a> 443 
+<a id='L444' name='L444'></a> 444 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/4250.html' title='Multiple used in 4 places.'>editTextAndGraphics</a>( "eeschema.InteractiveEdit.editTextAndGraphics",
+<a id='L445' name='L445'></a> 445         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L446' name='L446'></a> 446         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Edit Text &amp; Graphics Properties..." ),
+<a id='L447' name='L447'></a> 447         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Edit text and graphics properties globally across schematic" ),
+<a id='L448' name='L448'></a> 448         reset_text_xpm );
+<a id='L449' name='L449'></a> 449 
+<a id='L450' name='L450'></a> 450 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/8063.html' title='Multiple used in 7 places.'>symbolProperties</a>( "eeschema.InteractiveEdit.symbolProperties",
+<a id='L451' name='L451'></a> 451         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L452' name='L452'></a> 452         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Symbol Properties..." ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Displays symbol properties dialog" ),
+<a id='L453' name='L453'></a> 453         part_properties_xpm );
+<a id='L454' name='L454'></a> 454 
+<a id='L455' name='L455'></a> 455 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7256.html' title='Multiple used in 7 places.'>pinTable</a>( "eeschema.InteractiveEdit.pinTable",
+<a id='L456' name='L456'></a> 456         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L457' name='L457'></a> 457         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Pin Table..." ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Displays pin table for bulk editing of pins" ),
+<a id='L458' name='L458'></a> 458         pin_table_xpm );
+<a id='L459' name='L459'></a> 459 
+<a id='L460' name='L460'></a> 460 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/3731.html' title='Multiple used in 5 places.'>breakWire</a>( "eeschema.InteractiveEdit.breakWire",
+<a id='L461' name='L461'></a> 461         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L462' name='L462'></a> 462         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Break Wire" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Divide a wire into segments which can be dragged independently" ),
+<a id='L463' name='L463'></a> 463         <a href='../Y/3732.html' title='Multiple used in 2 places.'>break_line_xpm</a> );
+<a id='L464' name='L464'></a> 464 
+<a id='L465' name='L465'></a> 465 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/3730.html' title='Multiple used in 5 places.'>breakBus</a>( "eeschema.InteractiveEdit.breakBus",
+<a id='L466' name='L466'></a> 466         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L467' name='L467'></a> 467         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Break Bus" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Divide a bus into segments which can be dragged independently" ),
+<a id='L468' name='L468'></a> 468         <a href='../Y/3732.html' title='Multiple used in 2 places.'>break_line_xpm</a> );
+<a id='L469' name='L469'></a> 469 
+<a id='L470' name='L470'></a> 470 
+<a id='L471' name='L471'></a> 471 <em class='comment'>// SCH_EDITOR_CONTROL</em>
+<a id='L472' name='L472'></a> 472 <em class='comment'>//</em>
+<a id='L473' name='L473'></a> 473 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7589.html' title='Multiple used in 5 places.'>restartMove</a>( "eeschema.EditorControl.restartMove",
+<a id='L474' name='L474'></a> 474         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a> );
+<a id='L475' name='L475'></a> 475 
+<a id='L476' name='L476'></a> 476 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7894.html' title='Multiple used in 4 places.'>simProbe</a>( "eeschema.Simulation.probe",
+<a id='L477' name='L477'></a> 477         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L478' name='L478'></a> 478         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add a simulator probe" ), "" );
+<a id='L479' name='L479'></a> 479 
+<a id='L480' name='L480'></a> 480 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7895.html' title='Multiple used in 4 places.'>simTune</a>( "eeschema.Simulation.tune",
+<a id='L481' name='L481'></a> 481         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L482' name='L482'></a> 482         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Select a value to be tuned" ), "" );
+<a id='L483' name='L483'></a> 483 
+<a id='L484' name='L484'></a> 484 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../S/457.html#L825' title='Defined at 825 in tools/sch_editor_control.cpp.'>highlightNet</a>( "eeschema.EditorControl.highlightNet",
+<a id='L485' name='L485'></a> 485         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>,
+<a id='L486' name='L486'></a> 486         '`', "",
+<a id='L487' name='L487'></a> 487         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Highlight Net" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Highlight net under cursor" ),
+<a id='L488' name='L488'></a> 488         <a href='../Y/6861.html' title='Multiple used in 3 places.'>net_highlight_schematic_xpm</a> );
+<a id='L489' name='L489'></a> 489 
+<a id='L490' name='L490'></a> 490 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/3848.html' title='Multiple used in 3 places.'>clearHighlight</a>( "eeschema.EditorControl.clearHighlight",
+<a id='L491' name='L491'></a> 491         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a> );
+<a id='L492' name='L492'></a> 492 
+<a id='L493' name='L493'></a> 493 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/8322.html' title='Multiple used in 4 places.'>updateNetHighlighting</a>( "eeschema.EditorControl.updateNetHighlighting",
+<a id='L494' name='L494'></a> 494         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a> );
+<a id='L495' name='L495'></a> 495 
+<a id='L496' name='L496'></a> 496 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/4718.html' title='Multiple used in 5 places.'>highlightNetTool</a>( "eeschema.EditorControl.highlightNetTool",
+<a id='L497' name='L497'></a> 497         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L498' name='L498'></a> 498         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Highlight Nets" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Highlight wires and pins of a net" ),
+<a id='L499' name='L499'></a> 499         <a href='../Y/6861.html' title='Multiple used in 3 places.'>net_highlight_schematic_xpm</a>, <a href='../Y/6.html' title='Multiple used in 31 places.'>AF_ACTIVATE</a> );
+<a id='L500' name='L500'></a> 500 
+<a id='L501' name='L501'></a> 501 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/4253.html' title='Multiple used in 5 places.'>editWithLibEdit</a>( "eeschema.EditorControl.editWithSymbolEditor",
+<a id='L502' name='L502'></a> 502         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>,
+<a id='L503' name='L503'></a> 503         <a href='../Y/1451.html' title='Multiple used in 4 places.'>MD_CTRL</a> + 'E', <a href='../Y/1348.html' title='Multiple used in 32 places.'>LEGACY_HK_NAME</a>( "Edit with Symbol Editor" ),
+<a id='L504' name='L504'></a> 504         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Edit with Symbol Editor" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Open the symbol editor to edit the symbol" ),
+<a id='L505' name='L505'></a> 505         libedit_xpm );
+<a id='L506' name='L506'></a> 506 
+<a id='L507' name='L507'></a> 507 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/4247.html' title='Multiple used in 5 places.'>editSymbolFields</a>( "eeschema.EditorControl.editSymbolFields",
+<a id='L508' name='L508'></a> 508         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L509' name='L509'></a> 509         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Edit Symbol Fields..." ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Bulk-edit fields of all symbols in schematic" ),
+<a id='L510' name='L510'></a> 510         spreadsheet_xpm );
+<a id='L511' name='L511'></a> 511 
+<a id='L512' name='L512'></a> 512 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/4248.html' title='Multiple used in 4 places.'>editSymbolLibraryLinks</a>( "eeschema.EditorControl.editSymbolLibraryLinks",
+<a id='L513' name='L513'></a> 513         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L514' name='L514'></a> 514         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Edit Symbol Library Links..." ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Edit links between schematic and library symbols" ),
+<a id='L515' name='L515'></a> 515         edit_cmp_symb_links_xpm );
+<a id='L516' name='L516'></a> 516 
+<a id='L517' name='L517'></a> 517 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/3569.html' title='Multiple used in 5 places.'>assignFootprints</a>( "eeschema.EditorControl.assignFootprints",
+<a id='L518' name='L518'></a> 518         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L519' name='L519'></a> 519         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Assign Footprints..." ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Run Cvpcb" ),
+<a id='L520' name='L520'></a> 520         cvpcb_xpm );
+<a id='L521' name='L521'></a> 521 
+<a id='L522' name='L522'></a> 522 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/4761.html' title='Multiple used in 4 places.'>importFPAssignments</a>( "eeschema.EditorControl.importFPAssignments",
+<a id='L523' name='L523'></a> 523         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L524' name='L524'></a> 524         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Import Footprint Assignments..." ),
+<a id='L525' name='L525'></a> 525         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Import symbol footprint assignments from .cmp file created by Pcbnew" ),
+<a id='L526' name='L526'></a> 526         import_footprint_names_xpm );
+<a id='L527' name='L527'></a> 527 
+<a id='L528' name='L528'></a> 528 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/3537.html' title='Multiple used in 5 places.'>annotate</a>( "eeschema.EditorControl.annotate",
+<a id='L529' name='L529'></a> 529         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L530' name='L530'></a> 530         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Annotate Schematic..." ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Fill in schematic symbol reference designators" ),
+<a id='L531' name='L531'></a> 531         annotate_xpm );
+<a id='L532' name='L532'></a> 532 
+<a id='L533' name='L533'></a> 533 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7730.html' title='Multiple used in 5 places.'>schematicSetup</a>( "eeschema.EditorControl.schematicSetup",
+<a id='L534' name='L534'></a> 534         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L535' name='L535'></a> 535         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Schematic Setup..." ),
+<a id='L536' name='L536'></a> 536         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Edit schematic setup including annotation styles and electrical rules" ),
+<a id='L537' name='L537'></a> 537         options_schematic_xpm );
+<a id='L538' name='L538'></a> 538 
+<a id='L539' name='L539'></a> 539 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7577.html' title='Multiple used in 4 places.'>rescueSymbols</a>( "eeschema.EditorControl.rescueSymbols",
+<a id='L540' name='L540'></a> 540         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L541' name='L541'></a> 541         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Rescue Symbols..." ),
+<a id='L542' name='L542'></a> 542         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Find old symbols in project and rename/rescue them" ),
+<a id='L543' name='L543'></a> 543         <a href='../Y/7580.html' title='Multiple used in 2 places.'>rescue_xpm</a> );
+<a id='L544' name='L544'></a> 544 
+<a id='L545' name='L545'></a> 545 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7549.html' title='Multiple used in 4 places.'>remapSymbols</a>( "eeschema.EditorControl.remapSymbols",
+<a id='L546' name='L546'></a> 546         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L547' name='L547'></a> 547         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Remap Symbols..." ),
+<a id='L548' name='L548'></a> 548         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Remap legacy library symbols to symbol library table" ),
+<a id='L549' name='L549'></a> 549         <a href='../Y/7580.html' title='Multiple used in 2 places.'>rescue_xpm</a> );
+<a id='L550' name='L550'></a> 550 
+<a id='L551' name='L551'></a> 551 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7538.html' title='Multiple used in 4 places.'>refreshSymbolFromLibrary</a>( "eeschema.EditorControl.refreshSymbolFromLibrary",
+<a id='L552' name='L552'></a> 552         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L553' name='L553'></a> 553         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Update from Symbol Library" ),
+<a id='L554' name='L554'></a> 554         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Update from the symbol library using the library identifier" ),
+<a id='L555' name='L555'></a> 555         <a href='../Y/7539.html' title='Multiple used in 3 places.'>refresh_xpm</a> );
+<a id='L556' name='L556'></a> 556 
+<a id='L557' name='L557'></a> 557 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7860.html' title='Multiple used in 4 places.'>showBusManager</a>( "eeschema.EditorControl.showBusManager",
+<a id='L558' name='L558'></a> 558         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L559' name='L559'></a> 559         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Bus Definitions..." ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Manage bus definitions" ),
+<a id='L560' name='L560'></a> 560         bus_definition_tool_xpm );
+<a id='L561' name='L561'></a> 561 
+<a id='L562' name='L562'></a> 562 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/4184.html' title='Multiple used in 4 places.'>drawSheetOnClipboard</a>( "eeschema.EditorControl.drawSheetOnClipboard",
+<a id='L563' name='L563'></a> 563         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L564' name='L564'></a> 564         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Export Drawing to Clipboard" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Export drawing of current sheet to clipboard" ),
+<a id='L565' name='L565'></a> 565         <a href='../Y/3974.html' title='Multiple used in 2 places.'>copy_xpm</a> );
+<a id='L566' name='L566'></a> 566 
+<a id='L567' name='L567'></a> 567 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/7869.html' title='Multiple used in 5 places.'>showPcbNew</a>( "eeschema.EditorControl.showPcbNew",
+<a id='L568' name='L568'></a> 568         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L569' name='L569'></a> 569         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Switch to PCB Editor" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Open PCB in Pcbnew" ),
+<a id='L570' name='L570'></a> 570         pcbnew_xpm );
+<a id='L571' name='L571'></a> 571 
+<a id='L572' name='L572'></a> 572 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/4356.html' title='Multiple used in 4 places.'>exportNetlist</a>( "eeschema.EditorControl.exportNetlist",
+<a id='L573' name='L573'></a> 573         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L574' name='L574'></a> 574         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Export Netlist..." ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Export file containing netlist in one of several formats" ),
+<a id='L575' name='L575'></a> 575         <a href='../Y/6870.html' title='Multiple used in 2 places.'>netlist_xpm</a> );
+<a id='L576' name='L576'></a> 576 
+<a id='L577' name='L577'></a> 577 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/4633.html' title='Multiple used in 5 places.'>generateBOM</a>( "eeschema.EditorControl.generateBOM",
+<a id='L578' name='L578'></a> 578         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L579' name='L579'></a> 579         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Generate BOM..." ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Generate a bill of materials for the current schematic" ),
+<a id='L580' name='L580'></a> 580         bom_xpm );
+<a id='L581' name='L581'></a> 581 
+<a id='L582' name='L582'></a> 582 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/4295.html' title='Multiple used in 5 places.'>enterSheet</a>( "eeschema.EditorControl.enterSheet",
+<a id='L583' name='L583'></a> 583         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L584' name='L584'></a> 584         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Enter Sheet" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Display the selected sheet's contents in the Eeschema window" ),
+<a id='L585' name='L585'></a> 585         enter_sheet_xpm );
+<a id='L586' name='L586'></a> 586 
+<a id='L587' name='L587'></a> 587 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/4942.html' title='Multiple used in 8 places.'>leaveSheet</a>( "eeschema.EditorControl.leaveSheet",
+<a id='L588' name='L588'></a> 588         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>,
+<a id='L589' name='L589'></a> 589         <a href='../Y/1450.html' title='Multiple used in 22 places.'>MD_ALT</a> + WXK_BACK, <a href='../Y/1348.html' title='Multiple used in 32 places.'>LEGACY_HK_NAME</a>( "Leave Sheet" ),
+<a id='L590' name='L590'></a> 590         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Leave Sheet" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Display the parent sheet in the Eeschema window" ),
+<a id='L591' name='L591'></a> 591         leave_sheet_xpm );
+<a id='L592' name='L592'></a> 592 
+<a id='L593' name='L593'></a> 593 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/6830.html' title='Multiple used in 5 places.'>navigateHierarchy</a>( "eeschema.EditorControl.navigateHierarchy",
+<a id='L594' name='L594'></a> 594         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L595' name='L595'></a> 595         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Show Hierarchy Navigator" ), "",
+<a id='L596' name='L596'></a> 596         hierarchy_nav_xpm );
+<a id='L597' name='L597'></a> 597 
+<a id='L598' name='L598'></a> 598 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/4354.html' title='Multiple used in 4 places.'>explicitCrossProbe</a>( "eeschema.EditorControl.explicitCrossProbe",
+<a id='L599' name='L599'></a> 599         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L600' name='L600'></a> 600         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Highlight on PCB" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Highlight corresponding items in PCBNew" ),
+<a id='L601' name='L601'></a> 601         select_same_sheet_xpm );
+<a id='L602' name='L602'></a> 602 
+<a id='L603' name='L603'></a> 603 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/8200.html' title='Multiple used in 6 places.'>toggleHiddenPins</a>( "eeschema.EditorControl.showHiddenPins",
+<a id='L604' name='L604'></a> 604         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L605' name='L605'></a> 605         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Show Hidden Pins" ), "",
+<a id='L606' name='L606'></a> 606         hidden_pin_xpm );
+<a id='L607' name='L607'></a> 607 
+<a id='L608' name='L608'></a> 608 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/8199.html' title='Multiple used in 3 places.'>toggleHiddenFields</a>( "eeschema.EditorControl.showHiddenFields",
+<a id='L609' name='L609'></a> 609         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L610' name='L610'></a> 610         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Show Hidden Fields" ), "",
+<a id='L611' name='L611'></a> 611         <a href='../Y/7001.html' title='Multiple used in 622 places.'>nullptr</a> );
+<a id='L612' name='L612'></a> 612 
+<a id='L613' name='L613'></a> 613 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/8197.html' title='Multiple used in 5 places.'>toggleForceHV</a>( "eeschema.EditorControl.forceHVLines",
+<a id='L614' name='L614'></a> 614         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L615' name='L615'></a> 615         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Force H/V Wires and Buses" ), "",
+<a id='L616' name='L616'></a> 616         lines90_xpm );
+<a id='L617' name='L617'></a> 617 
+<a id='L618' name='L618'></a> 618 
+<a id='L619' name='L619'></a> 619 <em class='comment'>// SCH_LINE_WIRE_BUS_TOOL</em>
+<a id='L620' name='L620'></a> 620 <em class='comment'>//</em>
+<a id='L621' name='L621'></a> 621 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/3478.html' title='Multiple used in 6 places.'>addNeededJunctions</a>(
+<a id='L622' name='L622'></a> 622         "eeschema.InteractiveDrawingLineWireBus.addNeededJunctions", AS_ACTIVE, 0, "",
+<a id='L623' name='L623'></a> 623         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add Junctions to Selection where needed" ), "", <a href='../Y/7001.html' title='Multiple used in 622 places.'>nullptr</a>, <a href='../Y/6.html' title='Multiple used in 31 places.'>AF_ACTIVATE</a> );
+<a id='L624' name='L624'></a> 624 
+<a id='L625' name='L625'></a> 625 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/4189.html' title='Multiple used in 9 places.'>drawWire</a>( "eeschema.InteractiveDrawingLineWireBus.drawWires",
+<a id='L626' name='L626'></a> 626         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>,
+<a id='L627' name='L627'></a> 627         'W', <a href='../Y/1348.html' title='Multiple used in 32 places.'>LEGACY_HK_NAME</a>( "Begin Wire" ),
+<a id='L628' name='L628'></a> 628         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add Wire" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add a wire" ),
+<a id='L629' name='L629'></a> 629         <a href='../Y/3497.html' title='Multiple used in 2 places.'>add_line_xpm</a>, <a href='../Y/6.html' title='Multiple used in 31 places.'>AF_ACTIVATE</a>, (<strong class='reserved'>void</strong>*) <a href='../Y/1345.html' title='Multiple used in 56 places.'>LAYER_WIRE</a> );
+<a id='L630' name='L630'></a> 630 
+<a id='L631' name='L631'></a> 631 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/4176.html' title='Multiple used in 9 places.'>drawBus</a>( "eeschema.InteractiveDrawingLineWireBus.drawBuses",
+<a id='L632' name='L632'></a> 632         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>,
+<a id='L633' name='L633'></a> 633         'B', <a href='../Y/1348.html' title='Multiple used in 32 places.'>LEGACY_HK_NAME</a>( "Begin Bus" ),
+<a id='L634' name='L634'></a> 634         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add Bus" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add a bus" ),
+<a id='L635' name='L635'></a> 635         <a href='../Y/3482.html' title='Multiple used in 2 places.'>add_bus_xpm</a>, <a href='../Y/6.html' title='Multiple used in 31 places.'>AF_ACTIVATE</a>, (<strong class='reserved'>void</strong>*) <a href='../Y/1308.html' title='Multiple used in 50 places.'>LAYER_BUS</a> );
+<a id='L636' name='L636'></a> 636 
+<a id='L637' name='L637'></a> 637 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/8286.html' title='Multiple used in 4 places.'>unfoldBus</a>( "eeschema.InteractiveDrawingLineWireBus.unfoldBus",
+<a id='L638' name='L638'></a> 638         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>,
+<a id='L639' name='L639'></a> 639         'C', <a href='../Y/1348.html' title='Multiple used in 32 places.'>LEGACY_HK_NAME</a>( "Unfold from Bus" ),
+<a id='L640' name='L640'></a> 640         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Unfold from Bus" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Break a wire out of a bus" ),
+<a id='L641' name='L641'></a> 641         <a href='../Y/7001.html' title='Multiple used in 622 places.'>nullptr</a>, <a href='../Y/6.html' title='Multiple used in 31 places.'>AF_ACTIVATE</a> );
+<a id='L642' name='L642'></a> 642 
+<a id='L643' name='L643'></a> 643 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/4180.html' title='Multiple used in 8 places.'>drawLines</a>( "eeschema.InteractiveDrawingLineWireBus.drawLines",
+<a id='L644' name='L644'></a> 644         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>,
+<a id='L645' name='L645'></a> 645         'I', <a href='../Y/1348.html' title='Multiple used in 32 places.'>LEGACY_HK_NAME</a>( "Add Graphic PolyLine" ),
+<a id='L646' name='L646'></a> 646         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add Lines" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Add connected graphic lines" ),
+<a id='L647' name='L647'></a> 647         <a href='../Y/3487.html' title='Multiple used in 3 places.'>add_dashed_line_xpm</a>, <a href='../Y/6.html' title='Multiple used in 31 places.'>AF_ACTIVATE</a>, (<strong class='reserved'>void</strong>*) <a href='../Y/1325.html' title='Multiple used in 35 places.'>LAYER_NOTES</a> );
+<a id='L648' name='L648'></a> 648 
+<a id='L649' name='L649'></a> 649 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/4483.html' title='Multiple used in 3 places.'>finishLineWireOrBus</a>( "eeschema.InteractiveDrawingLineWireBus.finish",
+<a id='L650' name='L650'></a> 650         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>,
+<a id='L651' name='L651'></a> 651         'K', <a href='../Y/1348.html' title='Multiple used in 32 places.'>LEGACY_HK_NAME</a>( "End Line Wire Bus" ),
+<a id='L652' name='L652'></a> 652         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Finish Wire or Bus" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Complete drawing at current segment" ),
+<a id='L653' name='L653'></a> 653         <a href='../Y/3826.html' title='Multiple used in 6 places.'>checked_ok_xpm</a>, <a href='../Y/7.html' title='Multiple used in 10 places.'>AF_NONE</a> );
+<a id='L654' name='L654'></a> 654 
+<a id='L655' name='L655'></a> 655 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/4485.html' title='Multiple used in 5 places.'>finishWire</a>( "eeschema.InteractiveDrawingLineWireBus.finishWire",
+<a id='L656' name='L656'></a> 656         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0,  "",
+<a id='L657' name='L657'></a> 657         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Finish Wire" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Complete wire with current segment" ),
+<a id='L658' name='L658'></a> 658         <a href='../Y/3826.html' title='Multiple used in 6 places.'>checked_ok_xpm</a>, <a href='../Y/7.html' title='Multiple used in 10 places.'>AF_NONE</a> );
+<a id='L659' name='L659'></a> 659 
+<a id='L660' name='L660'></a> 660 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/4480.html' title='Multiple used in 5 places.'>finishBus</a>( "eeschema.InteractiveDrawingLineWireBus.finishBus",
+<a id='L661' name='L661'></a> 661         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0,  "",
+<a id='L662' name='L662'></a> 662         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Finish Bus" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Complete bus with current segment" ),
+<a id='L663' name='L663'></a> 663         <a href='../Y/3826.html' title='Multiple used in 6 places.'>checked_ok_xpm</a>, <a href='../Y/7.html' title='Multiple used in 10 places.'>AF_NONE</a> );
+<a id='L664' name='L664'></a> 664 
+<a id='L665' name='L665'></a> 665 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/4482.html' title='Multiple used in 4 places.'>finishLine</a>( "eeschema.InteractiveDrawingLineWireBus.finishLine",
+<a id='L666' name='L666'></a> 666         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0,  "",
+<a id='L667' name='L667'></a> 667         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Finish Lines" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Complete connected lines with current segment" ),
+<a id='L668' name='L668'></a> 668         <a href='../Y/3826.html' title='Multiple used in 6 places.'>checked_ok_xpm</a>, <a href='../Y/7.html' title='Multiple used in 10 places.'>AF_NONE</a> );
+<a id='L669' name='L669'></a> 669 
+<a id='L670' name='L670'></a> 670 
+<a id='L671' name='L671'></a> 671 <em class='comment'>// SCH_MOVE_TOOL</em>
+<a id='L672' name='L672'></a> 672 <em class='comment'>//</em>
+<a id='L673' name='L673'></a> 673 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/6765.html' title='Multiple used in 31 places.'>move</a>( "eeschema.InteractiveMove.move",
+<a id='L674' name='L674'></a> 674         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>,
+<a id='L675' name='L675'></a> 675         'M', <a href='../Y/1348.html' title='Multiple used in 32 places.'>LEGACY_HK_NAME</a>( "Move Item" ),
+<a id='L676' name='L676'></a> 676         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Move" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Moves the selected item(s)" ), <a href='../Y/6771.html' title='Multiple used in 5 places.'>move_xpm</a>, <a href='../Y/6.html' title='Multiple used in 31 places.'>AF_ACTIVATE</a> );
+<a id='L677' name='L677'></a> 677 
+<a id='L678' name='L678'></a> 678 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/4174.html' title='Multiple used in 6 places.'>drag</a>( "eeschema.InteractiveMove.drag",
+<a id='L679' name='L679'></a> 679         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>,
+<a id='L680' name='L680'></a> 680         'G', <a href='../Y/1348.html' title='Multiple used in 32 places.'>LEGACY_HK_NAME</a>( "Drag Item" ),
+<a id='L681' name='L681'></a> 681         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Drag" ), <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Drags the selected item(s)" ), <a href='../Y/6771.html' title='Multiple used in 5 places.'>move_xpm</a>, <a href='../Y/6.html' title='Multiple used in 31 places.'>AF_ACTIVATE</a> );
+<a id='L682' name='L682'></a> 682 
+<a id='L683' name='L683'></a> 683 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/6766.html' title='Multiple used in 5 places.'>moveActivate</a>( "eeschema.InteractiveMove",
+<a id='L684' name='L684'></a> 684         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L685' name='L685'></a> 685         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Move Activate" ), "", <a href='../Y/6771.html' title='Multiple used in 5 places.'>move_xpm</a>, <a href='../Y/6.html' title='Multiple used in 31 places.'>AF_ACTIVATE</a> );
+<a id='L686' name='L686'></a> 686 
+<a id='L687' name='L687'></a> 687 <a href='../Y/2383.html' title='Multiple used in 247 places.'>TOOL_ACTION</a> <a href='../Y/405.html' title='Multiple used in 645 places.'>EE_ACTIONS</a>::<a href='../Y/8060.html' title='Multiple used in 4 places.'>symbolMoveActivate</a>( "eeschema.SymbolMoveTool",
+<a id='L688' name='L688'></a> 688         <a href='../Y/12.html' title='Multiple used in 122 places.'>AS_GLOBAL</a>, 0, "",
+<a id='L689' name='L689'></a> 689         <a href='../D/1944.html' title='Multiple defined in 4 places.'>_</a>( "Symbol Move Activate" ), "", <a href='../Y/6771.html' title='Multiple used in 5 places.'>move_xpm</a>, <a href='../Y/6.html' title='Multiple used in 31 places.'>AF_ACTIVATE</a> );
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;][^][v]<a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

@@ -1,0 +1,418 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>schematic_undo_redo.cpp</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/schematic_undo_redo.cpp</h2>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L97'>[^]</a><a href='#L372'>[v]</a>[top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L97' title='Defined at 97.'>SaveCopyInUndoList</a></li>
+<li><a href='#L158' title='Defined at 158.'>SaveCopyInUndoList</a></li>
+<li><a href='#L254' title='Defined at 254.'>PutDataInPreviousState</a></li>
+<li><a href='#L352' title='Defined at 352.'>RollbackSchematicFromUndo</a></li>
+<li><a href='#L372' title='Defined at 372.'>ClearUndoORRedoList</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * This program source code file is part of KiCad, a free EDA CAD application.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 2004 Jean-Pierre Charras, jaen-pierre.charras@gipsa-lab.inpg.com</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> * Copyright (C) 2004-2019 KiCad Developers, see change_log.txt for contributors.</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> *</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> * This program is free software; you can redistribute it and/or</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * modify it under the terms of the GNU General Public License</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * as published by the Free Software Foundation; either version 2</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> * of the License, or (at your option) any later version.</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> *</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> * This program is distributed in the hope that it will be useful,</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> * GNU General Public License for more details.</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> *</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> * You should have received a copy of the GNU General Public License</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * along with this program; if not, you may find one here:</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> * or you may search the http://www.gnu.org website for the version 2 license,</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'> * or you may write to the Free Software Foundation, Inc.,</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'> * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'> */</em>
+<a id='L24' name='L24'></a>  24 
+<a id='L25' name='L25'></a>  25 <em class='sharp'>#include</em> &lt;fctsys.h&gt;
+<a id='L26' name='L26'></a>  26 <em class='sharp'>#include</em> &lt;<a href='357.html'>sch_edit_frame.h</a>&gt;
+<a id='L27' name='L27'></a>  27 <em class='sharp'>#include</em> &lt;tool/tool_manager.h&gt;
+<a id='L28' name='L28'></a>  28 <em class='sharp'>#include</em> &lt;<a href='347.html'>sch_bus_entry.h</a>&gt;
+<a id='L29' name='L29'></a>  29 <em class='sharp'>#include</em> &lt;<a href='366.html'>sch_junction.h</a>&gt;
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#include</em> &lt;<a href='370.html'>sch_line.h</a>&gt;
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#include</em> &lt;<a href='345.html'>sch_bitmap.h</a>&gt;
+<a id='L32' name='L32'></a>  32 <em class='sharp'>#include</em> &lt;<a href='443.html'>tools/ee_selection_tool.h</a>&gt;
+<a id='L33' name='L33'></a>  33 <em class='sharp'>#include</em> &lt;ws_proxy_undo_item.h&gt;
+<a id='L34' name='L34'></a>  34 <em class='sharp'>#include</em> &lt;tool/actions.h&gt;
+<a id='L35' name='L35'></a>  35 
+<a id='L36' name='L36'></a>  36 <em class='comment'>/* Functions to undo and redo edit commands.</em>
+<a id='L37' name='L37'></a>  37 <em class='comment'> *</em>
+<a id='L38' name='L38'></a>  38 <em class='comment'> *  m_UndoList and m_RedoList handle a std::vector of PICKED_ITEMS_LIST</em>
+<a id='L39' name='L39'></a>  39 <em class='comment'> *  Each PICKED_ITEMS_LIST handle a std::vector of pickers (class ITEM_PICKER),</em>
+<a id='L40' name='L40'></a>  40 <em class='comment'> *  that store the list of schematic items that are concerned by the command to</em>
+<a id='L41' name='L41'></a>  41 <em class='comment'> *  undo or redo and is created for each command to undo (handle also a command</em>
+<a id='L42' name='L42'></a>  42 <em class='comment'> *  to redo). each picker has a pointer pointing to an item to undo or redo (in</em>
+<a id='L43' name='L43'></a>  43 <em class='comment'> *  fact: deleted, added or modified), and has a pointer to a copy of this item,</em>
+<a id='L44' name='L44'></a>  44 <em class='comment'> *  when this item has been modified (the old values of parameters are</em>
+<a id='L45' name='L45'></a>  45 <em class='comment'> *  therefore saved)</em>
+<a id='L46' name='L46'></a>  46 <em class='comment'> *</em>
+<a id='L47' name='L47'></a>  47 <em class='comment'> *  there are 3 cases:</em>
+<a id='L48' name='L48'></a>  48 <em class='comment'> *  - delete item(s) command</em>
+<a id='L49' name='L49'></a>  49 <em class='comment'> *  - change item(s) command</em>
+<a id='L50' name='L50'></a>  50 <em class='comment'> *  - add item(s) command</em>
+<a id='L51' name='L51'></a>  51 <em class='comment'> *  and 2 cases for block:</em>
+<a id='L52' name='L52'></a>  52 <em class='comment'> *  - move list of items</em>
+<a id='L53' name='L53'></a>  53 <em class='comment'> *  - mirror (Y) list of items</em>
+<a id='L54' name='L54'></a>  54 <em class='comment'> *</em>
+<a id='L55' name='L55'></a>  55 <em class='comment'> *  Undo command</em>
+<a id='L56' name='L56'></a>  56 <em class='comment'> *  - delete item(s) command:</em>
+<a id='L57' name='L57'></a>  57 <em class='comment'> *       =&gt;  deleted items are moved in undo list</em>
+<a id='L58' name='L58'></a>  58 <em class='comment'> *</em>
+<a id='L59' name='L59'></a>  59 <em class='comment'> *  - change item(s) command</em>
+<a id='L60' name='L60'></a>  60 <em class='comment'> *      =&gt; A copy of item(s) is made (a DrawPickedStruct list of wrappers)</em>
+<a id='L61' name='L61'></a>  61 <em class='comment'> *      the .m_Link member of each wrapper points the modified item.</em>
+<a id='L62' name='L62'></a>  62 <em class='comment'> *      the .m_Item member of each wrapper points the old copy of this item.</em>
+<a id='L63' name='L63'></a>  63 <em class='comment'> *</em>
+<a id='L64' name='L64'></a>  64 <em class='comment'> *  - add item(s) command</em>
+<a id='L65' name='L65'></a>  65 <em class='comment'> *      =&gt;A list of item(s) is made. The .m_Item member of each wrapper points</em>
+<a id='L66' name='L66'></a>  66 <em class='comment'> *        the new item.</em>
+<a id='L67' name='L67'></a>  67 <em class='comment'> *</em>
+<a id='L68' name='L68'></a>  68 <em class='comment'> *  Redo command</em>
+<a id='L69' name='L69'></a>  69 <em class='comment'> *  - delete item(s) old command:</em>
+<a id='L70' name='L70'></a>  70 <em class='comment'> *      =&gt; deleted items are moved into m_tree</em>
+<a id='L71' name='L71'></a>  71 <em class='comment'> *</em>
+<a id='L72' name='L72'></a>  72 <em class='comment'> *  - change item(s) command</em>
+<a id='L73' name='L73'></a>  73 <em class='comment'> *      =&gt; the copy of item(s) is moved in Undo list</em>
+<a id='L74' name='L74'></a>  74 <em class='comment'> *</em>
+<a id='L75' name='L75'></a>  75 <em class='comment'> *  - add item(s) command</em>
+<a id='L76' name='L76'></a>  76 <em class='comment'> *      =&gt; The list of item(s) is used to create a deleted list in undo</em>
+<a id='L77' name='L77'></a>  77 <em class='comment'> *         list(same as a delete command)</em>
+<a id='L78' name='L78'></a>  78 <em class='comment'> *</em>
+<a id='L79' name='L79'></a>  79 <em class='comment'> *   Some block operations that change items can be undone without memorized</em>
+<a id='L80' name='L80'></a>  80 <em class='comment'> *   items, just the coordinates of the transform: move list of items (undo/</em>
+<a id='L81' name='L81'></a>  81 <em class='comment'> *   redo is made by moving with the opposite move vector) mirror (Y) and flip</em>
+<a id='L82' name='L82'></a>  82 <em class='comment'> *   list of items (undo/redo is made by mirror or flip items) so they are</em>
+<a id='L83' name='L83'></a>  83 <em class='comment'> *    handled specifically.</em>
+<a id='L84' name='L84'></a>  84 <em class='comment'> *</em>
+<a id='L85' name='L85'></a>  85 <em class='comment'> *  A problem is the hierarchical sheet handling.</em>
+<a id='L86' name='L86'></a>  86 <em class='comment'> *  the data associated (sub-hierarchy, undo/redo list) is deleted only</em>
+<a id='L87' name='L87'></a>  87 <em class='comment'> *  when the sheet is really deleted (i.e. when deleted from undo or redo list)</em>
+<a id='L88' name='L88'></a>  88 <em class='comment'> *  This is handled by its destructor.</em>
+<a id='L89' name='L89'></a>  89 <em class='comment'> */</em>
+<a id='L90' name='L90'></a>  90 
+<a id='L91' name='L91'></a>  91 
+<a id='L92' name='L92'></a>  92 <em class='comment'>/* Used if undo / redo command:</em>
+<a id='L93' name='L93'></a>  93 <em class='comment'> * swap data between Item and its copy, pointed by its picked item link member</em>
+<a id='L94' name='L94'></a>  94 <em class='comment'> * swapped data is data modified by editing, so not all values are swapped</em>
+<a id='L95' name='L95'></a>  95 <em class='comment'> */</em>
+<a id='L96' name='L96'></a>  96 
+<a id='L97' name='L97'></a>  97 <strong class='reserved'>void</strong> <a href='../S/356.html#L299' title='Defined at 299 in sch_edit_frame.cpp.'>SCH_EDIT_FRAME</a>::<a href='../R/1638.html' title='Multiple referred from 46 places.'>SaveCopyInUndoList</a>( <a href='../S/384.html#L85' title='Defined at 85 in sch_screen.cpp.'>SCH_SCREEN</a>*    <a href='../Y/3286.html' title='Multiple used in 237 places.'>aScreen</a>,
+<a id='L98' name='L98'></a>  98                                          <a href='../D/1533.html' title='Multiple defined in 3 places.'>SCH_ITEM</a>*      <a href='../Y/3005.html' title='Multiple used in 689 places.'>aItem</a>,
+<a id='L99' name='L99'></a>  99                                          <a href='../Y/2590.html' title='Multiple used in 11 places.'>UNDO_REDO_T</a>    <a href='../Y/2805.html' title='Multiple used in 4 places.'>aCommandType</a>,
+<a id='L100' name='L100'></a> 100                                          <strong class='reserved'>bool</strong>           <a href='../Y/2752.html' title='Multiple used in 16 places.'>aAppend</a>,
+<a id='L101' name='L101'></a> 101                                          <strong class='reserved'>const</strong> <a href='../Y/8819.html' title='Multiple used in 1271 places.'>wxPoint</a>&amp; <a href='../Y/3404.html' title='Multiple used in 6 places.'>aTransformPoint</a> )
+<a id='L102' name='L102'></a> 102 <em class='brace'>{</em>
+<a id='L103' name='L103'></a> 103     <a href='../Y/1613.html' title='Multiple used in 26 places.'>PICKED_ITEMS_LIST</a>* <a href='../Y/3908.html' title='Multiple used in 29 places.'>commandToUndo</a> = <a href='../Y/7001.html' title='Multiple used in 622 places.'>nullptr</a>;
+<a id='L104' name='L104'></a> 104 
+<a id='L105' name='L105'></a> 105     <strong class='reserved'>if</strong>( !<a href='../Y/3005.html' title='Multiple used in 689 places.'>aItem</a> )
+<a id='L106' name='L106'></a> 106         <strong class='reserved'>return</strong>;
+<a id='L107' name='L107'></a> 107 
+<a id='L108' name='L108'></a> 108     <em class='comment'>// Connectivity may change</em>
+<a id='L109' name='L109'></a> 109     <a href='../Y/3005.html' title='Multiple used in 689 places.'>aItem</a>-&gt;<a href='../Y/1989.html' title='Multiple used in 4 places.'>SetConnectivityDirty</a>();
+<a id='L110' name='L110'></a> 110 
+<a id='L111' name='L111'></a> 111     <strong class='reserved'>if</strong>( <a href='../Y/2752.html' title='Multiple used in 16 places.'>aAppend</a> )
+<a id='L112' name='L112'></a> 112         <a href='../Y/3908.html' title='Multiple used in 29 places.'>commandToUndo</a> = <a href='../Y/1683.html' title='Multiple used in 6 places.'>PopCommandFromUndoList</a>();
+<a id='L113' name='L113'></a> 113 
+<a id='L114' name='L114'></a> 114     <strong class='reserved'>if</strong>( !<a href='../Y/3908.html' title='Multiple used in 29 places.'>commandToUndo</a> )
+<a id='L115' name='L115'></a> 115     <em class='brace'>{</em>
+<a id='L116' name='L116'></a> 116         <a href='../Y/3908.html' title='Multiple used in 29 places.'>commandToUndo</a> = <strong class='reserved'>new</strong> <a href='../Y/1613.html' title='Multiple used in 26 places.'>PICKED_ITEMS_LIST</a>();
+<a id='L117' name='L117'></a> 117         <a href='../Y/3908.html' title='Multiple used in 29 places.'>commandToUndo</a>-&gt;<a href='../Y/5311.html' title='Multiple used in 9 places.'>m_TransformPoint</a> = <a href='../Y/3404.html' title='Multiple used in 6 places.'>aTransformPoint</a>;
+<a id='L118' name='L118'></a> 118     <em class='brace'>}</em>
+<a id='L119' name='L119'></a> 119 
+<a id='L120' name='L120'></a> 120     <a href='../Y/1138.html' title='Multiple used in 18 places.'>ITEM_PICKER</a> <a href='../Y/4861.html' title='Multiple used in 5 places.'>itemWrapper</a>( <a href='../Y/3286.html' title='Multiple used in 237 places.'>aScreen</a>, <a href='../Y/3005.html' title='Multiple used in 689 places.'>aItem</a>, <a href='../Y/2805.html' title='Multiple used in 4 places.'>aCommandType</a> );
+<a id='L121' name='L121'></a> 121     <a href='../Y/4861.html' title='Multiple used in 5 places.'>itemWrapper</a>.<a href='../Y/2046.html' title='Multiple used in 95 places.'>SetFlags</a>( <a href='../Y/3005.html' title='Multiple used in 689 places.'>aItem</a>-&gt;<a href='../Y/758.html' title='Multiple used in 21 places.'>GetFlags</a>() );
+<a id='L122' name='L122'></a> 122 
+<a id='L123' name='L123'></a> 123     <strong class='reserved'>switch</strong>( <a href='../Y/2805.html' title='Multiple used in 4 places.'>aCommandType</a> )
+<a id='L124' name='L124'></a> 124     <em class='brace'>{</em>
+<a id='L125' name='L125'></a> 125     <strong class='reserved'>case</strong> <a href='../Y/2597.html' title='Multiple used in 45 places.'>UR_CHANGED</a>:            <em class='comment'>/* Create a copy of item */</em>
+<a id='L126' name='L126'></a> 126         <a href='../Y/4861.html' title='Multiple used in 5 places.'>itemWrapper</a>.SetLink( <a href='../Y/3005.html' title='Multiple used in 689 places.'>aItem</a>-&gt;<a href='../D/357.html' title='Multiple defined in 3 places.'>Duplicate</a>( <strong class='reserved'>true</strong> ) );
+<a id='L127' name='L127'></a> 127         <a href='../Y/3908.html' title='Multiple used in 29 places.'>commandToUndo</a>-&gt;<a href='../Y/1715.html' title='Multiple used in 17 places.'>PushItem</a>( <a href='../Y/4861.html' title='Multiple used in 5 places.'>itemWrapper</a> );
+<a id='L128' name='L128'></a> 128         <strong class='reserved'>break</strong>;
+<a id='L129' name='L129'></a> 129 
+<a id='L130' name='L130'></a> 130     <strong class='reserved'>case</strong> <a href='../Y/2605.html' title='Multiple used in 17 places.'>UR_NEW</a>:
+<a id='L131' name='L131'></a> 131     <strong class='reserved'>case</strong> <a href='../Y/2598.html' title='Multiple used in 11 places.'>UR_DELETED</a>:
+<a id='L132' name='L132'></a> 132     <strong class='reserved'>case</strong> <a href='../Y/2607.html' title='Multiple used in 3 places.'>UR_ROTATED</a>:
+<a id='L133' name='L133'></a> 133     <strong class='reserved'>case</strong> <a href='../Y/2604.html' title='Multiple used in 3 places.'>UR_MOVED</a>:
+<a id='L134' name='L134'></a> 134         <a href='../Y/3908.html' title='Multiple used in 29 places.'>commandToUndo</a>-&gt;<a href='../Y/1715.html' title='Multiple used in 17 places.'>PushItem</a>( <a href='../Y/4861.html' title='Multiple used in 5 places.'>itemWrapper</a> );
+<a id='L135' name='L135'></a> 135         <strong class='reserved'>break</strong>;
+<a id='L136' name='L136'></a> 136 
+<a id='L137' name='L137'></a> 137     <strong class='reserved'>default</strong>:
+<a id='L138' name='L138'></a> 138         <a href='../Y/8617.html' title='Multiple used in 34 places.'>wxFAIL_MSG</a>( <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>::<a href='../D/501.html' title='Multiple defined in 7 places.'>Format</a>( <a href='../Y/8911.html' title='Multiple used in 490 places.'>wxT</a>( "SaveCopyInUndoList() error (unknown code %X)" ),
+<a id='L139' name='L139'></a> 139                                       <a href='../Y/2805.html' title='Multiple used in 4 places.'>aCommandType</a> ) );
+<a id='L140' name='L140'></a> 140         <strong class='reserved'>break</strong>;
+<a id='L141' name='L141'></a> 141     <em class='brace'>}</em>
+<a id='L142' name='L142'></a> 142 
+<a id='L143' name='L143'></a> 143     <strong class='reserved'>if</strong>( <a href='../Y/3908.html' title='Multiple used in 29 places.'>commandToUndo</a>-&gt;<a href='../S/241.html#L265' title='Defined at 265 in erc_settings.cpp.'>GetCount</a>() )
+<a id='L144' name='L144'></a> 144     <em class='brace'>{</em>
+<a id='L145' name='L145'></a> 145         <em class='comment'>/* Save the copy in undo list */</em>
+<a id='L146' name='L146'></a> 146         <a href='../Y/1713.html' title='Multiple used in 5 places.'>PushCommandToUndoList</a>( <a href='../Y/3908.html' title='Multiple used in 29 places.'>commandToUndo</a> );
+<a id='L147' name='L147'></a> 147 
+<a id='L148' name='L148'></a> 148         <em class='comment'>/* Clear redo list, because after new save there is no redo to do */</em>
+<a id='L149' name='L149'></a> 149         <a href='../D/183.html' title='Multiple defined in 2 places.'>ClearUndoORRedoList</a>( <a href='../Y/1728.html' title='Multiple used in 3 places.'>REDO_LIST</a> );
+<a id='L150' name='L150'></a> 150     <em class='brace'>}</em>
+<a id='L151' name='L151'></a> 151     <strong class='reserved'>else</strong>
+<a id='L152' name='L152'></a> 152     <em class='brace'>{</em>
+<a id='L153' name='L153'></a> 153         <strong class='reserved'>delete</strong> <a href='../Y/3908.html' title='Multiple used in 29 places.'>commandToUndo</a>;
+<a id='L154' name='L154'></a> 154     <em class='brace'>}</em>
+<a id='L155' name='L155'></a> 155 <em class='brace'>}</em>
+<a id='L156' name='L156'></a> 156 
+<a id='L157' name='L157'></a> 157 
+<a id='L158' name='L158'></a> 158 <strong class='reserved'>void</strong> <a href='../S/356.html#L299' title='Defined at 299 in sch_edit_frame.cpp.'>SCH_EDIT_FRAME</a>::<a href='../R/1638.html' title='Multiple referred from 46 places.'>SaveCopyInUndoList</a>( <strong class='reserved'>const</strong> <a href='../Y/1613.html' title='Multiple used in 26 places.'>PICKED_ITEMS_LIST</a>&amp; <a href='../Y/3015.html' title='Multiple used in 6 places.'>aItemsList</a>,
+<a id='L159' name='L159'></a> 159                                          <a href='../Y/2590.html' title='Multiple used in 11 places.'>UNDO_REDO_T</a>              <a href='../Y/3408.html' title='Multiple used in 5 places.'>aTypeCommand</a>,
+<a id='L160' name='L160'></a> 160                                          <strong class='reserved'>bool</strong>                     <a href='../Y/2752.html' title='Multiple used in 16 places.'>aAppend</a>,
+<a id='L161' name='L161'></a> 161                                          <strong class='reserved'>const</strong> <a href='../Y/8819.html' title='Multiple used in 1271 places.'>wxPoint</a>&amp;           <a href='../Y/3404.html' title='Multiple used in 6 places.'>aTransformPoint</a> )
+<a id='L162' name='L162'></a> 162 <em class='brace'>{</em>
+<a id='L163' name='L163'></a> 163     <a href='../Y/1613.html' title='Multiple used in 26 places.'>PICKED_ITEMS_LIST</a>* <a href='../Y/3908.html' title='Multiple used in 29 places.'>commandToUndo</a> = <a href='../Y/7001.html' title='Multiple used in 622 places.'>nullptr</a>;
+<a id='L164' name='L164'></a> 164 
+<a id='L165' name='L165'></a> 165     <strong class='reserved'>if</strong>( !<a href='../Y/3015.html' title='Multiple used in 6 places.'>aItemsList</a>.<a href='../S/241.html#L265' title='Defined at 265 in erc_settings.cpp.'>GetCount</a>() )
+<a id='L166' name='L166'></a> 166         <strong class='reserved'>return</strong>;
+<a id='L167' name='L167'></a> 167 
+<a id='L168' name='L168'></a> 168     <em class='comment'>// Can't append a WIRE IMAGE, so fail to a new undo point</em>
+<a id='L169' name='L169'></a> 169     <strong class='reserved'>if</strong>( <a href='../Y/2752.html' title='Multiple used in 16 places.'>aAppend</a> )
+<a id='L170' name='L170'></a> 170         <a href='../Y/3908.html' title='Multiple used in 29 places.'>commandToUndo</a> = <a href='../Y/1683.html' title='Multiple used in 6 places.'>PopCommandFromUndoList</a>();
+<a id='L171' name='L171'></a> 171 
+<a id='L172' name='L172'></a> 172     <strong class='reserved'>if</strong>( !<a href='../Y/3908.html' title='Multiple used in 29 places.'>commandToUndo</a> )
+<a id='L173' name='L173'></a> 173     <em class='brace'>{</em>
+<a id='L174' name='L174'></a> 174         <a href='../Y/3908.html' title='Multiple used in 29 places.'>commandToUndo</a> = <strong class='reserved'>new</strong> <a href='../Y/1613.html' title='Multiple used in 26 places.'>PICKED_ITEMS_LIST</a>();
+<a id='L175' name='L175'></a> 175         <a href='../Y/3908.html' title='Multiple used in 29 places.'>commandToUndo</a>-&gt;<a href='../Y/5311.html' title='Multiple used in 9 places.'>m_TransformPoint</a> = <a href='../Y/3404.html' title='Multiple used in 6 places.'>aTransformPoint</a>;
+<a id='L176' name='L176'></a> 176         <a href='../Y/3908.html' title='Multiple used in 29 places.'>commandToUndo</a>-&gt;m_Status = <a href='../Y/3408.html' title='Multiple used in 5 places.'>aTypeCommand</a>;
+<a id='L177' name='L177'></a> 177     <em class='brace'>}</em>
+<a id='L178' name='L178'></a> 178 
+<a id='L179' name='L179'></a> 179     <em class='comment'>// Copy picker list:</em>
+<a id='L180' name='L180'></a> 180     <strong class='reserved'>if</strong>( !<a href='../Y/3908.html' title='Multiple used in 29 places.'>commandToUndo</a>-&gt;<a href='../S/241.html#L265' title='Defined at 265 in erc_settings.cpp.'>GetCount</a>() )
+<a id='L181' name='L181'></a> 181         <a href='../Y/3908.html' title='Multiple used in 29 places.'>commandToUndo</a>-&gt;CopyList( <a href='../Y/3015.html' title='Multiple used in 6 places.'>aItemsList</a> );
+<a id='L182' name='L182'></a> 182     <strong class='reserved'>else</strong>
+<a id='L183' name='L183'></a> 183     <em class='brace'>{</em>
+<a id='L184' name='L184'></a> 184         <em class='comment'>// Unless we are appending, in which case, get the picker items</em>
+<a id='L185' name='L185'></a> 185         <strong class='reserved'>for</strong>( <strong class='reserved'>unsigned</strong> <a href='../Y/4748.html' title='Multiple used in 400 places.'>ii</a> = 0; <a href='../Y/4748.html' title='Multiple used in 400 places.'>ii</a> &lt; <a href='../Y/3015.html' title='Multiple used in 6 places.'>aItemsList</a>.<a href='../S/241.html#L265' title='Defined at 265 in erc_settings.cpp.'>GetCount</a>(); <a href='../Y/4748.html' title='Multiple used in 400 places.'>ii</a>++ )
+<a id='L186' name='L186'></a> 186             <a href='../Y/3908.html' title='Multiple used in 29 places.'>commandToUndo</a>-&gt;<a href='../Y/1715.html' title='Multiple used in 17 places.'>PushItem</a>( <a href='../Y/3015.html' title='Multiple used in 6 places.'>aItemsList</a>.GetItemWrapper( <a href='../Y/4748.html' title='Multiple used in 400 places.'>ii</a>) );
+<a id='L187' name='L187'></a> 187     <em class='brace'>}</em>
+<a id='L188' name='L188'></a> 188 
+<a id='L189' name='L189'></a> 189     <em class='comment'>// Verify list, and creates data if needed</em>
+<a id='L190' name='L190'></a> 190     <strong class='reserved'>for</strong>( <strong class='reserved'>unsigned</strong> <a href='../Y/4748.html' title='Multiple used in 400 places.'>ii</a> = 0; <a href='../Y/4748.html' title='Multiple used in 400 places.'>ii</a> &lt; <a href='../Y/3908.html' title='Multiple used in 29 places.'>commandToUndo</a>-&gt;<a href='../S/241.html#L265' title='Defined at 265 in erc_settings.cpp.'>GetCount</a>(); <a href='../Y/4748.html' title='Multiple used in 400 places.'>ii</a>++ )
+<a id='L191' name='L191'></a> 191     <em class='brace'>{</em>
+<a id='L192' name='L192'></a> 192         <a href='../D/1533.html' title='Multiple defined in 3 places.'>SCH_ITEM</a>* <a href='../Y/7722.html' title='Multiple used in 33 places.'>sch_item</a> = <strong class='reserved'>dynamic_cast</strong>&lt;<a href='../D/1533.html' title='Multiple defined in 3 places.'>SCH_ITEM</a>*&gt;( <a href='../Y/3908.html' title='Multiple used in 29 places.'>commandToUndo</a>-&gt;<a href='../Y/899.html' title='Multiple used in 2 places.'>GetPickedItem</a>( <a href='../Y/4748.html' title='Multiple used in 400 places.'>ii</a> ) );
+<a id='L193' name='L193'></a> 193 
+<a id='L194' name='L194'></a> 194         <em class='comment'>// Common items implemented in EDA_DRAW_FRAME will not be SCH_ITEMs.</em>
+<a id='L195' name='L195'></a> 195         <strong class='reserved'>if</strong>( !<a href='../Y/7722.html' title='Multiple used in 33 places.'>sch_item</a> )
+<a id='L196' name='L196'></a> 196             <strong class='reserved'>continue</strong>;
+<a id='L197' name='L197'></a> 197 
+<a id='L198' name='L198'></a> 198         <em class='comment'>// Connectivity may change</em>
+<a id='L199' name='L199'></a> 199         <a href='../Y/7722.html' title='Multiple used in 33 places.'>sch_item</a>-&gt;<a href='../Y/1989.html' title='Multiple used in 4 places.'>SetConnectivityDirty</a>();
+<a id='L200' name='L200'></a> 200 
+<a id='L201' name='L201'></a> 201         <a href='../Y/2590.html' title='Multiple used in 11 places.'>UNDO_REDO_T</a> <a href='../Y/3906.html' title='Multiple used in 20 places.'>command</a> = <a href='../Y/3908.html' title='Multiple used in 29 places.'>commandToUndo</a>-&gt;<a href='../Y/901.html' title='Multiple used in 3 places.'>GetPickedItemStatus</a>( <a href='../Y/4748.html' title='Multiple used in 400 places.'>ii</a> );
+<a id='L202' name='L202'></a> 202 
+<a id='L203' name='L203'></a> 203         <strong class='reserved'>if</strong>( <a href='../Y/3906.html' title='Multiple used in 20 places.'>command</a> == UR_UNSPECIFIED )
+<a id='L204' name='L204'></a> 204         <em class='brace'>{</em>
+<a id='L205' name='L205'></a> 205             <a href='../Y/3906.html' title='Multiple used in 20 places.'>command</a> = <a href='../Y/3408.html' title='Multiple used in 5 places.'>aTypeCommand</a>;
+<a id='L206' name='L206'></a> 206             <a href='../Y/3908.html' title='Multiple used in 29 places.'>commandToUndo</a>-&gt;<a href='../Y/2166.html' title='Multiple used in 3 places.'>SetPickedItemStatus</a>( <a href='../Y/3906.html' title='Multiple used in 20 places.'>command</a>, <a href='../Y/4748.html' title='Multiple used in 400 places.'>ii</a> );
+<a id='L207' name='L207'></a> 207         <em class='brace'>}</em>
+<a id='L208' name='L208'></a> 208 
+<a id='L209' name='L209'></a> 209         <strong class='reserved'>switch</strong>( <a href='../Y/3906.html' title='Multiple used in 20 places.'>command</a> )
+<a id='L210' name='L210'></a> 210         <em class='brace'>{</em>
+<a id='L211' name='L211'></a> 211         <strong class='reserved'>case</strong> <a href='../Y/2597.html' title='Multiple used in 45 places.'>UR_CHANGED</a>:
+<a id='L212' name='L212'></a> 212 
+<a id='L213' name='L213'></a> 213             <em class='comment'>/* If needed, create a copy of item, and put in undo list</em>
+<a id='L214' name='L214'></a> 214 <em class='comment'>             * in the picker, as link</em>
+<a id='L215' name='L215'></a> 215 <em class='comment'>             * If this link is not null, the copy is already done</em>
+<a id='L216' name='L216'></a> 216 <em class='comment'>             */</em>
+<a id='L217' name='L217'></a> 217             <strong class='reserved'>if</strong>( <a href='../Y/3908.html' title='Multiple used in 29 places.'>commandToUndo</a>-&gt;<a href='../Y/900.html' title='Multiple used in 3 places.'>GetPickedItemLink</a>( <a href='../Y/4748.html' title='Multiple used in 400 places.'>ii</a> ) == <a href='../Y/7001.html' title='Multiple used in 622 places.'>nullptr</a> )
+<a id='L218' name='L218'></a> 218                 <a href='../Y/3908.html' title='Multiple used in 29 places.'>commandToUndo</a>-&gt;<a href='../Y/2165.html' title='Multiple used in 2 places.'>SetPickedItemLink</a>( <a href='../Y/7722.html' title='Multiple used in 33 places.'>sch_item</a>-&gt;<a href='../D/357.html' title='Multiple defined in 3 places.'>Duplicate</a>( <strong class='reserved'>true</strong> ), <a href='../Y/4748.html' title='Multiple used in 400 places.'>ii</a> );
+<a id='L219' name='L219'></a> 219 
+<a id='L220' name='L220'></a> 220             <a href='../Y/8441.html' title='Multiple used in 163 places.'>wxASSERT</a>( <a href='../Y/3908.html' title='Multiple used in 29 places.'>commandToUndo</a>-&gt;<a href='../Y/900.html' title='Multiple used in 3 places.'>GetPickedItemLink</a>( <a href='../Y/4748.html' title='Multiple used in 400 places.'>ii</a> ) );
+<a id='L221' name='L221'></a> 221             <strong class='reserved'>break</strong>;
+<a id='L222' name='L222'></a> 222 
+<a id='L223' name='L223'></a> 223         <strong class='reserved'>case</strong> <a href='../Y/2604.html' title='Multiple used in 3 places.'>UR_MOVED</a>:
+<a id='L224' name='L224'></a> 224         <strong class='reserved'>case</strong> <a href='../Y/2603.html' title='Multiple used in 2 places.'>UR_MIRRORED_Y</a>:
+<a id='L225' name='L225'></a> 225         <strong class='reserved'>case</strong> <a href='../Y/2602.html' title='Multiple used in 2 places.'>UR_MIRRORED_X</a>:
+<a id='L226' name='L226'></a> 226         <strong class='reserved'>case</strong> <a href='../Y/2607.html' title='Multiple used in 3 places.'>UR_ROTATED</a>:
+<a id='L227' name='L227'></a> 227         <strong class='reserved'>case</strong> <a href='../Y/2605.html' title='Multiple used in 17 places.'>UR_NEW</a>:
+<a id='L228' name='L228'></a> 228         <strong class='reserved'>case</strong> <a href='../Y/2598.html' title='Multiple used in 11 places.'>UR_DELETED</a>:
+<a id='L229' name='L229'></a> 229         <strong class='reserved'>case</strong> <a href='../Y/2599.html' title='Multiple used in 2 places.'>UR_EXCHANGE_T</a>:
+<a id='L230' name='L230'></a> 230         <strong class='reserved'>case</strong> <a href='../Y/2606.html' title='Multiple used in 4 places.'>UR_PAGESETTINGS</a>:
+<a id='L231' name='L231'></a> 231             <strong class='reserved'>break</strong>;
+<a id='L232' name='L232'></a> 232 
+<a id='L233' name='L233'></a> 233         <strong class='reserved'>default</strong>:
+<a id='L234' name='L234'></a> 234             <a href='../Y/8617.html' title='Multiple used in 34 places.'>wxFAIL_MSG</a>( <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>::<a href='../D/501.html' title='Multiple defined in 7 places.'>Format</a>( <a href='../Y/8911.html' title='Multiple used in 490 places.'>wxT</a>( "Unknown undo/redo command %d" ), <a href='../Y/3906.html' title='Multiple used in 20 places.'>command</a> ) );
+<a id='L235' name='L235'></a> 235             <strong class='reserved'>break</strong>;
+<a id='L236' name='L236'></a> 236         <em class='brace'>}</em>
+<a id='L237' name='L237'></a> 237     <em class='brace'>}</em>
+<a id='L238' name='L238'></a> 238 
+<a id='L239' name='L239'></a> 239     <strong class='reserved'>if</strong>( <a href='../Y/3908.html' title='Multiple used in 29 places.'>commandToUndo</a>-&gt;<a href='../S/241.html#L265' title='Defined at 265 in erc_settings.cpp.'>GetCount</a>() )
+<a id='L240' name='L240'></a> 240     <em class='brace'>{</em>
+<a id='L241' name='L241'></a> 241         <em class='comment'>/* Save the copy in undo list */</em>
+<a id='L242' name='L242'></a> 242         <a href='../Y/1713.html' title='Multiple used in 5 places.'>PushCommandToUndoList</a>( <a href='../Y/3908.html' title='Multiple used in 29 places.'>commandToUndo</a> );
+<a id='L243' name='L243'></a> 243 
+<a id='L244' name='L244'></a> 244         <em class='comment'>/* Clear redo list, because after new save there is no redo to do */</em>
+<a id='L245' name='L245'></a> 245         <a href='../D/183.html' title='Multiple defined in 2 places.'>ClearUndoORRedoList</a>( <a href='../Y/1728.html' title='Multiple used in 3 places.'>REDO_LIST</a> );
+<a id='L246' name='L246'></a> 246     <em class='brace'>}</em>
+<a id='L247' name='L247'></a> 247     <strong class='reserved'>else</strong>    <em class='comment'>// Should not occur</em>
+<a id='L248' name='L248'></a> 248     <em class='brace'>{</em>
+<a id='L249' name='L249'></a> 249         <strong class='reserved'>delete</strong> <a href='../Y/3908.html' title='Multiple used in 29 places.'>commandToUndo</a>;
+<a id='L250' name='L250'></a> 250     <em class='brace'>}</em>
+<a id='L251' name='L251'></a> 251 <em class='brace'>}</em>
+<a id='L252' name='L252'></a> 252 
+<a id='L253' name='L253'></a> 253 
+<a id='L254' name='L254'></a> 254 <strong class='reserved'>void</strong> <a href='../S/356.html#L299' title='Defined at 299 in sch_edit_frame.cpp.'>SCH_EDIT_FRAME</a>::<a href='../R/1376.html' title='Multiple referred from 4 places.'>PutDataInPreviousState</a>( <a href='../Y/1613.html' title='Multiple used in 26 places.'>PICKED_ITEMS_LIST</a>* <a href='../Y/3070.html' title='Multiple used in 231 places.'>aList</a>, <strong class='reserved'>bool</strong> <a href='../Y/3244.html' title='Multiple used in 4 places.'>aRedoCommand</a> )
+<a id='L255' name='L255'></a> 255 <em class='brace'>{</em>
+<a id='L256' name='L256'></a> 256     <em class='comment'>// Undo in the reverse order of list creation: (this can allow stacked changes like the</em>
+<a id='L257' name='L257'></a> 257     <em class='comment'>// same item can be changed and deleted in the same complex command).</em>
+<a id='L258' name='L258'></a> 258     <strong class='reserved'>for</strong>( <strong class='reserved'>int</strong> <a href='../Y/4748.html' title='Multiple used in 400 places.'>ii</a> = <a href='../Y/3070.html' title='Multiple used in 231 places.'>aList</a>-&gt;<a href='../S/241.html#L265' title='Defined at 265 in erc_settings.cpp.'>GetCount</a>() - 1; <a href='../Y/4748.html' title='Multiple used in 400 places.'>ii</a> &gt;= 0; <a href='../Y/4748.html' title='Multiple used in 400 places.'>ii</a>-- )
+<a id='L259' name='L259'></a> 259     <em class='brace'>{</em>
+<a id='L260' name='L260'></a> 260         <a href='../Y/2590.html' title='Multiple used in 11 places.'>UNDO_REDO_T</a> <a href='../Y/7988.html' title='Multiple used in 15 places.'>status</a> = <a href='../Y/3070.html' title='Multiple used in 231 places.'>aList</a>-&gt;<a href='../Y/901.html' title='Multiple used in 3 places.'>GetPickedItemStatus</a>((<strong class='reserved'>unsigned</strong>) <a href='../Y/4748.html' title='Multiple used in 400 places.'>ii</a> );
+<a id='L261' name='L261'></a> 261         <a href='../Y/392.html' title='Multiple used in 237 places.'>EDA_ITEM</a>*   <a href='../Y/4236.html' title='Multiple used in 9 places.'>eda_item</a> = <a href='../Y/3070.html' title='Multiple used in 231 places.'>aList</a>-&gt;<a href='../Y/899.html' title='Multiple used in 2 places.'>GetPickedItem</a>( (<strong class='reserved'>unsigned</strong>) <a href='../Y/4748.html' title='Multiple used in 400 places.'>ii</a> );
+<a id='L262' name='L262'></a> 262 
+<a id='L263' name='L263'></a> 263         <a href='../Y/4236.html' title='Multiple used in 9 places.'>eda_item</a>-&gt;<a href='../Y/2046.html' title='Multiple used in 95 places.'>SetFlags</a>( <a href='../Y/3070.html' title='Multiple used in 231 places.'>aList</a>-&gt;GetPickerFlags( (<strong class='reserved'>unsigned</strong>) <a href='../Y/4748.html' title='Multiple used in 400 places.'>ii</a> ) );
+<a id='L264' name='L264'></a> 264         <a href='../Y/4236.html' title='Multiple used in 9 places.'>eda_item</a>-&gt;<a href='../S/8.html#L977' title='Defined at 977 in class_libentry.cpp.'>ClearEditFlags</a>();
+<a id='L265' name='L265'></a> 265         <a href='../Y/4236.html' title='Multiple used in 9 places.'>eda_item</a>-&gt;<a href='../S/8.html#L970' title='Defined at 970 in class_libentry.cpp.'>ClearTempFlags</a>();
+<a id='L266' name='L266'></a> 266 
+<a id='L267' name='L267'></a> 267         <strong class='reserved'>if</strong>( <a href='../Y/7988.html' title='Multiple used in 15 places.'>status</a> == <a href='../Y/2605.html' title='Multiple used in 17 places.'>UR_NEW</a> )
+<a id='L268' name='L268'></a> 268         <em class='brace'>{</em>
+<a id='L269' name='L269'></a> 269             <em class='comment'>// new items are deleted on undo</em>
+<a id='L270' name='L270'></a> 270             <a href='../S/342.html#L392' title='Defined at 392 in sch_base_frame.cpp.'>RemoveFromScreen</a>( <a href='../Y/4236.html' title='Multiple used in 9 places.'>eda_item</a>, (<a href='../S/384.html#L85' title='Defined at 85 in sch_screen.cpp.'>SCH_SCREEN</a>*) <a href='../Y/3070.html' title='Multiple used in 231 places.'>aList</a>-&gt;<a href='../Y/964.html' title='Multiple used in 4 places.'>GetScreenForItem</a>( (<strong class='reserved'>unsigned</strong>) <a href='../Y/4748.html' title='Multiple used in 400 places.'>ii</a> ) );
+<a id='L271' name='L271'></a> 271             <a href='../Y/3070.html' title='Multiple used in 231 places.'>aList</a>-&gt;<a href='../Y/2166.html' title='Multiple used in 3 places.'>SetPickedItemStatus</a>( <a href='../Y/2598.html' title='Multiple used in 11 places.'>UR_DELETED</a>, (<strong class='reserved'>unsigned</strong>) <a href='../Y/4748.html' title='Multiple used in 400 places.'>ii</a> );
+<a id='L272' name='L272'></a> 272         <em class='brace'>}</em>
+<a id='L273' name='L273'></a> 273         <strong class='reserved'>else</strong> <strong class='reserved'>if</strong>( <a href='../Y/7988.html' title='Multiple used in 15 places.'>status</a> == <a href='../Y/2598.html' title='Multiple used in 11 places.'>UR_DELETED</a> )
+<a id='L274' name='L274'></a> 274         <em class='brace'>{</em>
+<a id='L275' name='L275'></a> 275             <em class='comment'>// deleted items are re-inserted on undo</em>
+<a id='L276' name='L276'></a> 276             <a href='../S/342.html#L375' title='Defined at 375 in sch_base_frame.cpp.'>AddToScreen</a>( <a href='../Y/4236.html' title='Multiple used in 9 places.'>eda_item</a>, (<a href='../S/384.html#L85' title='Defined at 85 in sch_screen.cpp.'>SCH_SCREEN</a>*) <a href='../Y/3070.html' title='Multiple used in 231 places.'>aList</a>-&gt;<a href='../Y/964.html' title='Multiple used in 4 places.'>GetScreenForItem</a>( (<strong class='reserved'>unsigned</strong>) <a href='../Y/4748.html' title='Multiple used in 400 places.'>ii</a> ) );
+<a id='L277' name='L277'></a> 277             <a href='../Y/3070.html' title='Multiple used in 231 places.'>aList</a>-&gt;<a href='../Y/2166.html' title='Multiple used in 3 places.'>SetPickedItemStatus</a>( <a href='../Y/2605.html' title='Multiple used in 17 places.'>UR_NEW</a>, (<strong class='reserved'>unsigned</strong>) <a href='../Y/4748.html' title='Multiple used in 400 places.'>ii</a> );
+<a id='L278' name='L278'></a> 278         <em class='brace'>}</em>
+<a id='L279' name='L279'></a> 279         <strong class='reserved'>else</strong> <strong class='reserved'>if</strong>( <a href='../Y/7988.html' title='Multiple used in 15 places.'>status</a> == <a href='../Y/2606.html' title='Multiple used in 4 places.'>UR_PAGESETTINGS</a> )
+<a id='L280' name='L280'></a> 280         <em class='brace'>{</em>
+<a id='L281' name='L281'></a> 281             <em class='comment'>// swap current settings with stored settings</em>
+<a id='L282' name='L282'></a> 282             <a href='../Y/2672.html' title='Multiple used in 3 places.'>WS_PROXY_UNDO_ITEM</a>  <a href='../Y/3529.html' title='Multiple used in 6 places.'>alt_item</a>( <strong class='reserved'>this</strong> );
+<a id='L283' name='L283'></a> 283             <a href='../Y/2672.html' title='Multiple used in 3 places.'>WS_PROXY_UNDO_ITEM</a>* <a href='../Y/4848.html' title='Multiple used in 1338 places.'>item</a> = (<a href='../Y/2672.html' title='Multiple used in 3 places.'>WS_PROXY_UNDO_ITEM</a>*) <a href='../Y/4236.html' title='Multiple used in 9 places.'>eda_item</a>;
+<a id='L284' name='L284'></a> 284             <a href='../Y/4848.html' title='Multiple used in 1338 places.'>item</a>-&gt;<a href='../Y/1787.html' title='Multiple used in 3 places.'>Restore</a>( <strong class='reserved'>this</strong> );
+<a id='L285' name='L285'></a> 285             *<a href='../Y/4848.html' title='Multiple used in 1338 places.'>item</a> = <a href='../Y/3529.html' title='Multiple used in 6 places.'>alt_item</a>;
+<a id='L286' name='L286'></a> 286             <a href='../Y/1034.html' title='Multiple used in 26 places.'>GetToolManager</a>()-&gt;<a href='../Y/1795.html' title='Multiple used in 146 places.'>RunAction</a>( <a href='../Y/2.html' title='Multiple used in 292 places.'>ACTIONS</a>::<a href='../Y/9023.html' title='Multiple used in 21 places.'>zoomFitScreen</a>, <strong class='reserved'>true</strong> );
+<a id='L287' name='L287'></a> 287         <em class='brace'>}</em>
+<a id='L288' name='L288'></a> 288         <strong class='reserved'>else</strong> <strong class='reserved'>if</strong>( <strong class='reserved'>dynamic_cast</strong>&lt;<a href='../D/1533.html' title='Multiple defined in 3 places.'>SCH_ITEM</a>*&gt;( <a href='../Y/4236.html' title='Multiple used in 9 places.'>eda_item</a> ) )
+<a id='L289' name='L289'></a> 289         <em class='brace'>{</em>
+<a id='L290' name='L290'></a> 290             <em class='comment'>// everthing else is modified in place</em>
+<a id='L291' name='L291'></a> 291 
+<a id='L292' name='L292'></a> 292             <a href='../D/1533.html' title='Multiple defined in 3 places.'>SCH_ITEM</a>* <a href='../Y/4848.html' title='Multiple used in 1338 places.'>item</a> = (<a href='../D/1533.html' title='Multiple defined in 3 places.'>SCH_ITEM</a>*) <a href='../Y/4236.html' title='Multiple used in 9 places.'>eda_item</a>;
+<a id='L293' name='L293'></a> 293             <a href='../D/1533.html' title='Multiple defined in 3 places.'>SCH_ITEM</a>* <a href='../Y/3529.html' title='Multiple used in 6 places.'>alt_item</a> = (<a href='../D/1533.html' title='Multiple defined in 3 places.'>SCH_ITEM</a>*) <a href='../Y/3070.html' title='Multiple used in 231 places.'>aList</a>-&gt;<a href='../Y/900.html' title='Multiple used in 3 places.'>GetPickedItemLink</a>( (<strong class='reserved'>unsigned</strong>) <a href='../Y/4748.html' title='Multiple used in 400 places.'>ii</a> );
+<a id='L294' name='L294'></a> 294             <a href='../S/342.html#L392' title='Defined at 392 in sch_base_frame.cpp.'>RemoveFromScreen</a>( <a href='../Y/4848.html' title='Multiple used in 1338 places.'>item</a>, (<a href='../S/384.html#L85' title='Defined at 85 in sch_screen.cpp.'>SCH_SCREEN</a>*) <a href='../Y/3070.html' title='Multiple used in 231 places.'>aList</a>-&gt;<a href='../Y/964.html' title='Multiple used in 4 places.'>GetScreenForItem</a>( (<strong class='reserved'>unsigned</strong>) <a href='../Y/4748.html' title='Multiple used in 400 places.'>ii</a> ) );
+<a id='L295' name='L295'></a> 295 
+<a id='L296' name='L296'></a> 296             <strong class='reserved'>switch</strong>( <a href='../Y/7988.html' title='Multiple used in 15 places.'>status</a> )
+<a id='L297' name='L297'></a> 297             <em class='brace'>{</em>
+<a id='L298' name='L298'></a> 298             <strong class='reserved'>case</strong> <a href='../Y/2597.html' title='Multiple used in 45 places.'>UR_CHANGED</a>:
+<a id='L299' name='L299'></a> 299                 <a href='../Y/4848.html' title='Multiple used in 1338 places.'>item</a>-&gt;<a href='../D/1828.html' title='Multiple defined in 12 places.'>SwapData</a>( <a href='../Y/3529.html' title='Multiple used in 6 places.'>alt_item</a> );
+<a id='L300' name='L300'></a> 300                 <strong class='reserved'>break</strong>;
+<a id='L301' name='L301'></a> 301 
+<a id='L302' name='L302'></a> 302             <strong class='reserved'>case</strong> <a href='../Y/2604.html' title='Multiple used in 3 places.'>UR_MOVED</a>:
+<a id='L303' name='L303'></a> 303                 <a href='../Y/4848.html' title='Multiple used in 1338 places.'>item</a>-&gt;<a href='../D/1072.html' title='Multiple defined in 2 places.'>Move</a>( <a href='../Y/3244.html' title='Multiple used in 4 places.'>aRedoCommand</a> ? <a href='../Y/3070.html' title='Multiple used in 231 places.'>aList</a>-&gt;<a href='../Y/5311.html' title='Multiple used in 9 places.'>m_TransformPoint</a> : -<a href='../Y/3070.html' title='Multiple used in 231 places.'>aList</a>-&gt;<a href='../Y/5311.html' title='Multiple used in 9 places.'>m_TransformPoint</a> );
+<a id='L304' name='L304'></a> 304                 <strong class='reserved'>break</strong>;
+<a id='L305' name='L305'></a> 305 
+<a id='L306' name='L306'></a> 306             <strong class='reserved'>case</strong> <a href='../Y/2603.html' title='Multiple used in 2 places.'>UR_MIRRORED_Y</a>:
+<a id='L307' name='L307'></a> 307                 <a href='../Y/4848.html' title='Multiple used in 1338 places.'>item</a>-&gt;<a href='../D/1070.html' title='Multiple defined in 11 places.'>MirrorY</a>( <a href='../Y/3070.html' title='Multiple used in 231 places.'>aList</a>-&gt;<a href='../Y/5311.html' title='Multiple used in 9 places.'>m_TransformPoint</a>.<a href='../Y/8967.html' title='Multiple used in 647 places.'>x</a> );
+<a id='L308' name='L308'></a> 308                 <strong class='reserved'>break</strong>;
+<a id='L309' name='L309'></a> 309 
+<a id='L310' name='L310'></a> 310             <strong class='reserved'>case</strong> <a href='../Y/2602.html' title='Multiple used in 2 places.'>UR_MIRRORED_X</a>:
+<a id='L311' name='L311'></a> 311                 <a href='../Y/4848.html' title='Multiple used in 1338 places.'>item</a>-&gt;<a href='../D/1069.html' title='Multiple defined in 11 places.'>MirrorX</a>( <a href='../Y/3070.html' title='Multiple used in 231 places.'>aList</a>-&gt;<a href='../Y/5311.html' title='Multiple used in 9 places.'>m_TransformPoint</a>.<a href='../Y/9006.html' title='Multiple used in 589 places.'>y</a> );
+<a id='L312' name='L312'></a> 312                 <strong class='reserved'>break</strong>;
+<a id='L313' name='L313'></a> 313 
+<a id='L314' name='L314'></a> 314             <strong class='reserved'>case</strong> <a href='../Y/2607.html' title='Multiple used in 3 places.'>UR_ROTATED</a>:
+<a id='L315' name='L315'></a> 315                 <strong class='reserved'>if</strong>( <a href='../Y/3244.html' title='Multiple used in 4 places.'>aRedoCommand</a> )
+<a id='L316' name='L316'></a> 316                     <a href='../Y/4848.html' title='Multiple used in 1338 places.'>item</a>-&gt;<a href='../D/1498.html' title='Multiple defined in 22 places.'>Rotate</a>( <a href='../Y/3070.html' title='Multiple used in 231 places.'>aList</a>-&gt;<a href='../Y/5311.html' title='Multiple used in 9 places.'>m_TransformPoint</a> );
+<a id='L317' name='L317'></a> 317                 <strong class='reserved'>else</strong>
+<a id='L318' name='L318'></a> 318                 <em class='brace'>{</em>
+<a id='L319' name='L319'></a> 319                     <em class='comment'>// Rotate 270 deg to undo 90-deg rotate</em>
+<a id='L320' name='L320'></a> 320                     <a href='../Y/4848.html' title='Multiple used in 1338 places.'>item</a>-&gt;<a href='../D/1498.html' title='Multiple defined in 22 places.'>Rotate</a>( <a href='../Y/3070.html' title='Multiple used in 231 places.'>aList</a>-&gt;<a href='../Y/5311.html' title='Multiple used in 9 places.'>m_TransformPoint</a> );
+<a id='L321' name='L321'></a> 321                     <a href='../Y/4848.html' title='Multiple used in 1338 places.'>item</a>-&gt;<a href='../D/1498.html' title='Multiple defined in 22 places.'>Rotate</a>( <a href='../Y/3070.html' title='Multiple used in 231 places.'>aList</a>-&gt;<a href='../Y/5311.html' title='Multiple used in 9 places.'>m_TransformPoint</a> );
+<a id='L322' name='L322'></a> 322                     <a href='../Y/4848.html' title='Multiple used in 1338 places.'>item</a>-&gt;<a href='../D/1498.html' title='Multiple defined in 22 places.'>Rotate</a>( <a href='../Y/3070.html' title='Multiple used in 231 places.'>aList</a>-&gt;<a href='../Y/5311.html' title='Multiple used in 9 places.'>m_TransformPoint</a> );
+<a id='L323' name='L323'></a> 323                 <em class='brace'>}</em>
+<a id='L324' name='L324'></a> 324                 <strong class='reserved'>break</strong>;
+<a id='L325' name='L325'></a> 325 
+<a id='L326' name='L326'></a> 326             <strong class='reserved'>case</strong> <a href='../Y/2599.html' title='Multiple used in 2 places.'>UR_EXCHANGE_T</a>:
+<a id='L327' name='L327'></a> 327                 <a href='../Y/3070.html' title='Multiple used in 231 places.'>aList</a>-&gt;SetPickedItem( <a href='../Y/3529.html' title='Multiple used in 6 places.'>alt_item</a>, (<strong class='reserved'>unsigned</strong>) <a href='../Y/4748.html' title='Multiple used in 400 places.'>ii</a> );
+<a id='L328' name='L328'></a> 328                 <a href='../Y/3070.html' title='Multiple used in 231 places.'>aList</a>-&gt;<a href='../Y/2165.html' title='Multiple used in 2 places.'>SetPickedItemLink</a>( <a href='../Y/4848.html' title='Multiple used in 1338 places.'>item</a>, (<strong class='reserved'>unsigned</strong>) <a href='../Y/4748.html' title='Multiple used in 400 places.'>ii</a> );
+<a id='L329' name='L329'></a> 329                 <a href='../Y/4848.html' title='Multiple used in 1338 places.'>item</a> = <a href='../Y/3529.html' title='Multiple used in 6 places.'>alt_item</a>;
+<a id='L330' name='L330'></a> 330                 <strong class='reserved'>break</strong>;
+<a id='L331' name='L331'></a> 331 
+<a id='L332' name='L332'></a> 332             <strong class='reserved'>default</strong>:
+<a id='L333' name='L333'></a> 333                 <a href='../Y/8617.html' title='Multiple used in 34 places.'>wxFAIL_MSG</a>( <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>::<a href='../D/501.html' title='Multiple defined in 7 places.'>Format</a>( <a href='../Y/8911.html' title='Multiple used in 490 places.'>wxT</a>( "Unknown undo/redo command %d" ),
+<a id='L334' name='L334'></a> 334                                               <a href='../Y/3070.html' title='Multiple used in 231 places.'>aList</a>-&gt;<a href='../Y/901.html' title='Multiple used in 3 places.'>GetPickedItemStatus</a>( (<strong class='reserved'>unsigned</strong>) <a href='../Y/4748.html' title='Multiple used in 400 places.'>ii</a> ) ) );
+<a id='L335' name='L335'></a> 335                 <strong class='reserved'>break</strong>;
+<a id='L336' name='L336'></a> 336             <em class='brace'>}</em>
+<a id='L337' name='L337'></a> 337 
+<a id='L338' name='L338'></a> 338             <a href='../S/342.html#L375' title='Defined at 375 in sch_base_frame.cpp.'>AddToScreen</a>( <a href='../Y/4848.html' title='Multiple used in 1338 places.'>item</a>, (<a href='../S/384.html#L85' title='Defined at 85 in sch_screen.cpp.'>SCH_SCREEN</a>*) <a href='../Y/3070.html' title='Multiple used in 231 places.'>aList</a>-&gt;<a href='../Y/964.html' title='Multiple used in 4 places.'>GetScreenForItem</a>( (<strong class='reserved'>unsigned</strong>) <a href='../Y/4748.html' title='Multiple used in 400 places.'>ii</a> ) );
+<a id='L339' name='L339'></a> 339         <em class='brace'>}</em>
+<a id='L340' name='L340'></a> 340     <em class='brace'>}</em>
+<a id='L341' name='L341'></a> 341 
+<a id='L342' name='L342'></a> 342     <a href='../S/442.html#L134' title='Defined at 134 in tools/ee_selection_tool.cpp.'>EE_SELECTION_TOOL</a>* <a href='../Y/7780.html' title='Multiple used in 61 places.'>selTool</a> = <a href='../Y/6546.html' title='Multiple used in 97 places.'>m_toolManager</a>-&gt;<a href='../Y/1031.html' title='Multiple used in 70 places.'>GetTool</a>&lt;<a href='../S/442.html#L134' title='Defined at 134 in tools/ee_selection_tool.cpp.'>EE_SELECTION_TOOL</a>&gt;();
+<a id='L343' name='L343'></a> 343     <a href='../Y/7780.html' title='Multiple used in 61 places.'>selTool</a>-&gt;<a href='../S/442.html#L1031' title='Defined at 1031 in tools/ee_selection_tool.cpp.'>RebuildSelection</a>();
+<a id='L344' name='L344'></a> 344 
+<a id='L345' name='L345'></a> 345     <em class='comment'>// Bitmaps are cached in Opengl: clear the cache, because</em>
+<a id='L346' name='L346'></a> 346     <em class='comment'>// the cache data can be invalid</em>
+<a id='L347' name='L347'></a> 347     <a href='../S/342.html#L288' title='Defined at 288 in sch_base_frame.cpp.'>GetCanvas</a>()-&gt;<a href='../S/352.html#L176' title='Defined at 176 in sch_draw_panel.cpp.'>GetView</a>()-&gt;<a href='../Y/1755.html' title='Multiple used in 7 places.'>RecacheAllItems</a>();
+<a id='L348' name='L348'></a> 348     <a href='../S/342.html#L288' title='Defined at 288 in sch_base_frame.cpp.'>GetCanvas</a>()-&gt;<a href='../S/352.html#L176' title='Defined at 176 in sch_draw_panel.cpp.'>GetView</a>()-&gt;<a href='../S/399.html#L215' title='Defined at 215 in sch_view.cpp.'>ClearHiddenFlags</a>();
+<a id='L349' name='L349'></a> 349 <em class='brace'>}</em>
+<a id='L350' name='L350'></a> 350 
+<a id='L351' name='L351'></a> 351 
+<a id='L352' name='L352'></a> 352 <strong class='reserved'>void</strong> <a href='../S/356.html#L299' title='Defined at 299 in sch_edit_frame.cpp.'>SCH_EDIT_FRAME</a>::<a href='../R/1458.html' title='Multiple referred from 5 places.'>RollbackSchematicFromUndo</a>()
+<a id='L353' name='L353'></a> 353 <em class='brace'>{</em>
+<a id='L354' name='L354'></a> 354     <a href='../Y/1613.html' title='Multiple used in 26 places.'>PICKED_ITEMS_LIST</a>* <a href='../Y/8277.html' title='Multiple used in 13 places.'>undo</a> = <a href='../Y/1683.html' title='Multiple used in 6 places.'>PopCommandFromUndoList</a>();
+<a id='L355' name='L355'></a> 355 
+<a id='L356' name='L356'></a> 356     <strong class='reserved'>if</strong>( <a href='../Y/8277.html' title='Multiple used in 13 places.'>undo</a> )
+<a id='L357' name='L357'></a> 357     <em class='brace'>{</em>
+<a id='L358' name='L358'></a> 358         <a href='../S/341.html#L254' title='Defined at 254 in schematic_undo_redo.cpp.'>PutDataInPreviousState</a>( <a href='../Y/8277.html' title='Multiple used in 13 places.'>undo</a>, <strong class='reserved'>false</strong> );
+<a id='L359' name='L359'></a> 359         <a href='../Y/8277.html' title='Multiple used in 13 places.'>undo</a>-&gt;<a href='../Y/206.html' title='Multiple used in 3 places.'>ClearListAndDeleteItems</a>();
+<a id='L360' name='L360'></a> 360         <strong class='reserved'>delete</strong> <a href='../Y/8277.html' title='Multiple used in 13 places.'>undo</a>;
+<a id='L361' name='L361'></a> 361 
+<a id='L362' name='L362'></a> 362         <a href='../S/356.html#L367' title='Defined at 367 in sch_edit_frame.cpp.'>SetSheetNumberAndCount</a>();
+<a id='L363' name='L363'></a> 363 
+<a id='L364' name='L364'></a> 364         <a href='../D/1858.html' title='Multiple defined in 3 places.'>TestDanglingEnds</a>();
+<a id='L365' name='L365'></a> 365     <em class='brace'>}</em>
+<a id='L366' name='L366'></a> 366 
+<a id='L367' name='L367'></a> 367     <a href='../S/342.html#L409' title='Defined at 409 in sch_base_frame.cpp.'>SyncView</a>();
+<a id='L368' name='L368'></a> 368     <a href='../S/342.html#L288' title='Defined at 288 in sch_base_frame.cpp.'>GetCanvas</a>()-&gt;<a href='../D/1445.html' title='Multiple defined in 2 places.'>Refresh</a>();
+<a id='L369' name='L369'></a> 369 <em class='brace'>}</em>
+<a id='L370' name='L370'></a> 370 
+<a id='L371' name='L371'></a> 371 
+<a id='L372' name='L372'></a> 372 <strong class='reserved'>void</strong> <a href='../S/356.html#L299' title='Defined at 299 in sch_edit_frame.cpp.'>SCH_EDIT_FRAME</a>::<a href='../R/176.html' title='Multiple referred from 6 places.'>ClearUndoORRedoList</a>( <a href='../Y/2589.html' title='Multiple used in 4 places.'>UNDO_REDO_LIST</a> <a href='../Y/8397.html' title='Multiple used in 6 places.'>whichList</a>, <strong class='reserved'>int</strong> <a href='../Y/3010.html' title='Multiple used in 6 places.'>aItemCount</a> )
+<a id='L373' name='L373'></a> 373 <em class='brace'>{</em>
+<a id='L374' name='L374'></a> 374     <strong class='reserved'>if</strong>( <a href='../Y/3010.html' title='Multiple used in 6 places.'>aItemCount</a> == 0 )
+<a id='L375' name='L375'></a> 375         <strong class='reserved'>return</strong>;
+<a id='L376' name='L376'></a> 376 
+<a id='L377' name='L377'></a> 377     <a href='../Y/2588.html' title='Multiple used in 2 places.'>UNDO_REDO_CONTAINER</a>&amp; <a href='../Y/5070.html' title='Multiple used in 37 places.'>list</a> = <a href='../Y/8397.html' title='Multiple used in 6 places.'>whichList</a> == <a href='../Y/2587.html' title='Multiple used in 3 places.'>UNDO_LIST</a> ? <a href='../Y/6575.html' title='Multiple used in 2 places.'>m_undoList</a> : <a href='../Y/6146.html' title='Multiple used in 2 places.'>m_redoList</a>;
+<a id='L378' name='L378'></a> 378 
+<a id='L379' name='L379'></a> 379     <strong class='reserved'>for</strong>( <a href='../Y/1613.html' title='Multiple used in 26 places.'>PICKED_ITEMS_LIST</a>* <a href='../Y/3906.html' title='Multiple used in 20 places.'>command</a> : <a href='../Y/5070.html' title='Multiple used in 37 places.'>list</a>.<a href='../Y/5124.html' title='Multiple used in 4 places.'>m_CommandsList</a> )
+<a id='L380' name='L380'></a> 380     <em class='brace'>{</em>
+<a id='L381' name='L381'></a> 381         <a href='../Y/3906.html' title='Multiple used in 20 places.'>command</a>-&gt;<a href='../Y/206.html' title='Multiple used in 3 places.'>ClearListAndDeleteItems</a>();
+<a id='L382' name='L382'></a> 382         <strong class='reserved'>delete</strong> <a href='../Y/3906.html' title='Multiple used in 20 places.'>command</a>;
+<a id='L383' name='L383'></a> 383     <em class='brace'>}</em>
+<a id='L384' name='L384'></a> 384 
+<a id='L385' name='L385'></a> 385     <a href='../Y/5070.html' title='Multiple used in 37 places.'>list</a>.<a href='../Y/5124.html' title='Multiple used in 4 places.'>m_CommandsList</a>.<a href='../Y/3846.html' title='Multiple used in 112 places.'>clear</a>();
+<a id='L386' name='L386'></a> 386 <em class='brace'>}</em>
+<a id='L387' name='L387'></a> 387 
+<a id='L388' name='L388'></a> 388 
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L97'>[^]</a><a href='#L372'>[v]</a><a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

@@ -1,0 +1,188 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>dialogs/dialog_lib_edit_text.cpp</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/480.html'>dialogs</a>/dialog_lib_edit_text.cpp</h2>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L39'>[^]</a><a href='#L108'>[v]</a>[top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L39' title='Defined at 39.'>m_textSize</a></li>
+<li><a href='#L63' title='Defined at 63.'>TransferDataToWindow</a></li>
+<li><a href='#L108' title='Defined at 108.'>TransferDataFromWindow</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * This program source code file is part of KiCad, a free EDA CAD application.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 2001 Jean-Pierre Charras, jaen-pierre.charras@gipsa-lab.inpg.com</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> * Copyright (C) 2004-2020 KiCad Developers, see change_log.txt for contributors.</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> *</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> * This program is free software; you can redistribute it and/or</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * modify it under the terms of the GNU General Public License</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * as published by the Free Software Foundation; either version 2</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> * of the License, or (at your option) any later version.</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> *</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> * This program is distributed in the hope that it will be useful,</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> * GNU General Public License for more details.</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> *</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> * You should have received a copy of the GNU General Public License</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * along with this program; if not, you may find one here:</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> * or you may search the http://www.gnu.org website for the version 2 license,</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'> * or you may write to the Free Software Foundation, Inc.,</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'> * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'> */</em>
+<a id='L24' name='L24'></a>  24 
+<a id='L25' name='L25'></a>  25 <em class='sharp'>#include</em> &lt;fctsys.h&gt;
+<a id='L26' name='L26'></a>  26 <em class='sharp'>#include</em> &lt;<a href='260.html'>lib_edit_frame.h</a>&gt;
+<a id='L27' name='L27'></a>  27 <em class='sharp'>#include</em> &lt;<a href='284.html'>lib_text.h</a>&gt;
+<a id='L28' name='L28'></a>  28 <em class='sharp'>#include</em> &lt;settings/settings_manager.h&gt;
+<a id='L29' name='L29'></a>  29 <em class='sharp'>#include</em> &lt;<a href='103.html'>dialog_lib_edit_text.h</a>&gt;
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#include</em> &lt;<a href='257.html'>libedit/libedit_settings.h</a>&gt;
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#include</em> &lt;pgm_base.h&gt;
+<a id='L32' name='L32'></a>  32 <em class='sharp'>#include</em> &lt;<a href='448.html'>tools/lib_drawing_tools.h</a>&gt;
+<a id='L33' name='L33'></a>  33 
+<a id='L34' name='L34'></a>  34 
+<a id='L35' name='L35'></a>  35 <a href='../Y/306.html' title='Multiple used in 9 places.'>DIALOG_LIB_EDIT_TEXT</a>::<a href='../Y/306.html' title='Multiple used in 9 places.'>DIALOG_LIB_EDIT_TEXT</a>( <a href='../S/259.html#L193' title='Defined at 193 in libedit/lib_edit_frame.cpp.'>LIB_EDIT_FRAME</a>* <a href='../Y/3169.html' title='Multiple used in 321 places.'>aParent</a>, <a href='../Y/1381.html' title='Multiple used in 62 places.'>LIB_TEXT</a>* <a href='../Y/3390.html' title='Multiple used in 166 places.'>aText</a> ) :
+<a id='L36' name='L36'></a>  36     <a href='../D/291.html' title='Multiple defined in 2 places.'>DIALOG_LIB_EDIT_TEXT_BASE</a>( <a href='../Y/3169.html' title='Multiple used in 321 places.'>aParent</a> ),
+<a id='L37' name='L37'></a>  37     <a href='../Y/6056.html' title='Multiple used in 13 places.'>m_posX</a>( <a href='../Y/3169.html' title='Multiple used in 321 places.'>aParent</a>, <a href='../Y/6644.html' title='Multiple used in 6 places.'>m_xPosLabel</a>, <a href='../Y/6643.html' title='Multiple used in 6 places.'>m_xPosCtrl</a>, <a href='../Y/6645.html' title='Multiple used in 6 places.'>m_xPosUnits</a>, <strong class='reserved'>true</strong> ),
+<a id='L38' name='L38'></a>  38     <a href='../Y/6060.html' title='Multiple used in 13 places.'>m_posY</a>( <a href='../Y/3169.html' title='Multiple used in 321 places.'>aParent</a>, <a href='../Y/6648.html' title='Multiple used in 6 places.'>m_yPosLabel</a>, <a href='../Y/6647.html' title='Multiple used in 5 places.'>m_yPosCtrl</a>, <a href='../Y/6649.html' title='Multiple used in 6 places.'>m_yPosUnits</a>, <strong class='reserved'>true</strong> ),
+<a id='L39' name='L39'></a>  39     <a href='../R/2279.html' title='Multiple referred from 32 places.'>m_textSize</a>( <a href='../Y/3169.html' title='Multiple used in 321 places.'>aParent</a>, <a href='../Y/6529.html' title='Multiple used in 31 places.'>m_textSizeLabel</a>, <a href='../Y/6528.html' title='Multiple used in 26 places.'>m_textSizeCtrl</a>, <a href='../Y/6530.html' title='Multiple used in 31 places.'>m_textSizeUnits</a>, <strong class='reserved'>true</strong> )
+<a id='L40' name='L40'></a>  40 <em class='brace'>{</em>
+<a id='L41' name='L41'></a>  41     <a href='../D/2311.html' title='Multiple defined in 3 places.'>m_parent</a> = <a href='../Y/3169.html' title='Multiple used in 321 places.'>aParent</a>;
+<a id='L42' name='L42'></a>  42     <a href='../Y/5711.html' title='Multiple used in 34 places.'>m_graphicText</a> = <a href='../Y/3390.html' title='Multiple used in 166 places.'>aText</a>;
+<a id='L43' name='L43'></a>  43 
+<a id='L44' name='L44'></a>  44     <em class='comment'>// Disable options for fieldedit, not existing in  graphic text</em>
+<a id='L45' name='L45'></a>  45     <a href='../Y/6626.html' title='Multiple used in 7 places.'>m_visible</a>-&gt;<a href='../D/1795.html' title='Multiple defined in 14 places.'>Show</a>( <strong class='reserved'>false</strong> );
+<a id='L46' name='L46'></a>  46     <a href='../Y/5308.html' title='Multiple used in 8 places.'>m_TextValueSelectButton</a>-&gt;<a href='../Y/1096.html' title='Multiple used in 34 places.'>Hide</a>();
+<a id='L47' name='L47'></a>  47     <a href='../Y/5243.html' title='Multiple used in 9 places.'>m_PowerComponentValues</a>-&gt;<a href='../D/1795.html' title='Multiple defined in 14 places.'>Show</a>( <strong class='reserved'>false</strong> );
+<a id='L48' name='L48'></a>  48 
+<a id='L49' name='L49'></a>  49     <a href='../Y/8653.html' title='Multiple used in 23 places.'>wxFont</a> <a href='../Y/4783.html' title='Multiple used in 26 places.'>infoFont</a> = <a href='../Y/8910.html' title='Multiple used in 35 places.'>wxSystemSettings</a>::<a href='../Y/762.html' title='Multiple used in 10 places.'>GetFont</a>( <a href='../Y/8881.html' title='Multiple used in 7 places.'>wxSYS_DEFAULT_GUI_FONT</a> );
+<a id='L50' name='L50'></a>  50     <a href='../Y/4783.html' title='Multiple used in 26 places.'>infoFont</a>.<a href='../Y/2237.html' title='Multiple used in 7 places.'>SetSymbolicSize</a>( <a href='../Y/8633.html' title='Multiple used in 6 places.'>wxFONTSIZE_SMALL</a> );
+<a id='L51' name='L51'></a>  51     <a href='../Y/5243.html' title='Multiple used in 9 places.'>m_PowerComponentValues</a>-&gt;<a href='../Y/2049.html' title='Multiple used in 28 places.'>SetFont</a>( <a href='../Y/4783.html' title='Multiple used in 26 places.'>infoFont</a> );
+<a id='L52' name='L52'></a>  52 
+<a id='L53' name='L53'></a>  53     <a href='../Y/2080.html' title='Multiple used in 15 places.'>SetInitialFocus</a>( <a href='../Y/5297.html' title='Multiple used in 23 places.'>m_TextCtrl</a> );
+<a id='L54' name='L54'></a>  54     <a href='../Y/5292.html' title='Multiple used in 61 places.'>m_StyledTextCtrl</a>-&gt;<a href='../D/1795.html' title='Multiple defined in 14 places.'>Show</a>( <strong class='reserved'>false</strong> );
+<a id='L55' name='L55'></a>  55 
+<a id='L56' name='L56'></a>  56     <a href='../Y/6208.html' title='Multiple used in 14 places.'>m_sdbSizerButtonsOK</a>-&gt;<a href='../Y/2004.html' title='Multiple used in 31 places.'>SetDefault</a>();
+<a id='L57' name='L57'></a>  57 
+<a id='L58' name='L58'></a>  58     <em class='comment'>// Now all widgets have the size fixed, call FinishDialogSettings</em>
+<a id='L59' name='L59'></a>  59     <a href='../Y/552.html' title='Multiple used in 31 places.'>FinishDialogSettings</a>();
+<a id='L60' name='L60'></a>  60 <em class='brace'>}</em>
+<a id='L61' name='L61'></a>  61 
+<a id='L62' name='L62'></a>  62 
+<a id='L63' name='L63'></a>  63 <strong class='reserved'>bool</strong> <a href='../Y/306.html' title='Multiple used in 9 places.'>DIALOG_LIB_EDIT_TEXT</a>::<a href='../R/1832.html' title='Multiple referred from 46 places.'>TransferDataToWindow</a>()
+<a id='L64' name='L64'></a>  64 <em class='brace'>{</em>
+<a id='L65' name='L65'></a>  65     <strong class='reserved'>if</strong>( <a href='../Y/5711.html' title='Multiple used in 34 places.'>m_graphicText</a> )
+<a id='L66' name='L66'></a>  66     <em class='brace'>{</em>
+<a id='L67' name='L67'></a>  67         <a href='../Y/6056.html' title='Multiple used in 13 places.'>m_posX</a>.<a href='../D/1789.html' title='Multiple defined in 4 places.'>SetValue</a>( <a href='../Y/5711.html' title='Multiple used in 34 places.'>m_graphicText</a>-&gt;<a href='../D/684.html' title='Multiple defined in 2 places.'>GetPosition</a>().<a href='../Y/8967.html' title='Multiple used in 647 places.'>x</a> );
+<a id='L68' name='L68'></a>  68         <a href='../Y/6060.html' title='Multiple used in 13 places.'>m_posY</a>.<a href='../D/1789.html' title='Multiple defined in 4 places.'>SetValue</a>( <a href='../Y/5711.html' title='Multiple used in 34 places.'>m_graphicText</a>-&gt;<a href='../D/684.html' title='Multiple defined in 2 places.'>GetPosition</a>().<a href='../Y/9006.html' title='Multiple used in 589 places.'>y</a> );
+<a id='L69' name='L69'></a>  69         <a href='../D/2332.html' title='Multiple defined in 2 places.'>m_textSize</a>.<a href='../D/1789.html' title='Multiple defined in 4 places.'>SetValue</a>( <a href='../Y/5711.html' title='Multiple used in 34 places.'>m_graphicText</a>-&gt;<a href='../Y/1024.html' title='Multiple used in 19 places.'>GetTextWidth</a>() );
+<a id='L70' name='L70'></a>  70         <a href='../Y/5297.html' title='Multiple used in 23 places.'>m_TextCtrl</a>-&gt;<a href='../D/1789.html' title='Multiple defined in 4 places.'>SetValue</a>( <a href='../Y/5711.html' title='Multiple used in 34 places.'>m_graphicText</a>-&gt;<a href='../D/732.html' title='Multiple defined in 2 places.'>GetText</a>() );
+<a id='L71' name='L71'></a>  71 
+<a id='L72' name='L72'></a>  72         <a href='../Y/5774.html' title='Multiple used in 7 places.'>m_italic</a>-&gt;<a href='../D/1789.html' title='Multiple defined in 4 places.'>SetValue</a>( <a href='../Y/5711.html' title='Multiple used in 34 places.'>m_graphicText</a>-&gt;<a href='../Y/1214.html' title='Multiple used in 24 places.'>IsItalic</a>() );
+<a id='L73' name='L73'></a>  73         <a href='../Y/5379.html' title='Multiple used in 7 places.'>m_bold</a>-&gt;<a href='../D/1789.html' title='Multiple defined in 4 places.'>SetValue</a>( <a href='../Y/5711.html' title='Multiple used in 34 places.'>m_graphicText</a>-&gt;<a href='../Y/1176.html' title='Multiple used in 23 places.'>IsBold</a>() );
+<a id='L74' name='L74'></a>  74         <a href='../Y/5126.html' title='Multiple used in 8 places.'>m_CommonUnit</a>-&gt;<a href='../D/1789.html' title='Multiple defined in 4 places.'>SetValue</a>( <a href='../Y/5711.html' title='Multiple used in 34 places.'>m_graphicText</a>-&gt;<a href='../Y/1050.html' title='Multiple used in 101 places.'>GetUnit</a>() == 0 );
+<a id='L75' name='L75'></a>  75         <a href='../Y/5125.html' title='Multiple used in 8 places.'>m_CommonConvert</a>-&gt;<a href='../D/1789.html' title='Multiple defined in 4 places.'>SetValue</a>( <a href='../Y/5711.html' title='Multiple used in 34 places.'>m_graphicText</a>-&gt;<a href='../Y/691.html' title='Multiple used in 79 places.'>GetConvert</a>() == 0 );
+<a id='L76' name='L76'></a>  76         <a href='../Y/5955.html' title='Multiple used in 9 places.'>m_orientChoice</a>-&gt;<a href='../D/1771.html' title='Multiple defined in 2 places.'>SetSelection</a>( <a href='../Y/5711.html' title='Multiple used in 34 places.'>m_graphicText</a>-&gt;<a href='../Y/1009.html' title='Multiple used in 47 places.'>GetTextAngle</a>() == <a href='../Y/2377.html' title='Multiple used in 45 places.'>TEXT_ANGLE_HORIZ</a> ? 0 : 1 );
+<a id='L77' name='L77'></a>  77 
+<a id='L78' name='L78'></a>  78         <strong class='reserved'>switch</strong> ( <a href='../Y/5711.html' title='Multiple used in 34 places.'>m_graphicText</a>-&gt;<a href='../Y/780.html' title='Multiple used in 31 places.'>GetHorizJustify</a>() )
+<a id='L79' name='L79'></a>  79         <em class='brace'>{</em>
+<a id='L80' name='L80'></a>  80         <strong class='reserved'>case</strong> <a href='../Y/612.html' title='Multiple used in 44 places.'>GR_TEXT_HJUSTIFY_LEFT</a>:   <a href='../Y/5717.html' title='Multiple used in 10 places.'>m_hAlignChoice</a>-&gt;<a href='../D/1771.html' title='Multiple defined in 2 places.'>SetSelection</a>( 0 ); <strong class='reserved'>break</strong>;
+<a id='L81' name='L81'></a>  81         <strong class='reserved'>case</strong> <a href='../Y/611.html' title='Multiple used in 40 places.'>GR_TEXT_HJUSTIFY_CENTER</a>: <a href='../Y/5717.html' title='Multiple used in 10 places.'>m_hAlignChoice</a>-&gt;<a href='../D/1771.html' title='Multiple defined in 2 places.'>SetSelection</a>( 1 ); <strong class='reserved'>break</strong>;
+<a id='L82' name='L82'></a>  82         <strong class='reserved'>case</strong> <a href='../Y/613.html' title='Multiple used in 41 places.'>GR_TEXT_HJUSTIFY_RIGHT</a>:  <a href='../Y/5717.html' title='Multiple used in 10 places.'>m_hAlignChoice</a>-&gt;<a href='../D/1771.html' title='Multiple defined in 2 places.'>SetSelection</a>( 2 ); <strong class='reserved'>break</strong>;
+<a id='L83' name='L83'></a>  83         <em class='brace'>}</em>
+<a id='L84' name='L84'></a>  84 
+<a id='L85' name='L85'></a>  85         <strong class='reserved'>switch</strong> ( <a href='../Y/5711.html' title='Multiple used in 34 places.'>m_graphicText</a>-&gt;<a href='../Y/1055.html' title='Multiple used in 28 places.'>GetVertJustify</a>() )
+<a id='L86' name='L86'></a>  86         <em class='brace'>{</em>
+<a id='L87' name='L87'></a>  87         <strong class='reserved'>case</strong> <a href='../Y/616.html' title='Multiple used in 32 places.'>GR_TEXT_VJUSTIFY_TOP</a>:    <a href='../Y/6594.html' title='Multiple used in 10 places.'>m_vAlignChoice</a>-&gt;<a href='../D/1771.html' title='Multiple defined in 2 places.'>SetSelection</a>( 0 ); <strong class='reserved'>break</strong>;
+<a id='L88' name='L88'></a>  88         <strong class='reserved'>case</strong> <a href='../Y/615.html' title='Multiple used in 43 places.'>GR_TEXT_VJUSTIFY_CENTER</a>: <a href='../Y/6594.html' title='Multiple used in 10 places.'>m_vAlignChoice</a>-&gt;<a href='../D/1771.html' title='Multiple defined in 2 places.'>SetSelection</a>( 1 ); <strong class='reserved'>break</strong>;
+<a id='L89' name='L89'></a>  89         <strong class='reserved'>case</strong> <a href='../Y/614.html' title='Multiple used in 43 places.'>GR_TEXT_VJUSTIFY_BOTTOM</a>: <a href='../Y/6594.html' title='Multiple used in 10 places.'>m_vAlignChoice</a>-&gt;<a href='../D/1771.html' title='Multiple defined in 2 places.'>SetSelection</a>( 2 ); <strong class='reserved'>break</strong>;
+<a id='L90' name='L90'></a>  90         <em class='brace'>}</em>
+<a id='L91' name='L91'></a>  91     <em class='brace'>}</em>
+<a id='L92' name='L92'></a>  92     <strong class='reserved'>else</strong>
+<a id='L93' name='L93'></a>  93     <em class='brace'>{</em>
+<a id='L94' name='L94'></a>  94         <a href='../Y/1351.html' title='Multiple used in 32 places.'>LIBEDIT_SETTINGS</a>*  <a href='../Y/3816.html' title='Multiple used in 272 places.'>cfg</a> = <a href='../S/228.html#L160' title='Defined at 160 in eeschema.cpp.'>Pgm</a>().<a href='../Y/975.html' title='Multiple used in 63 places.'>GetSettingsManager</a>().<a href='../Y/626.html' title='Multiple used in 31 places.'>GetAppSettings</a>&lt;<a href='../Y/1351.html' title='Multiple used in 32 places.'>LIBEDIT_SETTINGS</a>&gt;();
+<a id='L95' name='L95'></a>  95         <a href='../Y/1361.html' title='Multiple used in 25 places.'>LIB_DRAWING_TOOLS</a>* <a href='../Y/8211.html' title='Multiple used in 12 places.'>tools</a> = <a href='../D/2311.html' title='Multiple defined in 3 places.'>m_parent</a>-&gt;<a href='../Y/1034.html' title='Multiple used in 26 places.'>GetToolManager</a>()-&gt;<a href='../Y/1031.html' title='Multiple used in 70 places.'>GetTool</a>&lt;<a href='../Y/1361.html' title='Multiple used in 25 places.'>LIB_DRAWING_TOOLS</a>&gt;();
+<a id='L96' name='L96'></a>  96 
+<a id='L97' name='L97'></a>  97         <a href='../D/2332.html' title='Multiple defined in 2 places.'>m_textSize</a>.<a href='../D/1789.html' title='Multiple defined in 4 places.'>SetValue</a>( <a href='../Y/1490.html' title='Multiple used in 134 places.'>Mils2iu</a>( <a href='../Y/3816.html' title='Multiple used in 272 places.'>cfg</a>-&gt;<a href='../Y/5138.html' title='Multiple used in 29 places.'>m_Defaults</a>.<a href='../Y/8132.html' title='Multiple used in 9 places.'>text_size</a> ) );
+<a id='L98' name='L98'></a>  98 
+<a id='L99' name='L99'></a>  99         <a href='../Y/5126.html' title='Multiple used in 8 places.'>m_CommonUnit</a>-&gt;<a href='../D/1789.html' title='Multiple defined in 4 places.'>SetValue</a>( !<a href='../Y/8211.html' title='Multiple used in 12 places.'>tools</a>-&gt;<a href='../Y/725.html' title='Multiple used in 2 places.'>GetDrawSpecificUnit</a>() );
+<a id='L100' name='L100'></a> 100         <a href='../Y/5125.html' title='Multiple used in 8 places.'>m_CommonConvert</a>-&gt;<a href='../D/1789.html' title='Multiple defined in 4 places.'>SetValue</a>( !<a href='../Y/8211.html' title='Multiple used in 12 places.'>tools</a>-&gt;<a href='../Y/724.html' title='Multiple used in 2 places.'>GetDrawSpecificConvert</a>() );
+<a id='L101' name='L101'></a> 101         <a href='../Y/5955.html' title='Multiple used in 9 places.'>m_orientChoice</a>-&gt;<a href='../D/1771.html' title='Multiple defined in 2 places.'>SetSelection</a>( <a href='../Y/8211.html' title='Multiple used in 12 places.'>tools</a>-&gt;<a href='../Y/809.html' title='Multiple used in 2 places.'>GetLastTextAngle</a>() == <a href='../Y/2377.html' title='Multiple used in 45 places.'>TEXT_ANGLE_HORIZ</a> ? 0 : 1 );
+<a id='L102' name='L102'></a> 102     <em class='brace'>}</em>
+<a id='L103' name='L103'></a> 103 
+<a id='L104' name='L104'></a> 104     <strong class='reserved'>return</strong> <strong class='reserved'>true</strong>;
+<a id='L105' name='L105'></a> 105 <em class='brace'>}</em>
+<a id='L106' name='L106'></a> 106 
+<a id='L107' name='L107'></a> 107 
+<a id='L108' name='L108'></a> 108 <strong class='reserved'>bool</strong> <a href='../Y/306.html' title='Multiple used in 9 places.'>DIALOG_LIB_EDIT_TEXT</a>::<a href='../R/1830.html' title='Multiple referred from 50 places.'>TransferDataFromWindow</a>()
+<a id='L109' name='L109'></a> 109 <em class='brace'>{</em>
+<a id='L110' name='L110'></a> 110     <strong class='reserved'>if</strong>( <a href='../Y/5711.html' title='Multiple used in 34 places.'>m_graphicText</a> )
+<a id='L111' name='L111'></a> 111     <em class='brace'>{</em>
+<a id='L112' name='L112'></a> 112         <strong class='reserved'>if</strong>( <a href='../Y/5297.html' title='Multiple used in 23 places.'>m_TextCtrl</a>-&gt;<a href='../D/749.html' title='Multiple defined in 6 places.'>GetValue</a>().<a href='../Y/1197.html' title='Multiple used in 258 places.'>IsEmpty</a>() )
+<a id='L113' name='L113'></a> 113             <a href='../Y/5711.html' title='Multiple used in 34 places.'>m_graphicText</a>-&gt;<a href='../Y/2241.html' title='Multiple used in 103 places.'>SetText</a>( <a href='../Y/8911.html' title='Multiple used in 490 places.'>wxT</a>( "[null]" ) );
+<a id='L114' name='L114'></a> 114         <strong class='reserved'>else</strong>
+<a id='L115' name='L115'></a> 115             <a href='../Y/5711.html' title='Multiple used in 34 places.'>m_graphicText</a>-&gt;<a href='../Y/2241.html' title='Multiple used in 103 places.'>SetText</a>( <a href='../Y/5297.html' title='Multiple used in 23 places.'>m_TextCtrl</a>-&gt;<a href='../D/749.html' title='Multiple defined in 6 places.'>GetValue</a>() );
+<a id='L116' name='L116'></a> 116 
+<a id='L117' name='L117'></a> 117         <a href='../Y/5711.html' title='Multiple used in 34 places.'>m_graphicText</a>-&gt;<a href='../D/1761.html' title='Multiple defined in 4 places.'>SetPosition</a>( <a href='../Y/8819.html' title='Multiple used in 1271 places.'>wxPoint</a>( <a href='../Y/6056.html' title='Multiple used in 13 places.'>m_posX</a>.<a href='../D/749.html' title='Multiple defined in 6 places.'>GetValue</a>(), <a href='../Y/6060.html' title='Multiple used in 13 places.'>m_posY</a>.<a href='../D/749.html' title='Multiple defined in 6 places.'>GetValue</a>() ) );
+<a id='L118' name='L118'></a> 118         <a href='../Y/5711.html' title='Multiple used in 34 places.'>m_graphicText</a>-&gt;<a href='../Y/2247.html' title='Multiple used in 31 places.'>SetTextSize</a>( <a href='../Y/8888.html' title='Multiple used in 319 places.'>wxSize</a>( <a href='../D/2332.html' title='Multiple defined in 2 places.'>m_textSize</a>.<a href='../D/749.html' title='Multiple defined in 6 places.'>GetValue</a>(), <a href='../D/2332.html' title='Multiple defined in 2 places.'>m_textSize</a>.<a href='../D/749.html' title='Multiple defined in 6 places.'>GetValue</a>() ) );
+<a id='L119' name='L119'></a> 119 
+<a id='L120' name='L120'></a> 120         <a href='../Y/5711.html' title='Multiple used in 34 places.'>m_graphicText</a>-&gt;<a href='../Y/2242.html' title='Multiple used in 46 places.'>SetTextAngle</a>( <a href='../Y/5955.html' title='Multiple used in 9 places.'>m_orientChoice</a>-&gt;<a href='../S/442.html#L461' title='Defined at 461 in tools/ee_selection_tool.cpp.'>GetSelection</a>() ? <a href='../Y/2378.html' title='Multiple used in 41 places.'>TEXT_ANGLE_VERT</a>
+<a id='L121' name='L121'></a> 121                                                                     : <a href='../Y/2377.html' title='Multiple used in 45 places.'>TEXT_ANGLE_HORIZ</a> );
+<a id='L122' name='L122'></a> 122 
+<a id='L123' name='L123'></a> 123         <strong class='reserved'>if</strong>( !<a href='../Y/5126.html' title='Multiple used in 8 places.'>m_CommonUnit</a>-&gt;<a href='../D/749.html' title='Multiple defined in 6 places.'>GetValue</a>() )
+<a id='L124' name='L124'></a> 124             <a href='../Y/5711.html' title='Multiple used in 34 places.'>m_graphicText</a>-&gt;<a href='../S/348.html#L314' title='Defined at 314 in sch_component.cpp.'>SetUnit</a>( <a href='../D/2311.html' title='Multiple defined in 3 places.'>m_parent</a>-&gt;<a href='../Y/1050.html' title='Multiple used in 101 places.'>GetUnit</a>() );
+<a id='L125' name='L125'></a> 125         <strong class='reserved'>else</strong>
+<a id='L126' name='L126'></a> 126             <a href='../Y/5711.html' title='Multiple used in 34 places.'>m_graphicText</a>-&gt;<a href='../S/348.html#L314' title='Defined at 314 in sch_component.cpp.'>SetUnit</a>( 0 );
+<a id='L127' name='L127'></a> 127 
+<a id='L128' name='L128'></a> 128         <strong class='reserved'>if</strong>( !<a href='../Y/5125.html' title='Multiple used in 8 places.'>m_CommonConvert</a>-&gt;<a href='../D/749.html' title='Multiple defined in 6 places.'>GetValue</a>() )
+<a id='L129' name='L129'></a> 129             <a href='../Y/5711.html' title='Multiple used in 34 places.'>m_graphicText</a>-&gt;<a href='../S/348.html#L330' title='Defined at 330 in sch_component.cpp.'>SetConvert</a>( <a href='../D/2311.html' title='Multiple defined in 3 places.'>m_parent</a>-&gt;<a href='../Y/691.html' title='Multiple used in 79 places.'>GetConvert</a>() );
+<a id='L130' name='L130'></a> 130         <strong class='reserved'>else</strong>
+<a id='L131' name='L131'></a> 131             <a href='../Y/5711.html' title='Multiple used in 34 places.'>m_graphicText</a>-&gt;<a href='../S/348.html#L330' title='Defined at 330 in sch_component.cpp.'>SetConvert</a>( 0 );
+<a id='L132' name='L132'></a> 132 
+<a id='L133' name='L133'></a> 133         <a href='../Y/5711.html' title='Multiple used in 34 places.'>m_graphicText</a>-&gt;<a href='../Y/2088.html' title='Multiple used in 16 places.'>SetItalic</a>( <a href='../Y/5774.html' title='Multiple used in 7 places.'>m_italic</a>-&gt;<a href='../D/749.html' title='Multiple defined in 6 places.'>GetValue</a>() );
+<a id='L134' name='L134'></a> 134         <a href='../Y/5711.html' title='Multiple used in 34 places.'>m_graphicText</a>-&gt;<a href='../Y/1952.html' title='Multiple used in 19 places.'>SetBold</a>( <a href='../Y/5379.html' title='Multiple used in 7 places.'>m_bold</a>-&gt;<a href='../D/749.html' title='Multiple defined in 6 places.'>GetValue</a>() );
+<a id='L135' name='L135'></a> 135 
+<a id='L136' name='L136'></a> 136         <strong class='reserved'>switch</strong>( <a href='../Y/5717.html' title='Multiple used in 10 places.'>m_hAlignChoice</a>-&gt;<a href='../S/442.html#L461' title='Defined at 461 in tools/ee_selection_tool.cpp.'>GetSelection</a>() )
+<a id='L137' name='L137'></a> 137         <em class='brace'>{</em>
+<a id='L138' name='L138'></a> 138         <strong class='reserved'>case</strong> 0: <a href='../Y/5711.html' title='Multiple used in 34 places.'>m_graphicText</a>-&gt;<a href='../Y/2070.html' title='Multiple used in 55 places.'>SetHorizJustify</a>( <a href='../Y/612.html' title='Multiple used in 44 places.'>GR_TEXT_HJUSTIFY_LEFT</a> );   <strong class='reserved'>break</strong>;
+<a id='L139' name='L139'></a> 139         <strong class='reserved'>case</strong> 1: <a href='../Y/5711.html' title='Multiple used in 34 places.'>m_graphicText</a>-&gt;<a href='../Y/2070.html' title='Multiple used in 55 places.'>SetHorizJustify</a>( <a href='../Y/611.html' title='Multiple used in 40 places.'>GR_TEXT_HJUSTIFY_CENTER</a> ); <strong class='reserved'>break</strong>;
+<a id='L140' name='L140'></a> 140         <strong class='reserved'>case</strong> 2: <a href='../Y/5711.html' title='Multiple used in 34 places.'>m_graphicText</a>-&gt;<a href='../Y/2070.html' title='Multiple used in 55 places.'>SetHorizJustify</a>( <a href='../Y/613.html' title='Multiple used in 41 places.'>GR_TEXT_HJUSTIFY_RIGHT</a> );  <strong class='reserved'>break</strong>;
+<a id='L141' name='L141'></a> 141         <em class='brace'>}</em>
+<a id='L142' name='L142'></a> 142 
+<a id='L143' name='L143'></a> 143         <strong class='reserved'>switch</strong>( <a href='../Y/6594.html' title='Multiple used in 10 places.'>m_vAlignChoice</a>-&gt;<a href='../S/442.html#L461' title='Defined at 461 in tools/ee_selection_tool.cpp.'>GetSelection</a>() )
+<a id='L144' name='L144'></a> 144         <em class='brace'>{</em>
+<a id='L145' name='L145'></a> 145         <strong class='reserved'>case</strong> 0: <a href='../Y/5711.html' title='Multiple used in 34 places.'>m_graphicText</a>-&gt;<a href='../Y/2266.html' title='Multiple used in 54 places.'>SetVertJustify</a>( <a href='../Y/616.html' title='Multiple used in 32 places.'>GR_TEXT_VJUSTIFY_TOP</a> );    <strong class='reserved'>break</strong>;
+<a id='L146' name='L146'></a> 146         <strong class='reserved'>case</strong> 1: <a href='../Y/5711.html' title='Multiple used in 34 places.'>m_graphicText</a>-&gt;<a href='../Y/2266.html' title='Multiple used in 54 places.'>SetVertJustify</a>( <a href='../Y/615.html' title='Multiple used in 43 places.'>GR_TEXT_VJUSTIFY_CENTER</a> ); <strong class='reserved'>break</strong>;
+<a id='L147' name='L147'></a> 147         <strong class='reserved'>case</strong> 2: <a href='../Y/5711.html' title='Multiple used in 34 places.'>m_graphicText</a>-&gt;<a href='../Y/2266.html' title='Multiple used in 54 places.'>SetVertJustify</a>( <a href='../Y/614.html' title='Multiple used in 43 places.'>GR_TEXT_VJUSTIFY_BOTTOM</a> ); <strong class='reserved'>break</strong>;
+<a id='L148' name='L148'></a> 148         <em class='brace'>}</em>
+<a id='L149' name='L149'></a> 149 
+<a id='L150' name='L150'></a> 150         <em class='comment'>// Record settings used for next time:</em>
+<a id='L151' name='L151'></a> 151         <a href='../Y/1361.html' title='Multiple used in 25 places.'>LIB_DRAWING_TOOLS</a>* <a href='../Y/8211.html' title='Multiple used in 12 places.'>tools</a> = <a href='../D/2311.html' title='Multiple defined in 3 places.'>m_parent</a>-&gt;<a href='../Y/1034.html' title='Multiple used in 26 places.'>GetToolManager</a>()-&gt;<a href='../Y/1031.html' title='Multiple used in 70 places.'>GetTool</a>&lt;<a href='../Y/1361.html' title='Multiple used in 25 places.'>LIB_DRAWING_TOOLS</a>&gt;();
+<a id='L152' name='L152'></a> 152         <a href='../Y/8211.html' title='Multiple used in 12 places.'>tools</a>-&gt;<a href='../Y/2099.html' title='Multiple used in 2 places.'>SetLastTextAngle</a>( <a href='../Y/5711.html' title='Multiple used in 34 places.'>m_graphicText</a>-&gt;<a href='../Y/1009.html' title='Multiple used in 47 places.'>GetTextAngle</a>() );
+<a id='L153' name='L153'></a> 153         <a href='../Y/8211.html' title='Multiple used in 12 places.'>tools</a>-&gt;<a href='../Y/2019.html' title='Multiple used in 3 places.'>SetDrawSpecificConvert</a>( !<a href='../Y/5125.html' title='Multiple used in 8 places.'>m_CommonConvert</a>-&gt;<a href='../D/749.html' title='Multiple defined in 6 places.'>GetValue</a>() );
+<a id='L154' name='L154'></a> 154         <a href='../Y/8211.html' title='Multiple used in 12 places.'>tools</a>-&gt;<a href='../Y/2020.html' title='Multiple used in 5 places.'>SetDrawSpecificUnit</a>( !<a href='../Y/5126.html' title='Multiple used in 8 places.'>m_CommonUnit</a>-&gt;<a href='../D/749.html' title='Multiple defined in 6 places.'>GetValue</a>() );
+<a id='L155' name='L155'></a> 155     <em class='brace'>}</em>
+<a id='L156' name='L156'></a> 156 
+<a id='L157' name='L157'></a> 157     <a href='../D/2311.html' title='Multiple defined in 3 places.'>m_parent</a>-&gt;<a href='../Y/2135.html' title='Multiple used in 5 places.'>SetMsgPanel</a>( <a href='../Y/5711.html' title='Multiple used in 34 places.'>m_graphicText</a> );
+<a id='L158' name='L158'></a> 158 
+<a id='L159' name='L159'></a> 159     <strong class='reserved'>return</strong> <strong class='reserved'>true</strong>;
+<a id='L160' name='L160'></a> 160 <em class='brace'>}</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L39'>[^]</a><a href='#L108'>[v]</a><a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

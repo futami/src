@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>plugins/xsl_scripts/bom2csv.xsl</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/483.html'>plugins</a>/<a href='../files/485.html'>xsl_scripts</a>/bom2csv.xsl</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>&lt;!--XSL style sheet to convert EESCHEMA XML Partlist Format to CSV BOM Format
+<a id='L2' name='L2'></a>    Copyright (C) 2013, Stefan Helmert.
+<a id='L3' name='L3'></a>    GPL v2.
+<a id='L4' name='L4'></a>
+<a id='L5' name='L5'></a>    Functionality:
+<a id='L6' name='L6'></a>        Generation of csv table with table head of all existing field names
+<a id='L7' name='L7'></a>        and correct assigned cell entries
+<a id='L8' name='L8'></a>
+<a id='L9' name='L9'></a>    How to use this is explained in eeschema.pdf chapter 14.  You enter a command line into the
+<a id='L10' name='L10'></a>    netlist exporter using a new (custom) tab in the netlist export dialog.  The command is
+<a id='L11' name='L11'></a>    similar to
+<a id='L12' name='L12'></a>        on Windows:
+<a id='L13' name='L13'></a>            xsltproc -o "%O.csv" "C:\Program Files (x86)\KiCad\bin\plugins\bom2csv.xsl" "%I"
+<a id='L14' name='L14'></a>        on Linux:
+<a id='L15' name='L15'></a>            xsltproc -o "%O.csv" /usr/local/lib/kicad/plugins/bom2csv.xsl "%I"
+<a id='L16' name='L16'></a>
+<a id='L17' name='L17'></a>    Instead of "%O.csv" you can alternatively use "%O" if you will supply your own file extension when
+<a id='L18' name='L18'></a>    prompted in the UI.  The double quotes are there to account for the possibility of space(s)
+<a id='L19' name='L19'></a>    in the filename.
+<a id='L20' name='L20'></a>--&gt;
+<a id='L21' name='L21'></a>
+<a id='L22' name='L22'></a>&lt;!--
+<a id='L23' name='L23'></a>    @package
+<a id='L24' name='L24'></a>    Generate a Tab delimited list (csv file type).
+<a id='L25' name='L25'></a>    One component per line
+<a id='L26' name='L26'></a>    Fields are
+<a id='L27' name='L27'></a>    Ref,Value, Footprint, Datasheet, Field5, Field4, price
+<a id='L28' name='L28'></a>
+<a id='L29' name='L29'></a>    Command line
+<a id='L30' name='L30'></a>    xsltproc -o "%O.csv" "pathToFile/bom2csv.xsl" "%I"
+<a id='L31' name='L31'></a>--&gt;
+<a id='L32' name='L32'></a>
+<a id='L33' name='L33'></a>&lt;!DOCTYPE xsl:stylesheet [
+<a id='L34' name='L34'></a>  &lt;!ENTITY nl  "&amp;#xd;&amp;#xa;"&gt;    &lt;!--new line CR, LF, or LF, your choice --&gt;
+<a id='L35' name='L35'></a>]&gt;
+<a id='L36' name='L36'></a>
+<a id='L37' name='L37'></a>
+<a id='L38' name='L38'></a>&lt;xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0"&gt;
+<a id='L39' name='L39'></a>    &lt;xsl:output method="text"/&gt;
+<a id='L40' name='L40'></a>
+<a id='L41' name='L41'></a>    &lt;!-- for table head and empty table fields--&gt;
+<a id='L42' name='L42'></a>    &lt;xsl:key name="headentr" match="field" use="@name"/&gt;
+<a id='L43' name='L43'></a>
+<a id='L44' name='L44'></a>    &lt;!-- main part --&gt;
+<a id='L45' name='L45'></a>    &lt;xsl:template match="/export"&gt;
+<a id='L46' name='L46'></a>        &lt;xsl:text&gt;Reference, Value, Footprint, Datasheet&lt;/xsl:text&gt;
+<a id='L47' name='L47'></a>
+<a id='L48' name='L48'></a>            &lt;!-- find all existing table head entries and list each one once --&gt;
+<a id='L49' name='L49'></a>            &lt;xsl:for-each select="components/comp/fields/field[generate-id(.) = generate-id(key('headentr',@name)[1])]"&gt;
+<a id='L50' name='L50'></a>                &lt;xsl:text&gt;, &lt;/xsl:text&gt;
+<a id='L51' name='L51'></a>                &lt;xsl:value-of select="@name"/&gt;
+<a id='L52' name='L52'></a>            &lt;/xsl:for-each&gt;
+<a id='L53' name='L53'></a>            &lt;xsl:text&gt;&amp;nl;&lt;/xsl:text&gt;
+<a id='L54' name='L54'></a>
+<a id='L55' name='L55'></a>        &lt;!-- all table entries --&gt;
+<a id='L56' name='L56'></a>        &lt;xsl:apply-templates select="components/comp"/&gt;
+<a id='L57' name='L57'></a>    &lt;/xsl:template&gt;
+<a id='L58' name='L58'></a>
+<a id='L59' name='L59'></a>    &lt;!-- the table entries --&gt;
+<a id='L60' name='L60'></a>    &lt;xsl:template match="components/comp"&gt;
+<a id='L61' name='L61'></a>        &lt;xsl:text&gt;"&lt;/xsl:text&gt;
+<a id='L62' name='L62'></a>        &lt;xsl:value-of select="@ref"/&gt;&lt;xsl:text&gt;","&lt;/xsl:text&gt;
+<a id='L63' name='L63'></a>        &lt;xsl:value-of select="value"/&gt;&lt;xsl:text&gt;","&lt;/xsl:text&gt;
+<a id='L64' name='L64'></a>        &lt;xsl:value-of select="footprint"/&gt;&lt;xsl:text&gt;","&lt;/xsl:text&gt;
+<a id='L65' name='L65'></a>        &lt;xsl:value-of select="datasheet"/&gt;&lt;xsl:text&gt;"&lt;/xsl:text&gt;
+<a id='L66' name='L66'></a>        &lt;xsl:apply-templates select="fields"/&gt;
+<a id='L67' name='L67'></a>        &lt;xsl:text&gt;&amp;nl;&lt;/xsl:text&gt;
+<a id='L68' name='L68'></a>    &lt;/xsl:template&gt;
+<a id='L69' name='L69'></a>
+<a id='L70' name='L70'></a>    &lt;!-- table entries with dynamic table head --&gt;
+<a id='L71' name='L71'></a>    &lt;xsl:template match="fields"&gt;
+<a id='L72' name='L72'></a>
+<a id='L73' name='L73'></a>        &lt;!-- remember current fields section --&gt;
+<a id='L74' name='L74'></a>        &lt;xsl:variable name="fieldvar" select="field"/&gt;
+<a id='L75' name='L75'></a>
+<a id='L76' name='L76'></a>        &lt;!-- for all existing head entries --&gt;
+<a id='L77' name='L77'></a>        &lt;xsl:for-each select="/export/components/comp/fields/field[generate-id(.) = generate-id(key('headentr',@name)[1])]"&gt;
+<a id='L78' name='L78'></a>            &lt;xsl:variable name="allnames" select="@name"/&gt;
+<a id='L79' name='L79'></a>            &lt;xsl:text&gt;,"&lt;/xsl:text&gt;
+<a id='L80' name='L80'></a>
+<a id='L81' name='L81'></a>            &lt;!-- for all field entries in the remembered fields section --&gt;
+<a id='L82' name='L82'></a>            &lt;xsl:for-each select="$fieldvar"&gt;
+<a id='L83' name='L83'></a>
+<a id='L84' name='L84'></a>                &lt;!-- only if this field entry exists in this fields section --&gt;
+<a id='L85' name='L85'></a>                &lt;xsl:if test="@name=$allnames"&gt;
+<a id='L86' name='L86'></a>                    &lt;!-- content of the field --&gt;
+<a id='L87' name='L87'></a>                    &lt;xsl:value-of select="."/&gt;
+<a id='L88' name='L88'></a>                &lt;/xsl:if&gt;
+<a id='L89' name='L89'></a>                &lt;!--
+<a id='L90' name='L90'></a>                    If it does not exist, use an empty cell in output for this row.
+<a id='L91' name='L91'></a>                    Every non-blank entry is assigned to its proper column.
+<a id='L92' name='L92'></a>                --&gt;
+<a id='L93' name='L93'></a>            &lt;/xsl:for-each&gt;
+<a id='L94' name='L94'></a>
+<a id='L95' name='L95'></a>            &lt;xsl:text&gt;"&lt;/xsl:text&gt;
+<a id='L96' name='L96'></a>        &lt;/xsl:for-each&gt;
+<a id='L97' name='L97'></a>    &lt;/xsl:template&gt;
+<a id='L98' name='L98'></a>
+<a id='L99' name='L99'></a> &lt;/xsl:stylesheet&gt;
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a> */</em>
+</body>
+</html>

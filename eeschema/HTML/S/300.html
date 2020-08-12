@@ -1,0 +1,272 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>netlist_exporters/netlist_exporter_pspice.h</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/482.html'>netlist_exporters</a>/netlist_exporter_pspice.h</h2>
+<em class='comment'>/* [&lt;][&gt;][^][v][top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'><a href='../J/255.html' title='Multiple included from 6 places.'>INCLUDED FROM</a></h2>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * This program source code file is part of KiCad, a free EDA CAD application.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 1992-2013 jp.charras at wanadoo.fr</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> * Copyright (C) 2013 SoftPLC Corporation, Dick Hollenbeck &lt;dick@softplc.com&gt;</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> * Copyright (C) 1992-2017 KiCad Developers</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> *</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * This program is free software; you can redistribute it and/or</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * modify it under the terms of the GNU General Public License</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> * as published by the Free Software Foundation; either version 2</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> * of the License, or (at your option) any later version.</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> *</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * This program is distributed in the hope that it will be useful,</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> * GNU General Public License for more details.</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> *</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * You should have received a copy of the GNU General Public License</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> * along with this program; if not, you may find one here:</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'> * or you may search the http://www.gnu.org website for the version 2 license,</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'> * or you may write to the Free Software Foundation, Inc.,</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'> * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA</em>
+<a id='L24' name='L24'></a>  24 <em class='comment'> */</em>
+<a id='L25' name='L25'></a>  25 
+<a id='L26' name='L26'></a>  26 <em class='sharp'>#ifndef</em> <a href='../S/300.html#L27' title='Defined at 27 in netlist_exporters/netlist_exporter_pspice.h.'>NETLIST_EXPORTER_PSPICE_H</a>
+<a id='L27' name='L27'></a>  27 <em class='sharp'>#define</em> <a href='../S/300.html#L26' title='Referred from 26 in netlist_exporters/netlist_exporter_pspice.h.'>NETLIST_EXPORTER_PSPICE_H</a>
+<a id='L28' name='L28'></a>  28 
+<a id='L29' name='L29'></a>  29 <em class='sharp'>#include</em> "<a href='290.html'>netlist_exporter.h</a>"
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#include</em> &lt;list&gt;
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#include</em> &lt;map&gt;
+<a id='L32' name='L32'></a>  32 
+<a id='L33' name='L33'></a>  33 <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../Y/1630.html' title='Multiple used in 61 places.'>PROJECT</a>;
+<a id='L34' name='L34'></a>  34 
+<a id='L35' name='L35'></a>  35 <em class='comment'>/// Flags for Spice netlist generation (can be combined)</em>
+<a id='L36' name='L36'></a>  36 <strong class='reserved'>enum</strong> SPICE_NETLIST_OPTIONS <em class='brace'>{</em>
+<a id='L37' name='L37'></a>  37     <a href='../R/1067.html' title='Multiple referred from 3 places.'>NET_ADJUST_INCLUDE_PATHS</a> = 8,       <em class='comment'>// use full paths for included files (if they are in search path)</em>
+<a id='L38' name='L38'></a>  38     <a href='../R/1068.html' title='Multiple referred from 4 places.'>NET_ADJUST_PASSIVE_VALS</a> = 16,       <em class='comment'>// reformat passive component values (e.g. 1M -&gt; 1Meg)</em>
+<a id='L39' name='L39'></a>  39     <a href='../R/1069.html' title='Multiple referred from 3 places.'>NET_ALL_FLAGS</a> = 0xffff
+<a id='L40' name='L40'></a>  40 <em class='brace'>}</em>;
+<a id='L41' name='L41'></a>  41 
+<a id='L42' name='L42'></a>  42 <strong class='reserved'>enum</strong> <a href='../R/1582.html' title='Multiple referred from 10 places.'>SPICE_FIELD</a> <em class='brace'>{</em>
+<a id='L43' name='L43'></a>  43     <a href='../R/1539.html' title='Multiple referred from 10 places.'>SF_PRIMITIVE</a>,
+<a id='L44' name='L44'></a>  44     <a href='../R/1537.html' title='Multiple referred from 8 places.'>SF_MODEL</a>,
+<a id='L45' name='L45'></a>  45     <a href='../R/1534.html' title='Multiple referred from 4 places.'>SF_ENABLED</a>,
+<a id='L46' name='L46'></a>  46     <a href='../R/1538.html' title='Multiple referred from 6 places.'>SF_NODE_SEQUENCE</a>,
+<a id='L47' name='L47'></a>  47     <a href='../R/1536.html' title='Multiple referred from 5 places.'>SF_LIB_FILE</a>,
+<a id='L48' name='L48'></a>  48     <a href='../S/166.html#L263' title='Referred from 263 in dialogs/dialog_spice_model.cpp.'>SF_END</a>     <em class='comment'>// sentinel</em>
+<a id='L49' name='L49'></a>  49 <em class='brace'>}</em>;
+<a id='L50' name='L50'></a>  50 
+<a id='L51' name='L51'></a>  51 <em class='comment'>///&gt; Basic Spice component primitives</em>
+<a id='L52' name='L52'></a>  52 <strong class='reserved'>enum</strong> <a href='../R/1586.html' title='Multiple referred from 10 places.'>SPICE_PRIMITIVE</a> <em class='brace'>{</em>
+<a id='L53' name='L53'></a>  53     <a href='../R/1609.html' title='Multiple referred from 3 places.'>SP_UNKNOWN</a>      = ' ',
+<a id='L54' name='L54'></a>  54     <a href='../R/1607.html' title='Multiple referred from 5 places.'>SP_RESISTOR</a>     = 'R',
+<a id='L55' name='L55'></a>  55     <a href='../R/1601.html' title='Multiple referred from 5 places.'>SP_CAPACITOR</a>    = 'C',
+<a id='L56' name='L56'></a>  56     <a href='../R/1603.html' title='Multiple referred from 5 places.'>SP_INDUCTOR</a>     = 'L',
+<a id='L57' name='L57'></a>  57     <a href='../R/1602.html' title='Multiple referred from 4 places.'>SP_DIODE</a>        = 'D',
+<a id='L58' name='L58'></a>  58     <a href='../R/1600.html' title='Multiple referred from 4 places.'>SP_BJT</a>          = 'Q',
+<a id='L59' name='L59'></a>  59     <a href='../R/1606.html' title='Multiple referred from 4 places.'>SP_MOSFET</a>       = 'M',
+<a id='L60' name='L60'></a>  60     <a href='../R/1605.html' title='Multiple referred from 3 places.'>SP_JFET</a>         = 'J',
+<a id='L61' name='L61'></a>  61     <a href='../R/1608.html' title='Multiple referred from 4 places.'>SP_SUBCKT</a>       = 'X',
+<a id='L62' name='L62'></a>  62     <a href='../R/1610.html' title='Multiple referred from 3 places.'>SP_VSOURCE</a>      = 'V',
+<a id='L63' name='L63'></a>  63     <a href='../R/1604.html' title='Multiple referred from 3 places.'>SP_ISOURCE</a>      = 'I'
+<a id='L64' name='L64'></a>  64 <em class='brace'>}</em>;
+<a id='L65' name='L65'></a>  65 
+<a id='L66' name='L66'></a>  66 <em class='comment'>/// @todo add NET_ADJUST_INCLUDE_PATHS &amp; NET_ADJUST_PASSIVE_VALS checkboxes in the netlist export dialog</em>
+<a id='L67' name='L67'></a>  67 
+<a id='L68' name='L68'></a>  68 <em class='comment'>/**</em>
+<a id='L69' name='L69'></a>  69 <em class='comment'> * @brief Structure to represent a schematic component in the Spice simulation.</em>
+<a id='L70' name='L70'></a>  70 <em class='comment'> */</em>
+<a id='L71' name='L71'></a>  71 <strong class='reserved'>struct</strong> <a href='../R/1583.html' title='Multiple referred from 4 places.'>SPICE_ITEM</a>
+<a id='L72' name='L72'></a>  72 <em class='brace'>{</em>
+<a id='L73' name='L73'></a>  73     <em class='comment'>///&gt; Schematic component represented by this SPICE_ITEM.</em>
+<a id='L74' name='L74'></a>  74     <a href='../D/1520.html' title='Multiple defined in 4 places.'>SCH_COMPONENT</a>* <a href='../D/2311.html' title='Multiple defined in 3 places.'>m_parent</a>;
+<a id='L75' name='L75'></a>  75 
+<a id='L76' name='L76'></a>  76     <em class='comment'>///&gt; Spice primitive type (@see SPICE_PRIMITIVE).</em>
+<a id='L77' name='L77'></a>  77     <a href='../Y/8508.html' title='Multiple used in 34 places.'>wxChar</a> <a href='../Y/6078.html' title='Multiple used in 7 places.'>m_primitive</a>;
+<a id='L78' name='L78'></a>  78 
+<a id='L79' name='L79'></a>  79     <em class='comment'>///&gt; Library model (for semiconductors and subcircuits), component value (for passive components)</em>
+<a id='L80' name='L80'></a>  80     <em class='comment'>///&gt; or voltage/current (for sources).</em>
+<a id='L81' name='L81'></a>  81     <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a> <a href='../Y/5870.html' title='Multiple used in 22 places.'>m_model</a>;
+<a id='L82' name='L82'></a>  82 
+<a id='L83' name='L83'></a>  83     <em class='comment'>///&gt;</em>
+<a id='L84' name='L84'></a>  84     <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a> <a href='../Y/6149.html' title='Multiple used in 12 places.'>m_refName</a>;
+<a id='L85' name='L85'></a>  85 
+<a id='L86' name='L86'></a>  86     <em class='comment'>///&gt; Flag to indicate whether the component should be used in simulation.</em>
+<a id='L87' name='L87'></a>  87     <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../Y/5626.html' title='Multiple used in 4 places.'>m_enabled</a>;
+<a id='L88' name='L88'></a>  88 
+<a id='L89' name='L89'></a>  89     <em class='comment'>///&gt; Array containing Standard Pin Name</em>
+<a id='L90' name='L90'></a>  90     <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8368.html' title='Multiple used in 470 places.'>vector</a>&lt;<a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&gt; <a href='../Y/6038.html' title='Multiple used in 87 places.'>m_pins</a>;
+<a id='L91' name='L91'></a>  91 
+<a id='L92' name='L92'></a>  92     <em class='comment'>///&gt; Numeric indices into m_SortedComponentPinList</em>
+<a id='L93' name='L93'></a>  93     <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8368.html' title='Multiple used in 470 places.'>vector</a>&lt;<strong class='reserved'>int</strong>&gt; <a href='../Y/6032.html' title='Multiple used in 4 places.'>m_pinSequence</a>;
+<a id='L94' name='L94'></a>  94 <em class='brace'>}</em>;
+<a id='L95' name='L95'></a>  95 
+<a id='L96' name='L96'></a>  96 
+<a id='L97' name='L97'></a>  97 <em class='comment'>/**</em>
+<a id='L98' name='L98'></a>  98 <em class='comment'> * NETLIST_EXPORTER_PSPICE</em>
+<a id='L99' name='L99'></a>  99 <em class='comment'> * generates a PSPICE compatible netlist</em>
+<a id='L100' name='L100'></a> 100 <em class='comment'> */</em>
+<a id='L101' name='L101'></a> 101 <a href='../Y/3843.html' title='Multiple used in 737 places.'>class</a> <a href='../Y/1513.html' title='Multiple used in 28 places.'>NETLIST_EXPORTER_PSPICE</a> : <a href='../Y/7469.html' title='Multiple used in 431 places.'>public</a> <a href='../Y/1508.html' title='Multiple used in 18 places.'>NETLIST_EXPORTER</a>
+<a id='L102' name='L102'></a> 102 <em class='brace'>{</em>
+<a id='L103' name='L103'></a> 103 <a href='../Y/7469.html' title='Multiple used in 431 places.'>public</a>:
+<a id='L104' name='L104'></a> 104     <a href='../Y/1513.html' title='Multiple used in 28 places.'>NETLIST_EXPORTER_PSPICE</a>( <a href='../S/336.html#L42' title='Defined at 42 in schematic.cpp.'>SCHEMATIC</a>* <a href='../Y/3282.html' title='Multiple used in 78 places.'>aSchematic</a> ) :
+<a id='L105' name='L105'></a> 105             <a href='../Y/1508.html' title='Multiple used in 18 places.'>NETLIST_EXPORTER</a>( <a href='../Y/3282.html' title='Multiple used in 78 places.'>aSchematic</a> )
+<a id='L106' name='L106'></a> 106     <em class='brace'>{</em>
+<a id='L107' name='L107'></a> 107     <em class='brace'>}</em>
+<a id='L108' name='L108'></a> 108 
+<a id='L109' name='L109'></a> 109     <a href='../Y/8381.html' title='Multiple used in 381 places.'>virtual</a> ~<a href='../Y/1513.html' title='Multiple used in 28 places.'>NETLIST_EXPORTER_PSPICE</a>()
+<a id='L110' name='L110'></a> 110     <em class='brace'>{</em>
+<a id='L111' name='L111'></a> 111     <em class='brace'>}</em>
+<a id='L112' name='L112'></a> 112 
+<a id='L113' name='L113'></a> 113     <strong class='reserved'>typedef</strong> <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/5070.html' title='Multiple used in 37 places.'>list</a>&lt;<a href='../S/300.html#L71' title='Defined at 71 in netlist_exporters/netlist_exporter_pspice.h.'>SPICE_ITEM</a>&gt; <a href='../R/1584.html' title='Multiple referred from 2 places.'>SPICE_ITEM_LIST</a>;
+<a id='L114' name='L114'></a> 114 
+<a id='L115' name='L115'></a> 115     <em class='comment'>///&gt; Net name to circuit node number mapping</em>
+<a id='L116' name='L116'></a> 116     <strong class='reserved'>typedef</strong> <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/6664.html' title='Multiple used in 68 places.'>map</a>&lt;<a href='../R/2578.html' title='Multiple referred from 2547 places.'>wxString</a>, <strong class='reserved'>int</strong>&gt; <a href='../R/1070.html' title='Multiple referred from 3 places.'>NET_INDEX_MAP</a>;
+<a id='L117' name='L117'></a> 117 
+<a id='L118' name='L118'></a> 118     <em class='comment'>/**</em>
+<a id='L119' name='L119'></a> 119 <em class='comment'>     * @brief Returns list of items representing schematic components in the Spice world.</em>
+<a id='L120' name='L120'></a> 120 <em class='comment'>     */</em>
+<a id='L121' name='L121'></a> 121     <strong class='reserved'>const</strong> <a href='../S/300.html#L113' title='Defined at 113 in netlist_exporters/netlist_exporter_pspice.h.'>SPICE_ITEM_LIST</a>&amp; <a href='../Y/989.html' title='Multiple used in 6 places.'>GetSpiceItems</a>() <strong class='reserved'>const</strong>
+<a id='L122' name='L122'></a> 122     <em class='brace'>{</em>
+<a id='L123' name='L123'></a> 123         <strong class='reserved'>return</strong> <a href='../Y/6290.html' title='Multiple used in 4 places.'>m_spiceItems</a>;
+<a id='L124' name='L124'></a> 124     <em class='brace'>}</em>
+<a id='L125' name='L125'></a> 125 
+<a id='L126' name='L126'></a> 126     <em class='comment'>/**</em>
+<a id='L127' name='L127'></a> 127 <em class='comment'>     * @brief Returns name of Spice device corresponding to a schematic component.</em>
+<a id='L128' name='L128'></a> 128 <em class='comment'>     *</em>
+<a id='L129' name='L129'></a> 129 <em class='comment'>     * @param aComponent is the component reference.</em>
+<a id='L130' name='L130'></a> 130 <em class='comment'>     * @return Spice device name or empty string if there is no such component in the netlist. The</em>
+<a id='L131' name='L131'></a> 131 <em class='comment'>     * name is either plain reference if the first character of reference corresponds to the</em>
+<a id='L132' name='L132'></a> 132 <em class='comment'>     * assigned device model type or it is the reference prefixed with a character defining</em>
+<a id='L133' name='L133'></a> 133 <em class='comment'>     * the device model type.</em>
+<a id='L134' name='L134'></a> 134 <em class='comment'>     */</em>
+<a id='L135' name='L135'></a> 135     <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a> <a href='../S/299.html#L43' title='Defined at 43 in netlist_exporters/netlist_exporter_pspice.cpp.'>GetSpiceDevice</a>( <strong class='reserved'>const</strong> <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&amp; <a href='../Y/2808.html' title='Multiple used in 179 places.'>aComponent</a> ) <strong class='reserved'>const</strong>;
+<a id='L136' name='L136'></a> 136 
+<a id='L137' name='L137'></a> 137     <em class='comment'>/**</em>
+<a id='L138' name='L138'></a> 138 <em class='comment'>     * Function WriteNetlist</em>
+<a id='L139' name='L139'></a> 139 <em class='comment'>     * writes to specified output file</em>
+<a id='L140' name='L140'></a> 140 <em class='comment'>     */</em>
+<a id='L141' name='L141'></a> 141     <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../D/1942.html' title='Multiple defined in 5 places.'>WriteNetlist</a>( <strong class='reserved'>const</strong> <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&amp; <a href='../Y/3160.html' title='Multiple used in 18 places.'>aOutFileName</a>, <strong class='reserved'>unsigned</strong> <a href='../Y/3115.html' title='Multiple used in 17 places.'>aNetlistOptions</a> ) <a href='../Y/7123.html' title='Multiple used in 1177 places.'>override</a>;
+<a id='L142' name='L142'></a> 142 
+<a id='L143' name='L143'></a> 143     <em class='comment'>///&gt; @copydoc NETLIST_EXPORTER::Format()</em>
+<a id='L144' name='L144'></a> 144     <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../D/501.html' title='Multiple defined in 7 places.'>Format</a>( <a href='../Y/1557.html' title='Multiple used in 66 places.'>OUTPUTFORMATTER</a>* <a href='../Y/2945.html' title='Multiple used in 214 places.'>aFormatter</a>, <strong class='reserved'>unsigned</strong> <a href='../Y/2829.html' title='Multiple used in 42 places.'>aCtl</a> );
+<a id='L145' name='L145'></a> 145 
+<a id='L146' name='L146'></a> 146     <em class='comment'>/**</em>
+<a id='L147' name='L147'></a> 147 <em class='comment'>     * @brief Processes the netlist to create net mapping and a list of SPICE_ITEMs.</em>
+<a id='L148' name='L148'></a> 148 <em class='comment'>     * It is automatically called by WriteNetlist(), but might be used separately,</em>
+<a id='L149' name='L149'></a> 149 <em class='comment'>     * if only net mapping and the list of SPICE_ITEMs are required.</em>
+<a id='L150' name='L150'></a> 150 <em class='comment'>     * @return True if successful.</em>
+<a id='L151' name='L151'></a> 151 <em class='comment'>     */</em>
+<a id='L152' name='L152'></a> 152     <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../S/299.html#L264' title='Defined at 264 in netlist_exporters/netlist_exporter_pspice.cpp.'>ProcessNetlist</a>( <strong class='reserved'>unsigned</strong> <a href='../Y/2829.html' title='Multiple used in 42 places.'>aCtl</a> );
+<a id='L153' name='L153'></a> 153 
+<a id='L154' name='L154'></a> 154 
+<a id='L155' name='L155'></a> 155     <em class='comment'>/**</em>
+<a id='L156' name='L156'></a> 156 <em class='comment'>     * @brief some chars are not accepted in netnames in spice netlists.</em>
+<a id='L157' name='L157'></a> 157 <em class='comment'>     * for instance '(' and ')'</em>
+<a id='L158' name='L158'></a> 158 <em class='comment'>     * ReplaceForbiddenChars replace these chars by an underscore.</em>
+<a id='L159' name='L159'></a> 159 <em class='comment'>     * @param aNetName = the netname to modify.</em>
+<a id='L160' name='L160'></a> 160 <em class='comment'>     */</em>
+<a id='L161' name='L161'></a> 161      <strong class='reserved'>static</strong> <strong class='reserved'>void</strong> <a href='../S/299.html#L67' title='Defined at 67 in netlist_exporters/netlist_exporter_pspice.cpp.'>ReplaceForbiddenChars</a>( <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&amp; <a href='../Y/3110.html' title='Multiple used in 28 places.'>aNetName</a> );
+<a id='L162' name='L162'></a> 162 
+<a id='L163' name='L163'></a> 163     <em class='comment'>/**</em>
+<a id='L164' name='L164'></a> 164 <em class='comment'>     * @brief Returns a map of circuit nodes to net names.</em>
+<a id='L165' name='L165'></a> 165 <em class='comment'>     */</em>
+<a id='L166' name='L166'></a> 166     <strong class='reserved'>const</strong> <a href='../S/300.html#L116' title='Defined at 116 in netlist_exporters/netlist_exporter_pspice.h.'>NET_INDEX_MAP</a>&amp; <a href='../Y/855.html' title='Multiple used in 5 places.'>GetNetIndexMap</a>() <strong class='reserved'>const</strong>
+<a id='L167' name='L167'></a> 167     <em class='brace'>{</em>
+<a id='L168' name='L168'></a> 168         <strong class='reserved'>return</strong> <a href='../Y/5903.html' title='Multiple used in 8 places.'>m_netMap</a>;
+<a id='L169' name='L169'></a> 169     <em class='brace'>}</em>
+<a id='L170' name='L170'></a> 170 
+<a id='L171' name='L171'></a> 171     <em class='comment'>/**</em>
+<a id='L172' name='L172'></a> 172 <em class='comment'>     * @brief Returns a vector of component field names related to Spice simulation.</em>
+<a id='L173' name='L173'></a> 173 <em class='comment'>     */</em>
+<a id='L174' name='L174'></a> 174     <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8368.html' title='Multiple used in 470 places.'>vector</a>&lt;<a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&gt;&amp; <a href='../Y/988.html' title='Multiple used in 2 places.'>GetSpiceFields</a>()
+<a id='L175' name='L175'></a> 175     <em class='brace'>{</em>
+<a id='L176' name='L176'></a> 176         <strong class='reserved'>return</strong> <a href='../Y/6288.html' title='Multiple used in 4 places.'>m_spiceFields</a>;
+<a id='L177' name='L177'></a> 177     <em class='brace'>}</em>
+<a id='L178' name='L178'></a> 178 
+<a id='L179' name='L179'></a> 179     <em class='comment'>/**</em>
+<a id='L180' name='L180'></a> 180 <em class='comment'>     * @brief Returns a string used for a particular component field related to Spice simulation.</em>
+<a id='L181' name='L181'></a> 181 <em class='comment'>     */</em>
+<a id='L182' name='L182'></a> 182     <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&amp; <a href='../Y/987.html' title='Multiple used in 7 places.'>GetSpiceFieldName</a>( <a href='../S/300.html#L42' title='Defined at 42 in netlist_exporters/netlist_exporter_pspice.h.'>SPICE_FIELD</a> <a href='../Y/2901.html' title='Multiple used in 189 places.'>aField</a> )
+<a id='L183' name='L183'></a> 183     <em class='brace'>{</em>
+<a id='L184' name='L184'></a> 184         <strong class='reserved'>return</strong> <a href='../Y/6288.html' title='Multiple used in 4 places.'>m_spiceFields</a>[(<strong class='reserved'>int</strong>) <a href='../Y/2901.html' title='Multiple used in 189 places.'>aField</a>];
+<a id='L185' name='L185'></a> 185     <em class='brace'>}</em>
+<a id='L186' name='L186'></a> 186 
+<a id='L187' name='L187'></a> 187     <em class='comment'>/**</em>
+<a id='L188' name='L188'></a> 188 <em class='comment'>     * @brief Retrieves either the requested field value or the default value.</em>
+<a id='L189' name='L189'></a> 189 <em class='comment'>     */</em>
+<a id='L190' name='L190'></a> 190     <strong class='reserved'>static</strong> <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a> <a href='../S/299.html#L174' title='Defined at 174 in netlist_exporters/netlist_exporter_pspice.cpp.'>GetSpiceField</a>( <a href='../S/300.html#L42' title='Defined at 42 in netlist_exporters/netlist_exporter_pspice.h.'>SPICE_FIELD</a> <a href='../Y/2901.html' title='Multiple used in 189 places.'>aField</a>, <a href='../D/1520.html' title='Multiple defined in 4 places.'>SCH_COMPONENT</a>* <a href='../Y/2808.html' title='Multiple used in 179 places.'>aComponent</a>, <strong class='reserved'>unsigned</strong> <a href='../Y/2829.html' title='Multiple used in 42 places.'>aCtl</a> );
+<a id='L191' name='L191'></a> 191 
+<a id='L192' name='L192'></a> 192     <em class='comment'>/**</em>
+<a id='L193' name='L193'></a> 193 <em class='comment'>     * @brief Retrieves the default value for a given field.</em>
+<a id='L194' name='L194'></a> 194 <em class='comment'>     */</em>
+<a id='L195' name='L195'></a> 195     <strong class='reserved'>static</strong> <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a> <a href='../S/299.html#L182' title='Defined at 182 in netlist_exporters/netlist_exporter_pspice.cpp.'>GetSpiceFieldDefVal</a>( <a href='../S/300.html#L42' title='Defined at 42 in netlist_exporters/netlist_exporter_pspice.h.'>SPICE_FIELD</a> <a href='../Y/2901.html' title='Multiple used in 189 places.'>aField</a>, <a href='../D/1520.html' title='Multiple defined in 4 places.'>SCH_COMPONENT</a>* <a href='../Y/2808.html' title='Multiple used in 179 places.'>aComponent</a>, <strong class='reserved'>unsigned</strong> <a href='../Y/2829.html' title='Multiple used in 42 places.'>aCtl</a> );
+<a id='L196' name='L196'></a> 196 
+<a id='L197' name='L197'></a> 197     <em class='comment'>/**</em>
+<a id='L198' name='L198'></a> 198 <em class='comment'>     * Updates the vector of Spice directives placed in the schematics.</em>
+<a id='L199' name='L199'></a> 199 <em class='comment'>     */</em>
+<a id='L200' name='L200'></a> 200     <strong class='reserved'>void</strong> <a href='../S/299.html#L369' title='Defined at 369 in netlist_exporters/netlist_exporter_pspice.cpp.'>UpdateDirectives</a>( <strong class='reserved'>unsigned</strong> <a href='../Y/2829.html' title='Multiple used in 42 places.'>aCtl</a> );
+<a id='L201' name='L201'></a> 201 
+<a id='L202' name='L202'></a> 202     <em class='comment'>/**</em>
+<a id='L203' name='L203'></a> 203 <em class='comment'>     * @brief Returnss a vector of Spice directives found in the schematics.</em>
+<a id='L204' name='L204'></a> 204 <em class='comment'>     */</em>
+<a id='L205' name='L205'></a> 205     <strong class='reserved'>const</strong> <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8368.html' title='Multiple used in 470 places.'>vector</a>&lt;<a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&gt; <a href='../Y/717.html' title='Multiple used in 3 places.'>GetDirectives</a>() <strong class='reserved'>const</strong>
+<a id='L206' name='L206'></a> 206     <em class='brace'>{</em>
+<a id='L207' name='L207'></a> 207         <strong class='reserved'>return</strong> <a href='../Y/5599.html' title='Multiple used in 5 places.'>m_directives</a>;
+<a id='L208' name='L208'></a> 208     <em class='brace'>}</em>
+<a id='L209' name='L209'></a> 209 
+<a id='L210' name='L210'></a> 210     <em class='comment'>/**</em>
+<a id='L211' name='L211'></a> 211 <em class='comment'>     * @brief Convertes typical boolean string values (no/yes, true/false, 1/0) to a boolean value.</em>
+<a id='L212' name='L212'></a> 212 <em class='comment'>     */</em>
+<a id='L213' name='L213'></a> 213     <strong class='reserved'>static</strong> <a href='../Y/3715.html' title='Multiple used in 968 places.'>bool</a> <a href='../Y/2345.html' title='Multiple used in 3 places.'>StringToBool</a>( <strong class='reserved'>const</strong> <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&amp; <a href='../Y/3356.html' title='Multiple used in 3 places.'>aStr</a> )
+<a id='L214' name='L214'></a> 214     <em class='brace'>{</em>
+<a id='L215' name='L215'></a> 215         <strong class='reserved'>if</strong>( <a href='../Y/3356.html' title='Multiple used in 3 places.'>aStr</a>.<a href='../Y/1197.html' title='Multiple used in 258 places.'>IsEmpty</a>() )
+<a id='L216' name='L216'></a> 216             <strong class='reserved'>return</strong> <a href='../Y/4387.html' title='Multiple used in 97 places.'>false</a>;
+<a id='L217' name='L217'></a> 217 
+<a id='L218' name='L218'></a> 218         <strong class='reserved'>char</strong> <a href='../Y/3776.html' title='Multiple used in 77 places.'>c</a> = <a href='../Y/8207.html' title='Multiple used in 2 places.'>tolower</a>( <a href='../Y/3356.html' title='Multiple used in 3 places.'>aStr</a>[0] );
+<a id='L219' name='L219'></a> 219 
+<a id='L220' name='L220'></a> 220         <em class='comment'>// Different ways of saying false (no/false/0)</em>
+<a id='L221' name='L221'></a> 221         <strong class='reserved'>return</strong> !( <a href='../Y/3776.html' title='Multiple used in 77 places.'>c</a> == 'n' || <a href='../Y/3776.html' title='Multiple used in 77 places.'>c</a> == 'f' || <a href='../Y/3776.html' title='Multiple used in 77 places.'>c</a> == '0' );
+<a id='L222' name='L222'></a> 222     <em class='brace'>}</em>
+<a id='L223' name='L223'></a> 223 
+<a id='L224' name='L224'></a> 224 <a href='../Y/7455.html' title='Multiple used in 93 places.'>protected</a>:
+<a id='L225' name='L225'></a> 225     <em class='comment'>/**</em>
+<a id='L226' name='L226'></a> 226 <em class='comment'>     * @brief Saves the Spice directives.</em>
+<a id='L227' name='L227'></a> 227 <em class='comment'>     */</em>
+<a id='L228' name='L228'></a> 228     <a href='../Y/8381.html' title='Multiple used in 381 places.'>virtual</a> <strong class='reserved'>void</strong> <a href='../D/2624.html' title='Multiple defined in 2 places.'>writeDirectives</a>( <a href='../Y/1557.html' title='Multiple used in 66 places.'>OUTPUTFORMATTER</a>* <a href='../Y/2945.html' title='Multiple used in 214 places.'>aFormatter</a>, <strong class='reserved'>unsigned</strong> <a href='../Y/2829.html' title='Multiple used in 42 places.'>aCtl</a> ) <strong class='reserved'>const</strong>;
+<a id='L229' name='L229'></a> 229 
+<a id='L230' name='L230'></a> 230 <a href='../Y/7425.html' title='Multiple used in 187 places.'>private</a>:
+<a id='L231' name='L231'></a> 231     <em class='comment'>///&gt; Spice simulation title found in the processed schematic sheet</em>
+<a id='L232' name='L232'></a> 232     <a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a> <a href='../Y/6536.html' title='Multiple used in 14 places.'>m_title</a>;
+<a id='L233' name='L233'></a> 233 
+<a id='L234' name='L234'></a> 234     <em class='comment'>///&gt; Spice directives found in the processed schematic sheet</em>
+<a id='L235' name='L235'></a> 235     <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8368.html' title='Multiple used in 470 places.'>vector</a>&lt;<a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&gt; <a href='../Y/5599.html' title='Multiple used in 5 places.'>m_directives</a>;
+<a id='L236' name='L236'></a> 236 
+<a id='L237' name='L237'></a> 237     <em class='comment'>///&gt; Libraries used by the simulated circuit</em>
+<a id='L238' name='L238'></a> 238     <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/7807.html' title='Multiple used in 38 places.'>set</a>&lt;<a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&gt; <a href='../Y/5830.html' title='Multiple used in 9 places.'>m_libraries</a>;
+<a id='L239' name='L239'></a> 239 
+<a id='L240' name='L240'></a> 240     <em class='comment'>///&gt; Maps circuit nodes to net names</em>
+<a id='L241' name='L241'></a> 241     <a href='../S/300.html#L116' title='Defined at 116 in netlist_exporters/netlist_exporter_pspice.h.'>NET_INDEX_MAP</a> <a href='../Y/5903.html' title='Multiple used in 8 places.'>m_netMap</a>;
+<a id='L242' name='L242'></a> 242 
+<a id='L243' name='L243'></a> 243     <em class='comment'>///&gt; List of items representing schematic components in the Spice world</em>
+<a id='L244' name='L244'></a> 244     <a href='../S/300.html#L113' title='Defined at 113 in netlist_exporters/netlist_exporter_pspice.h.'>SPICE_ITEM_LIST</a> <a href='../Y/6290.html' title='Multiple used in 4 places.'>m_spiceItems</a>;
+<a id='L245' name='L245'></a> 245 
+<a id='L246' name='L246'></a> 246     <em class='comment'>// Component fields that are processed during netlist export &amp; simulation</em>
+<a id='L247' name='L247'></a> 247     <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <a href='../S/392.html#L90' title='Defined at 90 in sch_sheet_path.cpp.'>std</a>::<a href='../Y/8368.html' title='Multiple used in 470 places.'>vector</a>&lt;<a href='../D/2634.html' title='Multiple defined in 6 places.'>wxString</a>&gt; <a href='../Y/6288.html' title='Multiple used in 4 places.'>m_spiceFields</a>;
+<a id='L248' name='L248'></a> 248 <em class='brace'>}</em>;
+<a id='L249' name='L249'></a> 249 
+<a id='L250' name='L250'></a> 250 <em class='sharp'>#endif</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;][^][v]<a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>
