@@ -1,0 +1,353 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>drc/drc_keepout_tester.cpp</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/832.html'>drc</a>/drc_keepout_tester.cpp</h2>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L36'>[^]</a><a href='#L275'>[v]</a>[top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L36' title='Defined at 36.'>m_keepoutFlags</a></li>
+<li><a href='#L41' title='Defined at 41.'>RunDRC</a></li>
+<li><a href='#L71' title='Defined at 71.'>checkTracksAndVias</a></li>
+<li><a href='#L155' title='Defined at 155.'>checkFootprints</a></li>
+<li><a href='#L212' title='Defined at 212.'>checkPads</a></li>
+<li><a href='#L275' title='Defined at 275.'>checkDrawings</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * This program source code file is part of KiCad, a free EDA CAD application.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 2020 KiCad Developers, see AUTHORS.txt for contributors.</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> *</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> * This program is free software; you can redistribute it and/or</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> * modify it under the terms of the GNU General Public License</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * as published by the Free Software Foundation; either version 2</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * of the License, or (at your option) any later version.</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> *</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> * This program is distributed in the hope that it will be useful,</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> * but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * GNU General Public License for more details.</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> *</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> * You should have received a copy of the GNU General Public License</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> * along with this program; if not, you may find one here:</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> * or you may search the http://www.gnu.org website for the version 2 license,</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> * or you may write to the Free Software Foundation, Inc.,</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'> * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'> */</em>
+<a id='L23' name='L23'></a>  23 
+<a id='L24' name='L24'></a>  24 
+<a id='L25' name='L25'></a>  25 <em class='sharp'>#include</em> &lt;<a href='396.html'>drc/drc_keepout_tester.h</a>&gt;
+<a id='L26' name='L26'></a>  26 <em class='sharp'>#include</em> &lt;geometry/shape_segment.h&gt;
+<a id='L27' name='L27'></a>  27 <em class='sharp'>#include</em> &lt;<a href='69.html'>class_module.h</a>&gt;
+<a id='L28' name='L28'></a>  28 <em class='sharp'>#include</em> &lt;<a href='387.html'>drc/drc.h</a>&gt;
+<a id='L29' name='L29'></a>  29 <em class='sharp'>#include</em> &lt;<a href='394.html'>drc/drc_item.h</a>&gt;
+<a id='L30' name='L30'></a>  30 
+<a id='L31' name='L31'></a>  31 <a href='../Y/721.html' title='Multiple used in 10 places.'>DRC_KEEPOUT_TESTER</a>::<a href='../Y/721.html' title='Multiple used in 10 places.'>DRC_KEEPOUT_TESTER</a>( <a href='../Y/2447.html' title='Multiple used in 11 places.'>MARKER_HANDLER</a> <a href='../Y/5548.html' title='Multiple used in 14 places.'>aMarkerHandler</a> ) :
+<a id='L32' name='L32'></a>  32         <a href='../Y/725.html' title='Multiple used in 11 places.'>DRC_TEST_PROVIDER</a>( <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/12717.html' title='Multiple used in 65 places.'>move</a>( <a href='../Y/5548.html' title='Multiple used in 14 places.'>aMarkerHandler</a> ) ),
+<a id='L33' name='L33'></a>  33         <a href='../Y/12294.html' title='Multiple used in 48 places.'>m_units</a>( <a href='../Y/848.html' title='Multiple used in 169 places.'>EDA_UNITS</a>::<a href='../Y/2509.html' title='Multiple used in 26 places.'>MILLIMETRES</a> ),
+<a id='L34' name='L34'></a>  34         <a href='../D/4144.html' title='Multiple defined in 3 places.'>m_board</a>( <a href='../Y/13059.html' title='Multiple used in 610 places.'>nullptr</a> ),
+<a id='L35' name='L35'></a>  35         <a href='../Y/12425.html' title='Multiple used in 53 places.'>m_zone</a>( <a href='../Y/13059.html' title='Multiple used in 610 places.'>nullptr</a> ),
+<a id='L36' name='L36'></a>  36         <a href='../R/4021.html' title='Multiple referred from 18 places.'>m_keepoutFlags</a>( 0 )
+<a id='L37' name='L37'></a>  37 <em class='brace'>{</em>
+<a id='L38' name='L38'></a>  38 <em class='brace'>}</em>
+<a id='L39' name='L39'></a>  39 
+<a id='L40' name='L40'></a>  40 
+<a id='L41' name='L41'></a>  41 <strong class='reserved'>bool</strong> <a href='../Y/721.html' title='Multiple used in 10 places.'>DRC_KEEPOUT_TESTER</a>::<a href='../R/2709.html' title='Multiple referred from 9 places.'>RunDRC</a>( <a href='../Y/848.html' title='Multiple used in 169 places.'>EDA_UNITS</a> <a href='../Y/6103.html' title='Multiple used in 67 places.'>aUnits</a>, <a href='../S/57.html#L104' title='Defined at 104 in class_board.cpp.'>BOARD</a>&amp; <a href='../Y/5041.html' title='Multiple used in 458 places.'>aBoard</a> )
+<a id='L42' name='L42'></a>  42 <em class='brace'>{</em>
+<a id='L43' name='L43'></a>  43     <strong class='reserved'>bool</strong> <a href='../Y/14764.html' title='Multiple used in 101 places.'>success</a> = <strong class='reserved'>true</strong>;
+<a id='L44' name='L44'></a>  44 
+<a id='L45' name='L45'></a>  45     <a href='../Y/12294.html' title='Multiple used in 48 places.'>m_units</a> = <a href='../Y/6103.html' title='Multiple used in 67 places.'>aUnits</a>;
+<a id='L46' name='L46'></a>  46     <a href='../D/4144.html' title='Multiple defined in 3 places.'>m_board</a> = &amp;<a href='../Y/5041.html' title='Multiple used in 458 places.'>aBoard</a>;
+<a id='L47' name='L47'></a>  47 
+<a id='L48' name='L48'></a>  48     <em class='comment'>// Get a list of all zones to inspect, from both board and footprints</em>
+<a id='L49' name='L49'></a>  49     <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/9077.html' title='Multiple used in 61 places.'>list</a>&lt;<a href='../S/80.html#L93' title='Defined at 93 in class_zone.cpp.'>ZONE_CONTAINER</a>*&gt; <a href='../Y/6437.html' title='Multiple used in 2 places.'>areasToInspect</a> = <a href='../D/4144.html' title='Multiple defined in 3 places.'>m_board</a>-&gt;<a href='../S/57.html#L1626' title='Defined at 1626 in class_board.cpp.'>GetZoneList</a>( <strong class='reserved'>true</strong> );
+<a id='L50' name='L50'></a>  50 
+<a id='L51' name='L51'></a>  51     <em class='comment'>// Test keepout areas for vias, tracks and pads inside keepout areas</em>
+<a id='L52' name='L52'></a>  52     <strong class='reserved'>for</strong>( <a href='../S/80.html#L93' title='Defined at 93 in class_zone.cpp.'>ZONE_CONTAINER</a>* <a href='../Y/6419.html' title='Multiple used in 97 places.'>area</a> : <a href='../Y/6437.html' title='Multiple used in 2 places.'>areasToInspect</a> )
+<a id='L53' name='L53'></a>  53     <em class='brace'>{</em>
+<a id='L54' name='L54'></a>  54         <a href='../S/395.html#L36' title='Defined at 36 in drc/drc_keepout_tester.cpp.'>m_keepoutFlags</a> = <a href='../Y/6419.html' title='Multiple used in 97 places.'>area</a>-&gt;<a href='../S/80.html#L335' title='Defined at 335 in class_zone.cpp.'>GetKeepouts</a>( &amp;<a href='../Y/11935.html' title='Multiple used in 8 places.'>m_sources</a> );
+<a id='L55' name='L55'></a>  55 
+<a id='L56' name='L56'></a>  56         <strong class='reserved'>if</strong>( <a href='../S/395.html#L36' title='Defined at 36 in drc/drc_keepout_tester.cpp.'>m_keepoutFlags</a> &gt; 0 )
+<a id='L57' name='L57'></a>  57         <em class='brace'>{</em>
+<a id='L58' name='L58'></a>  58             <a href='../Y/12425.html' title='Multiple used in 53 places.'>m_zone</a> = <a href='../Y/6419.html' title='Multiple used in 97 places.'>area</a>;
+<a id='L59' name='L59'></a>  59             <a href='../Y/12426.html' title='Multiple used in 6 places.'>m_zoneBBox</a> = <a href='../Y/6419.html' title='Multiple used in 97 places.'>area</a>-&gt;<a href='../D/1116.html' title='Multiple defined in 11 places.'>GetBoundingBox</a>();
+<a id='L60' name='L60'></a>  60 
+<a id='L61' name='L61'></a>  61             <a href='../Y/14764.html' title='Multiple used in 101 places.'>success</a> &amp;= <a href='../S/395.html#L71' title='Defined at 71 in drc/drc_keepout_tester.cpp.'>checkTracksAndVias</a>();
+<a id='L62' name='L62'></a>  62             <a href='../Y/14764.html' title='Multiple used in 101 places.'>success</a> &amp;= <a href='../S/395.html#L155' title='Defined at 155 in drc/drc_keepout_tester.cpp.'>checkFootprints</a>();
+<a id='L63' name='L63'></a>  63             <a href='../Y/14764.html' title='Multiple used in 101 places.'>success</a> &amp;= <a href='../S/395.html#L275' title='Defined at 275 in drc/drc_keepout_tester.cpp.'>checkDrawings</a>();
+<a id='L64' name='L64'></a>  64         <em class='brace'>}</em>
+<a id='L65' name='L65'></a>  65     <em class='brace'>}</em>
+<a id='L66' name='L66'></a>  66 
+<a id='L67' name='L67'></a>  67     <strong class='reserved'>return</strong> <a href='../Y/14764.html' title='Multiple used in 101 places.'>success</a>;
+<a id='L68' name='L68'></a>  68 <em class='brace'>}</em>
+<a id='L69' name='L69'></a>  69 
+<a id='L70' name='L70'></a>  70 
+<a id='L71' name='L71'></a>  71 <strong class='reserved'>bool</strong> <a href='../Y/721.html' title='Multiple used in 10 places.'>DRC_KEEPOUT_TESTER</a>::<a href='../R/3521.html' title='Multiple referred from 2 places.'>checkTracksAndVias</a>()
+<a id='L72' name='L72'></a>  72 <em class='brace'>{</em>
+<a id='L73' name='L73'></a>  73     <a href='../Y/7062.html' title='Multiple used in 39 places.'>constexpr</a> <strong class='reserved'>int</strong> <a href='../S/709.html#L72' title='Defined at 72 in router/router_tool.cpp.'>VIA_MASK</a> = <a href='../S/399.html#L43' title='Defined at 43 in drc/drc_rule.h.'>DISALLOW_VIAS</a> | <a href='../S/399.html#L44' title='Defined at 44 in drc/drc_rule.h.'>DISALLOW_MICRO_VIAS</a> | <a href='../S/399.html#L45' title='Defined at 45 in drc/drc_rule.h.'>DISALLOW_BB_VIAS</a>;
+<a id='L74' name='L74'></a>  74     <a href='../Y/7062.html' title='Multiple used in 39 places.'>constexpr</a> <strong class='reserved'>int</strong> <a href='../Y/348.html' title='Multiple used in 3 places.'>CHECK_VIAS_MASK</a> = <a href='../S/709.html#L72' title='Defined at 72 in router/router_tool.cpp.'>VIA_MASK</a> | <a href='../S/399.html#L51' title='Defined at 51 in drc/drc_rule.h.'>DISALLOW_HOLES</a>;
+<a id='L75' name='L75'></a>  75     <a href='../Y/7062.html' title='Multiple used in 39 places.'>constexpr</a> <strong class='reserved'>int</strong> <a href='../Y/347.html' title='Multiple used in 2 places.'>CHECK_TRACKS_AND_VIAS_MASK</a> = <a href='../Y/348.html' title='Multiple used in 3 places.'>CHECK_VIAS_MASK</a> | <a href='../S/399.html#L46' title='Defined at 46 in drc/drc_rule.h.'>DISALLOW_TRACKS</a>;
+<a id='L76' name='L76'></a>  76 
+<a id='L77' name='L77'></a>  77     <strong class='reserved'>if</strong>(( <a href='../S/395.html#L36' title='Defined at 36 in drc/drc_keepout_tester.cpp.'>m_keepoutFlags</a> &amp; <a href='../Y/347.html' title='Multiple used in 2 places.'>CHECK_TRACKS_AND_VIAS_MASK</a> ) == 0 )
+<a id='L78' name='L78'></a>  78         <strong class='reserved'>return</strong> <strong class='reserved'>true</strong>;
+<a id='L79' name='L79'></a>  79 
+<a id='L80' name='L80'></a>  80     <strong class='reserved'>bool</strong> <a href='../Y/14764.html' title='Multiple used in 101 places.'>success</a> = <strong class='reserved'>true</strong>;
+<a id='L81' name='L81'></a>  81 
+<a id='L82' name='L82'></a>  82     <strong class='reserved'>for</strong>( <a href='../S/78.html#L38' title='Defined at 38 in class_track.cpp.'>TRACK</a>* <a href='../Y/14293.html' title='Multiple used in 20 places.'>segm</a> : <a href='../D/4144.html' title='Multiple defined in 3 places.'>m_board</a>-&gt;<a href='../Y/4679.html' title='Multiple used in 78 places.'>Tracks</a>() )
+<a id='L83' name='L83'></a>  83     <em class='brace'>{</em>
+<a id='L84' name='L84'></a>  84         <strong class='reserved'>if</strong>( !<a href='../Y/12426.html' title='Multiple used in 6 places.'>m_zoneBBox</a>.<a href='../Y/2080.html' title='Multiple used in 39 places.'>Intersects</a>( <a href='../Y/14293.html' title='Multiple used in 20 places.'>segm</a>-&gt;<a href='../D/1116.html' title='Multiple defined in 11 places.'>GetBoundingBox</a>() ) )
+<a id='L85' name='L85'></a>  85             <strong class='reserved'>continue</strong>;
+<a id='L86' name='L86'></a>  86 
+<a id='L87' name='L87'></a>  87         <strong class='reserved'>if</strong>( <a href='../Y/14293.html' title='Multiple used in 20 places.'>segm</a>-&gt;<a href='../Y/4696.html' title='Multiple used in 393 places.'>Type</a>() == <a href='../Y/2859.html' title='Multiple used in 83 places.'>PCB_TRACE_T</a> &amp;&amp; ( <a href='../S/395.html#L36' title='Defined at 36 in drc/drc_keepout_tester.cpp.'>m_keepoutFlags</a> &amp; <a href='../S/399.html#L46' title='Defined at 46 in drc/drc_rule.h.'>DISALLOW_TRACKS</a> ) != 0 )
+<a id='L88' name='L88'></a>  88         <em class='brace'>{</em>
+<a id='L89' name='L89'></a>  89             <em class='comment'>// Ignore if the keepout zone is not on the same layer</em>
+<a id='L90' name='L90'></a>  90             <strong class='reserved'>if</strong>( !<a href='../Y/12425.html' title='Multiple used in 53 places.'>m_zone</a>-&gt;<a href='../D/1852.html' title='Multiple defined in 3 places.'>IsOnLayer</a>( <a href='../Y/14293.html' title='Multiple used in 20 places.'>segm</a>-&gt;<a href='../D/1216.html' title='Multiple defined in 2 places.'>GetLayer</a>() ) )
+<a id='L91' name='L91'></a>  91                 <strong class='reserved'>continue</strong>;
+<a id='L92' name='L92'></a>  92 
+<a id='L93' name='L93'></a>  93             <a href='../Y/3207.html' title='Multiple used in 183 places.'>SEG</a> <a href='../Y/15083.html' title='Multiple used in 11 places.'>trackSeg</a>( <a href='../Y/14293.html' title='Multiple used in 20 places.'>segm</a>-&gt;<a href='../Y/1728.html' title='Multiple used in 182 places.'>GetStart</a>(), <a href='../Y/14293.html' title='Multiple used in 20 places.'>segm</a>-&gt;<a href='../Y/1386.html' title='Multiple used in 189 places.'>GetEnd</a>() );
+<a id='L94' name='L94'></a>  94 
+<a id='L95' name='L95'></a>  95             <strong class='reserved'>if</strong>( <a href='../Y/12425.html' title='Multiple used in 53 places.'>m_zone</a>-&gt;<a href='../Y/2736.html' title='Multiple used in 73 places.'>Outline</a>()-&gt;<a href='../D/462.html' title='Multiple defined in 3 places.'>Collide</a>( <a href='../Y/15083.html' title='Multiple used in 11 places.'>trackSeg</a>, <a href='../Y/14293.html' title='Multiple used in 20 places.'>segm</a>-&gt;<a href='../Y/1809.html' title='Multiple used in 240 places.'>GetWidth</a>() / 2 ) )
+<a id='L96' name='L96'></a>  96             <em class='brace'>{</em>
+<a id='L97' name='L97'></a>  97                 <a href='../Y/720.html' title='Multiple used in 212 places.'>DRC_ITEM</a>* <a href='../Y/7557.html' title='Multiple used in 215 places.'>drcItem</a> = <a href='../Y/720.html' title='Multiple used in 212 places.'>DRC_ITEM</a>::<a href='../D/497.html' title='Multiple defined in 5 places.'>Create</a>( <a href='../S/387.html#L60' title='Defined at 60 in drc/drc.h.'>DRCE_KEEPOUT</a> );
+<a id='L98' name='L98'></a>  98 
+<a id='L99' name='L99'></a>  99                 <a href='../Y/11376.html' title='Multiple used in 74 places.'>m_msg</a>.<a href='../Y/2981.html' title='Multiple used in 353 places.'>Printf</a>( <a href='../Y/7557.html' title='Multiple used in 215 places.'>drcItem</a>-&gt;<a href='../S/82.html#L36' title='Defined at 36 in cleanup_item.cpp.'>GetErrorText</a>() + <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( " (%s)" ),
+<a id='L100' name='L100'></a> 100                               <a href='../Y/11935.html' title='Multiple used in 8 places.'>m_sources</a>.<a href='../S/330.html#L212' title='Defined at 212 in dialogs/panel_fp_lib_table.cpp.'>at</a>( <a href='../S/399.html#L46' title='Defined at 46 in drc/drc_rule.h.'>DISALLOW_TRACKS</a> ) );
+<a id='L101' name='L101'></a> 101 
+<a id='L102' name='L102'></a> 102                 <a href='../Y/7557.html' title='Multiple used in 215 places.'>drcItem</a>-&gt;<a href='../Y/3497.html' title='Multiple used in 39 places.'>SetErrorMessage</a>( <a href='../Y/11376.html' title='Multiple used in 74 places.'>m_msg</a> );
+<a id='L103' name='L103'></a> 103                 <a href='../Y/7557.html' title='Multiple used in 215 places.'>drcItem</a>-&gt;<a href='../Y/3622.html' title='Multiple used in 64 places.'>SetItems</a>( <a href='../Y/14293.html' title='Multiple used in 20 places.'>segm</a>, <a href='../Y/12425.html' title='Multiple used in 53 places.'>m_zone</a> );
+<a id='L104' name='L104'></a> 104 
+<a id='L105' name='L105'></a> 105                 <a href='../Y/1855.html' title='Multiple used in 18 places.'>HandleMarker</a>( <strong class='reserved'>new</strong> <a href='../S/66.html#L57' title='Defined at 57 in class_marker_pcb.cpp.'>MARKER_PCB</a>( <a href='../Y/7557.html' title='Multiple used in 215 places.'>drcItem</a>, <a href='../S/386.html#L86' title='Defined at 86 in drc/drc.cpp.'>DRC</a>::<a href='../D/1237.html' title='Multiple defined in 2 places.'>GetLocation</a>( <a href='../Y/14293.html' title='Multiple used in 20 places.'>segm</a>, <a href='../Y/12425.html' title='Multiple used in 53 places.'>m_zone</a> ) ) );
+<a id='L106' name='L106'></a> 106                 <a href='../Y/14764.html' title='Multiple used in 101 places.'>success</a> = <strong class='reserved'>false</strong>;
+<a id='L107' name='L107'></a> 107             <em class='brace'>}</em>
+<a id='L108' name='L108'></a> 108         <em class='brace'>}</em>
+<a id='L109' name='L109'></a> 109         <strong class='reserved'>else</strong> <strong class='reserved'>if</strong>( <a href='../Y/14293.html' title='Multiple used in 20 places.'>segm</a>-&gt;<a href='../Y/4696.html' title='Multiple used in 393 places.'>Type</a>() == <a href='../Y/2861.html' title='Multiple used in 102 places.'>PCB_VIA_T</a> &amp;&amp; ( <a href='../S/395.html#L36' title='Defined at 36 in drc/drc_keepout_tester.cpp.'>m_keepoutFlags</a> &amp; <a href='../Y/348.html' title='Multiple used in 3 places.'>CHECK_VIAS_MASK</a> ) != 0 )
+<a id='L110' name='L110'></a> 110         <em class='brace'>{</em>
+<a id='L111' name='L111'></a> 111             <a href='../D/3347.html' title='Multiple defined in 2 places.'>VIA</a>* <a href='../Y/15314.html' title='Multiple used in 342 places.'>via</a>  = <strong class='reserved'>static_cast</strong>&lt;<a href='../D/3347.html' title='Multiple defined in 2 places.'>VIA</a>*&gt;( <a href='../Y/14293.html' title='Multiple used in 20 places.'>segm</a> );
+<a id='L112' name='L112'></a> 112             <a href='../Y/3207.html' title='Multiple used in 183 places.'>SEG</a>  <a href='../S/467.html#L189' title='Defined at 189 in graphics_cleaner.cpp.'>seg</a>( <a href='../Y/15314.html' title='Multiple used in 342 places.'>via</a>-&gt;<a href='../D/1302.html' title='Multiple defined in 5 places.'>GetPosition</a>(), <a href='../Y/15314.html' title='Multiple used in 342 places.'>via</a>-&gt;<a href='../D/1302.html' title='Multiple defined in 5 places.'>GetPosition</a>() );
+<a id='L113' name='L113'></a> 113             <strong class='reserved'>int</strong>  <a href='../Y/14831.html' title='Multiple used in 40 places.'>test</a> = 0;
+<a id='L114' name='L114'></a> 114             <strong class='reserved'>int</strong>  <a href='../Y/6925.html' title='Multiple used in 135 places.'>clearance</a> = <a href='../Y/15314.html' title='Multiple used in 342 places.'>via</a>-&gt;<a href='../Y/1809.html' title='Multiple used in 240 places.'>GetWidth</a>() / 2;
+<a id='L115' name='L115'></a> 115 
+<a id='L116' name='L116'></a> 116             <strong class='reserved'>if</strong>( ( <a href='../S/395.html#L36' title='Defined at 36 in drc/drc_keepout_tester.cpp.'>m_keepoutFlags</a> &amp; <a href='../S/399.html#L43' title='Defined at 43 in drc/drc_rule.h.'>DISALLOW_VIAS</a> ) &gt; 0 )
+<a id='L117' name='L117'></a> 117             <em class='brace'>{</em>
+<a id='L118' name='L118'></a> 118                 <a href='../Y/14831.html' title='Multiple used in 40 places.'>test</a> = <a href='../S/399.html#L43' title='Defined at 43 in drc/drc_rule.h.'>DISALLOW_VIAS</a>;
+<a id='L119' name='L119'></a> 119             <em class='brace'>}</em>
+<a id='L120' name='L120'></a> 120             <strong class='reserved'>else</strong> <strong class='reserved'>if</strong>( <a href='../Y/15314.html' title='Multiple used in 342 places.'>via</a>-&gt;<a href='../Y/1801.html' title='Multiple used in 38 places.'>GetViaType</a>() == <a href='../Y/4795.html' title='Multiple used in 121 places.'>VIATYPE</a>::<a href='../S/709.html#L75' title='Defined at 75 in router/router_tool.cpp.'>MICROVIA</a>
+<a id='L121' name='L121'></a> 121                         &amp;&amp; ( <a href='../S/395.html#L36' title='Defined at 36 in drc/drc_keepout_tester.cpp.'>m_keepoutFlags</a> &amp; <a href='../S/399.html#L44' title='Defined at 44 in drc/drc_rule.h.'>DISALLOW_MICRO_VIAS</a> ) &gt; 0 )
+<a id='L122' name='L122'></a> 122             <em class='brace'>{</em>
+<a id='L123' name='L123'></a> 123                 <a href='../Y/14831.html' title='Multiple used in 40 places.'>test</a> = <a href='../S/399.html#L44' title='Defined at 44 in drc/drc_rule.h.'>DISALLOW_MICRO_VIAS</a>;
+<a id='L124' name='L124'></a> 124             <em class='brace'>}</em>
+<a id='L125' name='L125'></a> 125             <strong class='reserved'>else</strong> <strong class='reserved'>if</strong>( <a href='../Y/15314.html' title='Multiple used in 342 places.'>via</a>-&gt;<a href='../Y/1801.html' title='Multiple used in 38 places.'>GetViaType</a>() == <a href='../Y/4795.html' title='Multiple used in 121 places.'>VIATYPE</a>::<a href='../Y/242.html' title='Multiple used in 28 places.'>BLIND_BURIED</a>
+<a id='L126' name='L126'></a> 126                         &amp;&amp; ( <a href='../S/395.html#L36' title='Defined at 36 in drc/drc_keepout_tester.cpp.'>m_keepoutFlags</a> &amp; <a href='../S/399.html#L45' title='Defined at 45 in drc/drc_rule.h.'>DISALLOW_BB_VIAS</a> ) &gt; 0 )
+<a id='L127' name='L127'></a> 127             <em class='brace'>{</em>
+<a id='L128' name='L128'></a> 128                 <a href='../Y/14831.html' title='Multiple used in 40 places.'>test</a> = <a href='../S/399.html#L45' title='Defined at 45 in drc/drc_rule.h.'>DISALLOW_BB_VIAS</a>;
+<a id='L129' name='L129'></a> 129             <em class='brace'>}</em>
+<a id='L130' name='L130'></a> 130             <strong class='reserved'>else</strong> <strong class='reserved'>if</strong>( ( <a href='../S/395.html#L36' title='Defined at 36 in drc/drc_keepout_tester.cpp.'>m_keepoutFlags</a> &amp; <a href='../S/399.html#L51' title='Defined at 51 in drc/drc_rule.h.'>DISALLOW_HOLES</a> ) &gt; 0 )
+<a id='L131' name='L131'></a> 131             <em class='brace'>{</em>
+<a id='L132' name='L132'></a> 132                 <a href='../Y/14831.html' title='Multiple used in 40 places.'>test</a> = <a href='../S/399.html#L51' title='Defined at 51 in drc/drc_rule.h.'>DISALLOW_HOLES</a>;
+<a id='L133' name='L133'></a> 133                 <a href='../Y/6925.html' title='Multiple used in 135 places.'>clearance</a> = <a href='../Y/15314.html' title='Multiple used in 342 places.'>via</a>-&gt;<a href='../S/78.html#L184' title='Defined at 184 in class_track.cpp.'>GetDrillValue</a>() / 2;
+<a id='L134' name='L134'></a> 134             <em class='brace'>}</em>
+<a id='L135' name='L135'></a> 135             <strong class='reserved'>else</strong>
+<a id='L136' name='L136'></a> 136                 <strong class='reserved'>continue</strong>;
+<a id='L137' name='L137'></a> 137 
+<a id='L138' name='L138'></a> 138             <strong class='reserved'>if</strong>( <a href='../Y/12425.html' title='Multiple used in 53 places.'>m_zone</a>-&gt;<a href='../Y/2736.html' title='Multiple used in 73 places.'>Outline</a>()-&gt;<a href='../D/462.html' title='Multiple defined in 3 places.'>Collide</a>( <a href='../S/467.html#L189' title='Defined at 189 in graphics_cleaner.cpp.'>seg</a>, <a href='../Y/6925.html' title='Multiple used in 135 places.'>clearance</a> ) )
+<a id='L139' name='L139'></a> 139             <em class='brace'>{</em>
+<a id='L140' name='L140'></a> 140                 <a href='../Y/720.html' title='Multiple used in 212 places.'>DRC_ITEM</a>* <a href='../Y/7557.html' title='Multiple used in 215 places.'>drcItem</a> = <a href='../Y/720.html' title='Multiple used in 212 places.'>DRC_ITEM</a>::<a href='../D/497.html' title='Multiple defined in 5 places.'>Create</a>( <a href='../S/387.html#L60' title='Defined at 60 in drc/drc.h.'>DRCE_KEEPOUT</a> );
+<a id='L141' name='L141'></a> 141                 <a href='../Y/11376.html' title='Multiple used in 74 places.'>m_msg</a>.<a href='../Y/2981.html' title='Multiple used in 353 places.'>Printf</a>( <a href='../Y/7557.html' title='Multiple used in 215 places.'>drcItem</a>-&gt;<a href='../S/82.html#L36' title='Defined at 36 in cleanup_item.cpp.'>GetErrorText</a>() + <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( " (%s)" ), <a href='../Y/11935.html' title='Multiple used in 8 places.'>m_sources</a>.<a href='../S/330.html#L212' title='Defined at 212 in dialogs/panel_fp_lib_table.cpp.'>at</a>( <a href='../Y/14831.html' title='Multiple used in 40 places.'>test</a> ) );
+<a id='L142' name='L142'></a> 142                 <a href='../Y/7557.html' title='Multiple used in 215 places.'>drcItem</a>-&gt;<a href='../Y/3497.html' title='Multiple used in 39 places.'>SetErrorMessage</a>( <a href='../Y/11376.html' title='Multiple used in 74 places.'>m_msg</a> );
+<a id='L143' name='L143'></a> 143                 <a href='../Y/7557.html' title='Multiple used in 215 places.'>drcItem</a>-&gt;<a href='../Y/3622.html' title='Multiple used in 64 places.'>SetItems</a>( <a href='../Y/14293.html' title='Multiple used in 20 places.'>segm</a>, <a href='../Y/12425.html' title='Multiple used in 53 places.'>m_zone</a> );
+<a id='L144' name='L144'></a> 144 
+<a id='L145' name='L145'></a> 145                 <a href='../Y/1855.html' title='Multiple used in 18 places.'>HandleMarker</a>( <strong class='reserved'>new</strong> <a href='../S/66.html#L57' title='Defined at 57 in class_marker_pcb.cpp.'>MARKER_PCB</a>( <a href='../Y/7557.html' title='Multiple used in 215 places.'>drcItem</a>, <a href='../S/386.html#L86' title='Defined at 86 in drc/drc.cpp.'>DRC</a>::<a href='../D/1237.html' title='Multiple defined in 2 places.'>GetLocation</a>( <a href='../Y/14293.html' title='Multiple used in 20 places.'>segm</a>, <a href='../Y/12425.html' title='Multiple used in 53 places.'>m_zone</a> ) ) );
+<a id='L146' name='L146'></a> 146                 <a href='../Y/14764.html' title='Multiple used in 101 places.'>success</a> = <strong class='reserved'>false</strong>;
+<a id='L147' name='L147'></a> 147             <em class='brace'>}</em>
+<a id='L148' name='L148'></a> 148         <em class='brace'>}</em>
+<a id='L149' name='L149'></a> 149     <em class='brace'>}</em>
+<a id='L150' name='L150'></a> 150 
+<a id='L151' name='L151'></a> 151     <strong class='reserved'>return</strong> <a href='../Y/14764.html' title='Multiple used in 101 places.'>success</a>;
+<a id='L152' name='L152'></a> 152 <em class='brace'>}</em>
+<a id='L153' name='L153'></a> 153 
+<a id='L154' name='L154'></a> 154 
+<a id='L155' name='L155'></a> 155 <strong class='reserved'>bool</strong> <a href='../Y/721.html' title='Multiple used in 10 places.'>DRC_KEEPOUT_TESTER</a>::<a href='../R/3513.html' title='Multiple referred from 2 places.'>checkFootprints</a>()
+<a id='L156' name='L156'></a> 156 <em class='brace'>{</em>
+<a id='L157' name='L157'></a> 157     <a href='../Y/7062.html' title='Multiple used in 39 places.'>constexpr</a> <strong class='reserved'>int</strong> <a href='../Y/346.html' title='Multiple used in 3 places.'>CHECK_PADS_MASK</a> = <a href='../S/399.html#L47' title='Defined at 47 in drc/drc_rule.h.'>DISALLOW_PADS</a> | <a href='../S/399.html#L51' title='Defined at 51 in drc/drc_rule.h.'>DISALLOW_HOLES</a>;
+<a id='L158' name='L158'></a> 158     <a href='../Y/7062.html' title='Multiple used in 39 places.'>constexpr</a> <strong class='reserved'>int</strong> <a href='../Y/345.html' title='Multiple used in 2 places.'>CHECK_FOOTPRINTS_MASK</a> = <a href='../Y/346.html' title='Multiple used in 3 places.'>CHECK_PADS_MASK</a> | <a href='../S/399.html#L52' title='Defined at 52 in drc/drc_rule.h.'>DISALLOW_FOOTPRINTS</a>;
+<a id='L159' name='L159'></a> 159 
+<a id='L160' name='L160'></a> 160     <strong class='reserved'>if</strong>(( <a href='../S/395.html#L36' title='Defined at 36 in drc/drc_keepout_tester.cpp.'>m_keepoutFlags</a> &amp; <a href='../Y/345.html' title='Multiple used in 2 places.'>CHECK_FOOTPRINTS_MASK</a> ) == 0 )
+<a id='L161' name='L161'></a> 161         <strong class='reserved'>return</strong> <strong class='reserved'>true</strong>;
+<a id='L162' name='L162'></a> 162 
+<a id='L163' name='L163'></a> 163     <strong class='reserved'>bool</strong> <a href='../Y/14764.html' title='Multiple used in 101 places.'>success</a> = <strong class='reserved'>true</strong>;
+<a id='L164' name='L164'></a> 164 
+<a id='L165' name='L165'></a> 165     <strong class='reserved'>for</strong>( <a href='../D/2056.html' title='Multiple defined in 3 places.'>MODULE</a>* <a href='../Y/8077.html' title='Multiple used in 75 places.'>fp</a> : <a href='../D/4144.html' title='Multiple defined in 3 places.'>m_board</a>-&gt;<a href='../Y/2588.html' title='Multiple used in 121 places.'>Modules</a>() )
+<a id='L166' name='L166'></a> 166     <em class='brace'>{</em>
+<a id='L167' name='L167'></a> 167         <strong class='reserved'>if</strong>( !<a href='../Y/12426.html' title='Multiple used in 6 places.'>m_zoneBBox</a>.<a href='../Y/2080.html' title='Multiple used in 39 places.'>Intersects</a>( <a href='../Y/8077.html' title='Multiple used in 75 places.'>fp</a>-&gt;<a href='../D/1116.html' title='Multiple defined in 11 places.'>GetBoundingBox</a>() ) )
+<a id='L168' name='L168'></a> 168             <strong class='reserved'>continue</strong>;
+<a id='L169' name='L169'></a> 169 
+<a id='L170' name='L170'></a> 170         <strong class='reserved'>if</strong>( ( <a href='../S/395.html#L36' title='Defined at 36 in drc/drc_keepout_tester.cpp.'>m_keepoutFlags</a> &amp; <a href='../S/399.html#L52' title='Defined at 52 in drc/drc_rule.h.'>DISALLOW_FOOTPRINTS</a> ) &gt; 0
+<a id='L171' name='L171'></a> 171                 &amp;&amp; ( <a href='../Y/8077.html' title='Multiple used in 75 places.'>fp</a>-&gt;<a href='../S/70.html#L163' title='Defined at 163 in class_pad.cpp.'>IsFlipped</a>() ? <a href='../Y/12425.html' title='Multiple used in 53 places.'>m_zone</a>-&gt;<a href='../S/80.html#L220' title='Defined at 220 in class_zone.cpp.'>CommonLayerExists</a>( <a href='../Y/2380.html' title='Multiple used in 386 places.'>LSET</a>::<a href='../Y/292.html' title='Multiple used in 2 places.'>BackMask</a>() )
+<a id='L172' name='L172'></a> 172                                      : <a href='../Y/12425.html' title='Multiple used in 53 places.'>m_zone</a>-&gt;<a href='../S/80.html#L220' title='Defined at 220 in class_zone.cpp.'>CommonLayerExists</a>( <a href='../Y/2380.html' title='Multiple used in 386 places.'>LSET</a>::<a href='../Y/1112.html' title='Multiple used in 2 places.'>FrontMask</a>() ) ) )
+<a id='L173' name='L173'></a> 173         <em class='brace'>{</em>
+<a id='L174' name='L174'></a> 174             <a href='../Y/3235.html' title='Multiple used in 305 places.'>SHAPE_POLY_SET</a> <a href='../Y/13605.html' title='Multiple used in 137 places.'>poly</a>;
+<a id='L175' name='L175'></a> 175 
+<a id='L176' name='L176'></a> 176             <strong class='reserved'>if</strong>( <a href='../Y/8077.html' title='Multiple used in 75 places.'>fp</a>-&gt;<a href='../S/68.html#L1552' title='Defined at 1552 in class_module.cpp.'>BuildPolyCourtyard</a>() )
+<a id='L177' name='L177'></a> 177                 <a href='../Y/13605.html' title='Multiple used in 137 places.'>poly</a> = <a href='../Y/8077.html' title='Multiple used in 75 places.'>fp</a>-&gt;<a href='../S/70.html#L163' title='Defined at 163 in class_pad.cpp.'>IsFlipped</a>() ? <a href='../Y/8077.html' title='Multiple used in 75 places.'>fp</a>-&gt;<a href='../Y/1635.html' title='Multiple used in 9 places.'>GetPolyCourtyardBack</a>() : <a href='../Y/8077.html' title='Multiple used in 75 places.'>fp</a>-&gt;<a href='../Y/1636.html' title='Multiple used in 9 places.'>GetPolyCourtyardFront</a>();
+<a id='L178' name='L178'></a> 178 
+<a id='L179' name='L179'></a> 179             <strong class='reserved'>if</strong>( <a href='../Y/13605.html' title='Multiple used in 137 places.'>poly</a>.<a href='../Y/2737.html' title='Multiple used in 59 places.'>OutlineCount</a>() == 0 )
+<a id='L180' name='L180'></a> 180                 <a href='../Y/13605.html' title='Multiple used in 137 places.'>poly</a> = <a href='../Y/8077.html' title='Multiple used in 75 places.'>fp</a>-&gt;<a href='../S/68.html#L607' title='Defined at 607 in class_module.cpp.'>GetBoundingPoly</a>();
+<a id='L181' name='L181'></a> 181 
+<a id='L182' name='L182'></a> 182             <em class='comment'>// Build the common area between footprint and the keepout area:</em>
+<a id='L183' name='L183'></a> 183             <a href='../Y/13605.html' title='Multiple used in 137 places.'>poly</a>.<a href='../Y/311.html' title='Multiple used in 11 places.'>BooleanIntersection</a>( *<a href='../Y/12425.html' title='Multiple used in 53 places.'>m_zone</a>-&gt;<a href='../Y/2736.html' title='Multiple used in 73 places.'>Outline</a>(), <a href='../Y/3235.html' title='Multiple used in 305 places.'>SHAPE_POLY_SET</a>::<a href='../Y/2886.html' title='Multiple used in 40 places.'>PM_FAST</a> );
+<a id='L184' name='L184'></a> 184 
+<a id='L185' name='L185'></a> 185             <em class='comment'>// If it's not empty then we have a violation</em>
+<a id='L186' name='L186'></a> 186             <strong class='reserved'>if</strong>( <a href='../Y/13605.html' title='Multiple used in 137 places.'>poly</a>.<a href='../Y/2737.html' title='Multiple used in 59 places.'>OutlineCount</a>() )
+<a id='L187' name='L187'></a> 187             <em class='brace'>{</em>
+<a id='L188' name='L188'></a> 188                 <strong class='reserved'>const</strong> <a href='../Y/4788.html' title='Multiple used in 795 places.'>VECTOR2I</a>&amp; <a href='../Y/13782.html' title='Multiple used in 280 places.'>pt</a> = <a href='../Y/13605.html' title='Multiple used in 137 places.'>poly</a>.<a href='../Y/455.html' title='Multiple used in 25 places.'>CVertex</a>( 0, 0, -1 );
+<a id='L189' name='L189'></a> 189                 <a href='../Y/720.html' title='Multiple used in 212 places.'>DRC_ITEM</a>* <a href='../Y/7557.html' title='Multiple used in 215 places.'>drcItem</a> = <a href='../Y/720.html' title='Multiple used in 212 places.'>DRC_ITEM</a>::<a href='../D/497.html' title='Multiple defined in 5 places.'>Create</a>( <a href='../S/387.html#L60' title='Defined at 60 in drc/drc.h.'>DRCE_KEEPOUT</a> );
+<a id='L190' name='L190'></a> 190 
+<a id='L191' name='L191'></a> 191                 <a href='../Y/11376.html' title='Multiple used in 74 places.'>m_msg</a>.<a href='../Y/2981.html' title='Multiple used in 353 places.'>Printf</a>( <a href='../Y/7557.html' title='Multiple used in 215 places.'>drcItem</a>-&gt;<a href='../S/82.html#L36' title='Defined at 36 in cleanup_item.cpp.'>GetErrorText</a>() + <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( " (%s)" ),
+<a id='L192' name='L192'></a> 192                               <a href='../Y/11935.html' title='Multiple used in 8 places.'>m_sources</a>.<a href='../S/330.html#L212' title='Defined at 212 in dialogs/panel_fp_lib_table.cpp.'>at</a>( <a href='../S/399.html#L52' title='Defined at 52 in drc/drc_rule.h.'>DISALLOW_FOOTPRINTS</a> ) );
+<a id='L193' name='L193'></a> 193 
+<a id='L194' name='L194'></a> 194                 <a href='../Y/7557.html' title='Multiple used in 215 places.'>drcItem</a>-&gt;<a href='../Y/3497.html' title='Multiple used in 39 places.'>SetErrorMessage</a>( <a href='../Y/11376.html' title='Multiple used in 74 places.'>m_msg</a> );
+<a id='L195' name='L195'></a> 195                 <a href='../Y/7557.html' title='Multiple used in 215 places.'>drcItem</a>-&gt;<a href='../Y/3622.html' title='Multiple used in 64 places.'>SetItems</a>( <a href='../Y/8077.html' title='Multiple used in 75 places.'>fp</a>, <a href='../Y/12425.html' title='Multiple used in 53 places.'>m_zone</a> );
+<a id='L196' name='L196'></a> 196 
+<a id='L197' name='L197'></a> 197                 <a href='../Y/1855.html' title='Multiple used in 18 places.'>HandleMarker</a>( <strong class='reserved'>new</strong> <a href='../S/66.html#L57' title='Defined at 57 in class_marker_pcb.cpp.'>MARKER_PCB</a>( <a href='../Y/7557.html' title='Multiple used in 215 places.'>drcItem</a>, (<a href='../Y/15871.html' title='Multiple used in 1252 places.'>wxPoint</a>) <a href='../Y/13782.html' title='Multiple used in 280 places.'>pt</a> ) );
+<a id='L198' name='L198'></a> 198                 <a href='../Y/14764.html' title='Multiple used in 101 places.'>success</a> = <strong class='reserved'>false</strong>;
+<a id='L199' name='L199'></a> 199             <em class='brace'>}</em>
+<a id='L200' name='L200'></a> 200         <em class='brace'>}</em>
+<a id='L201' name='L201'></a> 201 
+<a id='L202' name='L202'></a> 202         <strong class='reserved'>if</strong>( ( <a href='../S/395.html#L36' title='Defined at 36 in drc/drc_keepout_tester.cpp.'>m_keepoutFlags</a> &amp; <a href='../Y/346.html' title='Multiple used in 3 places.'>CHECK_PADS_MASK</a> ) &gt; 0 )
+<a id='L203' name='L203'></a> 203         <em class='brace'>{</em>
+<a id='L204' name='L204'></a> 204             <a href='../Y/14764.html' title='Multiple used in 101 places.'>success</a> &amp;= <a href='../S/395.html#L212' title='Defined at 212 in drc/drc_keepout_tester.cpp.'>checkPads</a>( <a href='../Y/8077.html' title='Multiple used in 75 places.'>fp</a> );
+<a id='L205' name='L205'></a> 205         <em class='brace'>}</em>
+<a id='L206' name='L206'></a> 206     <em class='brace'>}</em>
+<a id='L207' name='L207'></a> 207 
+<a id='L208' name='L208'></a> 208     <strong class='reserved'>return</strong> <a href='../Y/14764.html' title='Multiple used in 101 places.'>success</a>;
+<a id='L209' name='L209'></a> 209 <em class='brace'>}</em>
+<a id='L210' name='L210'></a> 210 
+<a id='L211' name='L211'></a> 211 
+<a id='L212' name='L212'></a> 212 <strong class='reserved'>bool</strong> <a href='../Y/721.html' title='Multiple used in 10 places.'>DRC_KEEPOUT_TESTER</a>::<a href='../R/3519.html' title='Multiple referred from 2 places.'>checkPads</a>( <a href='../D/2056.html' title='Multiple defined in 3 places.'>MODULE</a>* <a href='../Y/5598.html' title='Multiple used in 419 places.'>aModule</a> )
+<a id='L213' name='L213'></a> 213 <em class='brace'>{</em>
+<a id='L214' name='L214'></a> 214     <strong class='reserved'>bool</strong> <a href='../Y/14764.html' title='Multiple used in 101 places.'>success</a> = <strong class='reserved'>true</strong>;
+<a id='L215' name='L215'></a> 215 
+<a id='L216' name='L216'></a> 216     <strong class='reserved'>for</strong>( <a href='../D/777.html' title='Multiple defined in 2 places.'>D_PAD</a>* <a href='../Y/13288.html' title='Multiple used in 1010 places.'>pad</a> : <a href='../Y/5598.html' title='Multiple used in 419 places.'>aModule</a>-&gt;<a href='../Y/2931.html' title='Multiple used in 98 places.'>Pads</a>() )
+<a id='L217' name='L217'></a> 217     <em class='brace'>{</em>
+<a id='L218' name='L218'></a> 218         <strong class='reserved'>if</strong>( !<a href='../Y/12425.html' title='Multiple used in 53 places.'>m_zone</a>-&gt;<a href='../S/80.html#L220' title='Defined at 220 in class_zone.cpp.'>CommonLayerExists</a>( <a href='../Y/13288.html' title='Multiple used in 1010 places.'>pad</a>-&gt;<a href='../D/1226.html' title='Multiple defined in 2 places.'>GetLayerSet</a>() ) )
+<a id='L219' name='L219'></a> 219             <strong class='reserved'>continue</strong>;
+<a id='L220' name='L220'></a> 220 
+<a id='L221' name='L221'></a> 221         <em class='comment'>// Fast test to detect a pad inside the keepout area bounding box.</em>
+<a id='L222' name='L222'></a> 222         <a href='../Y/844.html' title='Multiple used in 165 places.'>EDA_RECT</a> <a href='../Y/13294.html' title='Multiple used in 6 places.'>padBBox</a>( <a href='../Y/13288.html' title='Multiple used in 1010 places.'>pad</a>-&gt;<a href='../D/1302.html' title='Multiple defined in 5 places.'>GetPosition</a>(), <a href='../Y/15943.html' title='Multiple used in 474 places.'>wxSize</a>() );
+<a id='L223' name='L223'></a> 223         <a href='../Y/13294.html' title='Multiple used in 6 places.'>padBBox</a>.<a href='../Y/2058.html' title='Multiple used in 63 places.'>Inflate</a>( <a href='../Y/13288.html' title='Multiple used in 1010 places.'>pad</a>-&gt;<a href='../S/70.html#L229' title='Defined at 229 in class_pad.cpp.'>GetBoundingRadius</a>() );
+<a id='L224' name='L224'></a> 224 
+<a id='L225' name='L225'></a> 225         <strong class='reserved'>if</strong>( !<a href='../Y/12426.html' title='Multiple used in 6 places.'>m_zoneBBox</a>.<a href='../Y/2080.html' title='Multiple used in 39 places.'>Intersects</a>( <a href='../Y/13294.html' title='Multiple used in 6 places.'>padBBox</a> ) )
+<a id='L226' name='L226'></a> 226             <strong class='reserved'>continue</strong>;
+<a id='L227' name='L227'></a> 227 
+<a id='L228' name='L228'></a> 228         <strong class='reserved'>if</strong>( ( <a href='../S/395.html#L36' title='Defined at 36 in drc/drc_keepout_tester.cpp.'>m_keepoutFlags</a> &amp; <a href='../S/399.html#L47' title='Defined at 47 in drc/drc_rule.h.'>DISALLOW_PADS</a> ) &gt; 0 )
+<a id='L229' name='L229'></a> 229         <em class='brace'>{</em>
+<a id='L230' name='L230'></a> 230             <a href='../Y/3235.html' title='Multiple used in 305 places.'>SHAPE_POLY_SET</a> <a href='../Y/13222.html' title='Multiple used in 175 places.'>outline</a> = *<a href='../Y/13288.html' title='Multiple used in 1010 places.'>pad</a>-&gt;<a href='../S/70.html#L211' title='Defined at 211 in class_pad.cpp.'>GetEffectivePolygon</a>();
+<a id='L231' name='L231'></a> 231 
+<a id='L232' name='L232'></a> 232             <em class='comment'>// Build the common area between pad and the keepout area:</em>
+<a id='L233' name='L233'></a> 233             <a href='../Y/13222.html' title='Multiple used in 175 places.'>outline</a>.<a href='../Y/311.html' title='Multiple used in 11 places.'>BooleanIntersection</a>( *<a href='../Y/12425.html' title='Multiple used in 53 places.'>m_zone</a>-&gt;<a href='../Y/2736.html' title='Multiple used in 73 places.'>Outline</a>(), <a href='../Y/3235.html' title='Multiple used in 305 places.'>SHAPE_POLY_SET</a>::<a href='../Y/2886.html' title='Multiple used in 40 places.'>PM_FAST</a> );
+<a id='L234' name='L234'></a> 234 
+<a id='L235' name='L235'></a> 235             <em class='comment'>// If it's not empty then we have a violation</em>
+<a id='L236' name='L236'></a> 236             <strong class='reserved'>if</strong>( <a href='../Y/13222.html' title='Multiple used in 175 places.'>outline</a>.<a href='../Y/2737.html' title='Multiple used in 59 places.'>OutlineCount</a>() )
+<a id='L237' name='L237'></a> 237             <em class='brace'>{</em>
+<a id='L238' name='L238'></a> 238                 <strong class='reserved'>const</strong> <a href='../Y/4788.html' title='Multiple used in 795 places.'>VECTOR2I</a>&amp; <a href='../Y/13782.html' title='Multiple used in 280 places.'>pt</a> = <a href='../Y/13222.html' title='Multiple used in 175 places.'>outline</a>.<a href='../Y/455.html' title='Multiple used in 25 places.'>CVertex</a>( 0, 0, -1 );
+<a id='L239' name='L239'></a> 239                 <a href='../Y/720.html' title='Multiple used in 212 places.'>DRC_ITEM</a>* <a href='../Y/7557.html' title='Multiple used in 215 places.'>drcItem</a> = <a href='../Y/720.html' title='Multiple used in 212 places.'>DRC_ITEM</a>::<a href='../D/497.html' title='Multiple defined in 5 places.'>Create</a>( <a href='../S/387.html#L60' title='Defined at 60 in drc/drc.h.'>DRCE_KEEPOUT</a> );
+<a id='L240' name='L240'></a> 240 
+<a id='L241' name='L241'></a> 241                 <a href='../Y/11376.html' title='Multiple used in 74 places.'>m_msg</a>.<a href='../Y/2981.html' title='Multiple used in 353 places.'>Printf</a>( <a href='../Y/7557.html' title='Multiple used in 215 places.'>drcItem</a>-&gt;<a href='../S/82.html#L36' title='Defined at 36 in cleanup_item.cpp.'>GetErrorText</a>() + <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( " (%s)" ),
+<a id='L242' name='L242'></a> 242                               <a href='../Y/11935.html' title='Multiple used in 8 places.'>m_sources</a>.<a href='../S/330.html#L212' title='Defined at 212 in dialogs/panel_fp_lib_table.cpp.'>at</a>( <a href='../S/399.html#L47' title='Defined at 47 in drc/drc_rule.h.'>DISALLOW_PADS</a> ) );
+<a id='L243' name='L243'></a> 243 
+<a id='L244' name='L244'></a> 244                 <a href='../Y/7557.html' title='Multiple used in 215 places.'>drcItem</a>-&gt;<a href='../Y/3497.html' title='Multiple used in 39 places.'>SetErrorMessage</a>( <a href='../Y/11376.html' title='Multiple used in 74 places.'>m_msg</a> );
+<a id='L245' name='L245'></a> 245                 <a href='../Y/7557.html' title='Multiple used in 215 places.'>drcItem</a>-&gt;<a href='../Y/3622.html' title='Multiple used in 64 places.'>SetItems</a>( <a href='../Y/13288.html' title='Multiple used in 1010 places.'>pad</a>, <a href='../Y/12425.html' title='Multiple used in 53 places.'>m_zone</a> );
+<a id='L246' name='L246'></a> 246 
+<a id='L247' name='L247'></a> 247                 <a href='../Y/1855.html' title='Multiple used in 18 places.'>HandleMarker</a>( <strong class='reserved'>new</strong> <a href='../S/66.html#L57' title='Defined at 57 in class_marker_pcb.cpp.'>MARKER_PCB</a>( <a href='../Y/7557.html' title='Multiple used in 215 places.'>drcItem</a>, (<a href='../Y/15871.html' title='Multiple used in 1252 places.'>wxPoint</a>) <a href='../Y/13782.html' title='Multiple used in 280 places.'>pt</a> ) );
+<a id='L248' name='L248'></a> 248                 <a href='../Y/14764.html' title='Multiple used in 101 places.'>success</a> = <strong class='reserved'>false</strong>;
+<a id='L249' name='L249'></a> 249             <em class='brace'>}</em>
+<a id='L250' name='L250'></a> 250         <em class='brace'>}</em>
+<a id='L251' name='L251'></a> 251         <strong class='reserved'>else</strong> <strong class='reserved'>if</strong>( ( <a href='../S/395.html#L36' title='Defined at 36 in drc/drc_keepout_tester.cpp.'>m_keepoutFlags</a> &amp; <a href='../S/399.html#L51' title='Defined at 51 in drc/drc_rule.h.'>DISALLOW_HOLES</a> ) &gt; 0 )
+<a id='L252' name='L252'></a> 252         <em class='brace'>{</em>
+<a id='L253' name='L253'></a> 253             <strong class='reserved'>const</strong> <a href='../Y/3237.html' title='Multiple used in 44 places.'>SHAPE_SEGMENT</a>* <a href='../Y/14511.html' title='Multiple used in 4 places.'>slot</a> = <a href='../Y/13288.html' title='Multiple used in 1010 places.'>pad</a>-&gt;<a href='../S/70.html#L220' title='Defined at 220 in class_pad.cpp.'>GetEffectiveHoleShape</a>();
+<a id='L254' name='L254'></a> 254 
+<a id='L255' name='L255'></a> 255             <strong class='reserved'>if</strong>( <a href='../Y/12425.html' title='Multiple used in 53 places.'>m_zone</a>-&gt;<a href='../Y/2736.html' title='Multiple used in 73 places.'>Outline</a>()-&gt;<a href='../D/462.html' title='Multiple defined in 3 places.'>Collide</a>( <a href='../Y/14511.html' title='Multiple used in 4 places.'>slot</a>-&gt;<a href='../Y/1691.html' title='Multiple used in 25 places.'>GetSeg</a>(), <a href='../Y/14511.html' title='Multiple used in 4 places.'>slot</a>-&gt;<a href='../Y/1809.html' title='Multiple used in 240 places.'>GetWidth</a>() / 2 ) )
+<a id='L256' name='L256'></a> 256             <em class='brace'>{</em>
+<a id='L257' name='L257'></a> 257                 <a href='../Y/720.html' title='Multiple used in 212 places.'>DRC_ITEM</a>* <a href='../Y/7557.html' title='Multiple used in 215 places.'>drcItem</a> = <a href='../Y/720.html' title='Multiple used in 212 places.'>DRC_ITEM</a>::<a href='../D/497.html' title='Multiple defined in 5 places.'>Create</a>( <a href='../S/387.html#L60' title='Defined at 60 in drc/drc.h.'>DRCE_KEEPOUT</a> );
+<a id='L258' name='L258'></a> 258 
+<a id='L259' name='L259'></a> 259                 <a href='../Y/11376.html' title='Multiple used in 74 places.'>m_msg</a>.<a href='../Y/2981.html' title='Multiple used in 353 places.'>Printf</a>( <a href='../Y/7557.html' title='Multiple used in 215 places.'>drcItem</a>-&gt;<a href='../S/82.html#L36' title='Defined at 36 in cleanup_item.cpp.'>GetErrorText</a>() + <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( " (%s)" ),
+<a id='L260' name='L260'></a> 260                               <a href='../Y/11935.html' title='Multiple used in 8 places.'>m_sources</a>.<a href='../S/330.html#L212' title='Defined at 212 in dialogs/panel_fp_lib_table.cpp.'>at</a>( <a href='../S/399.html#L51' title='Defined at 51 in drc/drc_rule.h.'>DISALLOW_HOLES</a> ) );
+<a id='L261' name='L261'></a> 261 
+<a id='L262' name='L262'></a> 262                 <a href='../Y/7557.html' title='Multiple used in 215 places.'>drcItem</a>-&gt;<a href='../Y/3497.html' title='Multiple used in 39 places.'>SetErrorMessage</a>( <a href='../Y/11376.html' title='Multiple used in 74 places.'>m_msg</a> );
+<a id='L263' name='L263'></a> 263                 <a href='../Y/7557.html' title='Multiple used in 215 places.'>drcItem</a>-&gt;<a href='../Y/3622.html' title='Multiple used in 64 places.'>SetItems</a>( <a href='../Y/13288.html' title='Multiple used in 1010 places.'>pad</a>, <a href='../Y/12425.html' title='Multiple used in 53 places.'>m_zone</a> );
+<a id='L264' name='L264'></a> 264 
+<a id='L265' name='L265'></a> 265                 <a href='../Y/1855.html' title='Multiple used in 18 places.'>HandleMarker</a>( <strong class='reserved'>new</strong> <a href='../S/66.html#L57' title='Defined at 57 in class_marker_pcb.cpp.'>MARKER_PCB</a>( <a href='../Y/7557.html' title='Multiple used in 215 places.'>drcItem</a>, <a href='../Y/13288.html' title='Multiple used in 1010 places.'>pad</a>-&gt;<a href='../D/1302.html' title='Multiple defined in 5 places.'>GetPosition</a>() ) );
+<a id='L266' name='L266'></a> 266                 <a href='../Y/14764.html' title='Multiple used in 101 places.'>success</a> = <strong class='reserved'>false</strong>;
+<a id='L267' name='L267'></a> 267             <em class='brace'>}</em>
+<a id='L268' name='L268'></a> 268         <em class='brace'>}</em>
+<a id='L269' name='L269'></a> 269     <em class='brace'>}</em>
+<a id='L270' name='L270'></a> 270 
+<a id='L271' name='L271'></a> 271     <strong class='reserved'>return</strong> <a href='../Y/14764.html' title='Multiple used in 101 places.'>success</a>;
+<a id='L272' name='L272'></a> 272 <em class='brace'>}</em>
+<a id='L273' name='L273'></a> 273 
+<a id='L274' name='L274'></a> 274 
+<a id='L275' name='L275'></a> 275 <strong class='reserved'>bool</strong> <a href='../Y/721.html' title='Multiple used in 10 places.'>DRC_KEEPOUT_TESTER</a>::<a href='../R/3511.html' title='Multiple referred from 2 places.'>checkDrawings</a>()
+<a id='L276' name='L276'></a> 276 <em class='brace'>{</em>
+<a id='L277' name='L277'></a> 277     <a href='../Y/7062.html' title='Multiple used in 39 places.'>constexpr</a> <strong class='reserved'>int</strong> <a href='../Y/344.html' title='Multiple used in 2 places.'>CHECK_DRAWINGS_MASK</a> = <a href='../S/399.html#L49' title='Defined at 49 in drc/drc_rule.h.'>DISALLOW_TEXTS</a> | <a href='../S/399.html#L50' title='Defined at 50 in drc/drc_rule.h.'>DISALLOW_GRAPHICS</a>;
+<a id='L278' name='L278'></a> 278     <a href='../Y/7062.html' title='Multiple used in 39 places.'>constexpr</a> <a href='../Y/2245.html' title='Multiple used in 104 places.'>KICAD_T</a> <a href='../Y/8286.html' title='Multiple used in 2 places.'>graphicTypes</a>[] = <em class='brace'>{</em> <a href='../Y/2830.html' title='Multiple used in 50 places.'>PCB_LINE_T</a>, <a href='../Y/2813.html' title='Multiple used in 35 places.'>PCB_DIMENSION_T</a>, <a href='../Y/2856.html' title='Multiple used in 26 places.'>PCB_TARGET_T</a>, <a href='../Y/874.html' title='Multiple used in 48 places.'>EOT</a> <em class='brace'>}</em>;
+<a id='L279' name='L279'></a> 279 
+<a id='L280' name='L280'></a> 280     <strong class='reserved'>if</strong>(( <a href='../S/395.html#L36' title='Defined at 36 in drc/drc_keepout_tester.cpp.'>m_keepoutFlags</a> &amp; <a href='../Y/344.html' title='Multiple used in 2 places.'>CHECK_DRAWINGS_MASK</a> ) == 0 )
+<a id='L281' name='L281'></a> 281         <strong class='reserved'>return</strong> <strong class='reserved'>true</strong>;
+<a id='L282' name='L282'></a> 282 
+<a id='L283' name='L283'></a> 283     <strong class='reserved'>bool</strong> <a href='../Y/14764.html' title='Multiple used in 101 places.'>success</a> = <strong class='reserved'>true</strong>;
+<a id='L284' name='L284'></a> 284 
+<a id='L285' name='L285'></a> 285     <strong class='reserved'>for</strong>( <a href='../Y/253.html' title='Multiple used in 610 places.'>BOARD_ITEM</a>* <a href='../Y/7552.html' title='Multiple used in 51 places.'>drawing</a> : <a href='../D/4144.html' title='Multiple defined in 3 places.'>m_board</a>-&gt;<a href='../Y/811.html' title='Multiple used in 35 places.'>Drawings</a>() )
+<a id='L286' name='L286'></a> 286     <em class='brace'>{</em>
+<a id='L287' name='L287'></a> 287         <strong class='reserved'>if</strong>( !<a href='../Y/12426.html' title='Multiple used in 6 places.'>m_zoneBBox</a>.<a href='../Y/2080.html' title='Multiple used in 39 places.'>Intersects</a>( <a href='../Y/7552.html' title='Multiple used in 51 places.'>drawing</a>-&gt;<a href='../D/1116.html' title='Multiple defined in 11 places.'>GetBoundingBox</a>() ) )
+<a id='L288' name='L288'></a> 288             <strong class='reserved'>continue</strong>;
+<a id='L289' name='L289'></a> 289 
+<a id='L290' name='L290'></a> 290         <strong class='reserved'>int</strong>  <a href='../Y/14566.html' title='Multiple used in 4 places.'>sourceId</a> = 0;
+<a id='L291' name='L291'></a> 291 
+<a id='L292' name='L292'></a> 292         <strong class='reserved'>if</strong>( <a href='../Y/7552.html' title='Multiple used in 51 places.'>drawing</a>-&gt;<a href='../Y/2206.html' title='Multiple used in 46 places.'>IsType</a>( <a href='../Y/8286.html' title='Multiple used in 2 places.'>graphicTypes</a> ) &amp;&amp; ( <a href='../S/395.html#L36' title='Defined at 36 in drc/drc_keepout_tester.cpp.'>m_keepoutFlags</a> &amp; <a href='../S/399.html#L50' title='Defined at 50 in drc/drc_rule.h.'>DISALLOW_GRAPHICS</a> ) &gt; 0 )
+<a id='L293' name='L293'></a> 293             <a href='../Y/14566.html' title='Multiple used in 4 places.'>sourceId</a> = <a href='../S/399.html#L50' title='Defined at 50 in drc/drc_rule.h.'>DISALLOW_GRAPHICS</a>;
+<a id='L294' name='L294'></a> 294         <strong class='reserved'>else</strong> <strong class='reserved'>if</strong>( <a href='../Y/7552.html' title='Multiple used in 51 places.'>drawing</a>-&gt;<a href='../Y/4696.html' title='Multiple used in 393 places.'>Type</a>() == <a href='../Y/2857.html' title='Multiple used in 37 places.'>PCB_TEXT_T</a> &amp;&amp; ( <a href='../S/395.html#L36' title='Defined at 36 in drc/drc_keepout_tester.cpp.'>m_keepoutFlags</a> &amp; <a href='../S/399.html#L49' title='Defined at 49 in drc/drc_rule.h.'>DISALLOW_TEXTS</a> ) &gt; 0 )
+<a id='L295' name='L295'></a> 295             <a href='../Y/14566.html' title='Multiple used in 4 places.'>sourceId</a> = <a href='../S/399.html#L49' title='Defined at 49 in drc/drc_rule.h.'>DISALLOW_TEXTS</a>;
+<a id='L296' name='L296'></a> 296         <strong class='reserved'>else</strong>
+<a id='L297' name='L297'></a> 297             <strong class='reserved'>continue</strong>;
+<a id='L298' name='L298'></a> 298 
+<a id='L299' name='L299'></a> 299         <a href='../Y/3235.html' title='Multiple used in 305 places.'>SHAPE_POLY_SET</a> <a href='../Y/13605.html' title='Multiple used in 137 places.'>poly</a>;
+<a id='L300' name='L300'></a> 300         <a href='../Y/7552.html' title='Multiple used in 51 places.'>drawing</a>-&gt;<a href='../D/3281.html' title='Multiple defined in 5 places.'>TransformShapeWithClearanceToPolygon</a>( <a href='../Y/13605.html' title='Multiple used in 137 places.'>poly</a>, 0 );
+<a id='L301' name='L301'></a> 301 
+<a id='L302' name='L302'></a> 302         <em class='comment'>// Build the common area between footprint and the keepout area:</em>
+<a id='L303' name='L303'></a> 303         <a href='../Y/13605.html' title='Multiple used in 137 places.'>poly</a>.<a href='../Y/311.html' title='Multiple used in 11 places.'>BooleanIntersection</a>( *<a href='../Y/12425.html' title='Multiple used in 53 places.'>m_zone</a>-&gt;<a href='../Y/2736.html' title='Multiple used in 73 places.'>Outline</a>(), <a href='../Y/3235.html' title='Multiple used in 305 places.'>SHAPE_POLY_SET</a>::<a href='../Y/2886.html' title='Multiple used in 40 places.'>PM_FAST</a> );
+<a id='L304' name='L304'></a> 304 
+<a id='L305' name='L305'></a> 305         <em class='comment'>// If it's not empty then we have a violation</em>
+<a id='L306' name='L306'></a> 306         <strong class='reserved'>if</strong>( <a href='../Y/13605.html' title='Multiple used in 137 places.'>poly</a>.<a href='../Y/2737.html' title='Multiple used in 59 places.'>OutlineCount</a>() )
+<a id='L307' name='L307'></a> 307         <em class='brace'>{</em>
+<a id='L308' name='L308'></a> 308             <strong class='reserved'>const</strong> <a href='../Y/4788.html' title='Multiple used in 795 places.'>VECTOR2I</a>&amp; <a href='../Y/13782.html' title='Multiple used in 280 places.'>pt</a> = <a href='../Y/13605.html' title='Multiple used in 137 places.'>poly</a>.<a href='../Y/455.html' title='Multiple used in 25 places.'>CVertex</a>( 0, 0, -1 );
+<a id='L309' name='L309'></a> 309             <a href='../Y/720.html' title='Multiple used in 212 places.'>DRC_ITEM</a>* <a href='../Y/7557.html' title='Multiple used in 215 places.'>drcItem</a> = <a href='../Y/720.html' title='Multiple used in 212 places.'>DRC_ITEM</a>::<a href='../D/497.html' title='Multiple defined in 5 places.'>Create</a>( <a href='../S/387.html#L60' title='Defined at 60 in drc/drc.h.'>DRCE_KEEPOUT</a> );
+<a id='L310' name='L310'></a> 310             <a href='../Y/11376.html' title='Multiple used in 74 places.'>m_msg</a>.<a href='../Y/2981.html' title='Multiple used in 353 places.'>Printf</a>( <a href='../Y/7557.html' title='Multiple used in 215 places.'>drcItem</a>-&gt;<a href='../S/82.html#L36' title='Defined at 36 in cleanup_item.cpp.'>GetErrorText</a>() + <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( " (%s)" ), <a href='../Y/11935.html' title='Multiple used in 8 places.'>m_sources</a>.<a href='../S/330.html#L212' title='Defined at 212 in dialogs/panel_fp_lib_table.cpp.'>at</a>( <a href='../Y/14566.html' title='Multiple used in 4 places.'>sourceId</a> ) );
+<a id='L311' name='L311'></a> 311             <a href='../Y/7557.html' title='Multiple used in 215 places.'>drcItem</a>-&gt;<a href='../Y/3497.html' title='Multiple used in 39 places.'>SetErrorMessage</a>( <a href='../Y/11376.html' title='Multiple used in 74 places.'>m_msg</a> );
+<a id='L312' name='L312'></a> 312             <a href='../Y/7557.html' title='Multiple used in 215 places.'>drcItem</a>-&gt;<a href='../Y/3622.html' title='Multiple used in 64 places.'>SetItems</a>( <a href='../Y/7552.html' title='Multiple used in 51 places.'>drawing</a>, <a href='../Y/12425.html' title='Multiple used in 53 places.'>m_zone</a> );
+<a id='L313' name='L313'></a> 313 
+<a id='L314' name='L314'></a> 314             <a href='../Y/1855.html' title='Multiple used in 18 places.'>HandleMarker</a>( <strong class='reserved'>new</strong> <a href='../S/66.html#L57' title='Defined at 57 in class_marker_pcb.cpp.'>MARKER_PCB</a>( <a href='../Y/7557.html' title='Multiple used in 215 places.'>drcItem</a>, (<a href='../Y/15871.html' title='Multiple used in 1252 places.'>wxPoint</a>) <a href='../Y/13782.html' title='Multiple used in 280 places.'>pt</a> ) );
+<a id='L315' name='L315'></a> 315             <a href='../Y/14764.html' title='Multiple used in 101 places.'>success</a> = <strong class='reserved'>false</strong>;
+<a id='L316' name='L316'></a> 316         <em class='brace'>}</em>
+<a id='L317' name='L317'></a> 317     <em class='brace'>}</em>
+<a id='L318' name='L318'></a> 318 
+<a id='L319' name='L319'></a> 319     <strong class='reserved'>return</strong> <a href='../Y/14764.html' title='Multiple used in 101 places.'>success</a>;
+<a id='L320' name='L320'></a> 320 <em class='brace'>}</em>
+<a id='L321' name='L321'></a> 321 
+<a id='L322' name='L322'></a> 322 
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L36'>[^]</a><a href='#L275'>[v]</a><a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

@@ -1,0 +1,434 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>aPad</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/21.html#L311'>aPad</a>              311 autorouter/ar_autoplacer.cpp void AR_AUTOPLACER::addPad( D_PAD* aPad, int aClearance )</span>
+<span class='curline'><a href='../S/21.html#L314'>aPad</a>              314 autorouter/ar_autoplacer.cpp     EDA_RECT bbox = aPad-&gt;GetBoundingBox();</span>
+<span class='curline'><a href='../S/21.html#L317'>aPad</a>              317 autorouter/ar_autoplacer.cpp     if( aPad-&gt;IsOnLayer( F_Cu ) )</span>
+<span class='curline'><a href='../S/21.html#L325'>aPad</a>              325 autorouter/ar_autoplacer.cpp     if( aPad-&gt;IsOnLayer( B_Cu ) )</span>
+<span class='curline'><a href='../S/22.html#L118'>aPad</a>              118 autorouter/ar_autoplacer.h     void         addPad( D_PAD* aPad, int aClearance );</span>
+<span class='curline'><a href='../S/23.html#L939'>aPad</a>              939 autorouter/ar_matrix.cpp void AR_MATRIX::PlacePad( D_PAD* aPad, int color, int marge, AR_MATRIX::CELL_OP op_logic )</span>
+<span class='curline'><a href='../S/23.html#L942'>aPad</a>              942 autorouter/ar_matrix.cpp     wxPoint shape_pos = aPad-&gt;ShapePos();</span>
+<span class='curline'><a href='../S/23.html#L944'>aPad</a>              944 autorouter/ar_matrix.cpp     dx = aPad-&gt;GetSize().x / 2;</span>
+<span class='curline'><a href='../S/23.html#L947'>aPad</a>              947 autorouter/ar_matrix.cpp     if( aPad-&gt;GetShape() == PAD_SHAPE_CIRCLE )</span>
+<span class='curline'><a href='../S/23.html#L949'>aPad</a>              949 autorouter/ar_matrix.cpp         traceFilledCircle( shape_pos.x, shape_pos.y, dx, aPad-&gt;GetLayerSet(), color, op_logic );</span>
+<span class='curline'><a href='../S/23.html#L953'>aPad</a>              953 autorouter/ar_matrix.cpp     dy = aPad-&gt;GetSize().y / 2;</span>
+<span class='curline'><a href='../S/23.html#L956'>aPad</a>              956 autorouter/ar_matrix.cpp     if( aPad-&gt;GetShape() == PAD_SHAPE_TRAPEZOID )</span>
+<span class='curline'><a href='../S/23.html#L958'>aPad</a>              958 autorouter/ar_matrix.cpp         dx += abs( aPad-&gt;GetDelta().y ) / 2;</span>
+<span class='curline'><a href='../S/23.html#L959'>aPad</a>              959 autorouter/ar_matrix.cpp         dy += abs( aPad-&gt;GetDelta().x ) / 2;</span>
+<span class='curline'><a href='../S/23.html#L963'>aPad</a>              963 autorouter/ar_matrix.cpp     if( int( aPad-&gt;GetOrientation() ) % 900 == 0 )</span>
+<span class='curline'><a href='../S/23.html#L966'>aPad</a>              966 autorouter/ar_matrix.cpp         if( aPad-&gt;GetOrientation() == 900 || aPad-&gt;GetOrientation() == 2700 )</span>
+<span class='curline'><a href='../S/23.html#L972'>aPad</a>              972 autorouter/ar_matrix.cpp                 shape_pos.y + dy, aPad-&gt;GetLayerSet(), color, op_logic );</span>
+<span class='curline'><a href='../S/23.html#L977'>aPad</a>              977 autorouter/ar_matrix.cpp                 shape_pos.y + dy, aPad-&gt;GetOrientation(), aPad-&gt;GetLayerSet(), color, op_logic );</span>
+<span class='curline'><a href='../S/24.html#L139'>aPad</a>              139 autorouter/ar_matrix.h     void PlacePad( D_PAD* aPad, int color, int marge, AR_MATRIX::CELL_OP op_logic );</span>
+<span class='curline'><a href='../S/57.html#L1508'>aPad</a>             1508 class_board.cpp void BOARD::PadDelete( D_PAD* aPad )</span>
+<span class='curline'><a href='../S/57.html#L1510'>aPad</a>             1510 class_board.cpp     GetConnectivity()-&gt;Remove( aPad );</span>
+<span class='curline'><a href='../S/57.html#L1512'>aPad</a>             1512 class_board.cpp     InvokeListeners( &amp;BOARD_LISTENER::OnBoardItemRemoved, *this, aPad );</span>
+<span class='curline'><a href='../S/57.html#L1514'>aPad</a>             1514 class_board.cpp     aPad-&gt;DeleteStructure();</span>
+<span class='curline'><a href='../S/58.html#L1104'>aPad</a>             1104 class_board.h      void PadDelete( D_PAD* aPad );</span>
+<span class='curline'><a href='../S/70.html#L841'>aPad</a>              841 class_pad.cpp  bool D_PAD::Collide( const D_PAD* aPad, int aMinClearance, int* aActual )</span>
+<span class='curline'><a href='../S/70.html#L843'>aPad</a>              843 class_pad.cpp      int center2center = KiROUND( EuclideanNorm( aPad-&gt;ShapePos() - ShapePos() ) );</span>
+<span class='curline'><a href='../S/70.html#L846'>aPad</a>              846 class_pad.cpp      if( center2center - GetBoundingRadius() - aPad-&gt;GetBoundingRadius() &gt;= aMinClearance )</span>
+<span class='curline'><a href='../S/70.html#L853'>aPad</a>              853 class_pad.cpp          for( const std::shared_ptr&lt;SHAPE&gt;&amp; bShape : aPad-&gt;GetEffectiveShapes() )</span>
+<span class='curline'><a href='../S/71.html#L70'>aPad</a>               70 class_pad.h        D_PAD( const D_PAD&amp; aPad );</span>
+<span class='curline'><a href='../S/71.html#L522'>aPad</a>              522 class_pad.h        bool Collide( const D_PAD* aPad, int aMinClearance, int* aActual = nullptr );</span>
+<span class='curline'><a href='../S/80.html#L317'>aPad</a>              317 class_zone.cpp int ZONE_CONTAINER::GetThermalReliefGap( D_PAD* aPad ) const</span>
+<span class='curline'><a href='../S/80.html#L319'>aPad</a>              319 class_zone.cpp     if( aPad == NULL || aPad-&gt;GetThermalGap() == 0 )</span>
+<span class='curline'><a href='../S/80.html#L322'>aPad</a>              322 class_zone.cpp         return aPad-&gt;GetThermalGap();</span>
+<span class='curline'><a href='../S/80.html#L326'>aPad</a>              326 class_zone.cpp int ZONE_CONTAINER::GetThermalReliefCopperBridge( D_PAD* aPad ) const</span>
+<span class='curline'><a href='../S/80.html#L328'>aPad</a>              328 class_zone.cpp     if( aPad == NULL || aPad-&gt;GetThermalWidth() == 0 )</span>
+<span class='curline'><a href='../S/80.html#L331'>aPad</a>              331 class_zone.cpp         return aPad-&gt;GetThermalWidth();</span>
+<span class='curline'><a href='../S/80.html#L811'>aPad</a>              811 class_zone.cpp ZONE_CONNECTION ZONE_CONTAINER::GetPadConnection( D_PAD* aPad ) const</span>
+<span class='curline'><a href='../S/80.html#L813'>aPad</a>              813 class_zone.cpp     if( aPad == NULL || aPad-&gt;GetEffectiveZoneConnection() == ZONE_CONNECTION::INHERITED )</span>
+<span class='curline'><a href='../S/80.html#L816'>aPad</a>              816 class_zone.cpp         return aPad-&gt;GetEffectiveZoneConnection();</span>
+<span class='curline'><a href='../S/81.html#L151'>aPad</a>              151 class_zone.h       int GetThermalReliefGap( D_PAD* aPad = NULL ) const;</span>
+<span class='curline'><a href='../S/81.html#L160'>aPad</a>              160 class_zone.h       int GetThermalReliefCopperBridge( D_PAD* aPad = NULL ) const;</span>
+<span class='curline'><a href='../S/81.html#L194'>aPad</a>              194 class_zone.h       ZONE_CONNECTION GetPadConnection( D_PAD* aPad = NULL ) const;</span>
+<span class='curline'><a href='../S/245.html#L99'>aPad</a>               99 dialogs/dialog_pad_properties.cpp void PCB_BASE_FRAME::InstallPadOptionsFrame( D_PAD* aPad )</span>
+<span class='curline'><a href='../S/245.html#L101'>aPad</a>              101 dialogs/dialog_pad_properties.cpp     DIALOG_PAD_PROPERTIES dlg( this, aPad );</span>
+<span class='curline'><a href='../S/245.html#L107'>aPad</a>              107 dialogs/dialog_pad_properties.cpp         if( aPad )</span>
+<span class='curline'><a href='../S/245.html#L112'>aPad</a>              112 dialogs/dialog_pad_properties.cpp                 padTools-&gt;SetLastPadName( aPad-&gt;GetName() );</span>
+<span class='curline'><a href='../S/245.html#L118'>aPad</a>              118 dialogs/dialog_pad_properties.cpp DIALOG_PAD_PROPERTIES::DIALOG_PAD_PROPERTIES( PCB_BASE_FRAME* aParent, D_PAD* aPad ) :</span>
+<span class='curline'><a href='../S/245.html#L140'>aPad</a>              140 dialogs/dialog_pad_properties.cpp     m_currentPad = aPad;        // aPad can be NULL, if the dialog is called</span>
+<span class='curline'><a href='../S/245.html#L160'>aPad</a>              160 dialogs/dialog_pad_properties.cpp     if( aPad )</span>
+<span class='curline'><a href='../S/245.html#L162'>aPad</a>              162 dialogs/dialog_pad_properties.cpp         *m_dummyPad = *aPad;</span>
+<span class='curline'><a href='../S/245.html#L1457'>aPad</a>             1457 dialogs/dialog_pad_properties.cpp bool DIALOG_PAD_PROPERTIES::transferDataToPad( D_PAD* aPad )</span>
+<span class='curline'><a href='../S/245.html#L1472'>aPad</a>             1472 dialogs/dialog_pad_properties.cpp     aPad-&gt;SetAttribute( code_type[m_PadType-&gt;GetSelection()] );</span>
+<span class='curline'><a href='../S/245.html#L1473'>aPad</a>             1473 dialogs/dialog_pad_properties.cpp     aPad-&gt;SetShape( code_shape[m_PadShape-&gt;GetSelection()] );</span>
+<span class='curline'><a href='../S/245.html#L1474'>aPad</a>             1474 dialogs/dialog_pad_properties.cpp     aPad-&gt;SetAnchorPadShape( m_PadShape-&gt;GetSelection() == CHOICE_SHAPE_CUSTOM_RECT_ANCHOR ?</span>
+<span class='curline'><a href='../S/245.html#L1477'>aPad</a>             1477 dialogs/dialog_pad_properties.cpp     if( aPad-&gt;GetShape() == PAD_SHAPE_CUSTOM )</span>
+<span class='curline'><a href='../S/245.html#L1478'>aPad</a>             1478 dialogs/dialog_pad_properties.cpp         aPad-&gt;ReplacePrimitives( m_primitives );</span>
+<span class='curline'><a href='../S/245.html#L1481'>aPad</a>             1481 dialogs/dialog_pad_properties.cpp     aPad-&gt;SetLocalClearance( m_clearance.GetValue() );</span>
+<span class='curline'><a href='../S/245.html#L1482'>aPad</a>             1482 dialogs/dialog_pad_properties.cpp     aPad-&gt;SetLocalSolderMaskMargin( m_maskClearance.GetValue() );</span>
+<span class='curline'><a href='../S/245.html#L1483'>aPad</a>             1483 dialogs/dialog_pad_properties.cpp     aPad-&gt;SetLocalSolderPasteMargin( m_pasteClearance.GetValue() );</span>
+<span class='curline'><a href='../S/245.html#L1484'>aPad</a>             1484 dialogs/dialog_pad_properties.cpp     aPad-&gt;SetThermalWidth( m_spokeWidth.GetValue() );</span>
+<span class='curline'><a href='../S/245.html#L1485'>aPad</a>             1485 dialogs/dialog_pad_properties.cpp     aPad-&gt;SetThermalGap( m_thermalGap.GetValue() );</span>
+<span class='curline'><a href='../S/245.html#L1498'>aPad</a>             1498 dialogs/dialog_pad_properties.cpp     aPad-&gt;SetLocalSolderPasteMarginRatio( dtmp / 100 );</span>
+<span class='curline'><a href='../S/245.html#L1503'>aPad</a>             1503 dialogs/dialog_pad_properties.cpp     case 0: aPad-&gt;SetZoneConnection( ZONE_CONNECTION::INHERITED ); break;</span>
+<span class='curline'><a href='../S/245.html#L1504'>aPad</a>             1504 dialogs/dialog_pad_properties.cpp     case 1: aPad-&gt;SetZoneConnection( ZONE_CONNECTION::FULL );      break;</span>
+<span class='curline'><a href='../S/245.html#L1505'>aPad</a>             1505 dialogs/dialog_pad_properties.cpp     case 2: aPad-&gt;SetZoneConnection( ZONE_CONNECTION::THERMAL );   break;</span>
+<span class='curline'><a href='../S/245.html#L1506'>aPad</a>             1506 dialogs/dialog_pad_properties.cpp     case 3: aPad-&gt;SetZoneConnection( ZONE_CONNECTION::NONE );      break;</span>
+<span class='curline'><a href='../S/245.html#L1509'>aPad</a>             1509 dialogs/dialog_pad_properties.cpp     aPad-&gt;SetPosition( wxPoint( m_posX.GetValue(), m_posY.GetValue() ) );</span>
+<span class='curline'><a href='../S/245.html#L1510'>aPad</a>             1510 dialogs/dialog_pad_properties.cpp     aPad-&gt;SetPos0( wxPoint( m_posX.GetValue(), m_posY.GetValue() ) );</span>
+<span class='curline'><a href='../S/245.html#L1514'>aPad</a>             1514 dialogs/dialog_pad_properties.cpp         aPad-&gt;SetDrillShape( PAD_DRILL_SHAPE_CIRCLE );</span>
+<span class='curline'><a href='../S/245.html#L1515'>aPad</a>             1515 dialogs/dialog_pad_properties.cpp         aPad-&gt;SetDrillSize( wxSize( m_holeX.GetValue(), m_holeX.GetValue() ) );</span>
+<span class='curline'><a href='../S/245.html#L1519'>aPad</a>             1519 dialogs/dialog_pad_properties.cpp         aPad-&gt;SetDrillShape( PAD_DRILL_SHAPE_OBLONG );</span>
+<span class='curline'><a href='../S/245.html#L1520'>aPad</a>             1520 dialogs/dialog_pad_properties.cpp         aPad-&gt;SetDrillSize( wxSize( m_holeX.GetValue(), m_holeY.GetValue() ) );</span>
+<span class='curline'><a href='../S/245.html#L1523'>aPad</a>             1523 dialogs/dialog_pad_properties.cpp     if( aPad-&gt;GetShape() == PAD_SHAPE_CIRCLE )</span>
+<span class='curline'><a href='../S/245.html#L1524'>aPad</a>             1524 dialogs/dialog_pad_properties.cpp         aPad-&gt;SetSize( wxSize( m_sizeX.GetValue(), m_sizeX.GetValue() ) );</span>
+<span class='curline'><a href='../S/245.html#L1526'>aPad</a>             1526 dialogs/dialog_pad_properties.cpp         aPad-&gt;SetSize( wxSize( m_sizeX.GetValue(), m_sizeY.GetValue() ) );</span>
+<span class='curline'><a href='../S/245.html#L1533'>aPad</a>             1533 dialogs/dialog_pad_properties.cpp     if( aPad-&gt;GetShape() == PAD_SHAPE_TRAPEZOID )</span>
+<span class='curline'><a href='../S/245.html#L1541'>aPad</a>             1541 dialogs/dialog_pad_properties.cpp         if( delta.x &lt; 0 &amp;&amp; delta.x &lt;= -aPad-&gt;GetSize().y )</span>
+<span class='curline'><a href='../S/245.html#L1543'>aPad</a>             1543 dialogs/dialog_pad_properties.cpp             delta.x = -aPad-&gt;GetSize().y + 2;</span>
+<span class='curline'><a href='../S/245.html#L1547'>aPad</a>             1547 dialogs/dialog_pad_properties.cpp         if( delta.x &gt; 0 &amp;&amp; delta.x &gt;= aPad-&gt;GetSize().y )</span>
+<span class='curline'><a href='../S/245.html#L1549'>aPad</a>             1549 dialogs/dialog_pad_properties.cpp             delta.x = aPad-&gt;GetSize().y - 2;</span>
+<span class='curline'><a href='../S/245.html#L1553'>aPad</a>             1553 dialogs/dialog_pad_properties.cpp         if( delta.y &lt; 0 &amp;&amp; delta.y &lt;= -aPad-&gt;GetSize().x )</span>
+<span class='curline'><a href='../S/245.html#L1555'>aPad</a>             1555 dialogs/dialog_pad_properties.cpp             delta.y = -aPad-&gt;GetSize().x + 2;</span>
+<span class='curline'><a href='../S/245.html#L1559'>aPad</a>             1559 dialogs/dialog_pad_properties.cpp         if( delta.y &gt; 0 &amp;&amp; delta.y &gt;= aPad-&gt;GetSize().x )</span>
+<span class='curline'><a href='../S/245.html#L1561'>aPad</a>             1561 dialogs/dialog_pad_properties.cpp             delta.y = aPad-&gt;GetSize().x - 2;</span>
+<span class='curline'><a href='../S/245.html#L1566'>aPad</a>             1566 dialogs/dialog_pad_properties.cpp     aPad-&gt;SetDelta( delta );</span>
+<span class='curline'><a href='../S/245.html#L1569'>aPad</a>             1569 dialogs/dialog_pad_properties.cpp         aPad-&gt;SetOffset( wxPoint( m_offsetX.GetValue(), m_offsetY.GetValue() ) );</span>
+<span class='curline'><a href='../S/245.html#L1571'>aPad</a>             1571 dialogs/dialog_pad_properties.cpp         aPad-&gt;SetOffset( wxPoint() );</span>
+<span class='curline'><a href='../S/245.html#L1575'>aPad</a>             1575 dialogs/dialog_pad_properties.cpp         aPad-&gt;SetPadToDieLength( m_padToDie.GetValue() );</span>
+<span class='curline'><a href='../S/245.html#L1577'>aPad</a>             1577 dialogs/dialog_pad_properties.cpp         aPad-&gt;SetPadToDieLength( 0 );</span>
+<span class='curline'><a href='../S/245.html#L1579'>aPad</a>             1579 dialogs/dialog_pad_properties.cpp     aPad-&gt;SetOrientation( m_OrientValue * 10.0 );</span>
+<span class='curline'><a href='../S/245.html#L1580'>aPad</a>             1580 dialogs/dialog_pad_properties.cpp     aPad-&gt;SetName( m_PadNumCtrl-&gt;GetValue() );</span>
+<span class='curline'><a href='../S/245.html#L1581'>aPad</a>             1581 dialogs/dialog_pad_properties.cpp     aPad-&gt;SetNetCode( m_PadNetSelector-&gt;GetSelectedNetcode() );</span>
+<span class='curline'><a href='../S/245.html#L1613'>aPad</a>             1613 dialogs/dialog_pad_properties.cpp     aPad-&gt;SetChamferPositions( chamfers );</span>
+<span class='curline'><a href='../S/245.html#L1615'>aPad</a>             1615 dialogs/dialog_pad_properties.cpp     if( aPad-&gt;GetShape() == PAD_SHAPE_CUSTOM )</span>
+<span class='curline'><a href='../S/245.html#L1621'>aPad</a>             1621 dialogs/dialog_pad_properties.cpp         if( aPad-&gt;GetAnchorPadShape() == PAD_SHAPE_CIRCLE )</span>
+<span class='curline'><a href='../S/245.html#L1622'>aPad</a>             1622 dialogs/dialog_pad_properties.cpp             aPad-&gt;SetSize( wxSize( m_sizeX.GetValue(), m_sizeX.GetValue() ) );</span>
+<span class='curline'><a href='../S/245.html#L1625'>aPad</a>             1625 dialogs/dialog_pad_properties.cpp         aPad-&gt;SetCustomShapeInZoneOpt( m_ZoneCustomPadShape-&gt;GetSelection() == 0 ?</span>
+<span class='curline'><a href='../S/245.html#L1630'>aPad</a>             1630 dialogs/dialog_pad_properties.cpp     switch( aPad-&gt;GetAttribute() )</span>
+<span class='curline'><a href='../S/245.html#L1643'>aPad</a>             1643 dialogs/dialog_pad_properties.cpp         aPad-&gt;SetDrillSize( wxSize( 0, 0 ) );</span>
+<span class='curline'><a href='../S/245.html#L1649'>aPad</a>             1649 dialogs/dialog_pad_properties.cpp         aPad-&gt;SetName( wxEmptyString );</span>
+<span class='curline'><a href='../S/245.html#L1650'>aPad</a>             1650 dialogs/dialog_pad_properties.cpp         aPad-&gt;SetNetCode( NETINFO_LIST::UNCONNECTED );</span>
+<span class='curline'><a href='../S/245.html#L1658'>aPad</a>             1658 dialogs/dialog_pad_properties.cpp     if( aPad-&gt;GetShape() == PAD_SHAPE_ROUNDRECT )</span>
+<span class='curline'><a href='../S/245.html#L1663'>aPad</a>             1663 dialogs/dialog_pad_properties.cpp         aPad-&gt;SetRoundRectRadiusRatio( ratioPercent / 100.0 );</span>
+<span class='curline'><a href='../S/245.html#L1665'>aPad</a>             1665 dialogs/dialog_pad_properties.cpp     else if( aPad-&gt;GetShape() == PAD_SHAPE_CHAMFERED_RECT</span>
+<span class='curline'><a href='../S/245.html#L1671'>aPad</a>             1671 dialogs/dialog_pad_properties.cpp         aPad-&gt;SetRoundRectRadiusRatio( ratioPercent / 100.0 );</span>
+<span class='curline'><a href='../S/245.html#L1674'>aPad</a>             1674 dialogs/dialog_pad_properties.cpp     if( aPad-&gt;GetShape() == PAD_SHAPE_CHAMFERED_RECT )</span>
+<span class='curline'><a href='../S/245.html#L1679'>aPad</a>             1679 dialogs/dialog_pad_properties.cpp         aPad-&gt;SetChamferRectRatio( ratioPercent / 100.0 );</span>
+<span class='curline'><a href='../S/245.html#L1682'>aPad</a>             1682 dialogs/dialog_pad_properties.cpp     aPad-&gt;SetProperty( getSelectedProperty() );</span>
+<span class='curline'><a href='../S/245.html#L1727'>aPad</a>             1727 dialogs/dialog_pad_properties.cpp     aPad-&gt;SetLayerSet( padLayerMask );</span>
+<span class='curline'><a href='../S/246.html#L50'>aPad</a>               50 dialogs/dialog_pad_properties.h     DIALOG_PAD_PROPERTIES( PCB_BASE_FRAME* aParent, D_PAD* aPad );</span>
+<span class='curline'><a href='../S/246.html#L107'>aPad</a>              107 dialogs/dialog_pad_properties.h     bool transferDataToPad( D_PAD* aPad );</span>
+<span class='curline'><a href='../S/391.html#L82'>aPad</a>               82 drc/drc_drilled_hole_tester.cpp bool DRC_DRILLED_HOLE_TESTER::checkPad( D_PAD* aPad )</span>
+<span class='curline'><a href='../S/391.html#L87'>aPad</a>               87 drc/drc_drilled_hole_tester.cpp     int holeSize = std::min( aPad-&gt;GetDrillSize().x, aPad-&gt;GetDrillSize().y );</span>
+<span class='curline'><a href='../S/391.html#L96'>aPad</a>               96 drc/drc_drilled_hole_tester.cpp         DRC_RULE* rule = GetRule( aPad, nullptr, HOLE_CONSTRAINT );</span>
+<span class='curline'><a href='../S/391.html#L114'>aPad</a>              114 drc/drc_drilled_hole_tester.cpp             drcItem-&gt;SetItems( aPad );</span>
+<span class='curline'><a href='../S/391.html#L116'>aPad</a>              116 drc/drc_drilled_hole_tester.cpp             HandleMarker( new MARKER_PCB( drcItem, aPad-&gt;GetPosition() ) );</span>
+<span class='curline'><a href='../S/391.html#L123'>aPad</a>              123 drc/drc_drilled_hole_tester.cpp         if( aPad-&gt;GetDrillShape() == PAD_DRILL_SHAPE_CIRCLE )</span>
+<span class='curline'><a href='../S/391.html#L124'>aPad</a>              124 drc/drc_drilled_hole_tester.cpp             addHole( aPad-&gt;GetPosition(), aPad-&gt;GetDrillSize().x / 2, aPad );</span>
+<span class='curline'><a href='../S/392.html#L45'>aPad</a>               45 drc/drc_drilled_hole_tester.h     bool checkPad( D_PAD* aPad );</span>
+<span class='curline'><a href='../S/406.html#L2143'>aPad</a>             2143 eagle_plugin.cpp void EAGLE_PLUGIN::transferPad( const EPAD_COMMON&amp; aEaglePad, D_PAD* aPad ) const</span>
+<span class='curline'><a href='../S/406.html#L2145'>aPad</a>             2145 eagle_plugin.cpp     aPad-&gt;SetName( FROM_UTF8( aEaglePad.name.c_str() ) );</span>
+<span class='curline'><a href='../S/406.html#L2150'>aPad</a>             2150 eagle_plugin.cpp     aPad-&gt;SetPos0( padPos );</span>
+<span class='curline'><a href='../S/406.html#L2153'>aPad</a>             2153 eagle_plugin.cpp     const wxSize&amp; padSize( aPad-&gt;GetSize() );</span>
+<span class='curline'><a href='../S/406.html#L2155'>aPad</a>             2155 eagle_plugin.cpp     aPad-&gt;SetLocalSolderMaskMargin( eagleClamp( m_rules-&gt;mlMinStopFrame,</span>
+<span class='curline'><a href='../S/406.html#L2161'>aPad</a>             2161 eagle_plugin.cpp         aPad-&gt;SetZoneConnection( ZONE_CONNECTION::FULL );</span>
+<span class='curline'><a href='../S/406.html#L2163'>aPad</a>             2163 eagle_plugin.cpp     MODULE* module = aPad-&gt;GetParent();</span>
+<span class='curline'><a href='../S/406.html#L2166'>aPad</a>             2166 eagle_plugin.cpp     aPad-&gt;SetPosition( padPos + module-&gt;GetPosition() );</span>
+<span class='curline'><a href='../S/407.html#L291'>aPad</a>              291 eagle_plugin.h     void transferPad( const EPAD_COMMON&amp; aEaglePad, D_PAD* aPad ) const;</span>
+<span class='curline'><a href='../S/417.html#L56'>aPad</a>               56 exporters/export_hyperlynx.cpp     HYPERLYNX_PAD_STACK( BOARD* aBoard, const D_PAD* aPad );</span>
+<span class='curline'><a href='../S/417.html#L229'>aPad</a>              229 exporters/export_hyperlynx.cpp HYPERLYNX_PAD_STACK::HYPERLYNX_PAD_STACK( BOARD* aBoard, const D_PAD* aPad )</span>
+<span class='curline'><a href='../S/417.html#L232'>aPad</a>              232 exporters/export_hyperlynx.cpp     m_sx    = aPad-&gt;GetSize().x;</span>
+<span class='curline'><a href='../S/417.html#L233'>aPad</a>              233 exporters/export_hyperlynx.cpp     m_sy    = aPad-&gt;GetSize().y;</span>
+<span class='curline'><a href='../S/417.html#L234'>aPad</a>              234 exporters/export_hyperlynx.cpp     m_angle = 180.0 - ( aPad-&gt;GetOrientation() / 10.0 );</span>
+<span class='curline'><a href='../S/417.html#L241'>aPad</a>              241 exporters/export_hyperlynx.cpp     m_layers = aPad-&gt;GetLayerSet();</span>
+<span class='curline'><a href='../S/417.html#L242'>aPad</a>              242 exporters/export_hyperlynx.cpp     m_drill  = aPad-&gt;GetDrillSize().x;</span>
+<span class='curline'><a href='../S/417.html#L243'>aPad</a>              243 exporters/export_hyperlynx.cpp     m_shape  = aPad-&gt;GetShape();</span>
+<span class='curline'><a href='../S/419.html#L1121'>aPad</a>             1121 exporters/export_vrml.cpp static void export_vrml_padshape( MODEL_VRML&amp; aModel, VRML_LAYER* aTinLayer, D_PAD* aPad )</span>
+<span class='curline'><a href='../S/419.html#L1124'>aPad</a>             1124 exporters/export_vrml.cpp     wxPoint pad_pos = aPad-&gt;ShapePos();</span>
+<span class='curline'><a href='../S/419.html#L1127'>aPad</a>             1127 exporters/export_vrml.cpp     wxSize  pad_delta = aPad-&gt;GetDelta();</span>
+<span class='curline'><a href='../S/419.html#L1132'>aPad</a>             1132 exporters/export_vrml.cpp     double  pad_w   = aPad-&gt;GetSize().x * BOARD_SCALE / 2.0;</span>
+<span class='curline'><a href='../S/419.html#L1133'>aPad</a>             1133 exporters/export_vrml.cpp     double  pad_h   = aPad-&gt;GetSize().y * BOARD_SCALE / 2.0;</span>
+<span class='curline'><a href='../S/419.html#L1135'>aPad</a>             1135 exporters/export_vrml.cpp     switch( aPad-&gt;GetShape() )</span>
+<span class='curline'><a href='../S/419.html#L1147'>aPad</a>             1147 exporters/export_vrml.cpp                                  aPad-&gt;GetOrientation()/10.0, false ) )</span>
+<span class='curline'><a href='../S/419.html#L1156'>aPad</a>             1156 exporters/export_vrml.cpp         const int corner_radius = aPad-&gt;GetRoundRectCornerRadius();</span>
+<span class='curline'><a href='../S/419.html#L1157'>aPad</a>             1157 exporters/export_vrml.cpp         TransformRoundChamferedRectToPolygon( polySet, wxPoint( 0, 0 ), aPad-&gt;GetSize(),</span>
+<span class='curline'><a href='../S/419.html#L1170'>aPad</a>             1170 exporters/export_vrml.cpp         if( !aTinLayer-&gt;AddPolygon( cornerList, pad_x, -pad_y, aPad-&gt;GetOrientation() ) )</span>
+<span class='curline'><a href='../S/419.html#L1180'>aPad</a>             1180 exporters/export_vrml.cpp         aPad-&gt;MergePrimitivesAsPolygon( &amp;polySet );</span>
+<span class='curline'><a href='../S/419.html#L1194'>aPad</a>             1194 exporters/export_vrml.cpp             if( !aTinLayer-&gt;AddPolygon( cornerList, pad_x, -pad_y, aPad-&gt;GetOrientation() ) )</span>
+<span class='curline'><a href='../S/419.html#L1221'>aPad</a>             1221 exporters/export_vrml.cpp             RotatePoint( &amp;coord[i * 2], &amp;coord[i * 2 + 1], aPad-&gt;GetOrientation() );</span>
+<span class='curline'><a href='../S/419.html#L1254'>aPad</a>             1254 exporters/export_vrml.cpp static void export_vrml_pad( MODEL_VRML&amp; aModel, BOARD* aPcb, D_PAD* aPad )</span>
+<span class='curline'><a href='../S/419.html#L1256'>aPad</a>             1256 exporters/export_vrml.cpp     double  hole_drill_w    = (double) aPad-&gt;GetDrillSize().x * BOARD_SCALE / 2.0;</span>
+<span class='curline'><a href='../S/419.html#L1257'>aPad</a>             1257 exporters/export_vrml.cpp     double  hole_drill_h    = (double) aPad-&gt;GetDrillSize().y * BOARD_SCALE / 2.0;</span>
+<span class='curline'><a href='../S/419.html#L1259'>aPad</a>             1259 exporters/export_vrml.cpp     double  hole_x          = aPad-&gt;GetPosition().x * BOARD_SCALE;</span>
+<span class='curline'><a href='../S/419.html#L1260'>aPad</a>             1260 exporters/export_vrml.cpp     double  hole_y          = aPad-&gt;GetPosition().y * BOARD_SCALE;</span>
+<span class='curline'><a href='../S/419.html#L1267'>aPad</a>             1267 exporters/export_vrml.cpp         if( ( aPad-&gt;GetAttribute() != PAD_ATTRIB_HOLE_NOT_PLATED )</span>
+<span class='curline'><a href='../S/419.html#L1271'>aPad</a>             1271 exporters/export_vrml.cpp         if( aPad-&gt;GetDrillShape() == PAD_DRILL_SHAPE_OBLONG )</span>
+<span class='curline'><a href='../S/419.html#L1279'>aPad</a>             1279 exporters/export_vrml.cpp                     aPad-&gt;GetOrientation()/10.0, true, true );</span>
+<span class='curline'><a href='../S/419.html#L1283'>aPad</a>             1283 exporters/export_vrml.cpp                     aPad-&gt;GetOrientation()/10.0, true, false );</span>
+<span class='curline'><a href='../S/419.html#L1288'>aPad</a>             1288 exporters/export_vrml.cpp                     aPad-&gt;GetOrientation()/10.0, true, false );</span>
+<span class='curline'><a href='../S/419.html#L1313'>aPad</a>             1313 exporters/export_vrml.cpp     LSET layer_mask = aPad-&gt;GetLayerSet();</span>
+<span class='curline'><a href='../S/419.html#L1318'>aPad</a>             1318 exporters/export_vrml.cpp             export_vrml_padshape( aModel, &amp;aModel.m_bot_tin, aPad );</span>
+<span class='curline'><a href='../S/419.html#L1320'>aPad</a>             1320 exporters/export_vrml.cpp             export_vrml_padshape( aModel, &amp;aModel.m_bot_copper, aPad );</span>
+<span class='curline'><a href='../S/419.html#L1325'>aPad</a>             1325 exporters/export_vrml.cpp             export_vrml_padshape( aModel, &amp;aModel.m_top_tin, aPad );</span>
+<span class='curline'><a href='../S/419.html#L1327'>aPad</a>             1327 exporters/export_vrml.cpp             export_vrml_padshape( aModel, &amp;aModel.m_top_copper, aPad );</span>
+<span class='curline'><a href='../S/497.html#L1167'>aPad</a>             1167 kicad_plugin.cpp void PCB_IO::format( D_PAD* aPad, int aNestLevel ) const</span>
+<span class='curline'><a href='../S/497.html#L1171'>aPad</a>             1171 kicad_plugin.cpp     switch( aPad-&gt;GetShape() )</span>
+<span class='curline'><a href='../S/497.html#L1182'>aPad</a>             1182 kicad_plugin.cpp         THROW_IO_ERROR( wxString::Format( _( "unknown pad type: %d"), aPad-&gt;GetShape() ) );</span>
+<span class='curline'><a href='../S/497.html#L1187'>aPad</a>             1187 kicad_plugin.cpp     switch( aPad-&gt;GetAttribute() )</span>
+<span class='curline'><a href='../S/497.html#L1195'>aPad</a>             1195 kicad_plugin.cpp         THROW_IO_ERROR( wxString::Format( "unknown pad attribute: %d", aPad-&gt;GetAttribute() ) );</span>
+<span class='curline'><a href='../S/497.html#L1200'>aPad</a>             1200 kicad_plugin.cpp     switch( aPad-&gt;GetProperty() )</span>
+<span class='curline'><a href='../S/497.html#L1211'>aPad</a>             1211 kicad_plugin.cpp         THROW_IO_ERROR( wxString::Format( "unknown pad property: %d", aPad-&gt;GetProperty() ) );</span>
+<span class='curline'><a href='../S/497.html#L1215'>aPad</a>             1215 kicad_plugin.cpp                   m_out-&gt;Quotew( aPad-&gt;GetName() ).c_str(),</span>
+<span class='curline'><a href='../S/497.html#L1217'>aPad</a>             1217 kicad_plugin.cpp     m_out-&gt;Print( 0, " (at %s", FormatInternalUnits( aPad-&gt;GetPos0() ).c_str() );</span>
+<span class='curline'><a href='../S/497.html#L1219'>aPad</a>             1219 kicad_plugin.cpp     if( aPad-&gt;GetOrientation() != 0.0 )</span>
+<span class='curline'><a href='../S/497.html#L1220'>aPad</a>             1220 kicad_plugin.cpp         m_out-&gt;Print( 0, " %s", FormatAngle( aPad-&gt;GetOrientation() ).c_str() );</span>
+<span class='curline'><a href='../S/497.html#L1223'>aPad</a>             1223 kicad_plugin.cpp     m_out-&gt;Print( 0, " (size %s)", FormatInternalUnits( aPad-&gt;GetSize() ).c_str() );</span>
+<span class='curline'><a href='../S/497.html#L1225'>aPad</a>             1225 kicad_plugin.cpp     if( (aPad-&gt;GetDelta().GetWidth()) != 0 || (aPad-&gt;GetDelta().GetHeight() != 0 ) )</span>
+<span class='curline'><a href='../S/497.html#L1226'>aPad</a>             1226 kicad_plugin.cpp         m_out-&gt;Print( 0, " (rect_delta %s )", FormatInternalUnits( aPad-&gt;GetDelta() ).c_str() );</span>
+<span class='curline'><a href='../S/497.html#L1228'>aPad</a>             1228 kicad_plugin.cpp     wxSize sz = aPad-&gt;GetDrillSize();</span>
+<span class='curline'><a href='../S/497.html#L1229'>aPad</a>             1229 kicad_plugin.cpp     wxPoint shapeoffset = aPad-&gt;GetOffset();</span>
+<span class='curline'><a href='../S/497.html#L1236'>aPad</a>             1236 kicad_plugin.cpp         if( aPad-&gt;GetDrillShape() == PAD_DRILL_SHAPE_OBLONG )</span>
+<span class='curline'><a href='../S/497.html#L1246'>aPad</a>             1246 kicad_plugin.cpp             m_out-&gt;Print( 0, " (offset %s)", FormatInternalUnits( aPad-&gt;GetOffset() ).c_str() );</span>
+<span class='curline'><a href='../S/497.html#L1255'>aPad</a>             1255 kicad_plugin.cpp     formatLayers( aPad-&gt;GetLayerSet() );</span>
+<span class='curline'><a href='../S/497.html#L1258'>aPad</a>             1258 kicad_plugin.cpp     if( aPad-&gt;GetShape() == PAD_SHAPE_ROUNDRECT || aPad-&gt;GetShape() == PAD_SHAPE_CHAMFERED_RECT)</span>
+<span class='curline'><a href='../S/497.html#L1261'>aPad</a>             1261 kicad_plugin.cpp                       Double2Str( aPad-&gt;GetRoundRectRadiusRatio() ).c_str() );</span>
+<span class='curline'><a href='../S/497.html#L1265'>aPad</a>             1265 kicad_plugin.cpp     if( aPad-&gt;GetShape() == PAD_SHAPE_CHAMFERED_RECT)</span>
+<span class='curline'><a href='../S/497.html#L1270'>aPad</a>             1270 kicad_plugin.cpp                       Double2Str( aPad-&gt;GetChamferRectRatio() ).c_str() );</span>
+<span class='curline'><a href='../S/497.html#L1274'>aPad</a>             1274 kicad_plugin.cpp         if( ( aPad-&gt;GetChamferPositions() &amp; RECT_CHAMFER_TOP_LEFT ) )</span>
+<span class='curline'><a href='../S/497.html#L1277'>aPad</a>             1277 kicad_plugin.cpp         if( ( aPad-&gt;GetChamferPositions() &amp; RECT_CHAMFER_TOP_RIGHT ) )</span>
+<span class='curline'><a href='../S/497.html#L1280'>aPad</a>             1280 kicad_plugin.cpp         if( ( aPad-&gt;GetChamferPositions() &amp; RECT_CHAMFER_BOTTOM_LEFT ) )</span>
+<span class='curline'><a href='../S/497.html#L1283'>aPad</a>             1283 kicad_plugin.cpp         if( ( aPad-&gt;GetChamferPositions() &amp; RECT_CHAMFER_BOTTOM_RIGHT ) )</span>
+<span class='curline'><a href='../S/497.html#L1292'>aPad</a>             1292 kicad_plugin.cpp     if( !( m_ctl &amp; CTL_OMIT_NETS ) &amp;&amp; aPad-&gt;GetNetCode() != NETINFO_LIST::UNCONNECTED )</span>
+<span class='curline'><a href='../S/497.html#L1293'>aPad</a>             1293 kicad_plugin.cpp         StrPrintf( &amp;output, " (net %d %s)", m_mapping-&gt;Translate( aPad-&gt;GetNetCode() ),</span>
+<span class='curline'><a href='../S/497.html#L1294'>aPad</a>             1294 kicad_plugin.cpp                    m_out-&gt;Quotew( aPad-&gt;GetNetname() ).c_str() );</span>
+<span class='curline'><a href='../S/497.html#L1299'>aPad</a>             1299 kicad_plugin.cpp     if( !(m_ctl &amp; CTL_OMIT_NETS) &amp;&amp; !aPad-&gt;GetPinFunction().IsEmpty() )</span>
+<span class='curline'><a href='../S/497.html#L1301'>aPad</a>             1301 kicad_plugin.cpp                    m_out-&gt;Quotew( aPad-&gt;GetPinFunction() ).c_str() );</span>
+<span class='curline'><a href='../S/497.html#L1303'>aPad</a>             1303 kicad_plugin.cpp     if( aPad-&gt;GetPadToDieLength() != 0 )</span>
+<span class='curline'><a href='../S/497.html#L1305'>aPad</a>             1305 kicad_plugin.cpp                    FormatInternalUnits( aPad-&gt;GetPadToDieLength() ).c_str() );</span>
+<span class='curline'><a href='../S/497.html#L1307'>aPad</a>             1307 kicad_plugin.cpp     if( aPad-&gt;GetLocalSolderMaskMargin() != 0 )</span>
+<span class='curline'><a href='../S/497.html#L1309'>aPad</a>             1309 kicad_plugin.cpp                    FormatInternalUnits( aPad-&gt;GetLocalSolderMaskMargin() ).c_str() );</span>
+<span class='curline'><a href='../S/497.html#L1311'>aPad</a>             1311 kicad_plugin.cpp     if( aPad-&gt;GetLocalSolderPasteMargin() != 0 )</span>
+<span class='curline'><a href='../S/497.html#L1313'>aPad</a>             1313 kicad_plugin.cpp                    FormatInternalUnits( aPad-&gt;GetLocalSolderPasteMargin() ).c_str() );</span>
+<span class='curline'><a href='../S/497.html#L1315'>aPad</a>             1315 kicad_plugin.cpp     if( aPad-&gt;GetLocalSolderPasteMarginRatio() != 0 )</span>
+<span class='curline'><a href='../S/497.html#L1317'>aPad</a>             1317 kicad_plugin.cpp                    Double2Str( aPad-&gt;GetLocalSolderPasteMarginRatio() ).c_str() );</span>
+<span class='curline'><a href='../S/497.html#L1319'>aPad</a>             1319 kicad_plugin.cpp     if( aPad-&gt;GetLocalClearance() != 0 )</span>
+<span class='curline'><a href='../S/497.html#L1320'>aPad</a>             1320 kicad_plugin.cpp         StrPrintf( &amp;output, " (clearance %s)", FormatInternalUnits( aPad-&gt;GetLocalClearance() ).c_str() );</span>
+<span class='curline'><a href='../S/497.html#L1322'>aPad</a>             1322 kicad_plugin.cpp     if( aPad-&gt;GetEffectiveZoneConnection() != ZONE_CONNECTION::INHERITED )</span>
+<span class='curline'><a href='../S/497.html#L1323'>aPad</a>             1323 kicad_plugin.cpp         StrPrintf( &amp;output, " (zone_connect %d)", static_cast&lt;int&gt;( aPad-&gt;GetEffectiveZoneConnection() ) );</span>
+<span class='curline'><a href='../S/497.html#L1325'>aPad</a>             1325 kicad_plugin.cpp     if( aPad-&gt;GetThermalWidth() != 0 )</span>
+<span class='curline'><a href='../S/497.html#L1326'>aPad</a>             1326 kicad_plugin.cpp         StrPrintf( &amp;output, " (thermal_width %s)", FormatInternalUnits( aPad-&gt;GetThermalWidth() ).c_str() );</span>
+<span class='curline'><a href='../S/497.html#L1328'>aPad</a>             1328 kicad_plugin.cpp     if( aPad-&gt;GetThermalGap() != 0 )</span>
+<span class='curline'><a href='../S/497.html#L1329'>aPad</a>             1329 kicad_plugin.cpp         StrPrintf( &amp;output, " (thermal_gap %s)", FormatInternalUnits( aPad-&gt;GetThermalGap() ).c_str() );</span>
+<span class='curline'><a href='../S/497.html#L1337'>aPad</a>             1337 kicad_plugin.cpp     if( aPad-&gt;GetShape() == PAD_SHAPE_CUSTOM )</span>
+<span class='curline'><a href='../S/497.html#L1342'>aPad</a>             1342 kicad_plugin.cpp         if( aPad-&gt;GetCustomShapeInZoneOpt() == CUST_PAD_SHAPE_IN_ZONE_CONVEXHULL )</span>
+<span class='curline'><a href='../S/497.html#L1350'>aPad</a>             1350 kicad_plugin.cpp         if( aPad-&gt;GetAnchorPadShape() == PAD_SHAPE_RECT )</span>
+<span class='curline'><a href='../S/497.html#L1366'>aPad</a>             1366 kicad_plugin.cpp         for( const std::shared_ptr&lt;DRAWSEGMENT&gt;&amp; primitive : aPad-&gt;GetPrimitives() )</span>
+<span class='curline'><a href='../S/497.html#L1449'>aPad</a>             1449 kicad_plugin.cpp     m_out-&gt;Print( 0, " (tstamp %s)", TO_UTF8( aPad-&gt;m_Uuid.AsString() ) );</span>
+<span class='curline'><a href='../S/498.html#L246'>aPad</a>              246 kicad_plugin.h     void format( D_PAD* aPad, int aNestLevel = 0 ) const;</span>
+<span class='curline'><a href='../S/514.html#L81'>aPad</a>               81 netlist_reader/board_netlist_updater.cpp void BOARD_NETLIST_UPDATER::cacheNetname( D_PAD* aPad, const wxString&amp; aNetname )</span>
+<span class='curline'><a href='../S/514.html#L83'>aPad</a>               83 netlist_reader/board_netlist_updater.cpp     m_padNets[ aPad ] = aNetname;</span>
+<span class='curline'><a href='../S/514.html#L87'>aPad</a>               87 netlist_reader/board_netlist_updater.cpp wxString BOARD_NETLIST_UPDATER::getNetname( D_PAD* aPad )</span>
+<span class='curline'><a href='../S/514.html#L89'>aPad</a>               89 netlist_reader/board_netlist_updater.cpp     if( m_isDryRun &amp;&amp; m_padNets.count( aPad ) )</span>
+<span class='curline'><a href='../S/514.html#L90'>aPad</a>               90 netlist_reader/board_netlist_updater.cpp         return m_padNets[ aPad ];</span>
+<span class='curline'><a href='../S/514.html#L92'>aPad</a>               92 netlist_reader/board_netlist_updater.cpp         return aPad-&gt;GetNetname();</span>
+<span class='curline'><a href='../S/514.html#L96'>aPad</a>               96 netlist_reader/board_netlist_updater.cpp void BOARD_NETLIST_UPDATER::cachePinFunction( D_PAD* aPad, const wxString&amp; aPinFunction )</span>
+<span class='curline'><a href='../S/514.html#L98'>aPad</a>               98 netlist_reader/board_netlist_updater.cpp     m_padPinFunctions[ aPad ] = aPinFunction;</span>
+<span class='curline'><a href='../S/514.html#L102'>aPad</a>              102 netlist_reader/board_netlist_updater.cpp wxString BOARD_NETLIST_UPDATER::getPinFunction( D_PAD* aPad )</span>
+<span class='curline'><a href='../S/514.html#L104'>aPad</a>              104 netlist_reader/board_netlist_updater.cpp     if( m_isDryRun &amp;&amp; m_padPinFunctions.count( aPad ) )</span>
+<span class='curline'><a href='../S/514.html#L105'>aPad</a>              105 netlist_reader/board_netlist_updater.cpp         return m_padPinFunctions[ aPad ];</span>
+<span class='curline'><a href='../S/514.html#L107'>aPad</a>              107 netlist_reader/board_netlist_updater.cpp         return aPad-&gt;GetPinFunction();</span>
+<span class='curline'><a href='../S/515.html#L137'>aPad</a>              137 netlist_reader/board_netlist_updater.h     void cacheNetname( D_PAD* aPad, const wxString&amp; aNetname );</span>
+<span class='curline'><a href='../S/515.html#L138'>aPad</a>              138 netlist_reader/board_netlist_updater.h     wxString getNetname( D_PAD* aPad );</span>
+<span class='curline'><a href='../S/515.html#L140'>aPad</a>              140 netlist_reader/board_netlist_updater.h     void cachePinFunction( D_PAD* aPad, const wxString&amp; aPinFunction );</span>
+<span class='curline'><a href='../S/515.html#L141'>aPad</a>              141 netlist_reader/board_netlist_updater.h     wxString getPinFunction( D_PAD* aPad );</span>
+<span class='curline'><a href='../S/524.html#L26'>aPad</a>               26 pad_naming.cpp bool PAD_NAMING::PadCanHaveName( const D_PAD&amp; aPad )</span>
+<span class='curline'><a href='../S/524.html#L29'>aPad</a>               29 pad_naming.cpp     if( aPad.IsAperturePad() )</span>
+<span class='curline'><a href='../S/524.html#L33'>aPad</a>               33 pad_naming.cpp     if( aPad.GetAttribute() == PAD_ATTRIB_HOLE_NOT_PLATED )</span>
+<span class='curline'><a href='../S/525.html#L46'>aPad</a>               46 pad_naming.h   bool PadCanHaveName( const D_PAD&amp; aPad );</span>
+<span class='curline'><a href='../S/593.html#L354'>aPad</a>              354 pcb_painter.cpp int PCB_PAINTER::getDrillShape( const D_PAD* aPad ) const</span>
+<span class='curline'><a href='../S/593.html#L356'>aPad</a>              356 pcb_painter.cpp     return aPad-&gt;GetDrillShape();</span>
+<span class='curline'><a href='../S/593.html#L360'>aPad</a>              360 pcb_painter.cpp VECTOR2D PCB_PAINTER::getDrillSize( const D_PAD* aPad ) const</span>
+<span class='curline'><a href='../S/593.html#L362'>aPad</a>              362 pcb_painter.cpp     return VECTOR2D( aPad-&gt;GetDrillSize() );</span>
+<span class='curline'><a href='../S/593.html#L696'>aPad</a>              696 pcb_painter.cpp void PCB_PAINTER::draw( const D_PAD* aPad, int aLayer )</span>
+<span class='curline'><a href='../S/593.html#L704'>aPad</a>              704 pcb_painter.cpp             bool displayNetname = ( m_pcbSettings.m_netNamesOnPads &amp;&amp; !aPad-&gt;GetNetname().empty() );</span>
+<span class='curline'><a href='../S/593.html#L705'>aPad</a>              705 pcb_painter.cpp             EDA_RECT padBBox = aPad-&gt;GetBoundingBox();</span>
+<span class='curline'><a href='../S/593.html#L750'>aPad</a>              750 pcb_painter.cpp                 wxString netname = UnescapeString( aPad-&gt;GetShortNetname() );</span>
+<span class='curline'><a href='../S/593.html#L765'>aPad</a>              765 pcb_painter.cpp                 const wxString&amp; padName = aPad-&gt;GetName();</span>
+<span class='curline'><a href='../S/593.html#L790'>aPad</a>              790 pcb_painter.cpp     if( ( aLayer == LAYER_PADS_PLATEDHOLES ) &amp;&amp; !aPad-&gt;PadShouldBeNPTH() )</span>
+<span class='curline'><a href='../S/593.html#L793'>aPad</a>              793 pcb_painter.cpp         color = m_pcbSettings.GetColor( aPad, aLayer );</span>
+<span class='curline'><a href='../S/593.html#L814'>aPad</a>              814 pcb_painter.cpp         const SHAPE_SEGMENT* seg = aPad-&gt;GetEffectiveHoleShape();</span>
+<span class='curline'><a href='../S/593.html#L819'>aPad</a>              819 pcb_painter.cpp         wxSize pad_size = aPad-&gt;GetSize();</span>
+<span class='curline'><a href='../S/593.html#L826'>aPad</a>              826 pcb_painter.cpp             margin.x = margin.y = aPad-&gt;GetSolderMaskMargin();</span>
+<span class='curline'><a href='../S/593.html#L831'>aPad</a>              831 pcb_painter.cpp             margin = aPad-&gt;GetSolderPasteMargin();</span>
+<span class='curline'><a href='../S/593.html#L841'>aPad</a>              841 pcb_painter.cpp             const_cast&lt;D_PAD*&gt;( aPad )-&gt;SetSize( pad_size + margin + margin );</span>
+<span class='curline'><a href='../S/593.html#L845'>aPad</a>              845 pcb_painter.cpp         const std::vector&lt;std::shared_ptr&lt;SHAPE&gt;&gt;&amp; shapes = aPad-&gt;GetEffectiveShapes();</span>
+<span class='curline'><a href='../S/593.html#L860'>aPad</a>              860 pcb_painter.cpp             aPad-&gt;TransformShapeWithClearanceToPolygon( polySet, margin.x );</span>
+<span class='curline'><a href='../S/593.html#L864'>aPad</a>              864 pcb_painter.cpp         if( aPad-&gt;GetSize() != pad_size )</span>
+<span class='curline'><a href='../S/593.html#L865'>aPad</a>              865 pcb_painter.cpp             const_cast&lt;D_PAD*&gt;( aPad )-&gt;SetSize( pad_size );</span>
+<span class='curline'><a href='../S/593.html#L880'>aPad</a>              880 pcb_painter.cpp         int clearance = aPad-&gt;GetClearance();</span>
+<span class='curline'><a href='../S/593.html#L882'>aPad</a>              882 pcb_painter.cpp         const std::vector&lt;std::shared_ptr&lt;SHAPE&gt;&gt;&amp; shapes = aPad-&gt;GetEffectiveShapes();</span>
+<span class='curline'><a href='../S/593.html#L897'>aPad</a>              897 pcb_painter.cpp             aPad-&gt;TransformShapeWithClearanceToPolygon( polySet, clearance );</span>
+<span class='curline'><a href='../S/594.html#L301'>aPad</a>              301 pcb_painter.h      void draw( const D_PAD* aPad, int aLayer );</span>
+<span class='curline'><a href='../S/594.html#L323'>aPad</a>              323 pcb_painter.h      virtual int getDrillShape( const D_PAD* aPad ) const;</span>
+<span class='curline'><a href='../S/594.html#L328'>aPad</a>              328 pcb_painter.h      virtual VECTOR2D getDrillSize( const D_PAD* aPad ) const;</span>
+<span class='curline'><a href='../S/595.html#L3483'>aPad</a>             3483 pcb_parser.cpp bool PCB_PARSER::parseD_PAD_option( D_PAD* aPad )</span>
+<span class='curline'><a href='../S/595.html#L3507'>aPad</a>             3507 pcb_parser.cpp                     aPad-&gt;SetAnchorPadShape( PAD_SHAPE_RECT );</span>
+<span class='curline'><a href='../S/595.html#L3525'>aPad</a>             3525 pcb_parser.cpp                 aPad-&gt;SetCustomShapeInZoneOpt( CUST_PAD_SHAPE_IN_ZONE_OUTLINE );</span>
+<span class='curline'><a href='../S/595.html#L3529'>aPad</a>             3529 pcb_parser.cpp                 aPad-&gt;SetCustomShapeInZoneOpt( CUST_PAD_SHAPE_IN_ZONE_CONVEXHULL );</span>
+<span class='curline'><a href='../S/596.html#L159'>aPad</a>              159 pcb_parser.h       bool            parseD_PAD_option( D_PAD* aPad );</span>
+<span class='curline'><a href='../S/573.html#L230'>aPad</a>              230 pcbnew_printout.cpp int KIGFX::PCB_PRINT_PAINTER::getDrillShape( const D_PAD* aPad ) const</span>
+<span class='curline'><a href='../S/573.html#L232'>aPad</a>              232 pcbnew_printout.cpp     return m_drillMarkReal ? KIGFX::PCB_PAINTER::getDrillShape( aPad ) : PAD_DRILL_SHAPE_CIRCLE;</span>
+<span class='curline'><a href='../S/573.html#L236'>aPad</a>              236 pcbnew_printout.cpp VECTOR2D KIGFX::PCB_PRINT_PAINTER::getDrillSize( const D_PAD* aPad ) const</span>
+<span class='curline'><a href='../S/573.html#L239'>aPad</a>              239 pcbnew_printout.cpp     return m_drillMarkReal ? KIGFX::PCB_PAINTER::getDrillSize( aPad ) :</span>
+<span class='curline'><a href='../S/574.html#L101'>aPad</a>              101 pcbnew_printout.h     int getDrillShape( const D_PAD* aPad ) const override;</span>
+<span class='curline'><a href='../S/574.html#L103'>aPad</a>              103 pcbnew_printout.h     VECTOR2D getDrillSize( const D_PAD* aPad ) const override;</span>
+<span class='curline'><a href='../S/578.html#L115'>aPad</a>              115 pcbplot.h          void PlotPad( D_PAD* aPad, COLOR4D aColor, EDA_DRAW_MODE_T aPlotMode );</span>
+<span class='curline'><a href='../S/605.html#L86'>aPad</a>               86 plot_brditems_plotter.cpp void BRDITEMS_PLOTTER::PlotPad( D_PAD* aPad, COLOR4D aColor, EDA_DRAW_MODE_T aPlotMode )</span>
+<span class='curline'><a href='../S/605.html#L88'>aPad</a>               88 plot_brditems_plotter.cpp     wxPoint shape_pos = aPad-&gt;ShapePos();</span>
+<span class='curline'><a href='../S/605.html#L99'>aPad</a>               99 plot_brditems_plotter.cpp     gbr_metadata.SetCmpReference( aPad-&gt;GetParent()-&gt;GetReference() );</span>
+<span class='curline'><a href='../S/605.html#L113'>aPad</a>              113 plot_brditems_plotter.cpp         gbr_metadata.SetPadName( aPad-&gt;GetName(), useUTF8, useQuoting );</span>
+<span class='curline'><a href='../S/605.html#L115'>aPad</a>              115 plot_brditems_plotter.cpp         if( !aPad-&gt;GetName().IsEmpty() )</span>
+<span class='curline'><a href='../S/605.html#L116'>aPad</a>              116 plot_brditems_plotter.cpp             gbr_metadata.SetPadPinFunction( aPad-&gt;GetPinFunction(), useUTF8, useQuoting );</span>
+<span class='curline'><a href='../S/605.html#L118'>aPad</a>              118 plot_brditems_plotter.cpp         gbr_metadata.SetNetName( aPad-&gt;GetNetname() );</span>
+<span class='curline'><a href='../S/605.html#L123'>aPad</a>              123 plot_brditems_plotter.cpp         if( aPad-&gt;GetAttribute() == PAD_ATTRIB_HOLE_NOT_PLATED || aPad-&gt;GetName().IsEmpty() )</span>
+<span class='curline'><a href='../S/605.html#L144'>aPad</a>              144 plot_brditems_plotter.cpp         switch( aPad-&gt;GetAttribute() )</span>
+<span class='curline'><a href='../S/605.html#L168'>aPad</a>              168 plot_brditems_plotter.cpp         switch( aPad-&gt;GetProperty() )</span>
+<span class='curline'><a href='../S/605.html#L201'>aPad</a>              201 plot_brditems_plotter.cpp         if( aPad-&gt;GetAttribute() == PAD_ATTRIB_HOLE_NOT_PLATED )</span>
+<span class='curline'><a href='../S/605.html#L216'>aPad</a>              216 plot_brditems_plotter.cpp     switch( aPad-&gt;GetShape() )</span>
+<span class='curline'><a href='../S/605.html#L219'>aPad</a>              219 plot_brditems_plotter.cpp         m_plotter-&gt;FlashPadCircle( shape_pos, aPad-&gt;GetSize().x, aPlotMode, &amp;gbr_metadata );</span>
+<span class='curline'><a href='../S/605.html#L223'>aPad</a>              223 plot_brditems_plotter.cpp         m_plotter-&gt;FlashPadOval( shape_pos, aPad-&gt;GetSize(),</span>
+<span class='curline'><a href='../S/605.html#L224'>aPad</a>              224 plot_brditems_plotter.cpp                                  aPad-&gt;GetOrientation(), aPlotMode, &amp;gbr_metadata );</span>
+<span class='curline'><a href='../S/605.html#L228'>aPad</a>              228 plot_brditems_plotter.cpp         m_plotter-&gt;FlashPadRect( shape_pos, aPad-&gt;GetSize(), aPad-&gt;GetOrientation(), aPlotMode,</span>
+<span class='curline'><a href='../S/605.html#L233'>aPad</a>              233 plot_brditems_plotter.cpp         m_plotter-&gt;FlashPadRoundRect( shape_pos, aPad-&gt;GetSize(), aPad-&gt;GetRoundRectCornerRadius(),</span>
+<span class='curline'><a href='../S/605.html#L234'>aPad</a>              234 plot_brditems_plotter.cpp                                       aPad-&gt;GetOrientation(), aPlotMode, &amp;gbr_metadata );</span>
+<span class='curline'><a href='../S/605.html#L242'>aPad</a>              242 plot_brditems_plotter.cpp         const std::shared_ptr&lt;SHAPE_POLY_SET&gt;&amp; polygons = aPad-&gt;GetEffectivePolygon();</span>
+<span class='curline'><a href='../S/605.html#L246'>aPad</a>              246 plot_brditems_plotter.cpp             m_plotter-&gt;FlashPadCustom( shape_pos, aPad-&gt;GetSize(), polygons.get(), aPlotMode,</span>
+<span class='curline'><a href='../S/658.html#L569'>aPad</a>              569 router/pns_kicad_iface.cpp std::unique_ptr&lt;PNS::SOLID&gt; PNS_KICAD_IFACE_BASE::syncPad( D_PAD* aPad )</span>
+<span class='curline'><a href='../S/658.html#L574'>aPad</a>              574 router/pns_kicad_iface.cpp     if( ( aPad-&gt;GetLayerSet() &amp; LSET::AllCuMask()).none() )</span>
+<span class='curline'><a href='../S/658.html#L577'>aPad</a>              577 router/pns_kicad_iface.cpp     switch( aPad-&gt;GetAttribute() )</span>
+<span class='curline'><a href='../S/658.html#L586'>aPad</a>              586 router/pns_kicad_iface.cpp             LSET lmsk = aPad-&gt;GetLayerSet();</span>
+<span class='curline'><a href='../S/658.html#L595'>aPad</a>              595 router/pns_kicad_iface.cpp                     if( aPad-&gt;GetAttribute() != PAD_ATTRIB_HOLE_NOT_PLATED )</span>
+<span class='curline'><a href='../S/658.html#L608'>aPad</a>              608 router/pns_kicad_iface.cpp         wxLogTrace( "PNS", "unsupported pad type 0x%x", aPad-&gt;GetAttribute() );</span>
+<span class='curline'><a href='../S/658.html#L615'>aPad</a>              615 router/pns_kicad_iface.cpp     solid-&gt;SetNet( aPad-&gt;GetNetCode() );</span>
+<span class='curline'><a href='../S/658.html#L616'>aPad</a>              616 router/pns_kicad_iface.cpp     solid-&gt;SetParent( aPad );</span>
+<span class='curline'><a href='../S/658.html#L617'>aPad</a>              617 router/pns_kicad_iface.cpp     solid-&gt;SetPadToDie( aPad-&gt;GetPadToDieLength() );</span>
+<span class='curline'><a href='../S/658.html#L619'>aPad</a>              619 router/pns_kicad_iface.cpp     wxPoint wx_c = aPad-&gt;ShapePos();</span>
+<span class='curline'><a href='../S/658.html#L620'>aPad</a>              620 router/pns_kicad_iface.cpp     wxSize  wx_sz = aPad-&gt;GetSize();</span>
+<span class='curline'><a href='../S/658.html#L621'>aPad</a>              621 router/pns_kicad_iface.cpp     wxPoint offset = aPad-&gt;GetOffset();</span>
+<span class='curline'><a href='../S/658.html#L625'>aPad</a>              625 router/pns_kicad_iface.cpp     RotatePoint( &amp;offset, aPad-&gt;GetOrientation() );</span>
+<span class='curline'><a href='../S/658.html#L630'>aPad</a>              630 router/pns_kicad_iface.cpp     if( aPad-&gt;GetEffectiveShapes().size() == 1 )</span>
+<span class='curline'><a href='../S/658.html#L632'>aPad</a>              632 router/pns_kicad_iface.cpp         solid-&gt;SetShape( aPad-&gt;GetEffectiveShapes()[0]-&gt;Clone() );</span>
+<span class='curline'><a href='../S/658.html#L639'>aPad</a>              639 router/pns_kicad_iface.cpp         const std::shared_ptr&lt;SHAPE_POLY_SET&gt;&amp; outline = aPad-&gt;GetEffectivePolygon();</span>
+<span class='curline'><a href='../S/659.html#L84'>aPad</a>               84 router/pns_kicad_iface.h     std::unique_ptr&lt;PNS::SOLID&gt; syncPad( D_PAD* aPad );</span>
+<span class='curline'><a href='../S/679.html#L868'>aPad</a>              868 router/pns_optimizer.cpp int OPTIMIZER::smartPadsSingle( LINE* aLine, ITEM* aPad, bool aEnd, int aEndVertex )</span>
+<span class='curline'><a href='../S/679.html#L878'>aPad</a>              878 router/pns_optimizer.cpp     SOLID* solid = dyn_cast&lt;SOLID*&gt;( aPad );</span>
+<span class='curline'><a href='../S/679.html#L885'>aPad</a>              885 router/pns_optimizer.cpp     BREAKOUT_LIST    breakouts = computeBreakouts( aLine-&gt;Width(), aPad, true );</span>
+<span class='curline'><a href='../S/680.html#L184'>aPad</a>              184 router/pns_optimizer.h     int smartPadsSingle( LINE* aLine, ITEM* aPad, bool aEnd, int aEndVertex );</span>
+<span class='curline'><a href='../S/683.html#L252'>aPad</a>              252 router/pns_router.h     ITEM* syncPad( D_PAD* aPad );</span>
+<span class='curline'><a href='../S/683.html#L256'>aPad</a>              256 router/pns_router.h     void commitPad( SOLID* aPad );</span>
+<span class='curline'><a href='../S/715.html#L3782'>aPad</a>             3782 specctra_import_export/specctra.h     PADSTACK* makePADSTACK( BOARD* aBoard, D_PAD* aPad );</span>
+<span class='curline'><a href='../S/717.html#L202'>aPad</a>              202 specctra_import_export/specctra_export.cpp static bool isRoundKeepout( D_PAD* aPad )</span>
+<span class='curline'><a href='../S/717.html#L204'>aPad</a>              204 specctra_import_export/specctra_export.cpp     if( aPad-&gt;GetShape()==PAD_SHAPE_CIRCLE )</span>
+<span class='curline'><a href='../S/717.html#L206'>aPad</a>              206 specctra_import_export/specctra_export.cpp         if( aPad-&gt;GetDrillSize().x &gt;= aPad-&gt;GetSize().x )</span>
+<span class='curline'><a href='../S/717.html#L209'>aPad</a>              209 specctra_import_export/specctra_export.cpp         if( !( aPad-&gt;GetLayerSet() &amp; LSET::AllCuMask() ).any() )</span>
+<span class='curline'><a href='../S/717.html#L232'>aPad</a>              232 specctra_import_export/specctra_export.cpp PADSTACK* SPECCTRA_DB::makePADSTACK( BOARD* aBoard, D_PAD* aPad )</span>
+<span class='curline'><a href='../S/717.html#L238'>aPad</a>              238 specctra_import_export/specctra_export.cpp     wxASSERT( !isRoundKeepout( aPad ) );</span>
+<span class='curline'><a href='../S/717.html#L249'>aPad</a>              249 specctra_import_export/specctra_export.cpp     bool onAllCopperLayers = ( (aPad-&gt;GetLayerSet() &amp; all_cu) == all_cu );</span>
+<span class='curline'><a href='../S/717.html#L260'>aPad</a>              260 specctra_import_export/specctra_export.cpp         if( onAllCopperLayers || aPad-&gt;IsOnLayer( kilayer ) )</span>
+<span class='curline'><a href='../S/717.html#L280'>aPad</a>              280 specctra_import_export/specctra_export.cpp     if( aPad-&gt;GetOffset().x || aPad-&gt;GetOffset().y )</span>
+<span class='curline'><a href='../S/717.html#L284'>aPad</a>              284 specctra_import_export/specctra_export.cpp         wxPoint offset( aPad-&gt;GetOffset().x, aPad-&gt;GetOffset().y );</span>
+<span class='curline'><a href='../S/717.html#L295'>aPad</a>              295 specctra_import_export/specctra_export.cpp     switch( aPad-&gt;GetShape() )</span>
+<span class='curline'><a href='../S/717.html#L299'>aPad</a>              299 specctra_import_export/specctra_export.cpp             double diameter = scale( aPad-&gt;GetSize().x );</span>
+<span class='curline'><a href='../S/717.html#L317'>aPad</a>              317 specctra_import_export/specctra_export.cpp                       uniqifier.c_str(), IU2um( aPad-&gt;GetSize().x ) );</span>
+<span class='curline'><a href='../S/717.html#L327'>aPad</a>              327 specctra_import_export/specctra_export.cpp             double  dx  = scale( aPad-&gt;GetSize().x ) / 2.0;</span>
+<span class='curline'><a href='../S/717.html#L328'>aPad</a>              328 specctra_import_export/specctra_export.cpp             double  dy  = scale( aPad-&gt;GetSize().y ) / 2.0;</span>
+<span class='curline'><a href='../S/717.html#L352'>aPad</a>              352 specctra_import_export/specctra_export.cpp                       IU2um( aPad-&gt;GetSize().x ),</span>
+<span class='curline'><a href='../S/717.html#L353'>aPad</a>              353 specctra_import_export/specctra_export.cpp                       IU2um( aPad-&gt;GetSize().y ) );</span>
+<span class='curline'><a href='../S/717.html#L363'>aPad</a>              363 specctra_import_export/specctra_export.cpp             double  dx  = scale( aPad-&gt;GetSize().x ) / 2.0;</span>
+<span class='curline'><a href='../S/717.html#L364'>aPad</a>              364 specctra_import_export/specctra_export.cpp             double  dy  = scale( aPad-&gt;GetSize().y ) / 2.0;</span>
+<span class='curline'><a href='../S/717.html#L404'>aPad</a>              404 specctra_import_export/specctra_export.cpp                       IU2um( aPad-&gt;GetSize().x ),</span>
+<span class='curline'><a href='../S/717.html#L405'>aPad</a>              405 specctra_import_export/specctra_export.cpp                       IU2um( aPad-&gt;GetSize().y ) );</span>
+<span class='curline'><a href='../S/717.html#L414'>aPad</a>              414 specctra_import_export/specctra_export.cpp             double  dx  = scale( aPad-&gt;GetSize().x ) / 2.0;</span>
+<span class='curline'><a href='../S/717.html#L415'>aPad</a>              415 specctra_import_export/specctra_export.cpp             double  dy  = scale( aPad-&gt;GetSize().y ) / 2.0;</span>
+<span class='curline'><a href='../S/717.html#L417'>aPad</a>              417 specctra_import_export/specctra_export.cpp             double  ddx = scale( aPad-&gt;GetDelta().x ) / 2.0;</span>
+<span class='curline'><a href='../S/717.html#L418'>aPad</a>              418 specctra_import_export/specctra_export.cpp             double  ddy = scale( aPad-&gt;GetDelta().y ) / 2.0;</span>
+<span class='curline'><a href='../S/717.html#L452'>aPad</a>              452 specctra_import_export/specctra_export.cpp                      uniqifier.c_str(), IU2um( aPad-&gt;GetSize().x ), IU2um( aPad-&gt;GetSize().y ),</span>
+<span class='curline'><a href='../S/717.html#L453'>aPad</a>              453 specctra_import_export/specctra_export.cpp                      aPad-&gt;GetDelta().x &lt; 0 ? 'n' : 'p',</span>
+<span class='curline'><a href='../S/717.html#L454'>aPad</a>              454 specctra_import_export/specctra_export.cpp                      std::abs( IU2um( aPad-&gt;GetDelta().x )),</span>
+<span class='curline'><a href='../S/717.html#L455'>aPad</a>              455 specctra_import_export/specctra_export.cpp                      aPad-&gt;GetDelta().y &lt; 0 ? 'n' : 'p',</span>
+<span class='curline'><a href='../S/717.html#L456'>aPad</a>              456 specctra_import_export/specctra_export.cpp                      std::abs( IU2um( aPad-&gt;GetDelta().y ) )</span>
+<span class='curline'><a href='../S/717.html#L469'>aPad</a>              469 specctra_import_export/specctra_export.cpp             int rradius = aPad-&gt;GetRoundRectCornerRadius();</span>
+<span class='curline'><a href='../S/717.html#L481'>aPad</a>              481 specctra_import_export/specctra_export.cpp             wxSize psize = aPad-&gt;GetSize();</span>
+<span class='curline'><a href='../S/717.html#L485'>aPad</a>              485 specctra_import_export/specctra_export.cpp             bool doChamfer = aPad-&gt;GetShape() == PAD_SHAPE_CHAMFERED_RECT;</span>
+<span class='curline'><a href='../S/717.html#L489'>aPad</a>              489 specctra_import_export/specctra_export.cpp                                          aPad-&gt;GetChamferRectRatio(),</span>
+<span class='curline'><a href='../S/717.html#L490'>aPad</a>              490 specctra_import_export/specctra_export.cpp                                          doChamfer ? aPad-&gt;GetChamferPositions() : 0,</span>
+<span class='curline'><a href='../S/717.html#L525'>aPad</a>              525 specctra_import_export/specctra_export.cpp                       IU2um( aPad-&gt;GetSize().x ),</span>
+<span class='curline'><a href='../S/717.html#L526'>aPad</a>              526 specctra_import_export/specctra_export.cpp                       IU2um( aPad-&gt;GetSize().y ), IU2um( rradius ) );</span>
+<span class='curline'><a href='../S/717.html#L538'>aPad</a>              538 specctra_import_export/specctra_export.cpp             aPad-&gt;MergePrimitivesAsPolygon( &amp;pad_shape );</span>
+<span class='curline'><a href='../S/717.html#L575'>aPad</a>              575 specctra_import_export/specctra_export.cpp             EDA_RECT rect = aPad-&gt;GetBoundingBox();</span>
+<span class='curline'><a href='../S/717.html#L577'>aPad</a>              577 specctra_import_export/specctra_export.cpp                      uniqifier.c_str(), IU2um( aPad-&gt;GetSize().x ), IU2um( aPad-&gt;GetSize().y ),</span>
+<span class='curline'><a href='../S/765.html#L758'>aPad</a>              758 tools/edit_tool.cpp static void mirrorPadX( D_PAD&amp; aPad, const wxPoint&amp; aMirrorPoint )</span>
+<span class='curline'><a href='../S/765.html#L760'>aPad</a>              760 tools/edit_tool.cpp     if( aPad.GetShape() == PAD_SHAPE_CUSTOM )</span>
+<span class='curline'><a href='../S/765.html#L761'>aPad</a>              761 tools/edit_tool.cpp         aPad.FlipPrimitives( true );  // mirror primitives left to right</span>
+<span class='curline'><a href='../S/765.html#L763'>aPad</a>              763 tools/edit_tool.cpp     wxPoint tmpPt = mirrorPointX( aPad.GetPosition(), aMirrorPoint );</span>
+<span class='curline'><a href='../S/765.html#L764'>aPad</a>              764 tools/edit_tool.cpp     aPad.SetPosition( tmpPt );</span>
+<span class='curline'><a href='../S/765.html#L766'>aPad</a>              766 tools/edit_tool.cpp     aPad.SetX0( aPad.GetPosition().x );</span>
+<span class='curline'><a href='../S/765.html#L768'>aPad</a>              768 tools/edit_tool.cpp     tmpPt = aPad.GetOffset();</span>
+<span class='curline'><a href='../S/765.html#L770'>aPad</a>              770 tools/edit_tool.cpp     aPad.SetOffset( tmpPt );</span>
+<span class='curline'><a href='../S/765.html#L772'>aPad</a>              772 tools/edit_tool.cpp     auto tmpz = aPad.GetDelta();</span>
+<span class='curline'><a href='../S/765.html#L774'>aPad</a>              774 tools/edit_tool.cpp     aPad.SetDelta( tmpz );</span>
+<span class='curline'><a href='../S/765.html#L776'>aPad</a>              776 tools/edit_tool.cpp     aPad.SetOrientation( -aPad.GetOrientation() );</span>
+<span class='curline'><a href='../S/773.html#L558'>aPad</a>              558 tools/pad_tool.cpp PCB_LAYER_ID PAD_TOOL::explodePad( D_PAD* aPad )</span>
+<span class='curline'><a href='../S/773.html#L563'>aPad</a>              563 tools/pad_tool.cpp     if( aPad-&gt;IsOnLayer( F_Cu ) )</span>
+<span class='curline'><a href='../S/773.html#L565'>aPad</a>              565 tools/pad_tool.cpp     else if( aPad-&gt;IsOnLayer( B_Cu ) )</span>
+<span class='curline'><a href='../S/773.html#L568'>aPad</a>              568 tools/pad_tool.cpp         layer = *aPad-&gt;GetLayerSet().UIOrder();</span>
+<span class='curline'><a href='../S/773.html#L570'>aPad</a>              570 tools/pad_tool.cpp     if( aPad-&gt;GetShape() == PAD_SHAPE_CUSTOM )</span>
+<span class='curline'><a href='../S/773.html#L572'>aPad</a>              572 tools/pad_tool.cpp         commit.Modify( aPad );</span>
+<span class='curline'><a href='../S/773.html#L574'>aPad</a>              574 tools/pad_tool.cpp         for( const std::shared_ptr&lt;DRAWSEGMENT&gt;&amp; primitive : aPad-&gt;GetPrimitives() )</span>
+<span class='curline'><a href='../S/773.html#L587'>aPad</a>              587 tools/pad_tool.cpp             ds-&gt;Move( aPad-&gt;GetPosition() );</span>
+<span class='curline'><a href='../S/773.html#L588'>aPad</a>              588 tools/pad_tool.cpp             ds-&gt;Rotate( aPad-&gt;GetPosition(), aPad-&gt;GetOrientation() );</span>
+<span class='curline'><a href='../S/773.html#L594'>aPad</a>              594 tools/pad_tool.cpp         aPad-&gt;SetShape( aPad-&gt;GetAnchorPadShape() );</span>
+<span class='curline'><a href='../S/773.html#L595'>aPad</a>              595 tools/pad_tool.cpp         aPad-&gt;DeletePrimitivesList();</span>
+<span class='curline'><a href='../S/773.html#L596'>aPad</a>              596 tools/pad_tool.cpp         m_editPad = aPad-&gt;m_Uuid;</span>
+<span class='curline'><a href='../S/773.html#L605'>aPad</a>              605 tools/pad_tool.cpp void PAD_TOOL::recombinePad( D_PAD* aPad )</span>
+<span class='curline'><a href='../S/773.html#L610'>aPad</a>              610 tools/pad_tool.cpp                         aPad-&gt;TransformShapeWithClearanceToPolygon( padPoly, 0 );</span>
+<span class='curline'><a href='../S/773.html#L636'>aPad</a>              636 tools/pad_tool.cpp     if( aPad-&gt;IsOnLayer( F_Cu ) )</span>
+<span class='curline'><a href='../S/773.html#L638'>aPad</a>              638 tools/pad_tool.cpp     else if( aPad-&gt;IsOnLayer( B_Cu ) )</span>
+<span class='curline'><a href='../S/773.html#L641'>aPad</a>              641 tools/pad_tool.cpp         layer = *aPad-&gt;GetLayerSet().UIOrder();</span>
+<span class='curline'><a href='../S/773.html#L645'>aPad</a>              645 tools/pad_tool.cpp         commit.Modify( aPad );</span>
+<span class='curline'><a href='../S/773.html#L650'>aPad</a>              650 tools/pad_tool.cpp         if( aPad-&gt;GetShape() == PAD_SHAPE_RECT || aPad-&gt;GetShape() == PAD_SHAPE_CIRCLE )</span>
+<span class='curline'><a href='../S/773.html#L652'>aPad</a>              652 tools/pad_tool.cpp             aPad-&gt;SetAnchorPadShape( aPad-&gt;GetShape() );</span>
+<span class='curline'><a href='../S/773.html#L654'>aPad</a>              654 tools/pad_tool.cpp         else if( aPad-&gt;GetShape() != PAD_SHAPE_CUSTOM )</span>
+<span class='curline'><a href='../S/773.html#L660'>aPad</a>              660 tools/pad_tool.cpp             aPad-&gt;TransformShapeWithClearanceToPolygon( existingOutline, 0, maxError );</span>
+<span class='curline'><a href='../S/773.html#L662'>aPad</a>              662 tools/pad_tool.cpp             aPad-&gt;SetAnchorPadShape( PAD_SHAPE_CIRCLE );</span>
+<span class='curline'><a href='../S/773.html#L664'>aPad</a>              664 tools/pad_tool.cpp             aPad-&gt;SetSize( aPad-&gt;GetDrillSize() + minAnnulus );</span>
+<span class='curline'><a href='../S/773.html#L665'>aPad</a>              665 tools/pad_tool.cpp             aPad-&gt;SetOffset( wxPoint( 0, 0 ) );</span>
+<span class='curline'><a href='../S/773.html#L670'>aPad</a>              670 tools/pad_tool.cpp             shape-&gt;Move( - aPad-&gt;GetPosition() );</span>
+<span class='curline'><a href='../S/773.html#L671'>aPad</a>              671 tools/pad_tool.cpp             shape-&gt;Rotate( wxPoint( 0, 0 ), - aPad-&gt;GetOrientation() );</span>
+<span class='curline'><a href='../S/773.html#L673'>aPad</a>              673 tools/pad_tool.cpp             aPad-&gt;AddPrimitive( shape );</span>
+<span class='curline'><a href='../S/773.html#L676'>aPad</a>              676 tools/pad_tool.cpp         aPad-&gt;SetShape( PAD_SHAPE_CUSTOM );</span>
+<span class='curline'><a href='../S/773.html#L691'>aPad</a>              691 tools/pad_tool.cpp         ds-&gt;Move( - aPad-&gt;GetPosition() );</span>
+<span class='curline'><a href='../S/773.html#L692'>aPad</a>              692 tools/pad_tool.cpp         ds-&gt;Rotate( wxPoint( 0, 0 ), - aPad-&gt;GetOrientation() );</span>
+<span class='curline'><a href='../S/773.html#L693'>aPad</a>              693 tools/pad_tool.cpp         aPad-&gt;AddPrimitive( ds );</span>
+<span class='curline'><a href='../S/774.html#L92'>aPad</a>               92 tools/pad_tool.h     PCB_LAYER_ID explodePad( D_PAD* aPad );</span>
+<span class='curline'><a href='../S/774.html#L93'>aPad</a>               93 tools/pad_tool.h     void recombinePad( D_PAD* aPad );</span>
+<span class='curline'><a href='../S/822.html#L415'>aPad</a>              415 zone_filler.cpp static void setupDummyPadForHole( const D_PAD* aPad, D_PAD&amp; aDummyPad )</span>
+<span class='curline'><a href='../S/822.html#L417'>aPad</a>              417 zone_filler.cpp     aDummyPad.SetNetCode( aPad-&gt;GetNetCode() );</span>
+<span class='curline'><a href='../S/822.html#L418'>aPad</a>              418 zone_filler.cpp     aDummyPad.SetSize( aPad-&gt;GetDrillSize() );</span>
+<span class='curline'><a href='../S/822.html#L419'>aPad</a>              419 zone_filler.cpp     aDummyPad.SetOrientation( aPad-&gt;GetOrientation() );</span>
+<span class='curline'><a href='../S/822.html#L420'>aPad</a>              420 zone_filler.cpp     aDummyPad.SetShape( aPad-&gt;GetDrillShape() == PAD_DRILL_SHAPE_OBLONG ? PAD_SHAPE_OVAL</span>
+<span class='curline'><a href='../S/822.html#L422'>aPad</a>              422 zone_filler.cpp     aDummyPad.SetPosition( aPad-&gt;GetPosition() );</span>
+<span class='curline'><a href='../S/822.html#L430'>aPad</a>              430 zone_filler.cpp void ZONE_FILLER::addKnockout( D_PAD* aPad, int aGap, SHAPE_POLY_SET&amp; aHoles )</span>
+<span class='curline'><a href='../S/822.html#L432'>aPad</a>              432 zone_filler.cpp     if( aPad-&gt;GetShape() == PAD_SHAPE_CUSTOM )</span>
+<span class='curline'><a href='../S/822.html#L435'>aPad</a>              435 zone_filler.cpp         aPad-&gt;TransformShapeWithClearanceToPolygon( poly, aGap, m_high_def );</span>
+<span class='curline'><a href='../S/822.html#L438'>aPad</a>              438 zone_filler.cpp         if( aPad-&gt;GetCustomShapeInZoneOpt() == CUST_PAD_SHAPE_IN_ZONE_CONVEXHULL )</span>
+<span class='curline'><a href='../S/822.html#L456'>aPad</a>              456 zone_filler.cpp         if( aPad-&gt;GetShape() == PAD_SHAPE_CIRCLE || aPad-&gt;GetShape() == PAD_SHAPE_OVAL ||</span>
+<span class='curline'><a href='../S/822.html#L457'>aPad</a>              457 zone_filler.cpp           ( aPad-&gt;GetShape() == PAD_SHAPE_ROUNDRECT &amp;&amp; aPad-&gt;GetRoundRectRadiusRatio() &gt; 0.4 ) )</span>
+<span class='curline'><a href='../S/822.html#L458'>aPad</a>              458 zone_filler.cpp             aPad-&gt;TransformShapeWithClearanceToPolygon( aHoles, aGap, m_high_def );</span>
+<span class='curline'><a href='../S/822.html#L460'>aPad</a>              460 zone_filler.cpp             aPad-&gt;TransformShapeWithClearanceToPolygon( aHoles, aGap, m_low_def );</span>
+<span class='curline'><a href='../S/823.html#L50'>aPad</a>               50 zone_filler.h      void addKnockout( D_PAD* aPad, int aGap, SHAPE_POLY_SET&amp; aHoles );</span>
+</pre>
+</body>
+</html>

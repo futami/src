@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>router/pns_item.cpp</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/840.html'>router</a>/pns_item.cpp</h2>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L30'>[^]</a><a href='#L71'>[v]</a>[top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L30' title='Defined at 30.'>collideSimple</a></li>
+<li><a href='#L48' title='Defined at 48.'>Collide</a></li>
+<li><a href='#L71' title='Defined at 71.'>KindStr</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * KiRouter - a push-and-(sometimes-)shove PCB router</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 2013-2014 CERN</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> * Copyright (C) 2016-2019 KiCad Developers, see AUTHORS.txt for contributors.</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> * Author: Tomasz Wlostowski &lt;tomasz.wlostowski@cern.ch&gt;</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> *</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * This program is free software: you can redistribute it and/or modify it</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * under the terms of the GNU General Public License as published by the</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> * Free Software Foundation, either version 3 of the License, or (at your</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> * option) any later version.</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> *</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * This program is distributed in the hope that it will be useful, but</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> * General Public License for more details.</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> *</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * You should have received a copy of the GNU General Public License along</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> * with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> */</em>
+<a id='L21' name='L21'></a>  21 
+<a id='L22' name='L22'></a>  22 <em class='sharp'>#include</em> "<a href='678.html'>pns_node.h</a>"
+<a id='L23' name='L23'></a>  23 <em class='sharp'>#include</em> "<a href='654.html'>pns_item.h</a>"
+<a id='L24' name='L24'></a>  24 <em class='sharp'>#include</em> "<a href='662.html'>pns_line.h</a>"
+<a id='L25' name='L25'></a>  25 
+<a id='L26' name='L26'></a>  26 <strong class='reserved'>typedef</strong> <a href='../Y/4788.html' title='Multiple used in 795 places.'>VECTOR2I</a>::<a href='../Y/7832.html' title='Multiple used in 9 places.'>extended_type</a> <a href='../R/3718.html' title='Multiple referred from 13 places.'>ecoord</a>;
+<a id='L27' name='L27'></a>  27 
+<a id='L28' name='L28'></a>  28 <strong class='reserved'>namespace</strong> <a href='../R/2447.html' title='Multiple referred from 214 places.'>PNS</a> <em class='brace'>{</em>
+<a id='L29' name='L29'></a>  29 
+<a id='L30' name='L30'></a>  30 <strong class='reserved'>bool</strong> <a href='../D/1783.html' title='Multiple defined in 2 places.'>ITEM</a>::<a href='../R/3543.html' title='Multiple referred from 3 places.'>collideSimple</a>( <strong class='reserved'>const</strong> <a href='../D/1783.html' title='Multiple defined in 2 places.'>ITEM</a>* <a href='../Y/5700.html' title='Multiple used in 324 places.'>aOther</a>, <strong class='reserved'>int</strong> <a href='../Y/5084.html' title='Multiple used in 75 places.'>aClearance</a>, <strong class='reserved'>bool</strong> <a href='../Y/5614.html' title='Multiple used in 11 places.'>aNeedMTV</a>, <a href='../Y/4788.html' title='Multiple used in 795 places.'>VECTOR2I</a>* <a href='../Y/5540.html' title='Multiple used in 11 places.'>aMTV</a>,
+<a id='L31' name='L31'></a>  31                           <strong class='reserved'>const</strong> <a href='../D/2147.html' title='Multiple defined in 2 places.'>NODE</a>* <a href='../Y/5760.html' title='Multiple used in 6 places.'>aParentNode</a>, <strong class='reserved'>bool</strong> <a href='../Y/5199.html' title='Multiple used in 12 places.'>aDifferentNetsOnly</a> ) <strong class='reserved'>const</strong>
+<a id='L32' name='L32'></a>  32 <em class='brace'>{</em>
+<a id='L33' name='L33'></a>  33     <em class='comment'>// same nets? no collision!</em>
+<a id='L34' name='L34'></a>  34     <strong class='reserved'>if</strong>( <a href='../Y/5199.html' title='Multiple used in 12 places.'>aDifferentNetsOnly</a> &amp;&amp; <a href='../Y/11385.html' title='Multiple used in 50 places.'>m_net</a> == <a href='../Y/5700.html' title='Multiple used in 324 places.'>aOther</a>-&gt;<a href='../Y/11385.html' title='Multiple used in 50 places.'>m_net</a> &amp;&amp; <a href='../Y/11385.html' title='Multiple used in 50 places.'>m_net</a> &gt;= 0 &amp;&amp; <a href='../Y/5700.html' title='Multiple used in 324 places.'>aOther</a>-&gt;<a href='../Y/11385.html' title='Multiple used in 50 places.'>m_net</a> &gt;= 0 )
+<a id='L35' name='L35'></a>  35         <strong class='reserved'>return</strong> <strong class='reserved'>false</strong>;
+<a id='L36' name='L36'></a>  36 
+<a id='L37' name='L37'></a>  37     <em class='comment'>// check if we are not on completely different layers first</em>
+<a id='L38' name='L38'></a>  38     <strong class='reserved'>if</strong>( !<a href='../Y/11176.html' title='Multiple used in 88 places.'>m_layers</a>.<a href='../Y/2738.html' title='Multiple used in 24 places.'>Overlaps</a>( <a href='../Y/5700.html' title='Multiple used in 324 places.'>aOther</a>-&gt;<a href='../Y/11176.html' title='Multiple used in 88 places.'>m_layers</a> ) )
+<a id='L39' name='L39'></a>  39         <strong class='reserved'>return</strong> <strong class='reserved'>false</strong>;
+<a id='L40' name='L40'></a>  40 
+<a id='L41' name='L41'></a>  41     <strong class='reserved'>if</strong>( <a href='../Y/5614.html' title='Multiple used in 11 places.'>aNeedMTV</a> )
+<a id='L42' name='L42'></a>  42         <strong class='reserved'>return</strong> <a href='../Y/3976.html' title='Multiple used in 29 places.'>Shape</a>()-&gt;<a href='../D/462.html' title='Multiple defined in 3 places.'>Collide</a>( <a href='../Y/5700.html' title='Multiple used in 324 places.'>aOther</a>-&gt;<a href='../Y/3976.html' title='Multiple used in 29 places.'>Shape</a>(), <a href='../Y/5084.html' title='Multiple used in 75 places.'>aClearance</a>, <a href='../Y/5540.html' title='Multiple used in 11 places.'>aMTV</a> );
+<a id='L43' name='L43'></a>  43     <strong class='reserved'>else</strong>
+<a id='L44' name='L44'></a>  44         <strong class='reserved'>return</strong> <a href='../Y/3976.html' title='Multiple used in 29 places.'>Shape</a>()-&gt;<a href='../D/462.html' title='Multiple defined in 3 places.'>Collide</a>( <a href='../Y/5700.html' title='Multiple used in 324 places.'>aOther</a>-&gt;<a href='../Y/3976.html' title='Multiple used in 29 places.'>Shape</a>(), <a href='../Y/5084.html' title='Multiple used in 75 places.'>aClearance</a> );
+<a id='L45' name='L45'></a>  45 <em class='brace'>}</em>
+<a id='L46' name='L46'></a>  46 
+<a id='L47' name='L47'></a>  47 
+<a id='L48' name='L48'></a>  48 <strong class='reserved'>bool</strong> <a href='../D/1783.html' title='Multiple defined in 2 places.'>ITEM</a>::<a href='../R/439.html' title='Multiple referred from 37 places.'>Collide</a>( <strong class='reserved'>const</strong> <a href='../D/1783.html' title='Multiple defined in 2 places.'>ITEM</a>* <a href='../Y/5700.html' title='Multiple used in 324 places.'>aOther</a>, <strong class='reserved'>int</strong> <a href='../Y/5084.html' title='Multiple used in 75 places.'>aClearance</a>, <strong class='reserved'>bool</strong> <a href='../Y/5614.html' title='Multiple used in 11 places.'>aNeedMTV</a>, <a href='../Y/4788.html' title='Multiple used in 795 places.'>VECTOR2I</a>* <a href='../Y/5540.html' title='Multiple used in 11 places.'>aMTV</a>,
+<a id='L49' name='L49'></a>  49                     <strong class='reserved'>const</strong> <a href='../D/2147.html' title='Multiple defined in 2 places.'>NODE</a>* <a href='../Y/5760.html' title='Multiple used in 6 places.'>aParentNode</a>, <strong class='reserved'>bool</strong> <a href='../Y/5199.html' title='Multiple used in 12 places.'>aDifferentNetsOnly</a> ) <strong class='reserved'>const</strong>
+<a id='L50' name='L50'></a>  50 <em class='brace'>{</em>
+<a id='L51' name='L51'></a>  51     <strong class='reserved'>if</strong>( <a href='../S/653.html#L30' title='Defined at 30 in router/pns_item.cpp.'>collideSimple</a>( <a href='../Y/5700.html' title='Multiple used in 324 places.'>aOther</a>, <a href='../Y/5084.html' title='Multiple used in 75 places.'>aClearance</a>, <a href='../Y/5614.html' title='Multiple used in 11 places.'>aNeedMTV</a>, <a href='../Y/5540.html' title='Multiple used in 11 places.'>aMTV</a>, <a href='../Y/5760.html' title='Multiple used in 6 places.'>aParentNode</a>, <a href='../Y/5199.html' title='Multiple used in 12 places.'>aDifferentNetsOnly</a> ) )
+<a id='L52' name='L52'></a>  52         <strong class='reserved'>return</strong> <strong class='reserved'>true</strong>;
+<a id='L53' name='L53'></a>  53 
+<a id='L54' name='L54'></a>  54     <em class='comment'>// special case for "head" line with a via attached at the end.</em>
+<a id='L55' name='L55'></a>  55     <strong class='reserved'>if</strong>( <a href='../Y/5700.html' title='Multiple used in 324 places.'>aOther</a>-&gt;<a href='../Y/11115.html' title='Multiple used in 7 places.'>m_kind</a> == <a href='../S/654.html#L62' title='Defined at 62 in router/pns_item.h.'>LINE_T</a> )
+<a id='L56' name='L56'></a>  56     <em class='brace'>{</em>
+<a id='L57' name='L57'></a>  57         <strong class='reserved'>const</strong> <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>* <a href='../Y/9042.html' title='Multiple used in 439 places.'>line</a> = <strong class='reserved'>static_cast</strong>&lt;<strong class='reserved'>const</strong> <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>*&gt;( <a href='../Y/5700.html' title='Multiple used in 324 places.'>aOther</a> );
+<a id='L58' name='L58'></a>  58         <strong class='reserved'>int</strong> <a href='../Y/6925.html' title='Multiple used in 135 places.'>clearance</a> = <a href='../Y/5084.html' title='Multiple used in 75 places.'>aClearance</a> - <a href='../Y/9042.html' title='Multiple used in 439 places.'>line</a>-&gt;<a href='../Y/4896.html' title='Multiple used in 56 places.'>Width</a>() / 2;
+<a id='L59' name='L59'></a>  59 
+<a id='L60' name='L60'></a>  60         <strong class='reserved'>if</strong>( <a href='../Y/9042.html' title='Multiple used in 439 places.'>line</a>-&gt;<a href='../Y/937.html' title='Multiple used in 24 places.'>EndsWithVia</a>() )
+<a id='L61' name='L61'></a>  61         <em class='brace'>{</em>
+<a id='L62' name='L62'></a>  62             <strong class='reserved'>return</strong> <a href='../S/653.html#L30' title='Defined at 30 in router/pns_item.cpp.'>collideSimple</a>( &amp;<a href='../Y/9042.html' title='Multiple used in 439 places.'>line</a>-&gt;<a href='../Y/4822.html' title='Multiple used in 33 places.'>Via</a>(), <a href='../Y/6925.html' title='Multiple used in 135 places.'>clearance</a>, <a href='../Y/5614.html' title='Multiple used in 11 places.'>aNeedMTV</a>, <a href='../Y/5540.html' title='Multiple used in 11 places.'>aMTV</a>, <a href='../Y/5760.html' title='Multiple used in 6 places.'>aParentNode</a>,
+<a id='L63' name='L63'></a>  63                                   <a href='../Y/5199.html' title='Multiple used in 12 places.'>aDifferentNetsOnly</a> );
+<a id='L64' name='L64'></a>  64         <em class='brace'>}</em>
+<a id='L65' name='L65'></a>  65     <em class='brace'>}</em>
+<a id='L66' name='L66'></a>  66 
+<a id='L67' name='L67'></a>  67     <strong class='reserved'>return</strong> <strong class='reserved'>false</strong>;
+<a id='L68' name='L68'></a>  68 <em class='brace'>}</em>
+<a id='L69' name='L69'></a>  69 
+<a id='L70' name='L70'></a>  70 
+<a id='L71' name='L71'></a>  71 <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../D/4641.html' title='Multiple defined in 2 places.'>string</a> <a href='../D/1783.html' title='Multiple defined in 2 places.'>ITEM</a>::<a href='../R/1829.html' title='Multiple referred from 3 places.'>KindStr</a>() <strong class='reserved'>const</strong>
+<a id='L72' name='L72'></a>  72 <em class='brace'>{</em>
+<a id='L73' name='L73'></a>  73     <strong class='reserved'>switch</strong>( <a href='../Y/11115.html' title='Multiple used in 7 places.'>m_kind</a> )
+<a id='L74' name='L74'></a>  74     <em class='brace'>{</em>
+<a id='L75' name='L75'></a>  75     <strong class='reserved'>case</strong> <a href='../S/654.html#L65' title='Defined at 65 in router/pns_item.h.'>ARC_T</a>:     <strong class='reserved'>return</strong> "arc";
+<a id='L76' name='L76'></a>  76     <strong class='reserved'>case</strong> <a href='../S/654.html#L62' title='Defined at 62 in router/pns_item.h.'>LINE_T</a>:    <strong class='reserved'>return</strong> "line";
+<a id='L77' name='L77'></a>  77     <strong class='reserved'>case</strong> <a href='../S/654.html#L64' title='Defined at 64 in router/pns_item.h.'>SEGMENT_T</a>: <strong class='reserved'>return</strong> "segment";
+<a id='L78' name='L78'></a>  78     <strong class='reserved'>case</strong> <a href='../S/654.html#L66' title='Defined at 66 in router/pns_item.h.'>VIA_T</a>:     <strong class='reserved'>return</strong> "via";
+<a id='L79' name='L79'></a>  79     <strong class='reserved'>case</strong> <a href='../S/654.html#L63' title='Defined at 63 in router/pns_item.h.'>JOINT_T</a>:   <strong class='reserved'>return</strong> "joint";
+<a id='L80' name='L80'></a>  80     <strong class='reserved'>case</strong> <a href='../S/654.html#L61' title='Defined at 61 in router/pns_item.h.'>SOLID_T</a>:   <strong class='reserved'>return</strong> "solid";
+<a id='L81' name='L81'></a>  81     <strong class='reserved'>case</strong> <a href='../S/654.html#L67' title='Defined at 67 in router/pns_item.h.'>DIFF_PAIR_T</a>:   <strong class='reserved'>return</strong> "diff-pair";
+<a id='L82' name='L82'></a>  82     <strong class='reserved'>default</strong>:        <strong class='reserved'>return</strong> "unknown";
+<a id='L83' name='L83'></a>  83     <em class='brace'>}</em>
+<a id='L84' name='L84'></a>  84 <em class='brace'>}</em>
+<a id='L85' name='L85'></a>  85 
+<a id='L86' name='L86'></a>  86 
+<a id='L87' name='L87'></a>  87 <a href='../R/1718.html' title='Multiple referred from 531 places.'>ITEM</a>::~<a href='../D/1783.html' title='Multiple defined in 2 places.'>ITEM</a>()
+<a id='L88' name='L88'></a>  88 <em class='brace'>{</em>
+<a id='L89' name='L89'></a>  89 <em class='brace'>}</em>
+<a id='L90' name='L90'></a>  90 
+<a id='L91' name='L91'></a>  91 <em class='brace'>}</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L30'>[^]</a><a href='#L71'>[v]</a><a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

@@ -1,0 +1,767 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>class_module.h</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/class_module.h</h2>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L100'>[^]</a>[v][top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'><a href='../J/64.html' title='Multiple included from 109 places.'>INCLUDED FROM</a></h2>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L100' title='Defined at 100.'>DECL_DEQ_FOR_SWIG</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * This program source code file is part of KiCad, a free EDA CAD application.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 2015 Jean-Pierre Charras, jp.charras at wanadoo.fr</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> * Copyright (C) 1992-2020 KiCad Developers, see AUTHORS.txt for contributors.</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> *</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> * This program is free software; you can redistribute it and/or</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * modify it under the terms of the GNU General Public License</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * as published by the Free Software Foundation; either version 2</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> * of the License, or (at your option) any later version.</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> *</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> * This program is distributed in the hope that it will be useful,</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> * GNU General Public License for more details.</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> *</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> * You should have received a copy of the GNU General Public License</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * along with this program; if not, you may find one here:</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> * or you may search the http://www.gnu.org website for the version 2 license,</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'> * or you may write to the Free Software Foundation, Inc.,</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'> * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'> */</em>
+<a id='L24' name='L24'></a>  24 
+<a id='L25' name='L25'></a>  25 <em class='sharp'>#ifndef</em> <a href='../S/69.html#L26' title='Defined at 26 in class_module.h.'>MODULE_H_</a>
+<a id='L26' name='L26'></a>  26 <em class='sharp'>#define</em> <a href='../S/69.html#L25' title='Referred from 25 in class_module.h.'>MODULE_H_</a>
+<a id='L27' name='L27'></a>  27 
+<a id='L28' name='L28'></a>  28 <em class='sharp'>#include</em> &lt;deque&gt;
+<a id='L29' name='L29'></a>  29 
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#include</em> &lt;<a href='37.html'>board_item_container.h</a>&gt;
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#include</em> &lt;class_board_item.h&gt;
+<a id='L32' name='L32'></a>  32 <em class='sharp'>#include</em> &lt;<a href='86.html'>collectors.h</a>&gt;
+<a id='L33' name='L33'></a>  33 <em class='sharp'>#include</em> &lt;convert_to_biu.h&gt;
+<a id='L34' name='L34'></a>  34 <em class='sharp'>#include</em> &lt;layers_id_colors_and_visibility.h&gt; <em class='comment'>// ALL_LAYERS definition.</em>
+<a id='L35' name='L35'></a>  35 <em class='sharp'>#include</em> &lt;lib_id.h&gt;
+<a id='L36' name='L36'></a>  36 <em class='sharp'>#include</em> &lt;list&gt;
+<a id='L37' name='L37'></a>  37 
+<a id='L38' name='L38'></a>  38 <em class='sharp'>#include</em> "<a href='817.html'>zones.h</a>"
+<a id='L39' name='L39'></a>  39 <em class='sharp'>#include</em> &lt;<a href='77.html'>class_text_mod.h</a>&gt;
+<a id='L40' name='L40'></a>  40 <em class='sharp'>#include</em> &lt;<a href='81.html'>class_zone.h</a>&gt;
+<a id='L41' name='L41'></a>  41 <em class='sharp'>#include</em> &lt;functional&gt;
+<a id='L42' name='L42'></a>  42 
+<a id='L43' name='L43'></a>  43 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../Y/2373.html' title='Multiple used in 46 places.'>LINE_READER</a>;
+<a id='L44' name='L44'></a>  44 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../Y/828.html' title='Multiple used in 2 places.'>EDA_3D_CANVAS</a>;
+<a id='L45' name='L45'></a>  45 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../D/777.html' title='Multiple defined in 2 places.'>D_PAD</a>;
+<a id='L46' name='L46'></a>  46 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../S/57.html#L104' title='Defined at 104 in class_board.cpp.'>BOARD</a>;
+<a id='L47' name='L47'></a>  47 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../Y/2528.html' title='Multiple used in 53 places.'>MSG_PANEL_ITEM</a>;
+<a id='L48' name='L48'></a>  48 
+<a id='L49' name='L49'></a>  49 <a href='../Y/12795.html' title='Multiple used in 89 places.'>namespace</a> <a href='../D/1894.html' title='Multiple defined in 2 places.'>KIGFX</a> <em class='brace'>{</em>
+<a id='L50' name='L50'></a>  50 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../Y/4798.html' title='Multiple used in 92 places.'>VIEW</a>;
+<a id='L51' name='L51'></a>  51 <em class='brace'>}</em>
+<a id='L52' name='L52'></a>  52 
+<a id='L53' name='L53'></a>  53 <strong class='reserved'>enum</strong> <a href='../R/1703.html' title='Multiple referred from 4 places.'>INCLUDE_NPTH_T</a>
+<a id='L54' name='L54'></a>  54 <em class='brace'>{</em>
+<a id='L55' name='L55'></a>  55     <a href='../R/676.html' title='Multiple referred from 5 places.'>DO_NOT_INCLUDE_NPTH</a> = <a href='../Y/7859.html' title='Multiple used in 200 places.'>false</a>,
+<a id='L56' name='L56'></a>  56     <a href='../R/1702.html' title='Multiple referred from 2 places.'>INCLUDE_NPTH</a> = <a href='../Y/15117.html' title='Multiple used in 143 places.'>true</a>
+<a id='L57' name='L57'></a>  57 <em class='brace'>}</em>;
+<a id='L58' name='L58'></a>  58 
+<a id='L59' name='L59'></a>  59 <em class='comment'>/**</em>
+<a id='L60' name='L60'></a>  60 <em class='comment'> * Enum MODULE_ATTR_T</em>
+<a id='L61' name='L61'></a>  61 <em class='comment'> * is the set of attributes allowed within a MODULE, using MODULE::SetAttributes()</em>
+<a id='L62' name='L62'></a>  62 <em class='comment'> * and MODULE::GetAttributes().  These are to be ORed together when calling</em>
+<a id='L63' name='L63'></a>  63 <em class='comment'> * MODULE::SetAttributes()</em>
+<a id='L64' name='L64'></a>  64 <em class='comment'> */</em>
+<a id='L65' name='L65'></a>  65 <strong class='reserved'>enum</strong> <a href='../R/1964.html' title='Multiple referred from 2 places.'>MODULE_ATTR_T</a>
+<a id='L66' name='L66'></a>  66 <em class='brace'>{</em>
+<a id='L67' name='L67'></a>  67     <a href='../R/1976.html' title='Multiple referred from 6 places.'>MOD_DEFAULT</a> = 0,    <em class='comment'>///&lt; default</em>
+<a id='L68' name='L68'></a>  68     <a href='../R/1975.html' title='Multiple referred from 18 places.'>MOD_CMS</a>     = 1,    <em class='comment'>///&lt; Set for modules listed in the automatic insertion list</em>
+<a id='L69' name='L69'></a>  69                         <em class='comment'>///&lt; (usually SMD footprints)</em>
+<a id='L70' name='L70'></a>  70     <a href='../R/1977.html' title='Multiple referred from 17 places.'>MOD_VIRTUAL</a> = 2     <em class='comment'>///&lt; Virtual component: when created by copper shapes on</em>
+<a id='L71' name='L71'></a>  71                         <em class='comment'>///&lt;  board (Like edge card connectors, mounting hole...)</em>
+<a id='L72' name='L72'></a>  72 <em class='brace'>}</em>;
+<a id='L73' name='L73'></a>  73 
+<a id='L74' name='L74'></a>  74 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../Y/2522.html' title='Multiple used in 26 places.'>MODULE_3D_SETTINGS</a>
+<a id='L75' name='L75'></a>  75 <em class='brace'>{</em>
+<a id='L76' name='L76'></a>  76     <a href='../Y/13804.html' title='Multiple used in 833 places.'>public</a>:
+<a id='L77' name='L77'></a>  77         <a href='../Y/2522.html' title='Multiple used in 26 places.'>MODULE_3D_SETTINGS</a>() :
+<a id='L78' name='L78'></a>  78             <em class='comment'>// Initialize with sensible values</em>
+<a id='L79' name='L79'></a>  79             <a href='../Y/9974.html' title='Multiple used in 18 places.'>m_Scale</a> <em class='brace'>{</em> 1, 1, 1 <em class='brace'>}</em>,
+<a id='L80' name='L80'></a>  80             <a href='../Y/9962.html' title='Multiple used in 21 places.'>m_Rotation</a> <em class='brace'>{</em> 0, 0, 0 <em class='brace'>}</em>,
+<a id='L81' name='L81'></a>  81             <a href='../Y/9831.html' title='Multiple used in 40 places.'>m_Offset</a> <em class='brace'>{</em> 0, 0, 0 <em class='brace'>}</em>,
+<a id='L82' name='L82'></a>  82             <a href='../Y/9833.html' title='Multiple used in 6 places.'>m_Opacity</a>( 1.0 ),
+<a id='L83' name='L83'></a>  83             <a href='../Y/9989.html' title='Multiple used in 12 places.'>m_Show</a>( <a href='../Y/15117.html' title='Multiple used in 143 places.'>true</a> )
+<a id='L84' name='L84'></a>  84         <em class='brace'>{</em>
+<a id='L85' name='L85'></a>  85         <em class='brace'>}</em>
+<a id='L86' name='L86'></a>  86 
+<a id='L87' name='L87'></a>  87         <strong class='reserved'>struct</strong> <a href='../R/3213.html' title='Multiple referred from 6 places.'>VECTOR3D</a>
+<a id='L88' name='L88'></a>  88         <em class='brace'>{</em>
+<a id='L89' name='L89'></a>  89             <strong class='reserved'>double</strong> <a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a>, <a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a>, <a href='../Y/16076.html' title='Multiple used in 46 places.'>z</a>;
+<a id='L90' name='L90'></a>  90         <em class='brace'>}</em>;
+<a id='L91' name='L91'></a>  91 
+<a id='L92' name='L92'></a>  92         <a href='../S/69.html#L87' title='Defined at 87 in class_module.h.'>VECTOR3D</a> <a href='../Y/9974.html' title='Multiple used in 18 places.'>m_Scale</a>;       <em class='comment'>///&lt; 3D model scaling factor (dimensionless)</em>
+<a id='L93' name='L93'></a>  93         <a href='../S/69.html#L87' title='Defined at 87 in class_module.h.'>VECTOR3D</a> <a href='../Y/9962.html' title='Multiple used in 21 places.'>m_Rotation</a>;    <em class='comment'>///&lt; 3D model rotation (degrees)</em>
+<a id='L94' name='L94'></a>  94         <a href='../S/69.html#L87' title='Defined at 87 in class_module.h.'>VECTOR3D</a> <a href='../Y/9831.html' title='Multiple used in 40 places.'>m_Offset</a>;      <em class='comment'>///&lt; 3D model offset (mm)</em>
+<a id='L95' name='L95'></a>  95         <strong class='reserved'>double</strong>   <a href='../Y/9833.html' title='Multiple used in 6 places.'>m_Opacity</a>;
+<a id='L96' name='L96'></a>  96         <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../Y/9398.html' title='Multiple used in 23 places.'>m_Filename</a>;    <em class='comment'>///&lt; The 3D shape filename in 3D library</em>
+<a id='L97' name='L97'></a>  97         <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a>     <a href='../Y/9989.html' title='Multiple used in 12 places.'>m_Show</a>;        <em class='comment'>///&lt; Include module in rendering</em>
+<a id='L98' name='L98'></a>  98 <em class='brace'>}</em>;
+<a id='L99' name='L99'></a>  99 
+<a id='L100' name='L100'></a> 100 <a href='../R/513.html' title='Multiple referred from 3 places.'>DECL_DEQ_FOR_SWIG</a>( <a href='../Y/2743.html' title='Multiple used in 4 places.'>PADS</a>, <a href='../D/777.html' title='Multiple defined in 2 places.'>D_PAD</a>* )
+<a id='L101' name='L101'></a> 101 <a href='../S/69.html#L100' title='Defined at 100 in class_module.h.'>DECL_DEQ_FOR_SWIG</a>( <a href='../Y/716.html' title='Multiple used in 9 places.'>DRAWINGS</a>, <a href='../Y/253.html' title='Multiple used in 610 places.'>BOARD_ITEM</a>* )
+<a id='L102' name='L102'></a> 102 <a href='../D/540.html' title='Multiple defined in 2 places.'>DECL_VEC_FOR_SWIG</a>( <a href='../Y/2524.html' title='Multiple used in 4 places.'>MODULE_ZONE_CONTAINERS</a>, <a href='../D/2065.html' title='Multiple defined in 2 places.'>MODULE_ZONE_CONTAINER</a>* )
+<a id='L103' name='L103'></a> 103 <a href='../S/69.html#L100' title='Defined at 100 in class_module.h.'>DECL_DEQ_FOR_SWIG</a>( <a href='../Y/2521.html' title='Multiple used in 4 places.'>MODULES</a>, <a href='../D/2056.html' title='Multiple defined in 3 places.'>MODULE</a>* )
+<a id='L104' name='L104'></a> 104 
+<a id='L105' name='L105'></a> 105 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../D/2056.html' title='Multiple defined in 3 places.'>MODULE</a> : <a href='../Y/13804.html' title='Multiple used in 833 places.'>public</a> <a href='../Y/254.html' title='Multiple used in 32 places.'>BOARD_ITEM_CONTAINER</a>
+<a id='L106' name='L106'></a> 106 <em class='brace'>{</em>
+<a id='L107' name='L107'></a> 107 <a href='../Y/13804.html' title='Multiple used in 833 places.'>public</a>:
+<a id='L108' name='L108'></a> 108     <a href='../D/2056.html' title='Multiple defined in 3 places.'>MODULE</a>( <a href='../S/57.html#L104' title='Defined at 104 in class_board.cpp.'>BOARD</a>* <a href='../S/714.html#L3496' title='Defined at 3496 in specctra_import_export/specctra.cpp.'>parent</a> );
+<a id='L109' name='L109'></a> 109 
+<a id='L110' name='L110'></a> 110     <a href='../D/2056.html' title='Multiple defined in 3 places.'>MODULE</a>( <strong class='reserved'>const</strong> <a href='../D/2056.html' title='Multiple defined in 3 places.'>MODULE</a>&amp; <a href='../Y/5598.html' title='Multiple used in 419 places.'>aModule</a> );
+<a id='L111' name='L111'></a> 111 
+<a id='L112' name='L112'></a> 112     <em class='comment'>// Move constructor and operator needed due to std containers inside the module</em>
+<a id='L113' name='L113'></a> 113     <a href='../D/2056.html' title='Multiple defined in 3 places.'>MODULE</a>( <a href='../D/2056.html' title='Multiple defined in 3 places.'>MODULE</a>&amp;&amp; <a href='../Y/5598.html' title='Multiple used in 419 places.'>aModule</a> );
+<a id='L114' name='L114'></a> 114 
+<a id='L115' name='L115'></a> 115     ~<a href='../D/2056.html' title='Multiple defined in 3 places.'>MODULE</a>();
+<a id='L116' name='L116'></a> 116 
+<a id='L117' name='L117'></a> 117     <a href='../D/2056.html' title='Multiple defined in 3 places.'>MODULE</a>&amp; <a href='../Y/13158.html' title='Multiple used in 60 places.'>operator</a>=( <strong class='reserved'>const</strong> <a href='../D/2056.html' title='Multiple defined in 3 places.'>MODULE</a>&amp; <a href='../Y/5700.html' title='Multiple used in 324 places.'>aOther</a> );
+<a id='L118' name='L118'></a> 118     <a href='../D/2056.html' title='Multiple defined in 3 places.'>MODULE</a>&amp; <a href='../Y/13158.html' title='Multiple used in 60 places.'>operator</a>=( <a href='../D/2056.html' title='Multiple defined in 3 places.'>MODULE</a>&amp;&amp; <a href='../Y/5700.html' title='Multiple used in 324 places.'>aOther</a> );
+<a id='L119' name='L119'></a> 119 
+<a id='L120' name='L120'></a> 120     <strong class='reserved'>static</strong> <strong class='reserved'>inline</strong> <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/480.html' title='Multiple used in 23 places.'>ClassOf</a>( <strong class='reserved'>const</strong> <a href='../Y/839.html' title='Multiple used in 140 places.'>EDA_ITEM</a>* <a href='../Y/5437.html' title='Multiple used in 845 places.'>aItem</a> )
+<a id='L121' name='L121'></a> 121     <em class='brace'>{</em>
+<a id='L122' name='L122'></a> 122         <strong class='reserved'>return</strong> <a href='../Y/5437.html' title='Multiple used in 845 places.'>aItem</a> &amp;&amp; <a href='../Y/2843.html' title='Multiple used in 98 places.'>PCB_MODULE_T</a> == <a href='../Y/5437.html' title='Multiple used in 845 places.'>aItem</a>-&gt;<a href='../Y/4696.html' title='Multiple used in 393 places.'>Type</a>();
+<a id='L123' name='L123'></a> 123     <em class='brace'>}</em>
+<a id='L124' name='L124'></a> 124 
+<a id='L125' name='L125'></a> 125     <em class='comment'>///&gt; @copydoc BOARD_ITEM_CONTAINER::Add()</em>
+<a id='L126' name='L126'></a> 126     <strong class='reserved'>void</strong> <a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../Y/253.html' title='Multiple used in 610 places.'>BOARD_ITEM</a>* <a href='../Y/5437.html' title='Multiple used in 845 places.'>aItem</a>, <a href='../Y/27.html' title='Multiple used in 84 places.'>ADD_MODE</a> <a href='../Y/5593.html' title='Multiple used in 64 places.'>aMode</a> = <a href='../Y/27.html' title='Multiple used in 84 places.'>ADD_MODE</a>::<a href='../Y/1955.html' title='Multiple used in 6 places.'>INSERT</a> ) <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a>;
+<a id='L127' name='L127'></a> 127 
+<a id='L128' name='L128'></a> 128     <em class='comment'>///&gt; @copydoc BOARD_ITEM_CONTAINER::Remove()</em>
+<a id='L129' name='L129'></a> 129     <strong class='reserved'>void</strong> <a href='../D/2784.html' title='Multiple defined in 16 places.'>Remove</a>( <a href='../Y/253.html' title='Multiple used in 610 places.'>BOARD_ITEM</a>* <a href='../Y/5437.html' title='Multiple used in 845 places.'>aItem</a> ) <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a>;
+<a id='L130' name='L130'></a> 130 
+<a id='L131' name='L131'></a> 131     <em class='comment'>/**</em>
+<a id='L132' name='L132'></a> 132 <em class='comment'>     * Function ClearAllNets</em>
+<a id='L133' name='L133'></a> 133 <em class='comment'>     * Clear (i.e. force the ORPHANED dummy net info) the net info which</em>
+<a id='L134' name='L134'></a> 134 <em class='comment'>     * depends on a given board for all pads of the footprint.</em>
+<a id='L135' name='L135'></a> 135 <em class='comment'>     * This is needed when a footprint is copied between the fp editor and</em>
+<a id='L136' name='L136'></a> 136 <em class='comment'>     * the board editor for instance, because net info become fully broken</em>
+<a id='L137' name='L137'></a> 137 <em class='comment'>     */</em>
+<a id='L138' name='L138'></a> 138     <strong class='reserved'>void</strong> <a href='../S/68.html#L381' title='Defined at 381 in class_module.cpp.'>ClearAllNets</a>();
+<a id='L139' name='L139'></a> 139 
+<a id='L140' name='L140'></a> 140     <em class='comment'>/**</em>
+<a id='L141' name='L141'></a> 141 <em class='comment'>     * Function CalculateBoundingBox</em>
+<a id='L142' name='L142'></a> 142 <em class='comment'>     * calculates the bounding box in board coordinates.</em>
+<a id='L143' name='L143'></a> 143 <em class='comment'>     */</em>
+<a id='L144' name='L144'></a> 144     <strong class='reserved'>void</strong> <a href='../S/68.html#L494' title='Defined at 494 in class_module.cpp.'>CalculateBoundingBox</a>();
+<a id='L145' name='L145'></a> 145 
+<a id='L146' name='L146'></a> 146     <em class='comment'>/**</em>
+<a id='L147' name='L147'></a> 147 <em class='comment'>     * Function GetFootprintRect()</em>
+<a id='L148' name='L148'></a> 148 <em class='comment'>     * Returns the area of the module footprint excluding any text.</em>
+<a id='L149' name='L149'></a> 149 <em class='comment'>     * @return EDA_RECT - The rectangle containing the footprint.</em>
+<a id='L150' name='L150'></a> 150 <em class='comment'>     */</em>
+<a id='L151' name='L151'></a> 151     <a href='../Y/844.html' title='Multiple used in 165 places.'>EDA_RECT</a> <a href='../S/68.html#L508' title='Defined at 508 in class_module.cpp.'>GetFootprintRect</a>() <strong class='reserved'>const</strong>;
+<a id='L152' name='L152'></a> 152 
+<a id='L153' name='L153'></a> 153     <em class='comment'>/**</em>
+<a id='L154' name='L154'></a> 154 <em class='comment'>     * Returns the bounding box containing pads when the footprint</em>
+<a id='L155' name='L155'></a> 155 <em class='comment'>     * is on the front side, orientation 0, position 0,0.</em>
+<a id='L156' name='L156'></a> 156 <em class='comment'>     * mainly used in Gerber place file to draw a fp outline when the coutyard</em>
+<a id='L157' name='L157'></a> 157 <em class='comment'>     * is missing or broken</em>
+<a id='L158' name='L158'></a> 158 <em class='comment'>     * @return EDA_RECT - The rectangle containing the pads for the normalized footprint.</em>
+<a id='L159' name='L159'></a> 159 <em class='comment'>     */</em>
+<a id='L160' name='L160'></a> 160     <a href='../Y/844.html' title='Multiple used in 165 places.'>EDA_RECT</a> <a href='../S/68.html#L532' title='Defined at 532 in class_module.cpp.'>GetFpPadsLocalBbox</a>() <strong class='reserved'>const</strong>;
+<a id='L161' name='L161'></a> 161 
+<a id='L162' name='L162'></a> 162     <em class='comment'>/**</em>
+<a id='L163' name='L163'></a> 163 <em class='comment'>     * Returns a bounding polygon for the shapes and pads in the module</em>
+<a id='L164' name='L164'></a> 164 <em class='comment'>     * This operation is slower but more accurate than calculating a bounding box</em>
+<a id='L165' name='L165'></a> 165 <em class='comment'>     */</em>
+<a id='L166' name='L166'></a> 166     <a href='../Y/3235.html' title='Multiple used in 305 places.'>SHAPE_POLY_SET</a> <a href='../S/68.html#L607' title='Defined at 607 in class_module.cpp.'>GetBoundingPoly</a>() <strong class='reserved'>const</strong>;
+<a id='L167' name='L167'></a> 167 
+<a id='L168' name='L168'></a> 168     <em class='comment'>// Virtual function</em>
+<a id='L169' name='L169'></a> 169     <strong class='reserved'>const</strong> <a href='../Y/844.html' title='Multiple used in 165 places.'>EDA_RECT</a> <a href='../D/1116.html' title='Multiple defined in 11 places.'>GetBoundingBox</a>() <strong class='reserved'>const</strong> <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a>;
+<a id='L170' name='L170'></a> 170 
+<a id='L171' name='L171'></a> 171     <strong class='reserved'>const</strong> <a href='../Y/844.html' title='Multiple used in 165 places.'>EDA_RECT</a> <a href='../D/1116.html' title='Multiple defined in 11 places.'>GetBoundingBox</a>( <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/5404.html' title='Multiple used in 4 places.'>aIncludeInvisibleText</a> ) <strong class='reserved'>const</strong>;
+<a id='L172' name='L172'></a> 172 
+<a id='L173' name='L173'></a> 173     <a href='../Y/2743.html' title='Multiple used in 4 places.'>PADS</a>&amp; <a href='../Y/2931.html' title='Multiple used in 98 places.'>Pads</a>()
+<a id='L174' name='L174'></a> 174     <em class='brace'>{</em>
+<a id='L175' name='L175'></a> 175          <strong class='reserved'>return</strong> <a href='../Y/11534.html' title='Multiple used in 33 places.'>m_pads</a>;
+<a id='L176' name='L176'></a> 176     <em class='brace'>}</em>
+<a id='L177' name='L177'></a> 177 
+<a id='L178' name='L178'></a> 178     <strong class='reserved'>const</strong> <a href='../Y/2743.html' title='Multiple used in 4 places.'>PADS</a>&amp; <a href='../Y/2931.html' title='Multiple used in 98 places.'>Pads</a>() <strong class='reserved'>const</strong>
+<a id='L179' name='L179'></a> 179     <em class='brace'>{</em>
+<a id='L180' name='L180'></a> 180          <strong class='reserved'>return</strong> <a href='../Y/11534.html' title='Multiple used in 33 places.'>m_pads</a>;
+<a id='L181' name='L181'></a> 181     <em class='brace'>}</em>
+<a id='L182' name='L182'></a> 182 
+<a id='L183' name='L183'></a> 183     <a href='../Y/716.html' title='Multiple used in 9 places.'>DRAWINGS</a>&amp; <a href='../Y/1827.html' title='Multiple used in 42 places.'>GraphicalItems</a>()
+<a id='L184' name='L184'></a> 184     <em class='brace'>{</em>
+<a id='L185' name='L185'></a> 185         <strong class='reserved'>return</strong> <a href='../Y/10732.html' title='Multiple used in 41 places.'>m_drawings</a>;
+<a id='L186' name='L186'></a> 186     <em class='brace'>}</em>
+<a id='L187' name='L187'></a> 187 
+<a id='L188' name='L188'></a> 188     <strong class='reserved'>const</strong> <a href='../Y/716.html' title='Multiple used in 9 places.'>DRAWINGS</a>&amp; <a href='../Y/1827.html' title='Multiple used in 42 places.'>GraphicalItems</a>() <strong class='reserved'>const</strong>
+<a id='L189' name='L189'></a> 189     <em class='brace'>{</em>
+<a id='L190' name='L190'></a> 190         <strong class='reserved'>return</strong> <a href='../Y/10732.html' title='Multiple used in 41 places.'>m_drawings</a>;
+<a id='L191' name='L191'></a> 191     <em class='brace'>}</em>
+<a id='L192' name='L192'></a> 192 
+<a id='L193' name='L193'></a> 193     <a href='../Y/2524.html' title='Multiple used in 4 places.'>MODULE_ZONE_CONTAINERS</a>&amp; <a href='../Y/4925.html' title='Multiple used in 42 places.'>Zones</a>()
+<a id='L194' name='L194'></a> 194     <em class='brace'>{</em>
+<a id='L195' name='L195'></a> 195         <strong class='reserved'>return</strong> <a href='../Y/10913.html' title='Multiple used in 19 places.'>m_fp_zones</a>;
+<a id='L196' name='L196'></a> 196     <em class='brace'>}</em>
+<a id='L197' name='L197'></a> 197 
+<a id='L198' name='L198'></a> 198 
+<a id='L199' name='L199'></a> 199     <strong class='reserved'>const</strong> <a href='../Y/2524.html' title='Multiple used in 4 places.'>MODULE_ZONE_CONTAINERS</a>&amp; <a href='../Y/4925.html' title='Multiple used in 42 places.'>Zones</a>() <strong class='reserved'>const</strong>
+<a id='L200' name='L200'></a> 200     <em class='brace'>{</em>
+<a id='L201' name='L201'></a> 201         <strong class='reserved'>return</strong> <a href='../Y/10913.html' title='Multiple used in 19 places.'>m_fp_zones</a>;
+<a id='L202' name='L202'></a> 202     <em class='brace'>}</em>
+<a id='L203' name='L203'></a> 203 
+<a id='L204' name='L204'></a> 204     <em class='comment'>/**</em>
+<a id='L205' name='L205'></a> 205 <em class='comment'>     * @return true if the given module has any non smd pins, such as through hole</em>
+<a id='L206' name='L206'></a> 206 <em class='comment'>     * and therefore cannot be placed automatically.</em>
+<a id='L207' name='L207'></a> 207 <em class='comment'>     * Used in Pick and Place files writers</em>
+<a id='L208' name='L208'></a> 208 <em class='comment'>     */</em>
+<a id='L209' name='L209'></a> 209     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../S/68.html#L1610' title='Defined at 1610 in class_module.cpp.'>HasNonSMDPins</a>() <strong class='reserved'>const</strong>;
+<a id='L210' name='L210'></a> 210 
+<a id='L211' name='L211'></a> 211     <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/9077.html' title='Multiple used in 61 places.'>list</a>&lt;<a href='../Y/2522.html' title='Multiple used in 26 places.'>MODULE_3D_SETTINGS</a>&gt;&amp; <a href='../Y/2582.html' title='Multiple used in 17 places.'>Models</a>()             <em class='brace'>{</em> <strong class='reserved'>return</strong> <a href='../Y/9161.html' title='Multiple used in 11 places.'>m_3D_Drawings</a>; <em class='brace'>}</em>
+<a id='L212' name='L212'></a> 212     <strong class='reserved'>const</strong> <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/9077.html' title='Multiple used in 61 places.'>list</a>&lt;<a href='../Y/2522.html' title='Multiple used in 26 places.'>MODULE_3D_SETTINGS</a>&gt;&amp; <a href='../Y/2582.html' title='Multiple used in 17 places.'>Models</a>() <strong class='reserved'>const</strong> <em class='brace'>{</em> <strong class='reserved'>return</strong> <a href='../Y/9161.html' title='Multiple used in 11 places.'>m_3D_Drawings</a>; <em class='brace'>}</em>
+<a id='L213' name='L213'></a> 213 
+<a id='L214' name='L214'></a> 214     <strong class='reserved'>void</strong> <a href='../D/3066.html' title='Multiple defined in 5 places.'>SetPosition</a>( <strong class='reserved'>const</strong> <a href='../Y/15871.html' title='Multiple used in 1252 places.'>wxPoint</a>&amp; <a href='../Y/5815.html' title='Multiple used in 102 places.'>aPos</a> ) <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a>;
+<a id='L215' name='L215'></a> 215 
+<a id='L216' name='L216'></a> 216     <a href='../Y/15871.html' title='Multiple used in 1252 places.'>wxPoint</a> <a href='../D/1302.html' title='Multiple defined in 5 places.'>GetPosition</a>() <strong class='reserved'>const</strong> <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a> <em class='brace'>{</em> <strong class='reserved'>return</strong> <a href='../Y/9929.html' title='Multiple used in 61 places.'>m_Pos</a>; <em class='brace'>}</em>
+<a id='L217' name='L217'></a> 217 
+<a id='L218' name='L218'></a> 218     <strong class='reserved'>void</strong> <a href='../D/3054.html' title='Multiple defined in 2 places.'>SetOrientation</a>( <strong class='reserved'>double</strong> <a href='../Y/12972.html' title='Multiple used in 5 places.'>newangle</a> );
+<a id='L219' name='L219'></a> 219 
+<a id='L220' name='L220'></a> 220     <strong class='reserved'>void</strong> <a href='../Y/3725.html' title='Multiple used in 6 places.'>SetOrientationDegrees</a>( <strong class='reserved'>double</strong> <a href='../Y/5690.html' title='Multiple used in 16 places.'>aOrientation</a> ) <em class='brace'>{</em> <a href='../D/3054.html' title='Multiple defined in 2 places.'>SetOrientation</a>( <a href='../Y/5690.html' title='Multiple used in 16 places.'>aOrientation</a> * 10.0 ); <em class='brace'>}</em>
+<a id='L221' name='L221'></a> 221     <strong class='reserved'>double</strong> <a href='../Y/1586.html' title='Multiple used in 120 places.'>GetOrientation</a>() <strong class='reserved'>const</strong> <em class='brace'>{</em> <strong class='reserved'>return</strong> <a href='../Y/9845.html' title='Multiple used in 29 places.'>m_Orient</a>; <em class='brace'>}</em>
+<a id='L222' name='L222'></a> 222     <strong class='reserved'>double</strong> <a href='../Y/1587.html' title='Multiple used in 12 places.'>GetOrientationDegrees</a>() <strong class='reserved'>const</strong> <em class='brace'>{</em> <strong class='reserved'>return</strong> <a href='../Y/9845.html' title='Multiple used in 29 places.'>m_Orient</a> / 10.0; <em class='brace'>}</em>
+<a id='L223' name='L223'></a> 223     <strong class='reserved'>double</strong> <a href='../Y/1588.html' title='Multiple used in 6 places.'>GetOrientationRadians</a>() <strong class='reserved'>const</strong> <em class='brace'>{</em> <strong class='reserved'>return</strong> <a href='../Y/9845.html' title='Multiple used in 29 places.'>m_Orient</a> * <a href='../Y/2532.html' title='Multiple used in 38 places.'>M_PI</a> / 1800; <em class='brace'>}</em>
+<a id='L224' name='L224'></a> 224 
+<a id='L225' name='L225'></a> 225     <strong class='reserved'>const</strong> <a href='../Y/2356.html' title='Multiple used in 120 places.'>LIB_ID</a>&amp; <a href='../Y/1404.html' title='Multiple used in 91 places.'>GetFPID</a>() <strong class='reserved'>const</strong> <em class='brace'>{</em> <strong class='reserved'>return</strong> <a href='../Y/10914.html' title='Multiple used in 17 places.'>m_fpid</a>; <em class='brace'>}</em>
+<a id='L226' name='L226'></a> 226     <strong class='reserved'>void</strong> <a href='../Y/3508.html' title='Multiple used in 26 places.'>SetFPID</a>( <strong class='reserved'>const</strong> <a href='../Y/2356.html' title='Multiple used in 120 places.'>LIB_ID</a>&amp; <a href='../Y/5287.html' title='Multiple used in 28 places.'>aFPID</a> ) <em class='brace'>{</em> <a href='../Y/10914.html' title='Multiple used in 17 places.'>m_fpid</a> = <a href='../Y/5287.html' title='Multiple used in 28 places.'>aFPID</a>; <em class='brace'>}</em>
+<a id='L227' name='L227'></a> 227 
+<a id='L228' name='L228'></a> 228     <strong class='reserved'>const</strong> <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>&amp; <a href='../D/1161.html' title='Multiple defined in 2 places.'>GetDescription</a>() <strong class='reserved'>const</strong> <em class='brace'>{</em> <strong class='reserved'>return</strong> <a href='../Y/9347.html' title='Multiple used in 7 places.'>m_Doc</a>; <em class='brace'>}</em>
+<a id='L229' name='L229'></a> 229     <strong class='reserved'>void</strong> <a href='../Y/3455.html' title='Multiple used in 10 places.'>SetDescription</a>( <strong class='reserved'>const</strong> <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>&amp; <a href='../Y/5212.html' title='Multiple used in 3 places.'>aDoc</a> ) <em class='brace'>{</em> <a href='../Y/9347.html' title='Multiple used in 7 places.'>m_Doc</a> = <a href='../Y/5212.html' title='Multiple used in 3 places.'>aDoc</a>; <em class='brace'>}</em>
+<a id='L230' name='L230'></a> 230 
+<a id='L231' name='L231'></a> 231     <strong class='reserved'>const</strong> <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>&amp; <a href='../Y/1497.html' title='Multiple used in 10 places.'>GetKeywords</a>() <strong class='reserved'>const</strong> <em class='brace'>{</em> <strong class='reserved'>return</strong> <a href='../Y/9694.html' title='Multiple used in 7 places.'>m_KeyWord</a>; <em class='brace'>}</em>
+<a id='L232' name='L232'></a> 232     <strong class='reserved'>void</strong> <a href='../Y/3628.html' title='Multiple used in 4 places.'>SetKeywords</a>( <strong class='reserved'>const</strong> <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>&amp; <a href='../Y/5463.html' title='Multiple used in 3 places.'>aKeywords</a> ) <em class='brace'>{</em> <a href='../Y/9694.html' title='Multiple used in 7 places.'>m_KeyWord</a> = <a href='../Y/5463.html' title='Multiple used in 3 places.'>aKeywords</a>; <em class='brace'>}</em>
+<a id='L233' name='L233'></a> 233 
+<a id='L234' name='L234'></a> 234     <strong class='reserved'>const</strong> <a href='../Y/2256.html' title='Multiple used in 15 places.'>KIID_PATH</a>&amp; <a href='../D/1292.html' title='Multiple defined in 2 places.'>GetPath</a>() <strong class='reserved'>const</strong> <em class='brace'>{</em> <strong class='reserved'>return</strong> <a href='../Y/9911.html' title='Multiple used in 6 places.'>m_Path</a>; <em class='brace'>}</em>
+<a id='L235' name='L235'></a> 235     <strong class='reserved'>void</strong> <a href='../Y/3749.html' title='Multiple used in 35 places.'>SetPath</a>( <strong class='reserved'>const</strong> <a href='../Y/2256.html' title='Multiple used in 15 places.'>KIID_PATH</a>&amp; <a href='../Y/5766.html' title='Multiple used in 74 places.'>aPath</a> ) <em class='brace'>{</em> <a href='../Y/9911.html' title='Multiple used in 6 places.'>m_Path</a> = <a href='../Y/5766.html' title='Multiple used in 74 places.'>aPath</a>; <em class='brace'>}</em>
+<a id='L236' name='L236'></a> 236 
+<a id='L237' name='L237'></a> 237     <strong class='reserved'>int</strong> <a href='../Y/1528.html' title='Multiple used in 16 places.'>GetLocalSolderMaskMargin</a>() <strong class='reserved'>const</strong> <em class='brace'>{</em> <strong class='reserved'>return</strong> <a href='../Y/9737.html' title='Multiple used in 12 places.'>m_LocalSolderMaskMargin</a>; <em class='brace'>}</em>
+<a id='L238' name='L238'></a> 238     <strong class='reserved'>void</strong> <a href='../Y/3662.html' title='Multiple used in 17 places.'>SetLocalSolderMaskMargin</a>( <strong class='reserved'>int</strong> <a href='../Y/5545.html' title='Multiple used in 4 places.'>aMargin</a> ) <em class='brace'>{</em> <a href='../Y/9737.html' title='Multiple used in 12 places.'>m_LocalSolderMaskMargin</a> = <a href='../Y/5545.html' title='Multiple used in 4 places.'>aMargin</a>; <em class='brace'>}</em>
+<a id='L239' name='L239'></a> 239 
+<a id='L240' name='L240'></a> 240     <strong class='reserved'>int</strong> <a href='../D/1235.html' title='Multiple defined in 3 places.'>GetLocalClearance</a>() <strong class='reserved'>const</strong> <em class='brace'>{</em> <strong class='reserved'>return</strong> <a href='../Y/9734.html' title='Multiple used in 12 places.'>m_LocalClearance</a>; <em class='brace'>}</em>
+<a id='L241' name='L241'></a> 241     <strong class='reserved'>void</strong> <a href='../Y/3659.html' title='Multiple used in 15 places.'>SetLocalClearance</a>( <strong class='reserved'>int</strong> <a href='../Y/5084.html' title='Multiple used in 75 places.'>aClearance</a> ) <em class='brace'>{</em> <a href='../Y/9734.html' title='Multiple used in 12 places.'>m_LocalClearance</a> = <a href='../Y/5084.html' title='Multiple used in 75 places.'>aClearance</a>; <em class='brace'>}</em>
+<a id='L242' name='L242'></a> 242 
+<a id='L243' name='L243'></a> 243     <strong class='reserved'>int</strong> <a href='../D/1235.html' title='Multiple defined in 3 places.'>GetLocalClearance</a>( <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>* <a href='../Y/5982.html' title='Multiple used in 102 places.'>aSource</a> ) <strong class='reserved'>const</strong>
+<a id='L244' name='L244'></a> 244     <em class='brace'>{</em>
+<a id='L245' name='L245'></a> 245         <strong class='reserved'>if</strong>( <a href='../Y/5982.html' title='Multiple used in 102 places.'>aSource</a> )
+<a id='L246' name='L246'></a> 246             *<a href='../Y/5982.html' title='Multiple used in 102 places.'>aSource</a> = <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>::<a href='../D/1022.html' title='Multiple defined in 7 places.'>Format</a>( <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "footprint %s" ), <a href='../Y/1663.html' title='Multiple used in 115 places.'>GetReference</a>() );
+<a id='L247' name='L247'></a> 247 
+<a id='L248' name='L248'></a> 248         <strong class='reserved'>return</strong> <a href='../Y/9734.html' title='Multiple used in 12 places.'>m_LocalClearance</a>;
+<a id='L249' name='L249'></a> 249     <em class='brace'>}</em>
+<a id='L250' name='L250'></a> 250 
+<a id='L251' name='L251'></a> 251     <strong class='reserved'>int</strong> <a href='../Y/1529.html' title='Multiple used in 17 places.'>GetLocalSolderPasteMargin</a>() <strong class='reserved'>const</strong> <em class='brace'>{</em> <strong class='reserved'>return</strong> <a href='../Y/9738.html' title='Multiple used in 12 places.'>m_LocalSolderPasteMargin</a>; <em class='brace'>}</em>
+<a id='L252' name='L252'></a> 252     <strong class='reserved'>void</strong> <a href='../Y/3663.html' title='Multiple used in 15 places.'>SetLocalSolderPasteMargin</a>( <strong class='reserved'>int</strong> <a href='../Y/5545.html' title='Multiple used in 4 places.'>aMargin</a> ) <em class='brace'>{</em> <a href='../Y/9738.html' title='Multiple used in 12 places.'>m_LocalSolderPasteMargin</a> = <a href='../Y/5545.html' title='Multiple used in 4 places.'>aMargin</a>; <em class='brace'>}</em>
+<a id='L253' name='L253'></a> 253 
+<a id='L254' name='L254'></a> 254     <strong class='reserved'>double</strong> <a href='../Y/1530.html' title='Multiple used in 17 places.'>GetLocalSolderPasteMarginRatio</a>() <strong class='reserved'>const</strong> <em class='brace'>{</em> <strong class='reserved'>return</strong> <a href='../Y/9739.html' title='Multiple used in 12 places.'>m_LocalSolderPasteMarginRatio</a>; <em class='brace'>}</em>
+<a id='L255' name='L255'></a> 255     <strong class='reserved'>void</strong> <a href='../Y/3664.html' title='Multiple used in 13 places.'>SetLocalSolderPasteMarginRatio</a>( <strong class='reserved'>double</strong> <a href='../Y/5856.html' title='Multiple used in 2 places.'>aRatio</a> ) <em class='brace'>{</em> <a href='../Y/9739.html' title='Multiple used in 12 places.'>m_LocalSolderPasteMarginRatio</a> = <a href='../Y/5856.html' title='Multiple used in 2 places.'>aRatio</a>; <em class='brace'>}</em>
+<a id='L256' name='L256'></a> 256 
+<a id='L257' name='L257'></a> 257     <strong class='reserved'>void</strong> <a href='../Y/3970.html' title='Multiple used in 21 places.'>SetZoneConnection</a>( <a href='../Y/4917.html' title='Multiple used in 81 places.'>ZONE_CONNECTION</a> <a href='../Y/6093.html' title='Multiple used in 92 places.'>aType</a> ) <em class='brace'>{</em> <a href='../Y/10199.html' title='Multiple used in 13 places.'>m_ZoneConnection</a> = <a href='../Y/6093.html' title='Multiple used in 92 places.'>aType</a>; <em class='brace'>}</em>
+<a id='L258' name='L258'></a> 258     <a href='../Y/4917.html' title='Multiple used in 81 places.'>ZONE_CONNECTION</a> <a href='../Y/1820.html' title='Multiple used in 8 places.'>GetZoneConnection</a>() <strong class='reserved'>const</strong> <em class='brace'>{</em> <strong class='reserved'>return</strong> <a href='../Y/10199.html' title='Multiple used in 13 places.'>m_ZoneConnection</a>; <em class='brace'>}</em>
+<a id='L259' name='L259'></a> 259 
+<a id='L260' name='L260'></a> 260     <strong class='reserved'>void</strong> <a href='../Y/3912.html' title='Multiple used in 11 places.'>SetThermalWidth</a>( <strong class='reserved'>int</strong> <a href='../Y/6171.html' title='Multiple used in 160 places.'>aWidth</a> ) <em class='brace'>{</em> <a href='../Y/10084.html' title='Multiple used in 12 places.'>m_ThermalWidth</a> = <a href='../Y/6171.html' title='Multiple used in 160 places.'>aWidth</a>; <em class='brace'>}</em>
+<a id='L261' name='L261'></a> 261     <strong class='reserved'>int</strong> <a href='../S/70.html#L665' title='Defined at 665 in class_pad.cpp.'>GetThermalWidth</a>() <strong class='reserved'>const</strong> <em class='brace'>{</em> <strong class='reserved'>return</strong> <a href='../Y/10084.html' title='Multiple used in 12 places.'>m_ThermalWidth</a>; <em class='brace'>}</em>
+<a id='L262' name='L262'></a> 262 
+<a id='L263' name='L263'></a> 263     <strong class='reserved'>void</strong> <a href='../Y/3909.html' title='Multiple used in 11 places.'>SetThermalGap</a>( <strong class='reserved'>int</strong> <a href='../Y/5356.html' title='Multiple used in 32 places.'>aGap</a> ) <em class='brace'>{</em> <a href='../Y/10081.html' title='Multiple used in 12 places.'>m_ThermalGap</a> = <a href='../Y/5356.html' title='Multiple used in 32 places.'>aGap</a>; <em class='brace'>}</em>
+<a id='L264' name='L264'></a> 264     <strong class='reserved'>int</strong> <a href='../S/70.html#L676' title='Defined at 676 in class_pad.cpp.'>GetThermalGap</a>() <strong class='reserved'>const</strong> <em class='brace'>{</em> <strong class='reserved'>return</strong> <a href='../Y/10081.html' title='Multiple used in 12 places.'>m_ThermalGap</a>; <em class='brace'>}</em>
+<a id='L265' name='L265'></a> 265 
+<a id='L266' name='L266'></a> 266     <strong class='reserved'>int</strong> <a href='../Y/1250.html' title='Multiple used in 20 places.'>GetAttributes</a>() <strong class='reserved'>const</strong> <em class='brace'>{</em> <strong class='reserved'>return</strong> <a href='../Y/9178.html' title='Multiple used in 11 places.'>m_Attributs</a>; <em class='brace'>}</em>
+<a id='L267' name='L267'></a> 267     <strong class='reserved'>void</strong> <a href='../Y/3345.html' title='Multiple used in 12 places.'>SetAttributes</a>( <strong class='reserved'>int</strong> aAttributes ) <em class='brace'>{</em> <a href='../Y/9178.html' title='Multiple used in 11 places.'>m_Attributs</a> = aAttributes; <em class='brace'>}</em>
+<a id='L268' name='L268'></a> 268 
+<a id='L269' name='L269'></a> 269     <strong class='reserved'>void</strong> <a href='../Y/3526.html' title='Multiple used in 9 places.'>SetFlag</a>( <strong class='reserved'>int</strong> <a href='../Y/5308.html' title='Multiple used in 20 places.'>aFlag</a> ) <em class='brace'>{</em> <a href='../Y/10260.html' title='Multiple used in 6 places.'>m_arflag</a> = <a href='../Y/5308.html' title='Multiple used in 20 places.'>aFlag</a>; <em class='brace'>}</em>
+<a id='L270' name='L270'></a> 270     <strong class='reserved'>void</strong> IncrementFlag() <em class='brace'>{</em> <a href='../Y/10260.html' title='Multiple used in 6 places.'>m_arflag</a> += 1; <em class='brace'>}</em>
+<a id='L271' name='L271'></a> 271     <strong class='reserved'>int</strong> <a href='../Y/1427.html' title='Multiple used in 11 places.'>GetFlag</a>() <strong class='reserved'>const</strong> <em class='brace'>{</em> <strong class='reserved'>return</strong> <a href='../Y/10260.html' title='Multiple used in 6 places.'>m_arflag</a>; <em class='brace'>}</em>
+<a id='L272' name='L272'></a> 272 
+<a id='L273' name='L273'></a> 273     <em class='comment'>// A bit of a hack until net ties are supported as first class citizens</em>
+<a id='L274' name='L274'></a> 274     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/2163.html' title='Multiple used in 3 places.'>IsNetTie</a>() <strong class='reserved'>const</strong> <em class='brace'>{</em> <strong class='reserved'>return</strong> <a href='../Y/1497.html' title='Multiple used in 10 places.'>GetKeywords</a>().<a href='../Y/4037.html' title='Multiple used in 16 places.'>StartsWith</a>( <a href='../Y/15966.html' title='Multiple used in 1011 places.'>wxT</a>( "net tie" ) ); <em class='brace'>}</em>
+<a id='L275' name='L275'></a> 275 
+<a id='L276' name='L276'></a> 276     <strong class='reserved'>void</strong> <a href='../D/2120.html' title='Multiple defined in 14 places.'>Move</a>( <strong class='reserved'>const</strong> <a href='../Y/15871.html' title='Multiple used in 1252 places.'>wxPoint</a>&amp; <a href='../Y/5605.html' title='Multiple used in 42 places.'>aMoveVector</a> ) <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a>;
+<a id='L277' name='L277'></a> 277 
+<a id='L278' name='L278'></a> 278     <strong class='reserved'>void</strong> <a href='../D/2818.html' title='Multiple defined in 13 places.'>Rotate</a>( <strong class='reserved'>const</strong> <a href='../Y/15871.html' title='Multiple used in 1252 places.'>wxPoint</a>&amp; <a href='../Y/5898.html' title='Multiple used in 54 places.'>aRotCentre</a>, <strong class='reserved'>double</strong> <a href='../Y/4998.html' title='Multiple used in 90 places.'>aAngle</a> ) <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a>;
+<a id='L279' name='L279'></a> 279 
+<a id='L280' name='L280'></a> 280     <strong class='reserved'>void</strong> <a href='../D/1003.html' title='Multiple defined in 22 places.'>Flip</a>( <strong class='reserved'>const</strong> <a href='../Y/15871.html' title='Multiple used in 1252 places.'>wxPoint</a>&amp; <a href='../Y/5071.html' title='Multiple used in 88 places.'>aCentre</a>, <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/5310.html' title='Multiple used in 46 places.'>aFlipLeftRight</a> ) <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a>;
+<a id='L281' name='L281'></a> 281 
+<a id='L282' name='L282'></a> 282     <em class='comment'>/**</em>
+<a id='L283' name='L283'></a> 283 <em class='comment'>     * Function MoveAnchorPosition</em>
+<a id='L284' name='L284'></a> 284 <em class='comment'>     * Move the reference point of the footprint</em>
+<a id='L285' name='L285'></a> 285 <em class='comment'>     * It looks like a move footprint:</em>
+<a id='L286' name='L286'></a> 286 <em class='comment'>     * the footprints elements (pads, outlines, edges .. ) are moved</em>
+<a id='L287' name='L287'></a> 287 <em class='comment'>     * However:</em>
+<a id='L288' name='L288'></a> 288 <em class='comment'>     * - the footprint position is not modified.</em>
+<a id='L289' name='L289'></a> 289 <em class='comment'>     * - the relative (local) coordinates of these items are modified</em>
+<a id='L290' name='L290'></a> 290 <em class='comment'>     * (a move footprint does not change these local coordinates,</em>
+<a id='L291' name='L291'></a> 291 <em class='comment'>     * but changes the footprint position)</em>
+<a id='L292' name='L292'></a> 292 <em class='comment'>     */</em>
+<a id='L293' name='L293'></a> 293     <strong class='reserved'>void</strong> <a href='../S/68.html#L1265' title='Defined at 1265 in class_module.cpp.'>MoveAnchorPosition</a>( <strong class='reserved'>const</strong> <a href='../Y/15871.html' title='Multiple used in 1252 places.'>wxPoint</a>&amp; <a href='../Y/5605.html' title='Multiple used in 42 places.'>aMoveVector</a> );
+<a id='L294' name='L294'></a> 294 
+<a id='L295' name='L295'></a> 295     <em class='comment'>/**</em>
+<a id='L296' name='L296'></a> 296 <em class='comment'>     * function IsFlipped</em>
+<a id='L297' name='L297'></a> 297 <em class='comment'>     * @return true if the module is flipped, i.e. on the back side of the board</em>
+<a id='L298' name='L298'></a> 298 <em class='comment'>     */</em>
+<a id='L299' name='L299'></a> 299     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../S/70.html#L163' title='Defined at 163 in class_pad.cpp.'>IsFlipped</a>() <strong class='reserved'>const</strong> <em class='brace'>{</em> <strong class='reserved'>return</strong> <a href='../D/1216.html' title='Multiple defined in 2 places.'>GetLayer</a>() == <a href='../Y/286.html' title='Multiple used in 193 places.'>B_Cu</a>; <em class='brace'>}</em>
+<a id='L300' name='L300'></a> 300 
+<a id='L301' name='L301'></a> 301 <em class='comment'>// m_ModuleStatus bits:</em>
+<a id='L302' name='L302'></a> 302 <em class='sharp'>#define</em> <a href='../R/1972.html' title='Multiple referred from 3 places.'>MODULE_is_LOCKED</a>    0x01        <em class='comment'>///&lt; module LOCKED: no autoplace allowed</em>
+<a id='L303' name='L303'></a> 303 <em class='sharp'>#define</em> <a href='../R/1973.html' title='Multiple referred from 4 places.'>MODULE_is_PLACED</a>    0x02        <em class='comment'>///&lt; In autoplace: module automatically placed</em>
+<a id='L304' name='L304'></a> 304 <em class='sharp'>#define</em> <a href='../R/1974.html' title='Multiple referred from 3 places.'>MODULE_to_PLACE</a>     0x04        <em class='comment'>///&lt; In autoplace: module waiting for autoplace</em>
+<a id='L305' name='L305'></a> 305 <em class='sharp'>#define</em> <a href='../R/1970.html' title='Multiple referred from 4 places.'>MODULE_PADS_LOCKED</a>  0x08        <em class='comment'>///&lt; In autoplace: module waiting for autoplace</em>
+<a id='L306' name='L306'></a> 306 
+<a id='L307' name='L307'></a> 307 
+<a id='L308' name='L308'></a> 308     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/2151.html' title='Multiple used in 47 places.'>IsLocked</a>() <strong class='reserved'>const</strong> <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a>
+<a id='L309' name='L309'></a> 309     <em class='brace'>{</em>
+<a id='L310' name='L310'></a> 310         <strong class='reserved'>return</strong> ( <a href='../Y/9801.html' title='Multiple used in 18 places.'>m_ModuleStatus</a> &amp; <a href='../S/69.html#L302' title='Defined at 302 in class_module.h.'>MODULE_is_LOCKED</a> ) != 0;
+<a id='L311' name='L311'></a> 311     <em class='brace'>}</em>
+<a id='L312' name='L312'></a> 312 
+<a id='L313' name='L313'></a> 313     <em class='comment'>/**</em>
+<a id='L314' name='L314'></a> 314 <em class='comment'>     * Function SetLocked</em>
+<a id='L315' name='L315'></a> 315 <em class='comment'>     * sets the MODULE_is_LOCKED bit in the m_ModuleStatus</em>
+<a id='L316' name='L316'></a> 316 <em class='comment'>     * @param isLocked When true means turn on locked status, else unlock</em>
+<a id='L317' name='L317'></a> 317 <em class='comment'>     */</em>
+<a id='L318' name='L318'></a> 318     <strong class='reserved'>void</strong> <a href='../Y/3665.html' title='Multiple used in 22 places.'>SetLocked</a>( <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/8643.html' title='Multiple used in 4 places.'>isLocked</a> ) <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a>
+<a id='L319' name='L319'></a> 319     <em class='brace'>{</em>
+<a id='L320' name='L320'></a> 320         <strong class='reserved'>if</strong>( <a href='../Y/8643.html' title='Multiple used in 4 places.'>isLocked</a> )
+<a id='L321' name='L321'></a> 321             <a href='../Y/9801.html' title='Multiple used in 18 places.'>m_ModuleStatus</a> |= <a href='../S/69.html#L302' title='Defined at 302 in class_module.h.'>MODULE_is_LOCKED</a>;
+<a id='L322' name='L322'></a> 322         <strong class='reserved'>else</strong>
+<a id='L323' name='L323'></a> 323             <a href='../Y/9801.html' title='Multiple used in 18 places.'>m_ModuleStatus</a> &amp;= ~<a href='../S/69.html#L302' title='Defined at 302 in class_module.h.'>MODULE_is_LOCKED</a>;
+<a id='L324' name='L324'></a> 324     <em class='brace'>}</em>
+<a id='L325' name='L325'></a> 325 
+<a id='L326' name='L326'></a> 326     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/2177.html' title='Multiple used in 2 places.'>IsPlaced</a>() <strong class='reserved'>const</strong> <em class='brace'>{</em> <strong class='reserved'>return</strong> <a href='../Y/9801.html' title='Multiple used in 18 places.'>m_ModuleStatus</a> &amp; <a href='../S/69.html#L303' title='Defined at 303 in class_module.h.'>MODULE_is_PLACED</a>;  <em class='brace'>}</em>
+<a id='L327' name='L327'></a> 327     <strong class='reserved'>void</strong> <a href='../Y/3613.html' title='Multiple used in 4 places.'>SetIsPlaced</a>( <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/8653.html' title='Multiple used in 2 places.'>isPlaced</a> )
+<a id='L328' name='L328'></a> 328     <em class='brace'>{</em>
+<a id='L329' name='L329'></a> 329         <strong class='reserved'>if</strong>( <a href='../Y/8653.html' title='Multiple used in 2 places.'>isPlaced</a> )
+<a id='L330' name='L330'></a> 330             <a href='../Y/9801.html' title='Multiple used in 18 places.'>m_ModuleStatus</a> |= <a href='../S/69.html#L303' title='Defined at 303 in class_module.h.'>MODULE_is_PLACED</a>;
+<a id='L331' name='L331'></a> 331         <strong class='reserved'>else</strong>
+<a id='L332' name='L332'></a> 332             <a href='../Y/9801.html' title='Multiple used in 18 places.'>m_ModuleStatus</a> &amp;= ~<a href='../S/69.html#L303' title='Defined at 303 in class_module.h.'>MODULE_is_PLACED</a>;
+<a id='L333' name='L333'></a> 333     <em class='brace'>}</em>
+<a id='L334' name='L334'></a> 334 
+<a id='L335' name='L335'></a> 335     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/2659.html' title='Multiple used in 4 places.'>NeedsPlaced</a>() <strong class='reserved'>const</strong> <em class='brace'>{</em> <strong class='reserved'>return</strong> <a href='../Y/9801.html' title='Multiple used in 18 places.'>m_ModuleStatus</a> &amp; <a href='../S/69.html#L304' title='Defined at 304 in class_module.h.'>MODULE_to_PLACE</a>;  <em class='brace'>}</em>
+<a id='L336' name='L336'></a> 336     <strong class='reserved'>void</strong> <a href='../Y/3701.html' title='Multiple used in 5 places.'>SetNeedsPlaced</a>( <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/12816.html' title='Multiple used in 2 places.'>needsPlaced</a> )
+<a id='L337' name='L337'></a> 337     <em class='brace'>{</em>
+<a id='L338' name='L338'></a> 338         <strong class='reserved'>if</strong>( <a href='../Y/12816.html' title='Multiple used in 2 places.'>needsPlaced</a> )
+<a id='L339' name='L339'></a> 339             <a href='../Y/9801.html' title='Multiple used in 18 places.'>m_ModuleStatus</a> |= <a href='../S/69.html#L304' title='Defined at 304 in class_module.h.'>MODULE_to_PLACE</a>;
+<a id='L340' name='L340'></a> 340         <strong class='reserved'>else</strong>
+<a id='L341' name='L341'></a> 341             <a href='../Y/9801.html' title='Multiple used in 18 places.'>m_ModuleStatus</a> &amp;= ~<a href='../S/69.html#L304' title='Defined at 304 in class_module.h.'>MODULE_to_PLACE</a>;
+<a id='L342' name='L342'></a> 342     <em class='brace'>}</em>
+<a id='L343' name='L343'></a> 343 
+<a id='L344' name='L344'></a> 344     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/2932.html' title='Multiple used in 5 places.'>PadsLocked</a>() <strong class='reserved'>const</strong> <em class='brace'>{</em> <strong class='reserved'>return</strong> <a href='../Y/9801.html' title='Multiple used in 18 places.'>m_ModuleStatus</a> &amp; <a href='../S/69.html#L305' title='Defined at 305 in class_module.h.'>MODULE_PADS_LOCKED</a>;  <em class='brace'>}</em>
+<a id='L345' name='L345'></a> 345 
+<a id='L346' name='L346'></a> 346     <strong class='reserved'>void</strong> <a href='../Y/3738.html' title='Multiple used in 3 places.'>SetPadsLocked</a>( <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/5740.html' title='Multiple used in 2 places.'>aPadsLocked</a> )
+<a id='L347' name='L347'></a> 347     <em class='brace'>{</em>
+<a id='L348' name='L348'></a> 348         <strong class='reserved'>if</strong>( <a href='../Y/5740.html' title='Multiple used in 2 places.'>aPadsLocked</a> )
+<a id='L349' name='L349'></a> 349             <a href='../Y/9801.html' title='Multiple used in 18 places.'>m_ModuleStatus</a> |= <a href='../S/69.html#L305' title='Defined at 305 in class_module.h.'>MODULE_PADS_LOCKED</a>;
+<a id='L350' name='L350'></a> 350         <strong class='reserved'>else</strong>
+<a id='L351' name='L351'></a> 351             <a href='../Y/9801.html' title='Multiple used in 18 places.'>m_ModuleStatus</a> &amp;= ~<a href='../S/69.html#L305' title='Defined at 305 in class_module.h.'>MODULE_PADS_LOCKED</a>;
+<a id='L352' name='L352'></a> 352     <em class='brace'>}</em>
+<a id='L353' name='L353'></a> 353 
+<a id='L354' name='L354'></a> 354     <strong class='reserved'>void</strong> <a href='../Y/3632.html' title='Multiple used in 9 places.'>SetLastEditTime</a>( <a href='../Y/14951.html' title='Multiple used in 3 places.'>timestamp_t</a> aTime ) <em class='brace'>{</em> <a href='../Y/9698.html' title='Multiple used in 10 places.'>m_LastEditTime</a> = aTime; <em class='brace'>}</em>
+<a id='L355' name='L355'></a> 355     <strong class='reserved'>void</strong> <a href='../Y/3632.html' title='Multiple used in 9 places.'>SetLastEditTime</a>() <em class='brace'>{</em> <a href='../Y/9698.html' title='Multiple used in 10 places.'>m_LastEditTime</a> = <a href='../Y/14945.html' title='Multiple used in 3 places.'>time</a>( <a href='../Y/2643.html' title='Multiple used in 1581 places.'>NULL</a> ); <em class='brace'>}</em>
+<a id='L356' name='L356'></a> 356     <a href='../Y/14951.html' title='Multiple used in 3 places.'>timestamp_t</a> <a href='../Y/1500.html' title='Multiple used in 4 places.'>GetLastEditTime</a>() <strong class='reserved'>const</strong> <em class='brace'>{</em> <strong class='reserved'>return</strong> <a href='../Y/9698.html' title='Multiple used in 10 places.'>m_LastEditTime</a>; <em class='brace'>}</em>
+<a id='L357' name='L357'></a> 357 
+<a id='L358' name='L358'></a> 358     <em class='comment'>/* drawing functions */</em>
+<a id='L359' name='L359'></a> 359 
+<a id='L360' name='L360'></a> 360     <em class='comment'>/**</em>
+<a id='L361' name='L361'></a> 361 <em class='comment'>     * function TransformPadsShapesWithClearanceToPolygon</em>
+<a id='L362' name='L362'></a> 362 <em class='comment'>     * generate pads shapes on layer aLayer as polygons and adds these polygons to aCornerBuffer</em>
+<a id='L363' name='L363'></a> 363 <em class='comment'>     * Useful to generate a polygonal representation of a footprint in 3D view and plot functions,</em>
+<a id='L364' name='L364'></a> 364 <em class='comment'>     * when a full polygonal approach is needed</em>
+<a id='L365' name='L365'></a> 365 <em class='comment'>     * @param aLayer = the layer to consider, or UNDEFINED_LAYER to consider all</em>
+<a id='L366' name='L366'></a> 366 <em class='comment'>     * @param aCornerBuffer = the buffer to store polygons</em>
+<a id='L367' name='L367'></a> 367 <em class='comment'>     * @param aInflateValue = an additionnal size to add to pad shapes</em>
+<a id='L368' name='L368'></a> 368 <em class='comment'>     *          aInflateValue = 0 to have the exact pad size</em>
+<a id='L369' name='L369'></a> 369 <em class='comment'>     * @param aMaxError = Maximum deviation from true for arcs</em>
+<a id='L370' name='L370'></a> 370 <em class='comment'>     * @param aSkipNPTHPadsWihNoCopper = if true, do not add a NPTH pad shape, if the shape has</em>
+<a id='L371' name='L371'></a> 371 <em class='comment'>     *          same size and position as the hole. Usually, these pads are not drawn on copper</em>
+<a id='L372' name='L372'></a> 372 <em class='comment'>     *          layers, because there is actually no copper</em>
+<a id='L373' name='L373'></a> 373 <em class='comment'>     *          Due to diff between layers and holes, these pads must be skipped to be sure</em>
+<a id='L374' name='L374'></a> 374 <em class='comment'>     *          there is no copper left on the board (for instance when creating Gerber Files or</em>
+<a id='L375' name='L375'></a> 375 <em class='comment'>     *          3D shapes).  Defaults to false.</em>
+<a id='L376' name='L376'></a> 376 <em class='comment'>     */</em>
+<a id='L377' name='L377'></a> 377     <strong class='reserved'>void</strong> <a href='../S/36.html#L120' title='Defined at 120 in board_items_to_polygon_shape_transform.cpp.'>TransformPadsShapesWithClearanceToPolygon</a>( <a href='../S/423.html#L118' title='Defined at 118 in exporters/gendrill_file_writer_base.h.'>PCB_LAYER_ID</a> <a href='../Y/5477.html' title='Multiple used in 585 places.'>aLayer</a>,
+<a id='L378' name='L378'></a> 378             <a href='../Y/3235.html' title='Multiple used in 305 places.'>SHAPE_POLY_SET</a>&amp; <a href='../Y/5134.html' title='Multiple used in 58 places.'>aCornerBuffer</a>, <strong class='reserved'>int</strong> <a href='../Y/5415.html' title='Multiple used in 11 places.'>aInflateValue</a>, <strong class='reserved'>int</strong> <a href='../Y/5556.html' title='Multiple used in 3 places.'>aMaxError</a> = <a href='../Y/77.html' title='Multiple used in 25 places.'>ARC_HIGH_DEF</a>,
+<a id='L379' name='L379'></a> 379             <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/5970.html' title='Multiple used in 3 places.'>aSkipNPTHPadsWihNoCopper</a> = <a href='../Y/7859.html' title='Multiple used in 200 places.'>false</a> ) <strong class='reserved'>const</strong>;
+<a id='L380' name='L380'></a> 380 
+<a id='L381' name='L381'></a> 381     <em class='comment'>/**</em>
+<a id='L382' name='L382'></a> 382 <em class='comment'>     * function TransformGraphicShapesWithClearanceToPolygonSet</em>
+<a id='L383' name='L383'></a> 383 <em class='comment'>     * generate shapes of graphic items (outlines) on layer aLayer as polygons and adds these</em>
+<a id='L384' name='L384'></a> 384 <em class='comment'>     * polygons to aCornerBuffer</em>
+<a id='L385' name='L385'></a> 385 <em class='comment'>     * Useful to generate a polygonal representation of a footprint in 3D view and plot functions,</em>
+<a id='L386' name='L386'></a> 386 <em class='comment'>     * when a full polygonal approach is needed</em>
+<a id='L387' name='L387'></a> 387 <em class='comment'>     * @param aLayer = the layer to consider, or UNDEFINED_LAYER to consider all</em>
+<a id='L388' name='L388'></a> 388 <em class='comment'>     * @param aCornerBuffer = the buffer to store polygons</em>
+<a id='L389' name='L389'></a> 389 <em class='comment'>     * @param aInflateValue = a value to inflate shapes</em>
+<a id='L390' name='L390'></a> 390 <em class='comment'>     *          aInflateValue = 0 to have the exact shape size</em>
+<a id='L391' name='L391'></a> 391 <em class='comment'>     * @param aError = Maximum error between true arc and polygon approx</em>
+<a id='L392' name='L392'></a> 392 <em class='comment'>     * @param aIncludeText = True to transform text shapes</em>
+<a id='L393' name='L393'></a> 393 <em class='comment'>     * @param aIncludeEdges = True to transform module shapes</em>
+<a id='L394' name='L394'></a> 394 <em class='comment'>     */</em>
+<a id='L395' name='L395'></a> 395     <strong class='reserved'>void</strong> <a href='../S/36.html#L185' title='Defined at 185 in board_items_to_polygon_shape_transform.cpp.'>TransformGraphicShapesWithClearanceToPolygonSet</a>( <a href='../S/423.html#L118' title='Defined at 118 in exporters/gendrill_file_writer_base.h.'>PCB_LAYER_ID</a> <a href='../Y/5477.html' title='Multiple used in 585 places.'>aLayer</a>,
+<a id='L396' name='L396'></a> 396             <a href='../Y/3235.html' title='Multiple used in 305 places.'>SHAPE_POLY_SET</a>&amp; <a href='../Y/5134.html' title='Multiple used in 58 places.'>aCornerBuffer</a>, <strong class='reserved'>int</strong> <a href='../Y/5415.html' title='Multiple used in 11 places.'>aInflateValue</a>, <strong class='reserved'>int</strong> <a href='../Y/5265.html' title='Multiple used in 44 places.'>aError</a> = <a href='../Y/77.html' title='Multiple used in 25 places.'>ARC_HIGH_DEF</a>,
+<a id='L397' name='L397'></a> 397             <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/5407.html' title='Multiple used in 4 places.'>aIncludeText</a> = <a href='../Y/15117.html' title='Multiple used in 143 places.'>true</a>, <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/5403.html' title='Multiple used in 3 places.'>aIncludeEdges</a> = <a href='../Y/15117.html' title='Multiple used in 143 places.'>true</a> ) <strong class='reserved'>const</strong>;
+<a id='L398' name='L398'></a> 398 
+<a id='L399' name='L399'></a> 399     <em class='comment'>/**</em>
+<a id='L400' name='L400'></a> 400 <em class='comment'>     * @brief TransformGraphicTextWithClearanceToPolygonSet</em>
+<a id='L401' name='L401'></a> 401 <em class='comment'>     * This function is the same as TransformGraphicShapesWithClearanceToPolygonSet</em>
+<a id='L402' name='L402'></a> 402 <em class='comment'>     * but only generate text</em>
+<a id='L403' name='L403'></a> 403 <em class='comment'>     */</em>
+<a id='L404' name='L404'></a> 404     <strong class='reserved'>void</strong> TransformGraphicTextWithClearanceToPolygonSet( <a href='../S/423.html#L118' title='Defined at 118 in exporters/gendrill_file_writer_base.h.'>PCB_LAYER_ID</a> <a href='../Y/5477.html' title='Multiple used in 585 places.'>aLayer</a>,
+<a id='L405' name='L405'></a> 405             <a href='../Y/3235.html' title='Multiple used in 305 places.'>SHAPE_POLY_SET</a>&amp; <a href='../Y/5134.html' title='Multiple used in 58 places.'>aCornerBuffer</a>, <strong class='reserved'>int</strong> <a href='../Y/5415.html' title='Multiple used in 11 places.'>aInflateValue</a>, <strong class='reserved'>int</strong> <a href='../Y/5265.html' title='Multiple used in 44 places.'>aError</a> = <a href='../Y/77.html' title='Multiple used in 25 places.'>ARC_HIGH_DEF</a> ) <strong class='reserved'>const</strong>
+<a id='L406' name='L406'></a> 406     <em class='brace'>{</em>
+<a id='L407' name='L407'></a> 407         <a href='../S/36.html#L185' title='Defined at 185 in board_items_to_polygon_shape_transform.cpp.'>TransformGraphicShapesWithClearanceToPolygonSet</a>( <a href='../Y/5477.html' title='Multiple used in 585 places.'>aLayer</a>, <a href='../Y/5134.html' title='Multiple used in 58 places.'>aCornerBuffer</a>, <a href='../Y/5415.html' title='Multiple used in 11 places.'>aInflateValue</a>,
+<a id='L408' name='L408'></a> 408                                                          <a href='../Y/5265.html' title='Multiple used in 44 places.'>aError</a>, <a href='../Y/15117.html' title='Multiple used in 143 places.'>true</a>, <a href='../Y/7859.html' title='Multiple used in 200 places.'>false</a> );
+<a id='L409' name='L409'></a> 409     <em class='brace'>}</em>
+<a id='L410' name='L410'></a> 410 
+<a id='L411' name='L411'></a> 411     <em class='comment'>/**</em>
+<a id='L412' name='L412'></a> 412 <em class='comment'>     * Return the list of system text vars for this footprint.</em>
+<a id='L413' name='L413'></a> 413 <em class='comment'>     */</em>
+<a id='L414' name='L414'></a> 414     <strong class='reserved'>void</strong> <a href='../S/68.html#L351' title='Defined at 351 in class_module.cpp.'>GetContextualTextVars</a>( <a href='../Y/15511.html' title='Multiple used in 171 places.'>wxArrayString</a>* <a href='../Y/6142.html' title='Multiple used in 5 places.'>aVars</a> ) <strong class='reserved'>const</strong>;
+<a id='L415' name='L415'></a> 415 
+<a id='L416' name='L416'></a> 416     <em class='comment'>/**</em>
+<a id='L417' name='L417'></a> 417 <em class='comment'>     * Resolve any references to system tokens supported by the component.</em>
+<a id='L418' name='L418'></a> 418 <em class='comment'>     * @param aDepth a counter to limit recursion and circular references.</em>
+<a id='L419' name='L419'></a> 419 <em class='comment'>     */</em>
+<a id='L420' name='L420'></a> 420     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../S/68.html#L359' title='Defined at 359 in class_module.cpp.'>ResolveTextVar</a>( <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>* <a href='../Y/14995.html' title='Multiple used in 472 places.'>token</a>, <strong class='reserved'>int</strong> <a href='../Y/5190.html' title='Multiple used in 12 places.'>aDepth</a> = 0 ) <strong class='reserved'>const</strong>;
+<a id='L421' name='L421'></a> 421 
+<a id='L422' name='L422'></a> 422     <em class='comment'>///&gt; @copydoc EDA_ITEM::GetMsgPanelInfo</em>
+<a id='L423' name='L423'></a> 423     <strong class='reserved'>void</strong> <a href='../D/1248.html' title='Multiple defined in 14 places.'>GetMsgPanelInfo</a>( <a href='../Y/835.html' title='Multiple used in 54 places.'>EDA_DRAW_FRAME</a>* <a href='../Y/5337.html' title='Multiple used in 222 places.'>aFrame</a>, <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/15301.html' title='Multiple used in 606 places.'>vector</a>&lt;<a href='../Y/2528.html' title='Multiple used in 53 places.'>MSG_PANEL_ITEM</a>&gt;&amp; <a href='../Y/5524.html' title='Multiple used in 246 places.'>aList</a> ) <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a>;
+<a id='L424' name='L424'></a> 424 
+<a id='L425' name='L425'></a> 425     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../D/1448.html' title='Multiple defined in 19 places.'>HitTest</a>( <strong class='reserved'>const</strong> <a href='../Y/15871.html' title='Multiple used in 1252 places.'>wxPoint</a>&amp; <a href='../Y/5817.html' title='Multiple used in 110 places.'>aPosition</a>, <strong class='reserved'>int</strong> <a href='../Y/4969.html' title='Multiple used in 93 places.'>aAccuracy</a> = 0 ) <strong class='reserved'>const</strong> <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a>;
+<a id='L426' name='L426'></a> 426 
+<a id='L427' name='L427'></a> 427     <em class='comment'>/**</em>
+<a id='L428' name='L428'></a> 428 <em class='comment'>     * Tests if a point is inside the bounding polygon of the module</em>
+<a id='L429' name='L429'></a> 429 <em class='comment'>     *</em>
+<a id='L430' name='L430'></a> 430 <em class='comment'>     * The other hit test methods are just checking the bounding box, which</em>
+<a id='L431' name='L431'></a> 431 <em class='comment'>     * can be quite inaccurate for rotated or oddly-shaped footprints.</em>
+<a id='L432' name='L432'></a> 432 <em class='comment'>     *</em>
+<a id='L433' name='L433'></a> 433 <em class='comment'>     * @param aPosition is the point to test</em>
+<a id='L434' name='L434'></a> 434 <em class='comment'>     * @return true if aPosition is inside the bounding polygon</em>
+<a id='L435' name='L435'></a> 435 <em class='comment'>     */</em>
+<a id='L436' name='L436'></a> 436     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../S/68.html#L711' title='Defined at 711 in class_module.cpp.'>HitTestAccurate</a>( <strong class='reserved'>const</strong> <a href='../Y/15871.html' title='Multiple used in 1252 places.'>wxPoint</a>&amp; <a href='../Y/5817.html' title='Multiple used in 110 places.'>aPosition</a>, <strong class='reserved'>int</strong> <a href='../Y/4969.html' title='Multiple used in 93 places.'>aAccuracy</a> = 0 ) <strong class='reserved'>const</strong>;
+<a id='L437' name='L437'></a> 437 
+<a id='L438' name='L438'></a> 438     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../D/1448.html' title='Multiple defined in 19 places.'>HitTest</a>( <strong class='reserved'>const</strong> <a href='../Y/844.html' title='Multiple used in 165 places.'>EDA_RECT</a>&amp; <a href='../Y/5865.html' title='Multiple used in 56 places.'>aRect</a>, <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/5122.html' title='Multiple used in 36 places.'>aContained</a>, <strong class='reserved'>int</strong> <a href='../Y/4969.html' title='Multiple used in 93 places.'>aAccuracy</a> = 0 ) <strong class='reserved'>const</strong> <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a>;
+<a id='L439' name='L439'></a> 439 
+<a id='L440' name='L440'></a> 440     <em class='comment'>/**</em>
+<a id='L441' name='L441'></a> 441 <em class='comment'>     * Function GetReference</em>
+<a id='L442' name='L442'></a> 442 <em class='comment'>     * @return const wxString&amp; - the reference designator text.</em>
+<a id='L443' name='L443'></a> 443 <em class='comment'>     */</em>
+<a id='L444' name='L444'></a> 444     <strong class='reserved'>const</strong> <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../Y/1663.html' title='Multiple used in 115 places.'>GetReference</a>() <strong class='reserved'>const</strong>
+<a id='L445' name='L445'></a> 445     <em class='brace'>{</em>
+<a id='L446' name='L446'></a> 446         <strong class='reserved'>return</strong> <a href='../Y/9957.html' title='Multiple used in 35 places.'>m_Reference</a>-&gt;<a href='../S/60.html#L76' title='Defined at 76 in class_dimension.cpp.'>GetText</a>();
+<a id='L447' name='L447'></a> 447     <em class='brace'>}</em>
+<a id='L448' name='L448'></a> 448 
+<a id='L449' name='L449'></a> 449     <em class='comment'>/**</em>
+<a id='L450' name='L450'></a> 450 <em class='comment'>     * Function SetReference</em>
+<a id='L451' name='L451'></a> 451 <em class='comment'>     * @param aReference A reference to a wxString object containing the reference designator</em>
+<a id='L452' name='L452'></a> 452 <em class='comment'>     *                   text.</em>
+<a id='L453' name='L453'></a> 453 <em class='comment'>     */</em>
+<a id='L454' name='L454'></a> 454     <strong class='reserved'>void</strong> <a href='../Y/3791.html' title='Multiple used in 14 places.'>SetReference</a>( <strong class='reserved'>const</strong> <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>&amp; <a href='../Y/5877.html' title='Multiple used in 12 places.'>aReference</a> )
+<a id='L455' name='L455'></a> 455     <em class='brace'>{</em>
+<a id='L456' name='L456'></a> 456         <a href='../Y/9957.html' title='Multiple used in 35 places.'>m_Reference</a>-&gt;<a href='../S/60.html#L70' title='Defined at 70 in class_dimension.cpp.'>SetText</a>( <a href='../Y/5877.html' title='Multiple used in 12 places.'>aReference</a> );
+<a id='L457' name='L457'></a> 457     <em class='brace'>}</em>
+<a id='L458' name='L458'></a> 458 
+<a id='L459' name='L459'></a> 459     <em class='comment'>/**</em>
+<a id='L460' name='L460'></a> 460 <em class='comment'>     * Function IncrementReference</em>
+<a id='L461' name='L461'></a> 461 <em class='comment'>     * Bumps the current reference by aDelta.</em>
+<a id='L462' name='L462'></a> 462 <em class='comment'>     */</em>
+<a id='L463' name='L463'></a> 463     <strong class='reserved'>void</strong> <a href='../S/68.html#L1457' title='Defined at 1457 in class_module.cpp.'>IncrementReference</a>( <strong class='reserved'>int</strong> <a href='../Y/5189.html' title='Multiple used in 3 places.'>aDelta</a> );
+<a id='L464' name='L464'></a> 464 
+<a id='L465' name='L465'></a> 465     <em class='comment'>/**</em>
+<a id='L466' name='L466'></a> 466 <em class='comment'>     * Function GetValue</em>
+<a id='L467' name='L467'></a> 467 <em class='comment'>     * @return const wxString&amp; - the value text.</em>
+<a id='L468' name='L468'></a> 468 <em class='comment'>     */</em>
+<a id='L469' name='L469'></a> 469     <strong class='reserved'>const</strong> <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>() <strong class='reserved'>const</strong>
+<a id='L470' name='L470'></a> 470     <em class='brace'>{</em>
+<a id='L471' name='L471'></a> 471         <strong class='reserved'>return</strong> <a href='../Y/10148.html' title='Multiple used in 41 places.'>m_Value</a>-&gt;<a href='../S/60.html#L76' title='Defined at 76 in class_dimension.cpp.'>GetText</a>();
+<a id='L472' name='L472'></a> 472     <em class='brace'>}</em>
+<a id='L473' name='L473'></a> 473 
+<a id='L474' name='L474'></a> 474     <em class='comment'>/**</em>
+<a id='L475' name='L475'></a> 475 <em class='comment'>     * Function SetValue</em>
+<a id='L476' name='L476'></a> 476 <em class='comment'>     * @param aValue A reference to a wxString object containing the value text.</em>
+<a id='L477' name='L477'></a> 477 <em class='comment'>     */</em>
+<a id='L478' name='L478'></a> 478     <strong class='reserved'>void</strong> <a href='../D/3095.html' title='Multiple defined in 3 places.'>SetValue</a>( <strong class='reserved'>const</strong> <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>&amp; <a href='../Y/6138.html' title='Multiple used in 138 places.'>aValue</a> )
+<a id='L479' name='L479'></a> 479     <em class='brace'>{</em>
+<a id='L480' name='L480'></a> 480         <a href='../Y/10148.html' title='Multiple used in 41 places.'>m_Value</a>-&gt;<a href='../S/60.html#L70' title='Defined at 70 in class_dimension.cpp.'>SetText</a>( <a href='../Y/6138.html' title='Multiple used in 138 places.'>aValue</a> );
+<a id='L481' name='L481'></a> 481     <em class='brace'>}</em>
+<a id='L482' name='L482'></a> 482 
+<a id='L483' name='L483'></a> 483     <em class='comment'>/// read/write accessors:</em>
+<a id='L484' name='L484'></a> 484     <a href='../S/76.html#L67' title='Defined at 67 in class_text_mod.cpp.'>TEXTE_MODULE</a>&amp; <a href='../Y/4816.html' title='Multiple used in 68 places.'>Value</a>()       <em class='brace'>{</em> <strong class='reserved'>return</strong> *<a href='../Y/10148.html' title='Multiple used in 41 places.'>m_Value</a>; <em class='brace'>}</em>
+<a id='L485' name='L485'></a> 485     <a href='../S/76.html#L67' title='Defined at 67 in class_text_mod.cpp.'>TEXTE_MODULE</a>&amp; <a href='../Y/3145.html' title='Multiple used in 62 places.'>Reference</a>()   <em class='brace'>{</em> <strong class='reserved'>return</strong> *<a href='../Y/9957.html' title='Multiple used in 35 places.'>m_Reference</a>; <em class='brace'>}</em>
+<a id='L486' name='L486'></a> 486 
+<a id='L487' name='L487'></a> 487     <em class='comment'>/// The const versions to keep the compiler happy.</em>
+<a id='L488' name='L488'></a> 488     <a href='../S/76.html#L67' title='Defined at 67 in class_text_mod.cpp.'>TEXTE_MODULE</a>&amp; <a href='../Y/4816.html' title='Multiple used in 68 places.'>Value</a>() <strong class='reserved'>const</strong> <em class='brace'>{</em> <strong class='reserved'>return</strong> *<a href='../Y/10148.html' title='Multiple used in 41 places.'>m_Value</a>; <em class='brace'>}</em>
+<a id='L489' name='L489'></a> 489     <a href='../S/76.html#L67' title='Defined at 67 in class_text_mod.cpp.'>TEXTE_MODULE</a>&amp; <a href='../Y/3145.html' title='Multiple used in 62 places.'>Reference</a>() <strong class='reserved'>const</strong> <em class='brace'>{</em> <strong class='reserved'>return</strong> *<a href='../Y/9957.html' title='Multiple used in 35 places.'>m_Reference</a>; <em class='brace'>}</em>
+<a id='L490' name='L490'></a> 490 
+<a id='L491' name='L491'></a> 491     <em class='comment'>/**</em>
+<a id='L492' name='L492'></a> 492 <em class='comment'>     * Function FindPadByName</em>
+<a id='L493' name='L493'></a> 493 <em class='comment'>     * returns a D_PAD* with a matching name.  Note that names may not be</em>
+<a id='L494' name='L494'></a> 494 <em class='comment'>     * unique, depending on how the foot print was created.</em>
+<a id='L495' name='L495'></a> 495 <em class='comment'>     * @param aPadName the pad name to find</em>
+<a id='L496' name='L496'></a> 496 <em class='comment'>     * @return D_PAD* - The first matching name is returned, or NULL if not found.</em>
+<a id='L497' name='L497'></a> 497 <em class='comment'>     */</em>
+<a id='L498' name='L498'></a> 498     <a href='../D/777.html' title='Multiple defined in 2 places.'>D_PAD</a>* <a href='../S/68.html#L755' title='Defined at 755 in class_module.cpp.'>FindPadByName</a>( <strong class='reserved'>const</strong> <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>&amp; <a href='../Y/5731.html' title='Multiple used in 4 places.'>aPadName</a> ) <strong class='reserved'>const</strong>;
+<a id='L499' name='L499'></a> 499 
+<a id='L500' name='L500'></a> 500     <em class='comment'>/**</em>
+<a id='L501' name='L501'></a> 501 <em class='comment'>     * Function GetPad</em>
+<a id='L502' name='L502'></a> 502 <em class='comment'>     * get a pad at \a aPosition on \a aLayerMask in the footprint.</em>
+<a id='L503' name='L503'></a> 503 <em class='comment'>     *</em>
+<a id='L504' name='L504'></a> 504 <em class='comment'>     * @param aPosition A wxPoint object containing the position to hit test.</em>
+<a id='L505' name='L505'></a> 505 <em class='comment'>     * @param aLayerMask A layer or layers to mask the hit test.</em>
+<a id='L506' name='L506'></a> 506 <em class='comment'>     * @return A pointer to a D_PAD object if found otherwise NULL.</em>
+<a id='L507' name='L507'></a> 507 <em class='comment'>     */</em>
+<a id='L508' name='L508'></a> 508     <a href='../D/777.html' title='Multiple defined in 2 places.'>D_PAD</a>* <a href='../D/1276.html' title='Multiple defined in 5 places.'>GetPad</a>( <strong class='reserved'>const</strong> <a href='../Y/15871.html' title='Multiple used in 1252 places.'>wxPoint</a>&amp; <a href='../Y/5817.html' title='Multiple used in 110 places.'>aPosition</a>, <a href='../Y/2380.html' title='Multiple used in 386 places.'>LSET</a> <a href='../Y/5480.html' title='Multiple used in 85 places.'>aLayerMask</a> = <a href='../Y/2380.html' title='Multiple used in 386 places.'>LSET</a>::<a href='../Y/159.html' title='Multiple used in 16 places.'>AllLayersMask</a>() );
+<a id='L509' name='L509'></a> 509 
+<a id='L510' name='L510'></a> 510     <a href='../D/777.html' title='Multiple defined in 2 places.'>D_PAD</a>* <a href='../S/68.html#L783' title='Defined at 783 in class_module.cpp.'>GetTopLeftPad</a>();
+<a id='L511' name='L511'></a> 511 
+<a id='L512' name='L512'></a> 512     <em class='comment'>/**</em>
+<a id='L513' name='L513'></a> 513 <em class='comment'>     * Gets the first pad in the list or NULL if none</em>
+<a id='L514' name='L514'></a> 514 <em class='comment'>     * @return first pad or null pointer</em>
+<a id='L515' name='L515'></a> 515 <em class='comment'>     */</em>
+<a id='L516' name='L516'></a> 516     <a href='../D/777.html' title='Multiple defined in 2 places.'>D_PAD</a>* <a href='../Y/1424.html' title='Multiple used in 2 places.'>GetFirstPad</a>() <strong class='reserved'>const</strong>
+<a id='L517' name='L517'></a> 517     <em class='brace'>{</em>
+<a id='L518' name='L518'></a> 518         <strong class='reserved'>return</strong> <a href='../Y/11534.html' title='Multiple used in 33 places.'>m_pads</a>.<a href='../Y/7690.html' title='Multiple used in 167 places.'>empty</a>() ? <a href='../Y/13059.html' title='Multiple used in 610 places.'>nullptr</a> : <a href='../Y/11534.html' title='Multiple used in 33 places.'>m_pads</a>.<a href='../Y/8139.html' title='Multiple used in 34 places.'>front</a>();
+<a id='L519' name='L519'></a> 519     <em class='brace'>}</em>
+<a id='L520' name='L520'></a> 520 
+<a id='L521' name='L521'></a> 521     <em class='comment'>/**</em>
+<a id='L522' name='L522'></a> 522 <em class='comment'>     * GetPadCount</em>
+<a id='L523' name='L523'></a> 523 <em class='comment'>     * returns the number of pads.</em>
+<a id='L524' name='L524'></a> 524 <em class='comment'>     *</em>
+<a id='L525' name='L525'></a> 525 <em class='comment'>     * @param aIncludeNPTH includes non-plated through holes when true.  Does not include</em>
+<a id='L526' name='L526'></a> 526 <em class='comment'>     *                     non-plated through holes when false.</em>
+<a id='L527' name='L527'></a> 527 <em class='comment'>     * @return the number of pads according to \a aIncludeNPTH.</em>
+<a id='L528' name='L528'></a> 528 <em class='comment'>     */</em>
+<a id='L529' name='L529'></a> 529     <strong class='reserved'>unsigned</strong> <a href='../D/1278.html' title='Multiple defined in 3 places.'>GetPadCount</a>( <a href='../S/69.html#L53' title='Defined at 53 in class_module.h.'>INCLUDE_NPTH_T</a> <a href='../Y/5405.html' title='Multiple used in 6 places.'>aIncludeNPTH</a> = <a href='../S/69.html#L53' title='Defined at 53 in class_module.h.'>INCLUDE_NPTH_T</a>(<a href='../S/69.html#L56' title='Defined at 56 in class_module.h.'>INCLUDE_NPTH</a>) ) <strong class='reserved'>const</strong>;
+<a id='L530' name='L530'></a> 530 
+<a id='L531' name='L531'></a> 531     <em class='comment'>/**</em>
+<a id='L532' name='L532'></a> 532 <em class='comment'>     * GetUniquePadCount</em>
+<a id='L533' name='L533'></a> 533 <em class='comment'>     * returns the number of unique pads.</em>
+<a id='L534' name='L534'></a> 534 <em class='comment'>     * A complex pad can be built with many pads having the same pad name</em>
+<a id='L535' name='L535'></a> 535 <em class='comment'>     * to create a complex shape or fragmented solder paste areas.</em>
+<a id='L536' name='L536'></a> 536 <em class='comment'>     *</em>
+<a id='L537' name='L537'></a> 537 <em class='comment'>     * GetUniquePadCount calculate the count of not blank pad names</em>
+<a id='L538' name='L538'></a> 538 <em class='comment'>     *</em>
+<a id='L539' name='L539'></a> 539 <em class='comment'>     * @param aIncludeNPTH includes non-plated through holes when true.  Does not include</em>
+<a id='L540' name='L540'></a> 540 <em class='comment'>     *                     non-plated through holes when false.</em>
+<a id='L541' name='L541'></a> 541 <em class='comment'>     * @return the number of unique pads according to \a aIncludeNPTH.</em>
+<a id='L542' name='L542'></a> 542 <em class='comment'>     */</em>
+<a id='L543' name='L543'></a> 543     <strong class='reserved'>unsigned</strong> <a href='../S/68.html#L821' title='Defined at 821 in class_module.cpp.'>GetUniquePadCount</a>( <a href='../S/69.html#L53' title='Defined at 53 in class_module.h.'>INCLUDE_NPTH_T</a> <a href='../Y/5405.html' title='Multiple used in 6 places.'>aIncludeNPTH</a> = <a href='../S/69.html#L53' title='Defined at 53 in class_module.h.'>INCLUDE_NPTH_T</a>(<a href='../S/69.html#L56' title='Defined at 56 in class_module.h.'>INCLUDE_NPTH</a>) ) <strong class='reserved'>const</strong>;
+<a id='L544' name='L544'></a> 544 
+<a id='L545' name='L545'></a> 545     <em class='comment'>/**</em>
+<a id='L546' name='L546'></a> 546 <em class='comment'>     * Function GetNextPadName</em>
+<a id='L547' name='L547'></a> 547 <em class='comment'>     * returns the next available pad name in the module</em>
+<a id='L548' name='L548'></a> 548 <em class='comment'>     *</em>
+<a id='L549' name='L549'></a> 549 <em class='comment'>     * @param aFillSequenceGaps true if the numbering should "fill in" gaps in the sequence,</em>
+<a id='L550' name='L550'></a> 550 <em class='comment'>     *                          else return the highest value + 1</em>
+<a id='L551' name='L551'></a> 551 <em class='comment'>     * @return the next available pad name</em>
+<a id='L552' name='L552'></a> 552 <em class='comment'>     */</em>
+<a id='L553' name='L553'></a> 553     <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../D/1262.html' title='Multiple defined in 2 places.'>GetNextPadName</a>( <strong class='reserved'>const</strong> <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>&amp; <a href='../Y/5473.html' title='Multiple used in 4 places.'>aLastPadName</a> ) <strong class='reserved'>const</strong>;
+<a id='L554' name='L554'></a> 554 
+<a id='L555' name='L555'></a> 555     <strong class='reserved'>double</strong> <a href='../S/68.html#L500' title='Defined at 500 in class_module.cpp.'>GetArea</a>( <strong class='reserved'>int</strong> <a href='../Y/5738.html' title='Multiple used in 4 places.'>aPadding</a> = 0 ) <strong class='reserved'>const</strong>;
+<a id='L556' name='L556'></a> 556 
+<a id='L557' name='L557'></a> 557     <a href='../Y/2255.html' title='Multiple used in 48 places.'>KIID</a> <a href='../Y/1520.html' title='Multiple used in 17 places.'>GetLink</a>() <strong class='reserved'>const</strong> <em class='brace'>{</em> <strong class='reserved'>return</strong> <a href='../Y/9730.html' title='Multiple used in 7 places.'>m_Link</a>; <em class='brace'>}</em>
+<a id='L558' name='L558'></a> 558     <strong class='reserved'>void</strong> <a href='../Y/3656.html' title='Multiple used in 14 places.'>SetLink</a>( <strong class='reserved'>const</strong> <a href='../Y/2255.html' title='Multiple used in 48 places.'>KIID</a>&amp; <a href='../Y/5523.html' title='Multiple used in 3 places.'>aLink</a> ) <em class='brace'>{</em> <a href='../Y/9730.html' title='Multiple used in 7 places.'>m_Link</a> = <a href='../Y/5523.html' title='Multiple used in 3 places.'>aLink</a>; <em class='brace'>}</em>
+<a id='L559' name='L559'></a> 559 
+<a id='L560' name='L560'></a> 560     <strong class='reserved'>int</strong> <a href='../Y/1620.html' title='Multiple used in 6 places.'>GetPlacementCost180</a>() <strong class='reserved'>const</strong> <em class='brace'>{</em> <strong class='reserved'>return</strong> <a href='../Y/9247.html' title='Multiple used in 7 places.'>m_CntRot180</a>; <em class='brace'>}</em>
+<a id='L561' name='L561'></a> 561     <strong class='reserved'>void</strong> <a href='../Y/3761.html' title='Multiple used in 5 places.'>SetPlacementCost180</a>( <strong class='reserved'>int</strong> <a href='../Y/5142.html' title='Multiple used in 2 places.'>aCost</a> )   <em class='brace'>{</em> <a href='../Y/9247.html' title='Multiple used in 7 places.'>m_CntRot180</a> = <a href='../Y/5142.html' title='Multiple used in 2 places.'>aCost</a>; <em class='brace'>}</em>
+<a id='L562' name='L562'></a> 562 
+<a id='L563' name='L563'></a> 563     <strong class='reserved'>int</strong> <a href='../Y/1621.html' title='Multiple used in 6 places.'>GetPlacementCost90</a>() <strong class='reserved'>const</strong> <em class='brace'>{</em> <strong class='reserved'>return</strong> <a href='../Y/9248.html' title='Multiple used in 7 places.'>m_CntRot90</a>; <em class='brace'>}</em>
+<a id='L564' name='L564'></a> 564     <strong class='reserved'>void</strong> <a href='../Y/3762.html' title='Multiple used in 5 places.'>SetPlacementCost90</a>( <strong class='reserved'>int</strong> <a href='../Y/5142.html' title='Multiple used in 2 places.'>aCost</a> )    <em class='brace'>{</em> <a href='../Y/9248.html' title='Multiple used in 7 places.'>m_CntRot90</a> = <a href='../Y/5142.html' title='Multiple used in 2 places.'>aCost</a>; <em class='brace'>}</em>
+<a id='L565' name='L565'></a> 565 
+<a id='L566' name='L566'></a> 566     <em class='comment'>/**</em>
+<a id='L567' name='L567'></a> 567 <em class='comment'>     * Function DuplicateItem</em>
+<a id='L568' name='L568'></a> 568 <em class='comment'>     * Duplicate a given item within the module, optionally adding it to the board</em>
+<a id='L569' name='L569'></a> 569 <em class='comment'>     * @return the new item, or NULL if the item could not be duplicated</em>
+<a id='L570' name='L570'></a> 570 <em class='comment'>     */</em>
+<a id='L571' name='L571'></a> 571     <a href='../Y/253.html' title='Multiple used in 610 places.'>BOARD_ITEM</a>* <a href='../S/68.html#L1362' title='Defined at 1362 in class_module.cpp.'>DuplicateItem</a>( <strong class='reserved'>const</strong> <a href='../Y/253.html' title='Multiple used in 610 places.'>BOARD_ITEM</a>* <a href='../Y/5437.html' title='Multiple used in 845 places.'>aItem</a>, <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/4981.html' title='Multiple used in 6 places.'>aAddToModule</a> = <a href='../Y/7859.html' title='Multiple used in 200 places.'>false</a> );
+<a id='L572' name='L572'></a> 572 
+<a id='L573' name='L573'></a> 573     <em class='comment'>/**</em>
+<a id='L574' name='L574'></a> 574 <em class='comment'>     * Function Add3DModel</em>
+<a id='L575' name='L575'></a> 575 <em class='comment'>     * adds \a a3DModel definition to the end of the 3D model list.</em>
+<a id='L576' name='L576'></a> 576 <em class='comment'>     *</em>
+<a id='L577' name='L577'></a> 577 <em class='comment'>     * @param a3DModel A pointer to a #MODULE_3D_SETTINGS to add to the list.</em>
+<a id='L578' name='L578'></a> 578 <em class='comment'>     */</em>
+<a id='L579' name='L579'></a> 579     <strong class='reserved'>void</strong> <a href='../S/68.html#L854' title='Defined at 854 in class_module.cpp.'>Add3DModel</a>( <a href='../Y/2522.html' title='Multiple used in 26 places.'>MODULE_3D_SETTINGS</a>* <a href='../Y/4966.html' title='Multiple used in 6 places.'>a3DModel</a> );
+<a id='L580' name='L580'></a> 580 
+<a id='L581' name='L581'></a> 581     <a href='../Y/3204.html' title='Multiple used in 35 places.'>SEARCH_RESULT</a> <a href='../D/3377.html' title='Multiple defined in 3 places.'>Visit</a>( <a href='../Y/1957.html' title='Multiple used in 6 places.'>INSPECTOR</a> <a href='../Y/8584.html' title='Multiple used in 31 places.'>inspector</a>, <strong class='reserved'>void</strong>* <a href='../Y/14834.html' title='Multiple used in 32 places.'>testData</a>, <strong class='reserved'>const</strong> <a href='../Y/2245.html' title='Multiple used in 104 places.'>KICAD_T</a> <a href='../Y/14241.html' title='Multiple used in 11 places.'>scanTypes</a>[] ) <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a>;
+<a id='L582' name='L582'></a> 582 
+<a id='L583' name='L583'></a> 583     <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../Y/1285.html' title='Multiple used in 21 places.'>GetClass</a>() <strong class='reserved'>const</strong> <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a>
+<a id='L584' name='L584'></a> 584     <em class='brace'>{</em>
+<a id='L585' name='L585'></a> 585         <strong class='reserved'>return</strong> <a href='../Y/15966.html' title='Multiple used in 1011 places.'>wxT</a>( "MODULE" );
+<a id='L586' name='L586'></a> 586     <em class='brace'>}</em>
+<a id='L587' name='L587'></a> 587 
+<a id='L588' name='L588'></a> 588     <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../D/1321.html' title='Multiple defined in 13 places.'>GetSelectMenuText</a>( <a href='../Y/848.html' title='Multiple used in 169 places.'>EDA_UNITS</a> <a href='../Y/6103.html' title='Multiple used in 67 places.'>aUnits</a> ) <strong class='reserved'>const</strong> <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a>;
+<a id='L589' name='L589'></a> 589 
+<a id='L590' name='L590'></a> 590     <a href='../Y/238.html' title='Multiple used in 24 places.'>BITMAP_DEF</a> <a href='../D/1242.html' title='Multiple defined in 12 places.'>GetMenuImage</a>() <strong class='reserved'>const</strong> <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a>;
+<a id='L591' name='L591'></a> 591 
+<a id='L592' name='L592'></a> 592     <a href='../Y/839.html' title='Multiple used in 140 places.'>EDA_ITEM</a>* <a href='../D/456.html' title='Multiple defined in 19 places.'>Clone</a>() <strong class='reserved'>const</strong> <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a>;
+<a id='L593' name='L593'></a> 593 
+<a id='L594' name='L594'></a> 594     <em class='comment'>/**</em>
+<a id='L595' name='L595'></a> 595 <em class='comment'>     * Function RunOnChildren</em>
+<a id='L596' name='L596'></a> 596 <em class='comment'>     *</em>
+<a id='L597' name='L597'></a> 597 <em class='comment'>     * Invokes a function on all BOARD_ITEMs that belong to the module (pads, drawings, texts).</em>
+<a id='L598' name='L598'></a> 598 <em class='comment'>     * Note that this function should not add or remove items to the module</em>
+<a id='L599' name='L599'></a> 599 <em class='comment'>     * @param aFunction is the function to be invoked.</em>
+<a id='L600' name='L600'></a> 600 <em class='comment'>     */</em>
+<a id='L601' name='L601'></a> 601     <strong class='reserved'>void</strong> <a href='../S/68.html#L970' title='Defined at 970 in class_module.cpp.'>RunOnChildren</a>( <strong class='reserved'>const</strong> <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../S/15.html#L110' title='Defined at 110 in altium2kicadpcb_plugin/altium_pcb.h.'>function</a>&lt;<strong class='reserved'>void</strong> (<a href='../Y/253.html' title='Multiple used in 610 places.'>BOARD_ITEM</a>*)&gt;&amp; <a href='../Y/5353.html' title='Multiple used in 7 places.'>aFunction</a> );
+<a id='L602' name='L602'></a> 602 
+<a id='L603' name='L603'></a> 603     <em class='comment'>/**</em>
+<a id='L604' name='L604'></a> 604 <em class='comment'>     * Returns a set of all layers that this module has drawings on similar to ViewGetLayers()</em>
+<a id='L605' name='L605'></a> 605 <em class='comment'>     *</em>
+<a id='L606' name='L606'></a> 606 <em class='comment'>     * @param aLayers is an array to store layer ids</em>
+<a id='L607' name='L607'></a> 607 <em class='comment'>     * @param aCount is the number of layers stored in the array</em>
+<a id='L608' name='L608'></a> 608 <em class='comment'>     * @param aIncludePads controls whether to also include pad layers</em>
+<a id='L609' name='L609'></a> 609 <em class='comment'>     */</em>
+<a id='L610' name='L610'></a> 610     <strong class='reserved'>void</strong> <a href='../S/68.html#L993' title='Defined at 993 in class_module.cpp.'>GetAllDrawingLayers</a>( <strong class='reserved'>int</strong> <a href='../Y/5487.html' title='Multiple used in 83 places.'>aLayers</a>[], <strong class='reserved'>int</strong>&amp; <a href='../Y/5143.html' title='Multiple used in 51 places.'>aCount</a>, <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/5406.html' title='Multiple used in 3 places.'>aIncludePads</a> = <a href='../Y/15117.html' title='Multiple used in 143 places.'>true</a> ) <strong class='reserved'>const</strong>;
+<a id='L611' name='L611'></a> 611 
+<a id='L612' name='L612'></a> 612     <a href='../Y/15387.html' title='Multiple used in 761 places.'>virtual</a> <strong class='reserved'>void</strong> <a href='../D/3376.html' title='Multiple defined in 9 places.'>ViewGetLayers</a>( <strong class='reserved'>int</strong> <a href='../Y/5487.html' title='Multiple used in 83 places.'>aLayers</a>[], <strong class='reserved'>int</strong>&amp; <a href='../Y/5143.html' title='Multiple used in 51 places.'>aCount</a> ) <strong class='reserved'>const</strong> <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a>;
+<a id='L613' name='L613'></a> 613 
+<a id='L614' name='L614'></a> 614     <a href='../Y/15387.html' title='Multiple used in 761 places.'>virtual</a> <strong class='reserved'>unsigned</strong> <strong class='reserved'>int</strong> <a href='../D/3375.html' title='Multiple defined in 7 places.'>ViewGetLOD</a>( <strong class='reserved'>int</strong> <a href='../Y/5477.html' title='Multiple used in 585 places.'>aLayer</a>, <a href='../D/1894.html' title='Multiple defined in 2 places.'>KIGFX</a>::<a href='../Y/4798.html' title='Multiple used in 92 places.'>VIEW</a>* <a href='../Y/6158.html' title='Multiple used in 86 places.'>aView</a> ) <strong class='reserved'>const</strong> <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a>;
+<a id='L615' name='L615'></a> 615 
+<a id='L616' name='L616'></a> 616     <a href='../Y/15387.html' title='Multiple used in 761 places.'>virtual</a> <strong class='reserved'>const</strong> <a href='../Y/269.html' title='Multiple used in 83 places.'>BOX2I</a> <a href='../D/3373.html' title='Multiple defined in 9 places.'>ViewBBox</a>() <strong class='reserved'>const</strong> <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a>;
+<a id='L617' name='L617'></a> 617 
+<a id='L618' name='L618'></a> 618     <em class='comment'>/**</em>
+<a id='L619' name='L619'></a> 619 <em class='comment'>     * static function IsLibNameValid</em>
+<a id='L620' name='L620'></a> 620 <em class='comment'>     * Test for validity of a name of a footprint to be used in a footprint library</em>
+<a id='L621' name='L621'></a> 621 <em class='comment'>     * ( no spaces, dir separators ... )</em>
+<a id='L622' name='L622'></a> 622 <em class='comment'>     * @param aName = the name in library to validate</em>
+<a id='L623' name='L623'></a> 623 <em class='comment'>     * @return true if the given name is valid</em>
+<a id='L624' name='L624'></a> 624 <em class='comment'>     */</em>
+<a id='L625' name='L625'></a> 625     <strong class='reserved'>static</strong> <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../S/68.html#L1101' title='Defined at 1101 in class_module.cpp.'>IsLibNameValid</a>( <strong class='reserved'>const</strong> <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>&amp; <a href='../Y/5611.html' title='Multiple used in 98 places.'>aName</a> );
+<a id='L626' name='L626'></a> 626 
+<a id='L627' name='L627'></a> 627     <em class='comment'>/**</em>
+<a id='L628' name='L628'></a> 628 <em class='comment'>     * static function StringLibNameInvalidChars</em>
+<a id='L629' name='L629'></a> 629 <em class='comment'>     * Test for validity of the name in a library of the footprint</em>
+<a id='L630' name='L630'></a> 630 <em class='comment'>     * ( no spaces, dir separators ... )</em>
+<a id='L631' name='L631'></a> 631 <em class='comment'>     * @param aUserReadable = false to get the list of invalid chars</em>
+<a id='L632' name='L632'></a> 632 <em class='comment'>     *        true to get a readable form (i.e ' ' = 'space' '\\t'= 'tab')</em>
+<a id='L633' name='L633'></a> 633 <em class='comment'>     * @return a constant std::string giving the list of invalid chars in lib name</em>
+<a id='L634' name='L634'></a> 634 <em class='comment'>     */</em>
+<a id='L635' name='L635'></a> 635     <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <a href='../Y/15565.html' title='Multiple used in 24 places.'>wxChar</a>* <a href='../S/68.html#L1112' title='Defined at 1112 in class_module.cpp.'>StringLibNameInvalidChars</a>( <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/6128.html' title='Multiple used in 3 places.'>aUserReadable</a> );
+<a id='L636' name='L636'></a> 636 
+<a id='L637' name='L637'></a> 637     <em class='comment'>/**</em>
+<a id='L638' name='L638'></a> 638 <em class='comment'>     * Function SetInitialComments</em>
+<a id='L639' name='L639'></a> 639 <em class='comment'>     * takes ownership of caller's heap allocated aInitialComments block.  The comments</em>
+<a id='L640' name='L640'></a> 640 <em class='comment'>     * are single line strings already containing the s-expression comments with optional</em>
+<a id='L641' name='L641'></a> 641 <em class='comment'>     * leading whitespace and then a '#' character followed by optional single line text</em>
+<a id='L642' name='L642'></a> 642 <em class='comment'>     * (text with no line endings, not even one).</em>
+<a id='L643' name='L643'></a> 643 <em class='comment'>     * This block of single line comments will be output upfront of any generated</em>
+<a id='L644' name='L644'></a> 644 <em class='comment'>     * s-expression text in the PCBIO::Format() function.</em>
+<a id='L645' name='L645'></a> 645 <em class='comment'>     * &lt;p&gt;</em>
+<a id='L646' name='L646'></a> 646 <em class='comment'>     * Note that a block of single line comments constitutes a multiline block of single</em>
+<a id='L647' name='L647'></a> 647 <em class='comment'>     * line comments.  That is, the block is made of consecutive single line comments.</em>
+<a id='L648' name='L648'></a> 648 <em class='comment'>     * @param aInitialComments is a heap allocated wxArrayString or NULL, which the caller</em>
+<a id='L649' name='L649'></a> 649 <em class='comment'>     *                         gives up ownership of over to this MODULE.</em>
+<a id='L650' name='L650'></a> 650 <em class='comment'>     */</em>
+<a id='L651' name='L651'></a> 651     <strong class='reserved'>void</strong> <a href='../Y/3600.html' title='Multiple used in 2 places.'>SetInitialComments</a>( <a href='../Y/15511.html' title='Multiple used in 171 places.'>wxArrayString</a>* <a href='../Y/5418.html' title='Multiple used in 10 places.'>aInitialComments</a> )
+<a id='L652' name='L652'></a> 652     <em class='brace'>{</em>
+<a id='L653' name='L653'></a> 653         <a href='../Y/7334.html' title='Multiple used in 82 places.'>delete</a> <a href='../S/68.html#L41' title='Defined at 41 in class_module.cpp.'>m_initial_comments</a>;
+<a id='L654' name='L654'></a> 654         <a href='../S/68.html#L41' title='Defined at 41 in class_module.cpp.'>m_initial_comments</a> = <a href='../Y/5418.html' title='Multiple used in 10 places.'>aInitialComments</a>;
+<a id='L655' name='L655'></a> 655     <em class='brace'>}</em>
+<a id='L656' name='L656'></a> 656 
+<a id='L657' name='L657'></a> 657     <em class='comment'>/**</em>
+<a id='L658' name='L658'></a> 658 <em class='comment'>     * Function CoverageRatio</em>
+<a id='L659' name='L659'></a> 659 <em class='comment'>     * Calculates the ratio of total area of the footprint pads and graphical items</em>
+<a id='L660' name='L660'></a> 660 <em class='comment'>     * to the area of the footprint. Used by selection tool heuristics.</em>
+<a id='L661' name='L661'></a> 661 <em class='comment'>     * @return the ratio</em>
+<a id='L662' name='L662'></a> 662 <em class='comment'>     */</em>
+<a id='L663' name='L663'></a> 663     <strong class='reserved'>double</strong> <a href='../S/68.html#L1493' title='Defined at 1493 in class_module.cpp.'>CoverageRatio</a>( <strong class='reserved'>const</strong> <a href='../Y/1170.html' title='Multiple used in 83 places.'>GENERAL_COLLECTOR</a>&amp; <a href='../Y/5095.html' title='Multiple used in 162 places.'>aCollector</a> ) <strong class='reserved'>const</strong>;
+<a id='L664' name='L664'></a> 664 
+<a id='L665' name='L665'></a> 665     <em class='comment'>/// Return the initial comments block or NULL if none, without transfer of ownership.</em>
+<a id='L666' name='L666'></a> 666     <strong class='reserved'>const</strong> <a href='../Y/15511.html' title='Multiple used in 171 places.'>wxArrayString</a>* <a href='../Y/1485.html' title='Multiple used in 2 places.'>GetInitialComments</a>() <strong class='reserved'>const</strong> <em class='brace'>{</em> <strong class='reserved'>return</strong> <a href='../S/68.html#L41' title='Defined at 41 in class_module.cpp.'>m_initial_comments</a>; <em class='brace'>}</em>
+<a id='L667' name='L667'></a> 667 
+<a id='L668' name='L668'></a> 668     <em class='comment'>/** Used in DRC to test the courtyard area (a complex polygon)</em>
+<a id='L669' name='L669'></a> 669 <em class='comment'>     * @return the courtyard polygon</em>
+<a id='L670' name='L670'></a> 670 <em class='comment'>     */</em>
+<a id='L671' name='L671'></a> 671     <a href='../Y/3235.html' title='Multiple used in 305 places.'>SHAPE_POLY_SET</a>&amp; <a href='../Y/1636.html' title='Multiple used in 9 places.'>GetPolyCourtyardFront</a>() <em class='brace'>{</em> <strong class='reserved'>return</strong> <a href='../Y/11628.html' title='Multiple used in 4 places.'>m_poly_courtyard_front</a>; <em class='brace'>}</em>
+<a id='L672' name='L672'></a> 672     <a href='../Y/3235.html' title='Multiple used in 305 places.'>SHAPE_POLY_SET</a>&amp; <a href='../Y/1635.html' title='Multiple used in 9 places.'>GetPolyCourtyardBack</a>() <em class='brace'>{</em> <strong class='reserved'>return</strong> <a href='../Y/11627.html' title='Multiple used in 4 places.'>m_poly_courtyard_back</a>; <em class='brace'>}</em>
+<a id='L673' name='L673'></a> 673 
+<a id='L674' name='L674'></a> 674     <em class='comment'>/**</em>
+<a id='L675' name='L675'></a> 675 <em class='comment'>     * Builds a complex polygon of the courtyard area from graphic items on the courtyard layer</em>
+<a id='L676' name='L676'></a> 676 <em class='comment'>     * @return true if OK, or no courtyard defined,</em>
+<a id='L677' name='L677'></a> 677 <em class='comment'>     *         false only if the polygon cannot be built due to a malformed courtyard shape</em>
+<a id='L678' name='L678'></a> 678 <em class='comment'>     */</em>
+<a id='L679' name='L679'></a> 679     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../S/68.html#L1552' title='Defined at 1552 in class_module.cpp.'>BuildPolyCourtyard</a>();
+<a id='L680' name='L680'></a> 680 
+<a id='L681' name='L681'></a> 681     <a href='../Y/15387.html' title='Multiple used in 761 places.'>virtual</a> <strong class='reserved'>void</strong> <a href='../D/3160.html' title='Multiple defined in 11 places.'>SwapData</a>( <a href='../Y/253.html' title='Multiple used in 610 places.'>BOARD_ITEM</a>* <a href='../Y/5396.html' title='Multiple used in 55 places.'>aImage</a> ) <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a>;
+<a id='L682' name='L682'></a> 682 
+<a id='L683' name='L683'></a> 683     <strong class='reserved'>struct</strong> <a href='../R/3539.html' title='Multiple referred from 3 places.'>cmp_drawings</a>
+<a id='L684' name='L684'></a> 684     <em class='brace'>{</em>
+<a id='L685' name='L685'></a> 685         <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/13158.html' title='Multiple used in 60 places.'>operator</a>()( <strong class='reserved'>const</strong> <a href='../Y/253.html' title='Multiple used in 610 places.'>BOARD_ITEM</a>* <a href='../Y/5307.html' title='Multiple used in 30 places.'>aFirst</a>, <strong class='reserved'>const</strong> <a href='../Y/253.html' title='Multiple used in 610 places.'>BOARD_ITEM</a>* <a href='../Y/5925.html' title='Multiple used in 28 places.'>aSecond</a> ) <strong class='reserved'>const</strong>;
+<a id='L686' name='L686'></a> 686     <em class='brace'>}</em>;
+<a id='L687' name='L687'></a> 687 
+<a id='L688' name='L688'></a> 688     <strong class='reserved'>struct</strong> <a href='../R/3540.html' title='Multiple referred from 2 places.'>cmp_pads</a>
+<a id='L689' name='L689'></a> 689     <em class='brace'>{</em>
+<a id='L690' name='L690'></a> 690         <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/13158.html' title='Multiple used in 60 places.'>operator</a>()( <strong class='reserved'>const</strong> <a href='../D/777.html' title='Multiple defined in 2 places.'>D_PAD</a>* <a href='../Y/5307.html' title='Multiple used in 30 places.'>aFirst</a>, <strong class='reserved'>const</strong> <a href='../D/777.html' title='Multiple defined in 2 places.'>D_PAD</a>* <a href='../Y/5925.html' title='Multiple used in 28 places.'>aSecond</a> ) <strong class='reserved'>const</strong>;
+<a id='L691' name='L691'></a> 691     <em class='brace'>}</em>;
+<a id='L692' name='L692'></a> 692 
+<a id='L693' name='L693'></a> 693 
+<a id='L694' name='L694'></a> 694 <em class='sharp'>#if</em> <strong class='reserved'>defined</strong>(<a href='../Y/583.html' title='Multiple used in 44 places.'>DEBUG</a>)
+<a id='L695' name='L695'></a> 695     <a href='../Y/15387.html' title='Multiple used in 761 places.'>virtual</a> <strong class='reserved'>void</strong> <a href='../D/3117.html' title='Multiple defined in 3 places.'>Show</a>( <strong class='reserved'>int</strong> <a href='../Y/12819.html' title='Multiple used in 306 places.'>nestLevel</a>, <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/13204.html' title='Multiple used in 18 places.'>ostream</a>&amp; <a href='../Y/13202.html' title='Multiple used in 18 places.'>os</a> ) <strong class='reserved'>const</strong> <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a> <em class='brace'>{</em> <a href='../Y/3992.html' title='Multiple used in 13 places.'>ShowDummy</a>( <a href='../Y/13202.html' title='Multiple used in 18 places.'>os</a> ); <em class='brace'>}</em>
+<a id='L696' name='L696'></a> 696 <em class='sharp'>#endif</em>
+<a id='L697' name='L697'></a> 697 
+<a id='L698' name='L698'></a> 698 <a href='../Y/13721.html' title='Multiple used in 310 places.'>private</a>:
+<a id='L699' name='L699'></a> 699     <a href='../Y/716.html' title='Multiple used in 9 places.'>DRAWINGS</a>        <a href='../Y/10732.html' title='Multiple used in 41 places.'>m_drawings</a>;         <em class='comment'>// BOARD_ITEMs for drawings on the board, owned by pointer.</em>
+<a id='L700' name='L700'></a> 700     <a href='../Y/2743.html' title='Multiple used in 4 places.'>PADS</a>            <a href='../Y/11534.html' title='Multiple used in 33 places.'>m_pads</a>;             <em class='comment'>// D_PAD items, owned by pointer</em>
+<a id='L701' name='L701'></a> 701     <a href='../Y/2524.html' title='Multiple used in 4 places.'>MODULE_ZONE_CONTAINERS</a> <a href='../Y/10913.html' title='Multiple used in 19 places.'>m_fp_zones</a>;  <em class='comment'>// MODULE_ZONE_CONTAINER items, owned by pointer</em>
+<a id='L702' name='L702'></a> 702     <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/9077.html' title='Multiple used in 61 places.'>list</a>&lt;<a href='../Y/2522.html' title='Multiple used in 26 places.'>MODULE_3D_SETTINGS</a>&gt; <a href='../Y/9161.html' title='Multiple used in 11 places.'>m_3D_Drawings</a>;  <em class='comment'>// Linked list of 3D models.</em>
+<a id='L703' name='L703'></a> 703 
+<a id='L704' name='L704'></a> 704     <strong class='reserved'>double</strong>         <a href='../Y/9845.html' title='Multiple used in 29 places.'>m_Orient</a>;            <em class='comment'>// Orientation in tenths of a degree, 900=90.0 degrees.</em>
+<a id='L705' name='L705'></a> 705     <a href='../Y/15871.html' title='Multiple used in 1252 places.'>wxPoint</a>        <a href='../Y/9929.html' title='Multiple used in 61 places.'>m_Pos</a>;               <em class='comment'>// Position of module on the board in internal units.</em>
+<a id='L706' name='L706'></a> 706     <a href='../S/76.html#L67' title='Defined at 67 in class_text_mod.cpp.'>TEXTE_MODULE</a>*  <a href='../Y/9957.html' title='Multiple used in 35 places.'>m_Reference</a>;         <em class='comment'>// Component reference designator value (U34, R18..)</em>
+<a id='L707' name='L707'></a> 707     <a href='../S/76.html#L67' title='Defined at 67 in class_text_mod.cpp.'>TEXTE_MODULE</a>*  <a href='../Y/10148.html' title='Multiple used in 41 places.'>m_Value</a>;             <em class='comment'>// Component value (74LS00, 22K..)</em>
+<a id='L708' name='L708'></a> 708     <a href='../Y/2356.html' title='Multiple used in 120 places.'>LIB_ID</a>         <a href='../Y/10914.html' title='Multiple used in 17 places.'>m_fpid</a>;              <em class='comment'>// The #LIB_ID of the MODULE.</em>
+<a id='L709' name='L709'></a> 709     <strong class='reserved'>int</strong>            <a href='../Y/9178.html' title='Multiple used in 11 places.'>m_Attributs</a>;         <em class='comment'>// Flag bits ( see Mod_Attribut )</em>
+<a id='L710' name='L710'></a> 710     <strong class='reserved'>int</strong>            <a href='../Y/9801.html' title='Multiple used in 18 places.'>m_ModuleStatus</a>;      <em class='comment'>// For autoplace: flags (LOCKED, FIELDS_AUTOPLACED)</em>
+<a id='L711' name='L711'></a> 711     <a href='../Y/844.html' title='Multiple used in 165 places.'>EDA_RECT</a>       <a href='../Y/9221.html' title='Multiple used in 9 places.'>m_BoundaryBox</a>;       <em class='comment'>// Bounding box : coordinates on board, real orientation.</em>
+<a id='L712' name='L712'></a> 712 
+<a id='L713' name='L713'></a> 713     <a href='../Y/4917.html' title='Multiple used in 81 places.'>ZONE_CONNECTION</a> <a href='../Y/10199.html' title='Multiple used in 13 places.'>m_ZoneConnection</a>;
+<a id='L714' name='L714'></a> 714     <strong class='reserved'>int</strong>            <a href='../Y/10084.html' title='Multiple used in 12 places.'>m_ThermalWidth</a>;
+<a id='L715' name='L715'></a> 715     <strong class='reserved'>int</strong>            <a href='../Y/10081.html' title='Multiple used in 12 places.'>m_ThermalGap</a>;
+<a id='L716' name='L716'></a> 716     <strong class='reserved'>int</strong>            <a href='../Y/9734.html' title='Multiple used in 12 places.'>m_LocalClearance</a>;
+<a id='L717' name='L717'></a> 717     <strong class='reserved'>int</strong>            <a href='../Y/9737.html' title='Multiple used in 12 places.'>m_LocalSolderMaskMargin</a>;       <em class='comment'>// Solder mask margin</em>
+<a id='L718' name='L718'></a> 718     <strong class='reserved'>int</strong>            <a href='../Y/9738.html' title='Multiple used in 12 places.'>m_LocalSolderPasteMargin</a>;      <em class='comment'>// Solder paste margin absolute value</em>
+<a id='L719' name='L719'></a> 719     <strong class='reserved'>double</strong>         <a href='../Y/9739.html' title='Multiple used in 12 places.'>m_LocalSolderPasteMarginRatio</a>; <em class='comment'>// Solder mask margin ratio value of pad size</em>
+<a id='L720' name='L720'></a> 720 
+<a id='L721' name='L721'></a> 721     <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>       <a href='../Y/9347.html' title='Multiple used in 7 places.'>m_Doc</a>;               <em class='comment'>// File name and path for documentation file.</em>
+<a id='L722' name='L722'></a> 722     <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>       <a href='../Y/9694.html' title='Multiple used in 7 places.'>m_KeyWord</a>;           <em class='comment'>// Search keywords to find module in library.</em>
+<a id='L723' name='L723'></a> 723     <a href='../Y/2256.html' title='Multiple used in 15 places.'>KIID_PATH</a>      <a href='../Y/9911.html' title='Multiple used in 6 places.'>m_Path</a>;              <em class='comment'>// Path to associated symbol ([sheetUUID, .., symbolUUID]).</em>
+<a id='L724' name='L724'></a> 724     <a href='../Y/14951.html' title='Multiple used in 3 places.'>timestamp_t</a>    <a href='../Y/9698.html' title='Multiple used in 10 places.'>m_LastEditTime</a>;
+<a id='L725' name='L725'></a> 725     <strong class='reserved'>int</strong>            <a href='../Y/10260.html' title='Multiple used in 6 places.'>m_arflag</a>;            <em class='comment'>// Use to trace ratsnest and auto routing.</em>
+<a id='L726' name='L726'></a> 726     <a href='../Y/2255.html' title='Multiple used in 48 places.'>KIID</a>           <a href='../Y/9730.html' title='Multiple used in 7 places.'>m_Link</a>;              <em class='comment'>// Temporary logical link used during editing</em>
+<a id='L727' name='L727'></a> 727     <strong class='reserved'>int</strong>            <a href='../Y/9248.html' title='Multiple used in 7 places.'>m_CntRot90</a>;          <em class='comment'>// Horizontal automatic placement cost ( 0..10 ).</em>
+<a id='L728' name='L728'></a> 728     <strong class='reserved'>int</strong>            <a href='../Y/9247.html' title='Multiple used in 7 places.'>m_CntRot180</a>;         <em class='comment'>// Vertical automatic placement cost ( 0..10 ).</em>
+<a id='L729' name='L729'></a> 729 
+<a id='L730' name='L730'></a> 730     <a href='../Y/15511.html' title='Multiple used in 171 places.'>wxArrayString</a>* <a href='../S/68.html#L41' title='Defined at 41 in class_module.cpp.'>m_initial_comments</a>;  <em class='comment'>///&lt; leading s-expression comments in the module,</em>
+<a id='L731' name='L731'></a> 731                                         <em class='comment'>///&lt; lazily allocated only if needed for speed</em>
+<a id='L732' name='L732'></a> 732 
+<a id='L733' name='L733'></a> 733     <em class='comment'>/// Used in DRC to test the courtyard area (a polygon which can be not basic</em>
+<a id='L734' name='L734'></a> 734     <em class='comment'>/// Note also a footprint can have courtyards on both board sides</em>
+<a id='L735' name='L735'></a> 735     <a href='../Y/3235.html' title='Multiple used in 305 places.'>SHAPE_POLY_SET</a> <a href='../Y/11628.html' title='Multiple used in 4 places.'>m_poly_courtyard_front</a>;
+<a id='L736' name='L736'></a> 736     <a href='../Y/3235.html' title='Multiple used in 305 places.'>SHAPE_POLY_SET</a> <a href='../Y/11627.html' title='Multiple used in 4 places.'>m_poly_courtyard_back</a>;
+<a id='L737' name='L737'></a> 737 <em class='brace'>}</em>;
+<a id='L738' name='L738'></a> 738 
+<a id='L739' name='L739'></a> 739 <em class='sharp'>#endif</em>     <em class='comment'>// MODULE_H_</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;][^]<a href='#L100'>[v]</a><a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

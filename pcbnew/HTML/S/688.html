@@ -1,0 +1,200 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>router/pns_shove.h</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/840.html'>router</a>/pns_shove.h</h2>
+<em class='comment'>/* [&lt;][&gt;][^][v][top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'><a href='../J/592.html' title='Multiple included from 5 places.'>INCLUDED FROM</a></h2>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * KiRouter - a push-and-(sometimes-)shove PCB router</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 2013-2014 CERN</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> * Copyright (C) 2016 KiCad Developers, see AUTHORS.txt for contributors.</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> * Author: Tomasz Wlostowski &lt;tomasz.wlostowski@cern.ch&gt;</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> *</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * This program is free software: you can redistribute it and/or modify it</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * under the terms of the GNU General Public License as published by the</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> * Free Software Foundation, either version 3 of the License, or (at your</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> * option) any later version.</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> *</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * This program is distributed in the hope that it will be useful, but</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> * General Public License for more details.</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> *</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * You should have received a copy of the GNU General Public License along</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> * with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> */</em>
+<a id='L21' name='L21'></a>  21 
+<a id='L22' name='L22'></a>  22 <em class='sharp'>#ifndef</em> <a href='../S/688.html#L23' title='Defined at 23 in router/pns_shove.h.'>__PNS_SHOVE_H</a>
+<a id='L23' name='L23'></a>  23 <em class='sharp'>#define</em> <a href='../S/688.html#L22' title='Referred from 22 in router/pns_shove.h.'>__PNS_SHOVE_H</a>
+<a id='L24' name='L24'></a>  24 
+<a id='L25' name='L25'></a>  25 <em class='sharp'>#include</em> &lt;vector&gt;
+<a id='L26' name='L26'></a>  26 <em class='sharp'>#include</em> &lt;stack&gt;
+<a id='L27' name='L27'></a>  27 
+<a id='L28' name='L28'></a>  28 <em class='sharp'>#include</em> &lt;math/box2.h&gt;
+<a id='L29' name='L29'></a>  29 
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#include</em> "<a href='680.html'>pns_optimizer.h</a>"
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#include</em> "<a href='685.html'>pns_routing_settings.h</a>"
+<a id='L32' name='L32'></a>  32 <em class='sharp'>#include</em> "<a href='636.html'>pns_algo_base.h</a>"
+<a id='L33' name='L33'></a>  33 <em class='sharp'>#include</em> "<a href='668.html'>pns_logger.h</a>"
+<a id='L34' name='L34'></a>  34 <em class='sharp'>#include</em> "<a href='705.html'>range.h</a>"
+<a id='L35' name='L35'></a>  35 
+<a id='L36' name='L36'></a>  36 <a href='../Y/12795.html' title='Multiple used in 89 places.'>namespace</a> <a href='../D/2558.html' title='Multiple defined in 30 places.'>PNS</a> <em class='brace'>{</em>
+<a id='L37' name='L37'></a>  37 
+<a id='L38' name='L38'></a>  38 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>;
+<a id='L39' name='L39'></a>  39 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../D/2147.html' title='Multiple defined in 2 places.'>NODE</a>;
+<a id='L40' name='L40'></a>  40 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../D/2723.html' title='Multiple defined in 2 places.'>ROUTER</a>;
+<a id='L41' name='L41'></a>  41 
+<a id='L42' name='L42'></a>  42 <em class='comment'>/**</em>
+<a id='L43' name='L43'></a>  43 <em class='comment'> * SHOVE</em>
+<a id='L44' name='L44'></a>  44 <em class='comment'> *</em>
+<a id='L45' name='L45'></a>  45 <em class='comment'> * The actual Push and Shove algorithm.</em>
+<a id='L46' name='L46'></a>  46 <em class='comment'> */</em>
+<a id='L47' name='L47'></a>  47 
+<a id='L48' name='L48'></a>  48 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../D/2856.html' title='Multiple defined in 2 places.'>SHOVE</a> : <a href='../Y/13804.html' title='Multiple used in 833 places.'>public</a> <a href='../Y/33.html' title='Multiple used in 13 places.'>ALGO_BASE</a>
+<a id='L49' name='L49'></a>  49 <em class='brace'>{</em>
+<a id='L50' name='L50'></a>  50 <a href='../Y/13804.html' title='Multiple used in 833 places.'>public</a>:
+<a id='L51' name='L51'></a>  51 
+<a id='L52' name='L52'></a>  52     <strong class='reserved'>enum</strong> <a href='../R/2737.html' title='Multiple referred from 46 places.'>SHOVE_STATUS</a>
+<a id='L53' name='L53'></a>  53     <em class='brace'>{</em>
+<a id='L54' name='L54'></a>  54         <a href='../R/2741.html' title='Multiple referred from 32 places.'>SH_OK</a> = 0,
+<a id='L55' name='L55'></a>  55         <a href='../S/687.html#L1076' title='Referred from 1076 in router/pns_shove.cpp.'>SH_NULL</a>,
+<a id='L56' name='L56'></a>  56         <a href='../R/2739.html' title='Multiple referred from 34 places.'>SH_INCOMPLETE</a>,
+<a id='L57' name='L57'></a>  57         <a href='../R/2738.html' title='Multiple referred from 8 places.'>SH_HEAD_MODIFIED</a>,
+<a id='L58' name='L58'></a>  58         <a href='../R/2742.html' title='Multiple referred from 9 places.'>SH_TRY_WALK</a>
+<a id='L59' name='L59'></a>  59     <em class='brace'>}</em>;
+<a id='L60' name='L60'></a>  60 
+<a id='L61' name='L61'></a>  61     <a href='../D/2856.html' title='Multiple defined in 2 places.'>SHOVE</a>( <a href='../D/2147.html' title='Multiple defined in 2 places.'>NODE</a>* <a href='../Y/6178.html' title='Multiple used in 61 places.'>aWorld</a>, <a href='../D/2723.html' title='Multiple defined in 2 places.'>ROUTER</a>* <a href='../Y/5904.html' title='Multiple used in 38 places.'>aRouter</a> );
+<a id='L62' name='L62'></a>  62     ~<a href='../D/2856.html' title='Multiple defined in 2 places.'>SHOVE</a>();
+<a id='L63' name='L63'></a>  63 
+<a id='L64' name='L64'></a>  64     <a href='../Y/15387.html' title='Multiple used in 761 places.'>virtual</a> <a href='../D/1973.html' title='Multiple defined in 2 places.'>LOGGER</a>* <a href='../D/2020.html' title='Multiple defined in 2 places.'>Logger</a>() <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a>
+<a id='L65' name='L65'></a>  65     <em class='brace'>{</em>
+<a id='L66' name='L66'></a>  66         <strong class='reserved'>return</strong> &amp;<a href='../Y/11246.html' title='Multiple used in 65 places.'>m_logger</a>;
+<a id='L67' name='L67'></a>  67     <em class='brace'>}</em>
+<a id='L68' name='L68'></a>  68 
+<a id='L69' name='L69'></a>  69     <a href='../S/688.html#L52' title='Defined at 52 in router/pns_shove.h.'>SHOVE_STATUS</a> <a href='../S/687.html#L1266' title='Defined at 1266 in router/pns_shove.cpp.'>ShoveLines</a>( <strong class='reserved'>const</strong> <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>&amp; <a href='../Y/5162.html' title='Multiple used in 5 places.'>aCurrentHead</a> );
+<a id='L70' name='L70'></a>  70     <a href='../S/688.html#L52' title='Defined at 52 in router/pns_shove.h.'>SHOVE_STATUS</a> <a href='../S/687.html#L1374' title='Defined at 1374 in router/pns_shove.cpp.'>ShoveMultiLines</a>( <strong class='reserved'>const</strong> <a href='../D/1784.html' title='Multiple defined in 2 places.'>ITEM_SET</a>&amp; <a href='../Y/5378.html' title='Multiple used in 7 places.'>aHeadSet</a> );
+<a id='L71' name='L71'></a>  71 
+<a id='L72' name='L72'></a>  72     <a href='../S/688.html#L52' title='Defined at 52 in router/pns_shove.h.'>SHOVE_STATUS</a> <a href='../S/687.html#L1473' title='Defined at 1473 in router/pns_shove.cpp.'>ShoveDraggingVia</a>( <strong class='reserved'>const</strong> <a href='../S/702.html#L40' title='Defined at 40 in router/pns_via.h.'>VIA_HANDLE</a> <a href='../Y/5678.html' title='Multiple used in 3 places.'>aOldVia</a>, <strong class='reserved'>const</strong> <a href='../Y/4788.html' title='Multiple used in 795 places.'>VECTOR2I</a>&amp; <a href='../Y/6169.html' title='Multiple used in 29 places.'>aWhere</a>, <a href='../S/702.html#L40' title='Defined at 40 in router/pns_via.h.'>VIA_HANDLE</a>&amp; <a href='../Y/5649.html' title='Multiple used in 4 places.'>aNewVia</a> );
+<a id='L73' name='L73'></a>  73     <a href='../S/688.html#L52' title='Defined at 52 in router/pns_shove.h.'>SHOVE_STATUS</a> <a href='../S/687.html#L274' title='Defined at 274 in router/pns_shove.cpp.'>ProcessSingleLine</a>( <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>&amp; <a href='../Y/5161.html' title='Multiple used in 97 places.'>aCurrent</a>, <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>&amp; <a href='../Y/5666.html' title='Multiple used in 72 places.'>aObstacle</a>, <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>&amp; <a href='../Y/5953.html' title='Multiple used in 17 places.'>aShoved</a> );
+<a id='L74' name='L74'></a>  74 
+<a id='L75' name='L75'></a>  75     <strong class='reserved'>void</strong> <a href='../Y/1094.html' title='Multiple used in 2 places.'>ForceClearance</a> ( <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/5249.html' title='Multiple used in 52 places.'>aEnabled</a>, <strong class='reserved'>int</strong> <a href='../Y/5084.html' title='Multiple used in 75 places.'>aClearance</a> )
+<a id='L76' name='L76'></a>  76     <em class='brace'>{</em>
+<a id='L77' name='L77'></a>  77         <strong class='reserved'>if</strong>( <a href='../Y/5249.html' title='Multiple used in 52 places.'>aEnabled</a> )
+<a id='L78' name='L78'></a>  78             <a href='../S/677.html#L207' title='Defined at 207 in router/pns_node.cpp.'>m_forceClearance</a> = <a href='../Y/5084.html' title='Multiple used in 75 places.'>aClearance</a>;
+<a id='L79' name='L79'></a>  79         <strong class='reserved'>else</strong>
+<a id='L80' name='L80'></a>  80             <a href='../S/677.html#L207' title='Defined at 207 in router/pns_node.cpp.'>m_forceClearance</a> = -1;
+<a id='L81' name='L81'></a>  81     <em class='brace'>}</em>
+<a id='L82' name='L82'></a>  82 
+<a id='L83' name='L83'></a>  83     <a href='../D/2147.html' title='Multiple defined in 2 places.'>NODE</a>* <a href='../D/530.html' title='Multiple defined in 7 places.'>CurrentNode</a>();
+<a id='L84' name='L84'></a>  84 
+<a id='L85' name='L85'></a>  85     <strong class='reserved'>const</strong> <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a> <a href='../S/687.html#L1622' title='Defined at 1622 in router/pns_shove.cpp.'>NewHead</a>() <strong class='reserved'>const</strong>;
+<a id='L86' name='L86'></a>  86 
+<a id='L87' name='L87'></a>  87     <strong class='reserved'>void</strong> <a href='../S/687.html#L1630' title='Defined at 1630 in router/pns_shove.cpp.'>SetInitialLine</a>( <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>&amp; <a href='../Y/5417.html' title='Multiple used in 3 places.'>aInitial</a> );
+<a id='L88' name='L88'></a>  88 
+<a id='L89' name='L89'></a>  89     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../S/687.html#L1637' title='Defined at 1637 in router/pns_shove.cpp.'>AddLockedSpringbackNode</a>( <a href='../D/2147.html' title='Multiple defined in 2 places.'>NODE</a>* <a href='../Y/5655.html' title='Multiple used in 329 places.'>aNode</a> );
+<a id='L90' name='L90'></a>  90     <strong class='reserved'>void</strong> <a href='../S/687.html#L1676' title='Defined at 1676 in router/pns_shove.cpp.'>UnlockSpringbackNode</a>( <a href='../D/2147.html' title='Multiple defined in 2 places.'>NODE</a>* <a href='../Y/5655.html' title='Multiple used in 329 places.'>aNode</a> );
+<a id='L91' name='L91'></a>  91     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../S/687.html#L1648' title='Defined at 1648 in router/pns_shove.cpp.'>RewindSpringbackTo</a>( <a href='../D/2147.html' title='Multiple defined in 2 places.'>NODE</a>* <a href='../Y/5655.html' title='Multiple used in 329 places.'>aNode</a> );
+<a id='L92' name='L92'></a>  92 
+<a id='L93' name='L93'></a>  93 <a href='../Y/13721.html' title='Multiple used in 310 places.'>private</a>:
+<a id='L94' name='L94'></a>  94     <strong class='reserved'>typedef</strong> <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/15301.html' title='Multiple used in 606 places.'>vector</a>&lt;<a href='../Y/3234.html' title='Multiple used in 316 places.'>SHAPE_LINE_CHAIN</a>&gt; <a href='../R/1372.html' title='Multiple referred from 3 places.'>HULL_SET</a>;
+<a id='L95' name='L95'></a>  95     <strong class='reserved'>typedef</strong> <a href='../Y/2699.html' title='Multiple used in 30 places.'>OPT</a>&lt;<a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>&gt; <a href='../R/2078.html' title='Multiple referred from 4 places.'>OPT_LINE</a>;
+<a id='L96' name='L96'></a>  96     <strong class='reserved'>typedef</strong> <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/13395.html' title='Multiple used in 92 places.'>pair</a>&lt;<a href='../R/1874.html' title='Multiple referred from 363 places.'>LINE</a>, <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>&gt; <a href='../R/1875.html' title='Multiple referred from 3 places.'>LINE_PAIR</a>;
+<a id='L97' name='L97'></a>  97     <strong class='reserved'>typedef</strong> <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/15301.html' title='Multiple used in 606 places.'>vector</a>&lt;<a href='../S/688.html#L96' title='Defined at 96 in router/pns_shove.h.'>LINE_PAIR</a>&gt; <a href='../R/1876.html' title='Multiple referred from 2 places.'>LINE_PAIR_VEC</a>;
+<a id='L98' name='L98'></a>  98 
+<a id='L99' name='L99'></a>  99     <strong class='reserved'>struct</strong> <a href='../R/2777.html' title='Multiple referred from 5 places.'>SPRINGBACK_TAG</a>
+<a id='L100' name='L100'></a> 100     <em class='brace'>{</em>
+<a id='L101' name='L101'></a> 101         <a href='../S/688.html#L99' title='Defined at 99 in router/pns_shove.h.'>SPRINGBACK_TAG</a>() :
+<a id='L102' name='L102'></a> 102             <a href='../Y/11193.html' title='Multiple used in 8 places.'>m_length</a>( 0 ),
+<a id='L103' name='L103'></a> 103             <a href='../Y/11428.html' title='Multiple used in 19 places.'>m_node</a>( <a href='../Y/13059.html' title='Multiple used in 610 places.'>nullptr</a> ),
+<a id='L104' name='L104'></a> 104             <a href='../Y/11852.html' title='Multiple used in 3 places.'>m_seq</a>( 0 ),
+<a id='L105' name='L105'></a> 105             <a href='../Y/11244.html' title='Multiple used in 20 places.'>m_locked</a>( <a href='../Y/7859.html' title='Multiple used in 200 places.'>false</a> )
+<a id='L106' name='L106'></a> 106         <em class='brace'>{</em><em class='brace'>}</em>
+<a id='L107' name='L107'></a> 107 
+<a id='L108' name='L108'></a> 108         <a href='../Y/8588.html' title='Multiple used in 40 places.'>int64_t</a> <a href='../Y/11193.html' title='Multiple used in 8 places.'>m_length</a>;
+<a id='L109' name='L109'></a> 109         <a href='../S/702.html#L40' title='Defined at 40 in router/pns_via.h.'>VIA_HANDLE</a> <a href='../Y/10726.html' title='Multiple used in 17 places.'>m_draggedVia</a>;
+<a id='L110' name='L110'></a> 110         <a href='../Y/4788.html' title='Multiple used in 795 places.'>VECTOR2I</a> <a href='../Y/11508.html' title='Multiple used in 21 places.'>m_p</a>;
+<a id='L111' name='L111'></a> 111         <a href='../D/2147.html' title='Multiple defined in 2 places.'>NODE</a>* <a href='../Y/11428.html' title='Multiple used in 19 places.'>m_node</a>;
+<a id='L112' name='L112'></a> 112         <a href='../Y/2700.html' title='Multiple used in 25 places.'>OPT_BOX2I</a> <a href='../Y/10226.html' title='Multiple used in 16 places.'>m_affectedArea</a>;
+<a id='L113' name='L113'></a> 113         <strong class='reserved'>int</strong> <a href='../Y/11852.html' title='Multiple used in 3 places.'>m_seq</a>;
+<a id='L114' name='L114'></a> 114         <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/11244.html' title='Multiple used in 20 places.'>m_locked</a>;
+<a id='L115' name='L115'></a> 115     <em class='brace'>}</em>;
+<a id='L116' name='L116'></a> 116 
+<a id='L117' name='L117'></a> 117     <a href='../S/688.html#L52' title='Defined at 52 in router/pns_shove.h.'>SHOVE_STATUS</a> <a href='../S/687.html#L165' title='Defined at 165 in router/pns_shove.cpp.'>processHullSet</a>( <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>&amp; <a href='../Y/5161.html' title='Multiple used in 97 places.'>aCurrent</a>, <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>&amp; <a href='../Y/5666.html' title='Multiple used in 72 places.'>aObstacle</a>,
+<a id='L118' name='L118'></a> 118                                  <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>&amp; <a href='../Y/5953.html' title='Multiple used in 17 places.'>aShoved</a>, <strong class='reserved'>const</strong> <a href='../S/688.html#L94' title='Defined at 94 in router/pns_shove.h.'>HULL_SET</a>&amp; <a href='../Y/8442.html' title='Multiple used in 6 places.'>hulls</a> );
+<a id='L119' name='L119'></a> 119 
+<a id='L120' name='L120'></a> 120     <a href='../D/2147.html' title='Multiple defined in 2 places.'>NODE</a>* <a href='../S/687.html#L640' title='Defined at 640 in router/pns_shove.cpp.'>reduceSpringback</a>( <strong class='reserved'>const</strong> <a href='../D/1784.html' title='Multiple defined in 2 places.'>ITEM_SET</a>&amp; <a href='../Y/5378.html' title='Multiple used in 7 places.'>aHeadSet</a>, <a href='../S/702.html#L40' title='Defined at 40 in router/pns_via.h.'>VIA_HANDLE</a>&amp; <a href='../Y/5218.html' title='Multiple used in 8 places.'>aDraggedVia</a> );
+<a id='L121' name='L121'></a> 121 
+<a id='L122' name='L122'></a> 122     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../S/687.html#L668' title='Defined at 668 in router/pns_shove.cpp.'>pushSpringback</a>( <a href='../D/2147.html' title='Multiple defined in 2 places.'>NODE</a>* <a href='../Y/5655.html' title='Multiple used in 329 places.'>aNode</a>, <strong class='reserved'>const</strong> <a href='../Y/2700.html' title='Multiple used in 25 places.'>OPT_BOX2I</a>&amp; <a href='../Y/4983.html' title='Multiple used in 5 places.'>aAffectedArea</a>, <a href='../D/3347.html' title='Multiple defined in 2 places.'>VIA</a>* <a href='../Y/5218.html' title='Multiple used in 8 places.'>aDraggedVia</a> );
+<a id='L123' name='L123'></a> 123 
+<a id='L124' name='L124'></a> 124     <a href='../S/688.html#L52' title='Defined at 52 in router/pns_shove.h.'>SHOVE_STATUS</a> <a href='../S/687.html#L129' title='Defined at 129 in router/pns_shove.cpp.'>walkaroundLoneVia</a>( <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>&amp; <a href='../Y/5161.html' title='Multiple used in 97 places.'>aCurrent</a>, <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>&amp; <a href='../Y/5666.html' title='Multiple used in 72 places.'>aObstacle</a>, <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>&amp; <a href='../Y/5953.html' title='Multiple used in 17 places.'>aShoved</a> );
+<a id='L125' name='L125'></a> 125     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../S/687.html#L117' title='Defined at 117 in router/pns_shove.cpp.'>checkBumpDirection</a>( <strong class='reserved'>const</strong> <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>&amp; <a href='../Y/5161.html' title='Multiple used in 97 places.'>aCurrent</a>, <strong class='reserved'>const</strong> <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>&amp; <a href='../Y/5666.html' title='Multiple used in 72 places.'>aObstacle</a>, <strong class='reserved'>const</strong> <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>&amp; <a href='../Y/5953.html' title='Multiple used in 17 places.'>aShoved</a> ) <strong class='reserved'>const</strong>;
+<a id='L126' name='L126'></a> 126 
+<a id='L127' name='L127'></a> 127     <a href='../S/688.html#L52' title='Defined at 52 in router/pns_shove.h.'>SHOVE_STATUS</a> <a href='../S/687.html#L403' title='Defined at 403 in router/pns_shove.cpp.'>onCollidingArc</a>( <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>&amp; <a href='../Y/5161.html' title='Multiple used in 97 places.'>aCurrent</a>, <a href='../Y/73.html' title='Multiple used in 86 places.'>ARC</a>* <a href='../Y/5667.html' title='Multiple used in 4 places.'>aObstacleArc</a> );
+<a id='L128' name='L128'></a> 128     <a href='../S/688.html#L52' title='Defined at 52 in router/pns_shove.h.'>SHOVE_STATUS</a> <a href='../S/687.html#L464' title='Defined at 464 in router/pns_shove.cpp.'>onCollidingLine</a>( <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>&amp; <a href='../Y/5161.html' title='Multiple used in 97 places.'>aCurrent</a>, <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>&amp; <a href='../Y/5666.html' title='Multiple used in 72 places.'>aObstacle</a> );
+<a id='L129' name='L129'></a> 129     <a href='../S/688.html#L52' title='Defined at 52 in router/pns_shove.h.'>SHOVE_STATUS</a> <a href='../S/687.html#L342' title='Defined at 342 in router/pns_shove.cpp.'>onCollidingSegment</a>( <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>&amp; <a href='../Y/5161.html' title='Multiple used in 97 places.'>aCurrent</a>, <a href='../Y/3208.html' title='Multiple used in 87 places.'>SEGMENT</a>* <a href='../Y/5668.html' title='Multiple used in 4 places.'>aObstacleSeg</a> );
+<a id='L130' name='L130'></a> 130     <a href='../S/688.html#L52' title='Defined at 52 in router/pns_shove.h.'>SHOVE_STATUS</a> <a href='../S/687.html#L507' title='Defined at 507 in router/pns_shove.cpp.'>onCollidingSolid</a>( <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>&amp; <a href='../Y/5161.html' title='Multiple used in 97 places.'>aCurrent</a>, <a href='../D/1783.html' title='Multiple defined in 2 places.'>ITEM</a>* <a href='../Y/5666.html' title='Multiple used in 72 places.'>aObstacle</a> );
+<a id='L131' name='L131'></a> 131     <a href='../S/688.html#L52' title='Defined at 52 in router/pns_shove.h.'>SHOVE_STATUS</a> <a href='../S/687.html#L832' title='Defined at 832 in router/pns_shove.cpp.'>onCollidingVia</a>( <a href='../D/1783.html' title='Multiple defined in 2 places.'>ITEM</a>* <a href='../Y/5161.html' title='Multiple used in 97 places.'>aCurrent</a>, <a href='../D/3347.html' title='Multiple defined in 2 places.'>VIA</a>* <a href='../Y/5669.html' title='Multiple used in 16 places.'>aObstacleVia</a> );
+<a id='L132' name='L132'></a> 132     <a href='../S/688.html#L52' title='Defined at 52 in router/pns_shove.h.'>SHOVE_STATUS</a> <a href='../S/687.html#L907' title='Defined at 907 in router/pns_shove.cpp.'>onReverseCollidingVia</a>( <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>&amp; <a href='../Y/5161.html' title='Multiple used in 97 places.'>aCurrent</a>, <a href='../D/3347.html' title='Multiple defined in 2 places.'>VIA</a>* <a href='../Y/5669.html' title='Multiple used in 16 places.'>aObstacleVia</a> );
+<a id='L133' name='L133'></a> 133     <a href='../S/688.html#L52' title='Defined at 52 in router/pns_shove.h.'>SHOVE_STATUS</a> <a href='../S/687.html#L705' title='Defined at 705 in router/pns_shove.cpp.'>pushOrShoveVia</a>( <a href='../D/3347.html' title='Multiple defined in 2 places.'>VIA</a>* <a href='../Y/6149.html' title='Multiple used in 117 places.'>aVia</a>, <strong class='reserved'>const</strong> <a href='../Y/4788.html' title='Multiple used in 795 places.'>VECTOR2I</a>&amp; <a href='../Y/5319.html' title='Multiple used in 9 places.'>aForce</a>, <strong class='reserved'>int</strong> <a href='../Y/5165.html' title='Multiple used in 4 places.'>aCurrentRank</a> );
+<a id='L134' name='L134'></a> 134 
+<a id='L135' name='L135'></a> 135     <a href='../Y/2700.html' title='Multiple used in 25 places.'>OPT_BOX2I</a> <a href='../S/687.html#L1250' title='Defined at 1250 in router/pns_shove.cpp.'>totalAffectedArea</a>() <strong class='reserved'>const</strong>;
+<a id='L136' name='L136'></a> 136 
+<a id='L137' name='L137'></a> 137     <strong class='reserved'>void</strong> <a href='../D/4698.html' title='Multiple defined in 2 places.'>unwindLineStack</a>( <a href='../Y/2374.html' title='Multiple used in 44 places.'>LINKED_ITEM</a>* <a href='../Y/5926.html' title='Multiple used in 104 places.'>aSeg</a> );
+<a id='L138' name='L138'></a> 138     <strong class='reserved'>void</strong> <a href='../D/4698.html' title='Multiple defined in 2 places.'>unwindLineStack</a>( <a href='../D/1783.html' title='Multiple defined in 2 places.'>ITEM</a>* <a href='../Y/5437.html' title='Multiple used in 845 places.'>aItem</a> );
+<a id='L139' name='L139'></a> 139 
+<a id='L140' name='L140'></a> 140     <strong class='reserved'>void</strong> <a href='../S/687.html#L1545' title='Defined at 1545 in router/pns_shove.cpp.'>runOptimizer</a>( <a href='../D/2147.html' title='Multiple defined in 2 places.'>NODE</a>* <a href='../Y/5655.html' title='Multiple used in 329 places.'>aNode</a> );
+<a id='L141' name='L141'></a> 141 
+<a id='L142' name='L142'></a> 142     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../S/687.html#L1024' title='Defined at 1024 in router/pns_shove.cpp.'>pushLineStack</a>( <strong class='reserved'>const</strong> <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>&amp; <a href='../Y/5469.html' title='Multiple used in 19 places.'>aL</a>, <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/5458.html' title='Multiple used in 3 places.'>aKeepCurrentOnTop</a> = <a href='../Y/7859.html' title='Multiple used in 200 places.'>false</a> );
+<a id='L143' name='L143'></a> 143     <strong class='reserved'>void</strong> <a href='../S/687.html#L1043' title='Defined at 1043 in router/pns_shove.cpp.'>popLineStack</a>();
+<a id='L144' name='L144'></a> 144 
+<a id='L145' name='L145'></a> 145     <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a> <a href='../S/687.html#L104' title='Defined at 104 in router/pns_shove.cpp.'>assembleLine</a>( <strong class='reserved'>const</strong> <a href='../Y/2374.html' title='Multiple used in 44 places.'>LINKED_ITEM</a>* <a href='../Y/5926.html' title='Multiple used in 104 places.'>aSeg</a>, <strong class='reserved'>int</strong>* <a href='../Y/5409.html' title='Multiple used in 115 places.'>aIndex</a> = <a href='../Y/2643.html' title='Multiple used in 1581 places.'>NULL</a> );
+<a id='L146' name='L146'></a> 146 
+<a id='L147' name='L147'></a> 147     <strong class='reserved'>void</strong> <a href='../S/687.html#L47' title='Defined at 47 in router/pns_shove.cpp.'>replaceItems</a>( <a href='../D/1783.html' title='Multiple defined in 2 places.'>ITEM</a>* <a href='../Y/5674.html' title='Multiple used in 16 places.'>aOld</a>, <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/15186.html' title='Multiple used in 184 places.'>unique_ptr</a>&lt; <a href='../D/1783.html' title='Multiple defined in 2 places.'>ITEM</a> &gt; <a href='../Y/5631.html' title='Multiple used in 16 places.'>aNew</a> );
+<a id='L148' name='L148'></a> 148     <strong class='reserved'>void</strong> <a href='../S/687.html#L57' title='Defined at 57 in router/pns_shove.cpp.'>replaceLine</a>( <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>&amp; <a href='../Y/5674.html' title='Multiple used in 16 places.'>aOld</a>, <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>&amp; <a href='../Y/5631.html' title='Multiple used in 16 places.'>aNew</a> );
+<a id='L149' name='L149'></a> 149 
+<a id='L150' name='L150'></a> 150     <a href='../Y/2700.html' title='Multiple used in 25 places.'>OPT_BOX2I</a>                   <a href='../Y/10226.html' title='Multiple used in 16 places.'>m_affectedArea</a>;
+<a id='L151' name='L151'></a> 151 
+<a id='L152' name='L152'></a> 152     <a href='../S/688.html#L52' title='Defined at 52 in router/pns_shove.h.'>SHOVE_STATUS</a> <a href='../S/687.html#L1072' title='Defined at 1072 in router/pns_shove.cpp.'>shoveIteration</a>( <strong class='reserved'>int</strong> <a href='../Y/5449.html' title='Multiple used in 13 places.'>aIter</a> );
+<a id='L153' name='L153'></a> 153     <a href='../S/688.html#L52' title='Defined at 52 in router/pns_shove.h.'>SHOVE_STATUS</a> <a href='../S/687.html#L1210' title='Defined at 1210 in router/pns_shove.cpp.'>shoveMainLoop</a>();
+<a id='L154' name='L154'></a> 154 
+<a id='L155' name='L155'></a> 155     <strong class='reserved'>int</strong> <a href='../S/687.html#L67' title='Defined at 67 in router/pns_shove.cpp.'>getClearance</a>( <strong class='reserved'>const</strong> <a href='../D/1783.html' title='Multiple defined in 2 places.'>ITEM</a>* <a href='../Y/4968.html' title='Multiple used in 35 places.'>aA</a>, <strong class='reserved'>const</strong> <a href='../D/1783.html' title='Multiple defined in 2 places.'>ITEM</a>* <a href='../Y/5024.html' title='Multiple used in 70 places.'>aB</a> ) <strong class='reserved'>const</strong>;
+<a id='L156' name='L156'></a> 156 
+<a id='L157' name='L157'></a> 157     <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/15301.html' title='Multiple used in 606 places.'>vector</a>&lt;<a href='../S/688.html#L99' title='Defined at 99 in router/pns_shove.h.'>SPRINGBACK_TAG</a>&gt; <a href='../Y/11429.html' title='Multiple used in 18 places.'>m_nodeStack</a>;
+<a id='L158' name='L158'></a> 158     <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/15301.html' title='Multiple used in 606 places.'>vector</a>&lt;<a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>&gt;           <a href='../Y/11212.html' title='Multiple used in 17 places.'>m_lineStack</a>;
+<a id='L159' name='L159'></a> 159     <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/15301.html' title='Multiple used in 606 places.'>vector</a>&lt;<a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>&gt;           <a href='../Y/11469.html' title='Multiple used in 12 places.'>m_optimizerQueue</a>;
+<a id='L160' name='L160'></a> 160 
+<a id='L161' name='L161'></a> 161     <a href='../D/2147.html' title='Multiple defined in 2 places.'>NODE</a>*                       <a href='../Y/11782.html' title='Multiple used in 25 places.'>m_root</a>;
+<a id='L162' name='L162'></a> 162     <a href='../D/2147.html' title='Multiple defined in 2 places.'>NODE</a>*                       <a href='../Y/10631.html' title='Multiple used in 151 places.'>m_currentNode</a>;
+<a id='L163' name='L163'></a> 163     <strong class='reserved'>int</strong>                         <a href='../Y/11772.html' title='Multiple used in 2 places.'>m_restrictSpringbackTagId</a>;
+<a id='L164' name='L164'></a> 164 
+<a id='L165' name='L165'></a> 165     <a href='../S/688.html#L95' title='Defined at 95 in router/pns_shove.h.'>OPT_LINE</a>                    <a href='../Y/11421.html' title='Multiple used in 18 places.'>m_newHead</a>;
+<a id='L166' name='L166'></a> 166 
+<a id='L167' name='L167'></a> 167     <a href='../D/1973.html' title='Multiple defined in 2 places.'>LOGGER</a>                      <a href='../Y/11246.html' title='Multiple used in 65 places.'>m_logger</a>;
+<a id='L168' name='L168'></a> 168     <a href='../D/3347.html' title='Multiple defined in 2 places.'>VIA</a>*                        <a href='../Y/10726.html' title='Multiple used in 17 places.'>m_draggedVia</a>;
+<a id='L169' name='L169'></a> 169 
+<a id='L170' name='L170'></a> 170     <strong class='reserved'>int</strong>                         <a href='../Y/11097.html' title='Multiple used in 17 places.'>m_iter</a>;
+<a id='L171' name='L171'></a> 171     <strong class='reserved'>int</strong> <a href='../S/677.html#L207' title='Defined at 207 in router/pns_node.cpp.'>m_forceClearance</a>;
+<a id='L172' name='L172'></a> 172     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/11377.html' title='Multiple used in 9 places.'>m_multiLineMode</a>;
+<a id='L173' name='L173'></a> 173     <strong class='reserved'>void</strong> <a href='../S/687.html#L76' title='Defined at 76 in router/pns_shove.cpp.'>sanityCheck</a>( <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>* <a href='../Y/5674.html' title='Multiple used in 16 places.'>aOld</a>, <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>* <a href='../Y/5631.html' title='Multiple used in 16 places.'>aNew</a> );
+<a id='L174' name='L174'></a> 174 <em class='brace'>}</em>;
+<a id='L175' name='L175'></a> 175 
+<a id='L176' name='L176'></a> 176 <em class='brace'>}</em>
+<a id='L177' name='L177'></a> 177 
+<a id='L178' name='L178'></a> 178 <em class='sharp'>#endif</em> <em class='comment'>// __PNS_SHOVE_H</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;][^][v]<a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

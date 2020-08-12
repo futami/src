@@ -1,0 +1,364 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>tools/zone_create_helper.cpp</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/843.html'>tools</a>/zone_create_helper.cpp</h2>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L38'>[^]</a><a href='#L292'>[v]</a>[top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L38' title='Defined at 38.'>m_parentView</a></li>
+<li><a href='#L52' title='Defined at 52.'>createNewZone</a></li>
+<li><a href='#L118' title='Defined at 118.'>createZoneFromExisting</a></li>
+<li><a href='#L134' title='Defined at 134.'>performZoneCutout</a></li>
+<li><a href='#L181' title='Defined at 181.'>commitZone</a></li>
+<li><a href='#L251' title='Defined at 251.'>OnFirstPoint</a></li>
+<li><a href='#L284' title='Defined at 284.'>OnGeometryChange</a></li>
+<li><a href='#L292' title='Defined at 292.'>OnComplete</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * This program source code file is part of KiCad, a free EDA CAD application.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 2017-2019 KiCad Developers, see AUTHORS.txt for contributors.</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> *</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> * This program is free software; you can redistribute it and/or</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> * modify it under the terms of the GNU General Public License</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * as published by the Free Software Foundation; either version 2</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * of the License, or (at your option) any later version.</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> *</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> * This program is distributed in the hope that it will be useful,</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> * but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * GNU General Public License for more details.</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> *</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> * You should have received a copy of the GNU General Public License</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> * along with this program; if not, you may find one here:</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> * or you may search the http://www.gnu.org website for the version 2 license,</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> * or you may write to the Free Software Foundation, Inc.,</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'> * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'> */</em>
+<a id='L23' name='L23'></a>  23 
+<a id='L24' name='L24'></a>  24 <em class='sharp'>#include</em> &lt;<a href='806.html'>tools/zone_create_helper.h</a>&gt;
+<a id='L25' name='L25'></a>  25 <em class='sharp'>#include</em> &lt;tool/tool_manager.h&gt;
+<a id='L26' name='L26'></a>  26 <em class='sharp'>#include</em> &lt;<a href='81.html'>class_zone.h</a>&gt;
+<a id='L27' name='L27'></a>  27 <em class='sharp'>#include</em> &lt;<a href='63.html'>class_drawsegment.h</a>&gt;
+<a id='L28' name='L28'></a>  28 <em class='sharp'>#include</em> &lt;<a href='65.html'>class_edge_mod.h</a>&gt;
+<a id='L29' name='L29'></a>  29 <em class='sharp'>#include</em> &lt;<a href='32.html'>board_commit.h</a>&gt;
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#include</em> &lt;<a href='594.html'>pcb_painter.h</a>&gt;
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#include</em> &lt;<a href='782.html'>tools/pcb_actions.h</a>&gt;
+<a id='L32' name='L32'></a>  32 <em class='sharp'>#include</em> &lt;<a href='802.html'>tools/selection_tool.h</a>&gt;
+<a id='L33' name='L33'></a>  33 <em class='sharp'>#include</em> &lt;<a href='823.html'>zone_filler.h</a>&gt;
+<a id='L34' name='L34'></a>  34 
+<a id='L35' name='L35'></a>  35 <a href='../S/805.html#L44' title='Defined at 44 in tools/zone_create_helper.cpp.'>ZONE_CREATE_HELPER</a>::<a href='../S/805.html#L44' title='Defined at 44 in tools/zone_create_helper.cpp.'>ZONE_CREATE_HELPER</a>( <a href='../S/763.html#L71' title='Defined at 71 in tools/drawing_tool.cpp.'>DRAWING_TOOL</a>&amp; <a href='../Y/6070.html' title='Multiple used in 28 places.'>aTool</a>, <a href='../S/806.html#L50' title='Defined at 50 in tools/zone_create_helper.h.'>PARAMS</a>&amp; <a href='../Y/5753.html' title='Multiple used in 6 places.'>aParams</a> ):
+<a id='L36' name='L36'></a>  36         <a href='../Y/12206.html' title='Multiple used in 36 places.'>m_tool</a>( <a href='../Y/6070.html' title='Multiple used in 28 places.'>aTool</a> ),
+<a id='L37' name='L37'></a>  37         <a href='../Y/11561.html' title='Multiple used in 243 places.'>m_params</a>( <a href='../Y/5753.html' title='Multiple used in 6 places.'>aParams</a> ),
+<a id='L38' name='L38'></a>  38         <a href='../R/4042.html' title='Multiple referred from 8 places.'>m_parentView</a>( *<a href='../Y/6070.html' title='Multiple used in 28 places.'>aTool</a>.<a href='../Y/8265.html' title='Multiple used in 66 places.'>getView</a>() )
+<a id='L39' name='L39'></a>  39 <em class='brace'>{</em>
+<a id='L40' name='L40'></a>  40     <a href='../S/805.html#L38' title='Defined at 38 in tools/zone_create_helper.cpp.'>m_parentView</a>.<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( &amp;<a href='../Y/11648.html' title='Multiple used in 10 places.'>m_previewItem</a> );
+<a id='L41' name='L41'></a>  41 <em class='brace'>}</em>
+<a id='L42' name='L42'></a>  42 
+<a id='L43' name='L43'></a>  43 
+<a id='L44' name='L44'></a>  44 <a href='../S/805.html#L44' title='Defined at 44 in tools/zone_create_helper.cpp.'>ZONE_CREATE_HELPER</a>::~<a href='../R/3273.html' title='Multiple referred from 15 places.'>ZONE_CREATE_HELPER</a>()
+<a id='L45' name='L45'></a>  45 <em class='brace'>{</em>
+<a id='L46' name='L46'></a>  46     <em class='comment'>// remove the preview from the view</em>
+<a id='L47' name='L47'></a>  47     <a href='../S/805.html#L38' title='Defined at 38 in tools/zone_create_helper.cpp.'>m_parentView</a>.<a href='../S/628.html#L470' title='Defined at 470 in ratsnest/ratsnest_data.cpp.'>SetVisible</a>( &amp;<a href='../Y/11648.html' title='Multiple used in 10 places.'>m_previewItem</a>, <strong class='reserved'>false</strong> );
+<a id='L48' name='L48'></a>  48     <a href='../S/805.html#L38' title='Defined at 38 in tools/zone_create_helper.cpp.'>m_parentView</a>.<a href='../D/2784.html' title='Multiple defined in 16 places.'>Remove</a>( &amp;<a href='../Y/11648.html' title='Multiple used in 10 places.'>m_previewItem</a> );
+<a id='L49' name='L49'></a>  49 <em class='brace'>}</em>
+<a id='L50' name='L50'></a>  50 
+<a id='L51' name='L51'></a>  51 
+<a id='L52' name='L52'></a>  52 <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/15186.html' title='Multiple used in 184 places.'>unique_ptr</a>&lt;<a href='../S/80.html#L93' title='Defined at 93 in class_zone.cpp.'>ZONE_CONTAINER</a>&gt; <a href='../S/805.html#L44' title='Defined at 44 in tools/zone_create_helper.cpp.'>ZONE_CREATE_HELPER</a>::<a href='../R/3581.html' title='Multiple referred from 2 places.'>createNewZone</a>( <strong class='reserved'>bool</strong> <a href='../Y/5461.html' title='Multiple used in 2 places.'>aKeepout</a> )
+<a id='L53' name='L53'></a>  53 <em class='brace'>{</em>
+<a id='L54' name='L54'></a>  54     <strong class='reserved'>auto</strong>&amp; <a href='../Y/8124.html' title='Multiple used in 280 places.'>frame</a> = *<a href='../Y/12206.html' title='Multiple used in 36 places.'>m_tool</a>.<a href='../Y/8253.html' title='Multiple used in 66 places.'>getEditFrame</a>&lt;<a href='../S/579.html#L54' title='Defined at 54 in pcb_base_edit_frame.cpp.'>PCB_BASE_EDIT_FRAME</a>&gt;();
+<a id='L55' name='L55'></a>  55     <strong class='reserved'>auto</strong>&amp; <a href='../Y/6700.html' title='Multiple used in 309 places.'>board</a> = *<a href='../Y/12206.html' title='Multiple used in 36 places.'>m_tool</a>.<a href='../Y/8259.html' title='Multiple used in 21 places.'>getModel</a>&lt;<a href='../S/57.html#L104' title='Defined at 104 in class_board.cpp.'>BOARD</a>&gt;();
+<a id='L56' name='L56'></a>  56     <a href='../Y/254.html' title='Multiple used in 32 places.'>BOARD_ITEM_CONTAINER</a>* <a href='../S/714.html#L3496' title='Defined at 3496 in specctra_import_export/specctra.cpp.'>parent</a> = <a href='../Y/12206.html' title='Multiple used in 36 places.'>m_tool</a>.<a href='../D/4159.html' title='Multiple defined in 14 places.'>m_frame</a>-&gt;<a href='../D/1244.html' title='Multiple defined in 4 places.'>GetModel</a>();
+<a id='L57' name='L57'></a>  57     <a href='../D/1894.html' title='Multiple defined in 2 places.'>KIGFX</a>::<a href='../Y/4801.html' title='Multiple used in 18 places.'>VIEW_CONTROLS</a>* <a href='../Y/7080.html' title='Multiple used in 124 places.'>controls</a> = <a href='../Y/12206.html' title='Multiple used in 36 places.'>m_tool</a>.<a href='../Y/1536.html' title='Multiple used in 8 places.'>GetManager</a>()-&gt;<a href='../Y/1802.html' title='Multiple used in 21 places.'>GetViewControls</a>();
+<a id='L58' name='L58'></a>  58 
+<a id='L59' name='L59'></a>  59     <em class='comment'>// Get the current default settings for zones</em>
+<a id='L60' name='L60'></a>  60     <a href='../S/824.html#L45' title='Defined at 45 in zone_settings.cpp.'>ZONE_SETTINGS</a> <a href='../Y/16099.html' title='Multiple used in 22 places.'>zoneInfo</a> = <a href='../Y/8124.html' title='Multiple used in 280 places.'>frame</a>.<a href='../S/581.html#L286' title='Defined at 286 in pcb_base_frame.cpp.'>GetZoneSettings</a>();
+<a id='L61' name='L61'></a>  61     <a href='../Y/16099.html' title='Multiple used in 22 places.'>zoneInfo</a>.<a href='../Y/9712.html' title='Multiple used in 72 places.'>m_Layers</a>.<a href='../S/777.html#L170' title='Defined at 170 in tools/pcbnew_picker_tool.cpp.'>reset</a>().<a href='../Y/14361.html' title='Multiple used in 188 places.'>set</a>( <a href='../Y/11561.html' title='Multiple used in 243 places.'>m_params</a>.<a href='../Y/11149.html' title='Multiple used in 35 places.'>m_layer</a> );  <em class='comment'>// TODO(JE) multilayer defaults?</em>
+<a id='L62' name='L62'></a>  62     <a href='../Y/16099.html' title='Multiple used in 22 places.'>zoneInfo</a>.<a href='../Y/9820.html' title='Multiple used in 10 places.'>m_NetcodeSelection</a> =
+<a id='L63' name='L63'></a>  63             <a href='../Y/6700.html' title='Multiple used in 309 places.'>board</a>.<a href='../Y/1471.html' title='Multiple used in 7 places.'>GetHighLightNetCodes</a>().<a href='../Y/7690.html' title='Multiple used in 167 places.'>empty</a>() ? -1 : *<a href='../Y/6700.html' title='Multiple used in 309 places.'>board</a>.<a href='../Y/1471.html' title='Multiple used in 7 places.'>GetHighLightNetCodes</a>().<a href='../S/330.html#L221' title='Defined at 221 in dialogs/panel_fp_lib_table.cpp.'>begin</a>();
+<a id='L64' name='L64'></a>  64     <a href='../Y/16099.html' title='Multiple used in 22 places.'>zoneInfo</a>.<a href='../Y/3612.html' title='Multiple used in 18 places.'>SetIsKeepout</a>( <a href='../Y/11561.html' title='Multiple used in 243 places.'>m_params</a>.<a href='../Y/11108.html' title='Multiple used in 6 places.'>m_keepout</a> );
+<a id='L65' name='L65'></a>  65     <a href='../Y/16099.html' title='Multiple used in 22 places.'>zoneInfo</a>.<a href='../Y/10211.html' title='Multiple used in 14 places.'>m_Zone_45_Only</a> = ( <a href='../Y/11561.html' title='Multiple used in 243 places.'>m_params</a>.<a href='../Y/11187.html' title='Multiple used in 2 places.'>m_leaderMode</a> == <a href='../Y/2896.html' title='Multiple used in 17 places.'>POLYGON_GEOM_MANAGER</a>::<a href='../Y/2344.html' title='Multiple used in 8 places.'>LEADER_MODE</a>::<a href='../Y/621.html' title='Multiple used in 5 places.'>DEG45</a> );
+<a id='L66' name='L66'></a>  66 
+<a id='L67' name='L67'></a>  67     <em class='comment'>// If we don't have a net from highlighing, maybe we can get one from the selection</em>
+<a id='L68' name='L68'></a>  68     <a href='../S/801.html#L137' title='Defined at 137 in tools/selection_tool.cpp.'>SELECTION_TOOL</a>* <a href='../Y/14347.html' title='Multiple used in 36 places.'>selectionTool</a> = <a href='../Y/12206.html' title='Multiple used in 36 places.'>m_tool</a>.<a href='../Y/1536.html' title='Multiple used in 8 places.'>GetManager</a>()-&gt;<a href='../Y/1767.html' title='Multiple used in 91 places.'>GetTool</a>&lt;<a href='../S/801.html#L137' title='Defined at 137 in tools/selection_tool.cpp.'>SELECTION_TOOL</a>&gt;();
+<a id='L69' name='L69'></a>  69 
+<a id='L70' name='L70'></a>  70     <strong class='reserved'>if</strong>( <a href='../Y/14347.html' title='Multiple used in 36 places.'>selectionTool</a> &amp;&amp; !<a href='../Y/14347.html' title='Multiple used in 36 places.'>selectionTool</a>-&gt;<a href='../S/801.html#L332' title='Defined at 332 in tools/selection_tool.cpp.'>GetSelection</a>().<a href='../Y/916.html' title='Multiple used in 64 places.'>Empty</a>()
+<a id='L71' name='L71'></a>  71             &amp;&amp; <a href='../Y/16099.html' title='Multiple used in 22 places.'>zoneInfo</a>.<a href='../Y/9820.html' title='Multiple used in 10 places.'>m_NetcodeSelection</a> == -1 )
+<a id='L72' name='L72'></a>  72     <em class='brace'>{</em>
+<a id='L73' name='L73'></a>  73         <a href='../Y/839.html' title='Multiple used in 140 places.'>EDA_ITEM</a>* <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a> = *<a href='../Y/14347.html' title='Multiple used in 36 places.'>selectionTool</a>-&gt;<a href='../S/801.html#L332' title='Defined at 332 in tools/selection_tool.cpp.'>GetSelection</a>().<a href='../Y/1493.html' title='Multiple used in 16 places.'>GetItems</a>().<a href='../S/330.html#L221' title='Defined at 221 in dialogs/panel_fp_lib_table.cpp.'>begin</a>();
+<a id='L74' name='L74'></a>  74 
+<a id='L75' name='L75'></a>  75         <strong class='reserved'>if</strong>( <a href='../Y/249.html' title='Multiple used in 141 places.'>BOARD_CONNECTED_ITEM</a>* <a href='../Y/6659.html' title='Multiple used in 7 places.'>bci</a> = <strong class='reserved'>dynamic_cast</strong>&lt;<a href='../Y/249.html' title='Multiple used in 141 places.'>BOARD_CONNECTED_ITEM</a>*&gt;( <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a> ) )
+<a id='L76' name='L76'></a>  76             <a href='../Y/16099.html' title='Multiple used in 22 places.'>zoneInfo</a>.<a href='../Y/9820.html' title='Multiple used in 10 places.'>m_NetcodeSelection</a> = <a href='../Y/6659.html' title='Multiple used in 7 places.'>bci</a>-&gt;<a href='../D/1256.html' title='Multiple defined in 2 places.'>GetNetCode</a>();
+<a id='L77' name='L77'></a>  77     <em class='brace'>}</em>
+<a id='L78' name='L78'></a>  78 
+<a id='L79' name='L79'></a>  79     <strong class='reserved'>if</strong>( <a href='../Y/11561.html' title='Multiple used in 243 places.'>m_params</a>.<a href='../S/260.html#L42' title='Defined at 42 in dialogs/dialog_pns_length_tuning_settings.cpp.'>m_mode</a> != <a href='../Y/4921.html' title='Multiple used in 18 places.'>ZONE_MODE</a>::<a href='../Y/1184.html' title='Multiple used in 9 places.'>GRAPHIC_POLYGON</a> )
+<a id='L80' name='L80'></a>  80     <em class='brace'>{</em>
+<a id='L81' name='L81'></a>  81         <em class='comment'>// Get the current default settings for zones</em>
+<a id='L82' name='L82'></a>  82 
+<a id='L83' name='L83'></a>  83         <em class='comment'>// Show options dialog</em>
+<a id='L84' name='L84'></a>  84         <strong class='reserved'>int</strong> <a href='../Y/7388.html' title='Multiple used in 16 places.'>dialogResult</a>;
+<a id='L85' name='L85'></a>  85 
+<a id='L86' name='L86'></a>  86         <strong class='reserved'>if</strong>( <a href='../Y/11561.html' title='Multiple used in 243 places.'>m_params</a>.<a href='../Y/11108.html' title='Multiple used in 6 places.'>m_keepout</a> )
+<a id='L87' name='L87'></a>  87             <a href='../Y/7388.html' title='Multiple used in 16 places.'>dialogResult</a> = <a href='../S/223.html#L61' title='Defined at 61 in dialogs/dialog_keepout_area_properties.cpp.'>InvokeKeepoutAreaEditor</a>( &amp;<a href='../Y/8124.html' title='Multiple used in 280 places.'>frame</a>, &amp;<a href='../Y/16099.html' title='Multiple used in 22 places.'>zoneInfo</a> );
+<a id='L88' name='L88'></a>  88         <strong class='reserved'>else</strong>
+<a id='L89' name='L89'></a>  89         <em class='brace'>{</em>
+<a id='L90' name='L90'></a>  90             <em class='comment'>// TODO(JE) combine these dialogs?</em>
+<a id='L91' name='L91'></a>  91             <strong class='reserved'>if</strong>( ( <a href='../Y/16099.html' title='Multiple used in 22 places.'>zoneInfo</a>.<a href='../Y/9712.html' title='Multiple used in 72 places.'>m_Layers</a> &amp; <a href='../Y/2380.html' title='Multiple used in 386 places.'>LSET</a>::<a href='../Y/157.html' title='Multiple used in 72 places.'>AllCuMask</a>() ).<a href='../Y/6379.html' title='Multiple used in 52 places.'>any</a>() )
+<a id='L92' name='L92'></a>  92                 <a href='../Y/7388.html' title='Multiple used in 16 places.'>dialogResult</a> = <a href='../S/116.html#L97' title='Defined at 97 in dialogs/dialog_copper_zones.cpp.'>InvokeCopperZonesEditor</a>( &amp;<a href='../Y/8124.html' title='Multiple used in 280 places.'>frame</a>, &amp;<a href='../Y/16099.html' title='Multiple used in 22 places.'>zoneInfo</a> );
+<a id='L93' name='L93'></a>  93             <strong class='reserved'>else</strong>
+<a id='L94' name='L94'></a>  94                 <a href='../Y/7388.html' title='Multiple used in 16 places.'>dialogResult</a> = <a href='../S/240.html#L66' title='Defined at 66 in dialogs/dialog_non_copper_zones_properties.cpp.'>InvokeNonCopperZonesEditor</a>( &amp;<a href='../Y/8124.html' title='Multiple used in 280 places.'>frame</a>, &amp;<a href='../Y/16099.html' title='Multiple used in 22 places.'>zoneInfo</a> );
+<a id='L95' name='L95'></a>  95         <em class='brace'>}</em>
+<a id='L96' name='L96'></a>  96 
+<a id='L97' name='L97'></a>  97         <strong class='reserved'>if</strong>( <a href='../Y/7388.html' title='Multiple used in 16 places.'>dialogResult</a> == <a href='../Y/15783.html' title='Multiple used in 92 places.'>wxID_CANCEL</a> )
+<a id='L98' name='L98'></a>  98             <strong class='reserved'>return</strong> <a href='../Y/13059.html' title='Multiple used in 610 places.'>nullptr</a>;
+<a id='L99' name='L99'></a>  99 
+<a id='L100' name='L100'></a> 100         <a href='../Y/7080.html' title='Multiple used in 124 places.'>controls</a>-&gt;<a href='../Y/4893.html' title='Multiple used in 2 places.'>WarpCursor</a>( <a href='../Y/7080.html' title='Multiple used in 124 places.'>controls</a>-&gt;<a href='../Y/1332.html' title='Multiple used in 37 places.'>GetCursorPosition</a>(), <strong class='reserved'>true</strong> );
+<a id='L101' name='L101'></a> 101     <em class='brace'>}</em>
+<a id='L102' name='L102'></a> 102 
+<a id='L103' name='L103'></a> 103     <em class='comment'>// The new zone is a ZONE_CONTAINER if created in the board editor</em>
+<a id='L104' name='L104'></a> 104     <em class='comment'>// and a MODULE_ZONE_CONTAINER if created in the footprint editor</em>
+<a id='L105' name='L105'></a> 105     <a href='../Y/15500.html' title='Multiple used in 180 places.'>wxASSERT</a>( !<a href='../Y/12206.html' title='Multiple used in 36 places.'>m_tool</a>.<a href='../Y/10757.html' title='Multiple used in 69 places.'>m_editModules</a> || ( <a href='../S/714.html#L3496' title='Defined at 3496 in specctra_import_export/specctra.cpp.'>parent</a>-&gt;<a href='../Y/4696.html' title='Multiple used in 393 places.'>Type</a>() == <a href='../Y/2843.html' title='Multiple used in 98 places.'>PCB_MODULE_T</a> ) );
+<a id='L106' name='L106'></a> 106 
+<a id='L107' name='L107'></a> 107     <strong class='reserved'>auto</strong> <a href='../Y/12939.html' title='Multiple used in 19 places.'>newZone</a> = <a href='../Y/12206.html' title='Multiple used in 36 places.'>m_tool</a>.<a href='../Y/10757.html' title='Multiple used in 69 places.'>m_editModules</a> ?
+<a id='L108' name='L108'></a> 108                         <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/12451.html' title='Multiple used in 49 places.'>make_unique</a>&lt;<a href='../D/2065.html' title='Multiple defined in 2 places.'>MODULE_ZONE_CONTAINER</a>&gt;( <a href='../S/714.html#L3496' title='Defined at 3496 in specctra_import_export/specctra.cpp.'>parent</a> ) :
+<a id='L109' name='L109'></a> 109                         <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/12451.html' title='Multiple used in 49 places.'>make_unique</a>&lt;<a href='../S/80.html#L93' title='Defined at 93 in class_zone.cpp.'>ZONE_CONTAINER</a>&gt;( <a href='../S/714.html#L3496' title='Defined at 3496 in specctra_import_export/specctra.cpp.'>parent</a> );
+<a id='L110' name='L110'></a> 110 
+<a id='L111' name='L111'></a> 111     <em class='comment'>// Apply the selected settings</em>
+<a id='L112' name='L112'></a> 112     <a href='../Y/16099.html' title='Multiple used in 22 places.'>zoneInfo</a>.<a href='../S/824.html#L126' title='Defined at 126 in zone_settings.cpp.'>ExportSetting</a>( *<a href='../Y/12939.html' title='Multiple used in 19 places.'>newZone</a> );
+<a id='L113' name='L113'></a> 113 
+<a id='L114' name='L114'></a> 114     <strong class='reserved'>return</strong> <a href='../Y/12939.html' title='Multiple used in 19 places.'>newZone</a>;
+<a id='L115' name='L115'></a> 115 <em class='brace'>}</em>
+<a id='L116' name='L116'></a> 116 
+<a id='L117' name='L117'></a> 117 
+<a id='L118' name='L118'></a> 118 <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/15186.html' title='Multiple used in 184 places.'>unique_ptr</a>&lt;<a href='../S/80.html#L93' title='Defined at 93 in class_zone.cpp.'>ZONE_CONTAINER</a>&gt; <a href='../S/805.html#L44' title='Defined at 44 in tools/zone_create_helper.cpp.'>ZONE_CREATE_HELPER</a>::<a href='../R/3589.html' title='Multiple referred from 2 places.'>createZoneFromExisting</a>(
+<a id='L119' name='L119'></a> 119         <strong class='reserved'>const</strong> <a href='../S/80.html#L93' title='Defined at 93 in class_zone.cpp.'>ZONE_CONTAINER</a>&amp; <a href='../Y/5995.html' title='Multiple used in 3 places.'>aSrcZone</a> )
+<a id='L120' name='L120'></a> 120 <em class='brace'>{</em>
+<a id='L121' name='L121'></a> 121     <strong class='reserved'>auto</strong>&amp; <a href='../Y/6700.html' title='Multiple used in 309 places.'>board</a> = *<a href='../Y/12206.html' title='Multiple used in 36 places.'>m_tool</a>.<a href='../Y/8259.html' title='Multiple used in 21 places.'>getModel</a>&lt;<a href='../S/57.html#L104' title='Defined at 104 in class_board.cpp.'>BOARD</a>&gt;();
+<a id='L122' name='L122'></a> 122 
+<a id='L123' name='L123'></a> 123     <strong class='reserved'>auto</strong> <a href='../Y/12939.html' title='Multiple used in 19 places.'>newZone</a> = <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/12451.html' title='Multiple used in 49 places.'>make_unique</a>&lt;<a href='../S/80.html#L93' title='Defined at 93 in class_zone.cpp.'>ZONE_CONTAINER</a>&gt;( &amp;<a href='../Y/6700.html' title='Multiple used in 309 places.'>board</a> );
+<a id='L124' name='L124'></a> 124 
+<a id='L125' name='L125'></a> 125     <a href='../S/824.html#L45' title='Defined at 45 in zone_settings.cpp.'>ZONE_SETTINGS</a> <a href='../Y/16108.html' title='Multiple used in 20 places.'>zoneSettings</a>;
+<a id='L126' name='L126'></a> 126     <a href='../Y/16108.html' title='Multiple used in 20 places.'>zoneSettings</a> &lt;&lt; <a href='../Y/5995.html' title='Multiple used in 3 places.'>aSrcZone</a>;
+<a id='L127' name='L127'></a> 127 
+<a id='L128' name='L128'></a> 128     <a href='../Y/16108.html' title='Multiple used in 20 places.'>zoneSettings</a>.<a href='../S/824.html#L126' title='Defined at 126 in zone_settings.cpp.'>ExportSetting</a>( *<a href='../Y/12939.html' title='Multiple used in 19 places.'>newZone</a> );
+<a id='L129' name='L129'></a> 129 
+<a id='L130' name='L130'></a> 130     <strong class='reserved'>return</strong> <a href='../Y/12939.html' title='Multiple used in 19 places.'>newZone</a>;
+<a id='L131' name='L131'></a> 131 <em class='brace'>}</em>
+<a id='L132' name='L132'></a> 132 
+<a id='L133' name='L133'></a> 133 
+<a id='L134' name='L134'></a> 134 <strong class='reserved'>void</strong> <a href='../S/805.html#L44' title='Defined at 44 in tools/zone_create_helper.cpp.'>ZONE_CREATE_HELPER</a>::<a href='../R/4299.html' title='Multiple referred from 2 places.'>performZoneCutout</a>( <a href='../S/80.html#L93' title='Defined at 93 in class_zone.cpp.'>ZONE_CONTAINER</a>&amp; <a href='../Y/6194.html' title='Multiple used in 262 places.'>aZone</a>, <a href='../S/80.html#L93' title='Defined at 93 in class_zone.cpp.'>ZONE_CONTAINER</a>&amp; <a href='../Y/5169.html' title='Multiple used in 3 places.'>aCutout</a> )
+<a id='L135' name='L135'></a> 135 <em class='brace'>{</em>
+<a id='L136' name='L136'></a> 136     <a href='../D/203.html' title='Multiple defined in 3 places.'>BOARD_COMMIT</a> <a href='../Y/7008.html' title='Multiple used in 225 places.'>commit</a>( &amp;<a href='../Y/12206.html' title='Multiple used in 36 places.'>m_tool</a> );
+<a id='L137' name='L137'></a> 137     <a href='../S/57.html#L104' title='Defined at 104 in class_board.cpp.'>BOARD</a>* <a href='../Y/6700.html' title='Multiple used in 309 places.'>board</a> = <a href='../Y/12206.html' title='Multiple used in 36 places.'>m_tool</a>.<a href='../Y/8259.html' title='Multiple used in 21 places.'>getModel</a>&lt;<a href='../S/57.html#L104' title='Defined at 104 in class_board.cpp.'>BOARD</a>&gt;();
+<a id='L138' name='L138'></a> 138     <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/15301.html' title='Multiple used in 606 places.'>vector</a>&lt;<a href='../S/80.html#L93' title='Defined at 93 in class_zone.cpp.'>ZONE_CONTAINER</a>*&gt; <a href='../Y/12941.html' title='Multiple used in 5 places.'>newZones</a>;
+<a id='L139' name='L139'></a> 139 
+<a id='L140' name='L140'></a> 140     <em class='comment'>// Clear the selection before removing the old zone</em>
+<a id='L141' name='L141'></a> 141     <strong class='reserved'>auto</strong> <a href='../Y/15011.html' title='Multiple used in 3 places.'>toolMgr</a> = <a href='../Y/12206.html' title='Multiple used in 36 places.'>m_tool</a>.<a href='../Y/1536.html' title='Multiple used in 8 places.'>GetManager</a>();
+<a id='L142' name='L142'></a> 142     <a href='../Y/15011.html' title='Multiple used in 3 places.'>toolMgr</a>-&gt;<a href='../Y/3195.html' title='Multiple used in 158 places.'>RunAction</a>( <a href='../Y/2808.html' title='Multiple used in 1029 places.'>PCB_ACTIONS</a>::<a href='../Y/14341.html' title='Multiple used in 60 places.'>selectionClear</a>, <strong class='reserved'>true</strong> );
+<a id='L143' name='L143'></a> 143 
+<a id='L144' name='L144'></a> 144     <a href='../Y/3235.html' title='Multiple used in 305 places.'>SHAPE_POLY_SET</a> <a href='../Y/13200.html' title='Multiple used in 6 places.'>originalOutline</a>( *<a href='../Y/6194.html' title='Multiple used in 262 places.'>aZone</a>.<a href='../Y/2736.html' title='Multiple used in 73 places.'>Outline</a>() );
+<a id='L145' name='L145'></a> 145     <a href='../Y/13200.html' title='Multiple used in 6 places.'>originalOutline</a>.<a href='../Y/312.html' title='Multiple used in 9 places.'>BooleanSubtract</a>( *<a href='../Y/5169.html' title='Multiple used in 3 places.'>aCutout</a>.<a href='../Y/2736.html' title='Multiple used in 73 places.'>Outline</a>(), <a href='../Y/3235.html' title='Multiple used in 305 places.'>SHAPE_POLY_SET</a>::<a href='../Y/2886.html' title='Multiple used in 40 places.'>PM_FAST</a> );
+<a id='L146' name='L146'></a> 146 
+<a id='L147' name='L147'></a> 147     <em class='comment'>// After substracting the hole, originalOutline can have more than one</em>
+<a id='L148' name='L148'></a> 148     <em class='comment'>// main outline.</em>
+<a id='L149' name='L149'></a> 149     <em class='comment'>// But a zone can have only one main outline, so create as many zones as</em>
+<a id='L150' name='L150'></a> 150     <em class='comment'>// originalOutline contains main outlines:</em>
+<a id='L151' name='L151'></a> 151     <strong class='reserved'>for</strong>( <strong class='reserved'>int</strong> <a href='../Y/13222.html' title='Multiple used in 175 places.'>outline</a> = 0; <a href='../Y/13222.html' title='Multiple used in 175 places.'>outline</a> &lt; <a href='../Y/13200.html' title='Multiple used in 6 places.'>originalOutline</a>.<a href='../Y/2737.html' title='Multiple used in 59 places.'>OutlineCount</a>(); <a href='../Y/13222.html' title='Multiple used in 175 places.'>outline</a>++ )
+<a id='L152' name='L152'></a> 152     <em class='brace'>{</em>
+<a id='L153' name='L153'></a> 153         <strong class='reserved'>auto</strong> <a href='../Y/12940.html' title='Multiple used in 4 places.'>newZoneOutline</a> = <strong class='reserved'>new</strong> <a href='../Y/3235.html' title='Multiple used in 305 places.'>SHAPE_POLY_SET</a>;
+<a id='L154' name='L154'></a> 154         <a href='../Y/12940.html' title='Multiple used in 4 places.'>newZoneOutline</a>-&gt;<a href='../Y/127.html' title='Multiple used in 12 places.'>AddOutline</a>( <a href='../Y/13200.html' title='Multiple used in 6 places.'>originalOutline</a>.<a href='../Y/2736.html' title='Multiple used in 73 places.'>Outline</a>( <a href='../Y/13222.html' title='Multiple used in 175 places.'>outline</a> ) );
+<a id='L155' name='L155'></a> 155 
+<a id='L156' name='L156'></a> 156         <em class='comment'>// Add holes (if any) to thez new zone outline:</em>
+<a id='L157' name='L157'></a> 157         <strong class='reserved'>for</strong> (<strong class='reserved'>int</strong> <a href='../Y/8406.html' title='Multiple used in 63 places.'>hole</a> = 0; <a href='../Y/8406.html' title='Multiple used in 63 places.'>hole</a> &lt; <a href='../Y/13200.html' title='Multiple used in 6 places.'>originalOutline</a>.<a href='../Y/1891.html' title='Multiple used in 11 places.'>HoleCount</a>( <a href='../Y/13222.html' title='Multiple used in 175 places.'>outline</a> ) ; <a href='../Y/8406.html' title='Multiple used in 63 places.'>hole</a>++ )
+<a id='L158' name='L158'></a> 158             <a href='../Y/12940.html' title='Multiple used in 4 places.'>newZoneOutline</a>-&gt;<a href='../Y/116.html' title='Multiple used in 2 places.'>AddHole</a>( <a href='../Y/13200.html' title='Multiple used in 6 places.'>originalOutline</a>.<a href='../Y/355.html' title='Multiple used in 4 places.'>CHole</a>( <a href='../Y/13222.html' title='Multiple used in 175 places.'>outline</a>, <a href='../Y/8406.html' title='Multiple used in 63 places.'>hole</a> ) );
+<a id='L159' name='L159'></a> 159 
+<a id='L160' name='L160'></a> 160         <strong class='reserved'>auto</strong> <a href='../Y/12939.html' title='Multiple used in 19 places.'>newZone</a> = <strong class='reserved'>new</strong> <a href='../S/80.html#L93' title='Defined at 93 in class_zone.cpp.'>ZONE_CONTAINER</a>( <a href='../Y/6194.html' title='Multiple used in 262 places.'>aZone</a> );
+<a id='L161' name='L161'></a> 161         <a href='../Y/12939.html' title='Multiple used in 19 places.'>newZone</a>-&gt;<a href='../S/557.html#L87' title='Defined at 87 in pcad2kicadpcb_plugin/pcb_polygon.cpp.'>SetOutline</a>( <a href='../Y/12940.html' title='Multiple used in 4 places.'>newZoneOutline</a> );
+<a id='L162' name='L162'></a> 162         <a href='../Y/12939.html' title='Multiple used in 19 places.'>newZone</a>-&gt;<a href='../Y/3660.html' title='Multiple used in 9 places.'>SetLocalFlags</a>( 1 );
+<a id='L163' name='L163'></a> 163         <a href='../Y/12939.html' title='Multiple used in 19 places.'>newZone</a>-&gt;<a href='../S/80.html#L953' title='Defined at 953 in class_zone.cpp.'>Hatch</a>();
+<a id='L164' name='L164'></a> 164         <a href='../Y/12941.html' title='Multiple used in 5 places.'>newZones</a>.<a href='../S/330.html#L228' title='Defined at 228 in dialogs/panel_fp_lib_table.cpp.'>push_back</a>( <a href='../Y/12939.html' title='Multiple used in 19 places.'>newZone</a> );
+<a id='L165' name='L165'></a> 165         <a href='../Y/7008.html' title='Multiple used in 225 places.'>commit</a>.<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../Y/12939.html' title='Multiple used in 19 places.'>newZone</a> );
+<a id='L166' name='L166'></a> 166     <em class='brace'>}</em>
+<a id='L167' name='L167'></a> 167 
+<a id='L168' name='L168'></a> 168     <a href='../Y/7008.html' title='Multiple used in 225 places.'>commit</a>.<a href='../D/2784.html' title='Multiple defined in 16 places.'>Remove</a>( &amp;<a href='../Y/6194.html' title='Multiple used in 262 places.'>aZone</a> );
+<a id='L169' name='L169'></a> 169     <a href='../Y/7008.html' title='Multiple used in 225 places.'>commit</a>.<a href='../S/31.html#L84' title='Defined at 84 in board_commit.cpp.'>Push</a>( <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Add a zone cutout" ) );
+<a id='L170' name='L170'></a> 170 
+<a id='L171' name='L171'></a> 171     <a href='../S/822.html#L89' title='Defined at 89 in zone_filler.cpp.'>ZONE_FILLER</a> <a href='../Y/7958.html' title='Multiple used in 21 places.'>filler</a>( <a href='../Y/6700.html' title='Multiple used in 309 places.'>board</a> );
+<a id='L172' name='L172'></a> 172     <a href='../Y/7958.html' title='Multiple used in 21 places.'>filler</a>.<a href='../S/822.html#L102' title='Defined at 102 in zone_filler.cpp.'>Fill</a>( <a href='../Y/12941.html' title='Multiple used in 5 places.'>newZones</a> );
+<a id='L173' name='L173'></a> 173 
+<a id='L174' name='L174'></a> 174     <em class='comment'>// Select the new zone and set it as the source for the next cutout</em>
+<a id='L175' name='L175'></a> 175     <a href='../Y/15011.html' title='Multiple used in 3 places.'>toolMgr</a>-&gt;<a href='../Y/3195.html' title='Multiple used in 158 places.'>RunAction</a>( <a href='../Y/2808.html' title='Multiple used in 1029 places.'>PCB_ACTIONS</a>::<a href='../Y/14317.html' title='Multiple used in 24 places.'>selectItem</a>, <strong class='reserved'>true</strong>, <a href='../Y/12941.html' title='Multiple used in 5 places.'>newZones</a>[0] );
+<a id='L176' name='L176'></a> 176     <a href='../Y/11561.html' title='Multiple used in 243 places.'>m_params</a>.<a href='../Y/11934.html' title='Multiple used in 6 places.'>m_sourceZone</a> = <a href='../Y/12941.html' title='Multiple used in 5 places.'>newZones</a>[0];
+<a id='L177' name='L177'></a> 177 
+<a id='L178' name='L178'></a> 178 <em class='brace'>}</em>
+<a id='L179' name='L179'></a> 179 
+<a id='L180' name='L180'></a> 180 
+<a id='L181' name='L181'></a> 181 <strong class='reserved'>void</strong> <a href='../S/805.html#L44' title='Defined at 44 in tools/zone_create_helper.cpp.'>ZONE_CREATE_HELPER</a>::<a href='../R/3544.html' title='Multiple referred from 2 places.'>commitZone</a>( <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/15186.html' title='Multiple used in 184 places.'>unique_ptr</a>&lt;<a href='../S/80.html#L93' title='Defined at 93 in class_zone.cpp.'>ZONE_CONTAINER</a>&gt; <a href='../Y/6194.html' title='Multiple used in 262 places.'>aZone</a> )
+<a id='L182' name='L182'></a> 182 <em class='brace'>{</em>
+<a id='L183' name='L183'></a> 183     <strong class='reserved'>switch</strong> ( <a href='../Y/11561.html' title='Multiple used in 243 places.'>m_params</a>.<a href='../S/260.html#L42' title='Defined at 42 in dialogs/dialog_pns_length_tuning_settings.cpp.'>m_mode</a> )
+<a id='L184' name='L184'></a> 184     <em class='brace'>{</em>
+<a id='L185' name='L185'></a> 185         <strong class='reserved'>case</strong> <a href='../Y/4921.html' title='Multiple used in 18 places.'>ZONE_MODE</a>::<a href='../Y/454.html' title='Multiple used in 4 places.'>CUTOUT</a>:
+<a id='L186' name='L186'></a> 186             <em class='comment'>// For cutouts, subtract from the source</em>
+<a id='L187' name='L187'></a> 187             <a href='../S/805.html#L134' title='Defined at 134 in tools/zone_create_helper.cpp.'>performZoneCutout</a>( *<a href='../Y/11561.html' title='Multiple used in 243 places.'>m_params</a>.<a href='../Y/11934.html' title='Multiple used in 6 places.'>m_sourceZone</a>, *<a href='../Y/6194.html' title='Multiple used in 262 places.'>aZone</a> );
+<a id='L188' name='L188'></a> 188             <strong class='reserved'>break</strong>;
+<a id='L189' name='L189'></a> 189 
+<a id='L190' name='L190'></a> 190         <strong class='reserved'>case</strong> <a href='../Y/4921.html' title='Multiple used in 18 places.'>ZONE_MODE</a>::<a href='../Y/26.html' title='Multiple used in 5 places.'>ADD</a>:
+<a id='L191' name='L191'></a> 191         <strong class='reserved'>case</strong> <a href='../Y/4921.html' title='Multiple used in 18 places.'>ZONE_MODE</a>::<a href='../Y/3252.html' title='Multiple used in 5 places.'>SIMILAR</a>:
+<a id='L192' name='L192'></a> 192         <em class='brace'>{</em>
+<a id='L193' name='L193'></a> 193             <a href='../D/203.html' title='Multiple defined in 3 places.'>BOARD_COMMIT</a> <a href='../Y/6515.html' title='Multiple used in 7 places.'>bCommit</a>( &amp;<a href='../Y/12206.html' title='Multiple used in 36 places.'>m_tool</a> );
+<a id='L194' name='L194'></a> 194 
+<a id='L195' name='L195'></a> 195             <a href='../Y/6194.html' title='Multiple used in 262 places.'>aZone</a>-&gt;<a href='../S/80.html#L953' title='Defined at 953 in class_zone.cpp.'>Hatch</a>();
+<a id='L196' name='L196'></a> 196 
+<a id='L197' name='L197'></a> 197             <strong class='reserved'>if</strong>( !<a href='../Y/11561.html' title='Multiple used in 243 places.'>m_params</a>.<a href='../Y/11108.html' title='Multiple used in 6 places.'>m_keepout</a> )
+<a id='L198' name='L198'></a> 198             <em class='brace'>{</em>
+<a id='L199' name='L199'></a> 199                 <a href='../S/822.html#L89' title='Defined at 89 in zone_filler.cpp.'>ZONE_FILLER</a> <a href='../Y/7958.html' title='Multiple used in 21 places.'>filler</a>( <a href='../Y/12206.html' title='Multiple used in 36 places.'>m_tool</a>.<a href='../Y/8259.html' title='Multiple used in 21 places.'>getModel</a>&lt;<a href='../S/57.html#L104' title='Defined at 104 in class_board.cpp.'>BOARD</a>&gt;() );
+<a id='L200' name='L200'></a> 200                 <a href='../Y/7958.html' title='Multiple used in 21 places.'>filler</a>.<a href='../S/822.html#L102' title='Defined at 102 in zone_filler.cpp.'>Fill</a>( <em class='brace'>{</em> <a href='../Y/6194.html' title='Multiple used in 262 places.'>aZone</a>.<a href='../Y/8249.html' title='Multiple used in 194 places.'>get</a>() <em class='brace'>}</em> );
+<a id='L201' name='L201'></a> 201             <em class='brace'>}</em>
+<a id='L202' name='L202'></a> 202 
+<a id='L203' name='L203'></a> 203             <a href='../Y/6515.html' title='Multiple used in 7 places.'>bCommit</a>.<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../Y/6194.html' title='Multiple used in 262 places.'>aZone</a>.<a href='../Y/8249.html' title='Multiple used in 194 places.'>get</a>() );
+<a id='L204' name='L204'></a> 204             <a href='../Y/6515.html' title='Multiple used in 7 places.'>bCommit</a>.<a href='../S/31.html#L84' title='Defined at 84 in board_commit.cpp.'>Push</a>( <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Add a zone" ) );
+<a id='L205' name='L205'></a> 205             <a href='../Y/12206.html' title='Multiple used in 36 places.'>m_tool</a>.<a href='../Y/1536.html' title='Multiple used in 8 places.'>GetManager</a>()-&gt;<a href='../Y/3195.html' title='Multiple used in 158 places.'>RunAction</a>( <a href='../Y/2808.html' title='Multiple used in 1029 places.'>PCB_ACTIONS</a>::<a href='../Y/14317.html' title='Multiple used in 24 places.'>selectItem</a>, <strong class='reserved'>true</strong>, <a href='../Y/6194.html' title='Multiple used in 262 places.'>aZone</a>.<a href='../S/646.html#L124' title='Defined at 124 in router/pns_dp_meander_placer.cpp.'>release</a>() );
+<a id='L206' name='L206'></a> 206             <strong class='reserved'>break</strong>;
+<a id='L207' name='L207'></a> 207         <em class='brace'>}</em>
+<a id='L208' name='L208'></a> 208 
+<a id='L209' name='L209'></a> 209         <strong class='reserved'>case</strong> <a href='../Y/4921.html' title='Multiple used in 18 places.'>ZONE_MODE</a>::<a href='../Y/1184.html' title='Multiple used in 9 places.'>GRAPHIC_POLYGON</a>:
+<a id='L210' name='L210'></a> 210         <em class='brace'>{</em>
+<a id='L211' name='L211'></a> 211             <a href='../D/203.html' title='Multiple defined in 3 places.'>BOARD_COMMIT</a> <a href='../Y/6515.html' title='Multiple used in 7 places.'>bCommit</a>( &amp;<a href='../Y/12206.html' title='Multiple used in 36 places.'>m_tool</a> );
+<a id='L212' name='L212'></a> 212             <a href='../Y/254.html' title='Multiple used in 32 places.'>BOARD_ITEM_CONTAINER</a>* <a href='../S/714.html#L3496' title='Defined at 3496 in specctra_import_export/specctra.cpp.'>parent</a> = <a href='../Y/12206.html' title='Multiple used in 36 places.'>m_tool</a>.<a href='../D/4159.html' title='Multiple defined in 14 places.'>m_frame</a>-&gt;<a href='../D/1244.html' title='Multiple defined in 4 places.'>GetModel</a>();
+<a id='L213' name='L213'></a> 213             <a href='../Y/2380.html' title='Multiple used in 386 places.'>LSET</a> <a href='../Y/8285.html' title='Multiple used in 3 places.'>graphicPolygonsLayers</a> = <a href='../Y/2380.html' title='Multiple used in 386 places.'>LSET</a>::<a href='../Y/159.html' title='Multiple used in 16 places.'>AllLayersMask</a>();
+<a id='L214' name='L214'></a> 214 
+<a id='L215' name='L215'></a> 215             <a href='../Y/8285.html' title='Multiple used in 3 places.'>graphicPolygonsLayers</a>.<a href='../S/777.html#L170' title='Defined at 170 in tools/pcbnew_picker_tool.cpp.'>reset</a>( <a href='../Y/914.html' title='Multiple used in 68 places.'>Edge_Cuts</a> ).<a href='../S/777.html#L170' title='Defined at 170 in tools/pcbnew_picker_tool.cpp.'>reset</a>( <a href='../Y/1020.html' title='Multiple used in 21 places.'>F_CrtYd</a> ).<a href='../S/777.html#L170' title='Defined at 170 in tools/pcbnew_picker_tool.cpp.'>reset</a>( <a href='../Y/285.html' title='Multiple used in 21 places.'>B_CrtYd</a> );
+<a id='L216' name='L216'></a> 216 
+<a id='L217' name='L217'></a> 217             <strong class='reserved'>if</strong>( <a href='../Y/8285.html' title='Multiple used in 3 places.'>graphicPolygonsLayers</a>.<a href='../D/485.html' title='Multiple defined in 2 places.'>Contains</a>( <a href='../Y/11561.html' title='Multiple used in 243 places.'>m_params</a>.<a href='../Y/11149.html' title='Multiple used in 35 places.'>m_layer</a> ) )
+<a id='L218' name='L218'></a> 218             <em class='brace'>{</em>
+<a id='L219' name='L219'></a> 219                 <strong class='reserved'>auto</strong> <a href='../Y/13605.html' title='Multiple used in 137 places.'>poly</a> = <a href='../Y/12206.html' title='Multiple used in 36 places.'>m_tool</a>.<a href='../Y/10757.html' title='Multiple used in 69 places.'>m_editModules</a> ? <strong class='reserved'>new</strong> <a href='../D/848.html' title='Multiple defined in 2 places.'>EDGE_MODULE</a>( (<a href='../D/2056.html' title='Multiple defined in 3 places.'>MODULE</a> *) <a href='../S/714.html#L3496' title='Defined at 3496 in specctra_import_export/specctra.cpp.'>parent</a> )
+<a id='L220' name='L220'></a> 220                                                  : <strong class='reserved'>new</strong> <a href='../D/717.html' title='Multiple defined in 2 places.'>DRAWSEGMENT</a>();
+<a id='L221' name='L221'></a> 221                 <a href='../Y/13605.html' title='Multiple used in 137 places.'>poly</a>-&gt;<a href='../Y/3834.html' title='Multiple used in 179 places.'>SetShape</a> ( <a href='../Y/3302.html' title='Multiple used in 69 places.'>S_POLYGON</a> );
+<a id='L222' name='L222'></a> 222                 <a href='../Y/13605.html' title='Multiple used in 137 places.'>poly</a>-&gt;<a href='../D/3034.html' title='Multiple defined in 4 places.'>SetLayer</a>( <a href='../Y/11561.html' title='Multiple used in 243 places.'>m_params</a>.<a href='../Y/11149.html' title='Multiple used in 35 places.'>m_layer</a> );
+<a id='L223' name='L223'></a> 223                 <a href='../Y/13605.html' title='Multiple used in 137 places.'>poly</a>-&gt;<a href='../Y/3774.html' title='Multiple used in 5 places.'>SetPolyShape</a> ( *<a href='../Y/6194.html' title='Multiple used in 262 places.'>aZone</a>-&gt;<a href='../Y/2736.html' title='Multiple used in 73 places.'>Outline</a>() );
+<a id='L224' name='L224'></a> 224                 <a href='../Y/6515.html' title='Multiple used in 7 places.'>bCommit</a>.<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../Y/13605.html' title='Multiple used in 137 places.'>poly</a> );
+<a id='L225' name='L225'></a> 225                 <a href='../Y/12206.html' title='Multiple used in 36 places.'>m_tool</a>.<a href='../Y/1536.html' title='Multiple used in 8 places.'>GetManager</a>()-&gt;<a href='../Y/3195.html' title='Multiple used in 158 places.'>RunAction</a>( <a href='../Y/2808.html' title='Multiple used in 1029 places.'>PCB_ACTIONS</a>::<a href='../Y/14317.html' title='Multiple used in 24 places.'>selectItem</a>, <strong class='reserved'>true</strong>, <a href='../Y/13605.html' title='Multiple used in 137 places.'>poly</a> );
+<a id='L226' name='L226'></a> 226             <em class='brace'>}</em>
+<a id='L227' name='L227'></a> 227             <strong class='reserved'>else</strong>
+<a id='L228' name='L228'></a> 228             <em class='brace'>{</em>
+<a id='L229' name='L229'></a> 229                 <strong class='reserved'>auto</strong> <a href='../Y/13222.html' title='Multiple used in 175 places.'>outline</a> = <a href='../Y/6194.html' title='Multiple used in 262 places.'>aZone</a>-&gt;<a href='../Y/2736.html' title='Multiple used in 73 places.'>Outline</a>();
+<a id='L230' name='L230'></a> 230 
+<a id='L231' name='L231'></a> 231                 <strong class='reserved'>for</strong>( <strong class='reserved'>auto</strong> <a href='../S/467.html#L189' title='Defined at 189 in graphics_cleaner.cpp.'>seg</a> = <a href='../Y/13222.html' title='Multiple used in 175 places.'>outline</a>-&gt;<a href='../Y/360.html' title='Multiple used in 2 places.'>CIterateSegments</a>( 0 ); <a href='../S/467.html#L189' title='Defined at 189 in graphics_cleaner.cpp.'>seg</a>; <a href='../S/467.html#L189' title='Defined at 189 in graphics_cleaner.cpp.'>seg</a>++ )
+<a id='L232' name='L232'></a> 232                 <em class='brace'>{</em>
+<a id='L233' name='L233'></a> 233                     <strong class='reserved'>auto</strong> <a href='../Y/12964.html' title='Multiple used in 6 places.'>new_seg</a> = <a href='../Y/12206.html' title='Multiple used in 36 places.'>m_tool</a>.<a href='../Y/10757.html' title='Multiple used in 69 places.'>m_editModules</a> ? <strong class='reserved'>new</strong> <a href='../D/848.html' title='Multiple defined in 2 places.'>EDGE_MODULE</a>( (<a href='../D/2056.html' title='Multiple defined in 3 places.'>MODULE</a> *) <a href='../S/714.html#L3496' title='Defined at 3496 in specctra_import_export/specctra.cpp.'>parent</a> )
+<a id='L234' name='L234'></a> 234                                                         : <strong class='reserved'>new</strong> <a href='../D/717.html' title='Multiple defined in 2 places.'>DRAWSEGMENT</a>();
+<a id='L235' name='L235'></a> 235                     <a href='../Y/12964.html' title='Multiple used in 6 places.'>new_seg</a>-&gt;<a href='../Y/3834.html' title='Multiple used in 179 places.'>SetShape</a>( <a href='../Y/3304.html' title='Multiple used in 75 places.'>S_SEGMENT</a> );
+<a id='L236' name='L236'></a> 236                     <a href='../Y/12964.html' title='Multiple used in 6 places.'>new_seg</a>-&gt;<a href='../D/3034.html' title='Multiple defined in 4 places.'>SetLayer</a>( <a href='../Y/11561.html' title='Multiple used in 243 places.'>m_params</a>.<a href='../Y/11149.html' title='Multiple used in 35 places.'>m_layer</a> );
+<a id='L237' name='L237'></a> 237                     <a href='../Y/12964.html' title='Multiple used in 6 places.'>new_seg</a>-&gt;<a href='../Y/3868.html' title='Multiple used in 67 places.'>SetStart</a>( <a href='../Y/15871.html' title='Multiple used in 1252 places.'>wxPoint</a>( <a href='../S/467.html#L189' title='Defined at 189 in graphics_cleaner.cpp.'>seg</a>.<a href='../Y/1219.html' title='Multiple used in 21 places.'>Get</a>().<a href='../Y/1.html' title='Multiple used in 142 places.'>A</a>.<a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a>, <a href='../S/467.html#L189' title='Defined at 189 in graphics_cleaner.cpp.'>seg</a>.<a href='../Y/1219.html' title='Multiple used in 21 places.'>Get</a>().<a href='../Y/1.html' title='Multiple used in 142 places.'>A</a>.<a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a> ) );
+<a id='L238' name='L238'></a> 238                     <a href='../Y/12964.html' title='Multiple used in 6 places.'>new_seg</a>-&gt;<a href='../S/60.html#L199' title='Defined at 199 in class_dimension.cpp.'>SetEnd</a>( <a href='../Y/15871.html' title='Multiple used in 1252 places.'>wxPoint</a>( <a href='../S/467.html#L189' title='Defined at 189 in graphics_cleaner.cpp.'>seg</a>.<a href='../Y/1219.html' title='Multiple used in 21 places.'>Get</a>().<a href='../Y/225.html' title='Multiple used in 131 places.'>B</a>.<a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a>, <a href='../S/467.html#L189' title='Defined at 189 in graphics_cleaner.cpp.'>seg</a>.<a href='../Y/1219.html' title='Multiple used in 21 places.'>Get</a>().<a href='../Y/225.html' title='Multiple used in 131 places.'>B</a>.<a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a> ) );
+<a id='L239' name='L239'></a> 239                     <a href='../Y/6515.html' title='Multiple used in 7 places.'>bCommit</a>.<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../Y/12964.html' title='Multiple used in 6 places.'>new_seg</a> );
+<a id='L240' name='L240'></a> 240                 <em class='brace'>}</em>
+<a id='L241' name='L241'></a> 241             <em class='brace'>}</em>
+<a id='L242' name='L242'></a> 242 
+<a id='L243' name='L243'></a> 243             <a href='../Y/6515.html' title='Multiple used in 7 places.'>bCommit</a>.<a href='../S/31.html#L84' title='Defined at 84 in board_commit.cpp.'>Push</a>( <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Add a graphical polygon" ) );
+<a id='L244' name='L244'></a> 244 
+<a id='L245' name='L245'></a> 245             <strong class='reserved'>break</strong>;
+<a id='L246' name='L246'></a> 246         <em class='brace'>}</em>
+<a id='L247' name='L247'></a> 247     <em class='brace'>}</em>
+<a id='L248' name='L248'></a> 248 <em class='brace'>}</em>
+<a id='L249' name='L249'></a> 249 
+<a id='L250' name='L250'></a> 250 
+<a id='L251' name='L251'></a> 251 <strong class='reserved'>bool</strong> <a href='../S/805.html#L44' title='Defined at 44 in tools/zone_create_helper.cpp.'>ZONE_CREATE_HELPER</a>::<a href='../S/806.html#L82' title='Referred from 82 in tools/zone_create_helper.h.'>OnFirstPoint</a>( <a href='../Y/2896.html' title='Multiple used in 17 places.'>POLYGON_GEOM_MANAGER</a>&amp; <a href='../Y/5571.html' title='Multiple used in 18 places.'>aMgr</a> )
+<a id='L252' name='L252'></a> 252 <em class='brace'>{</em>
+<a id='L253' name='L253'></a> 253     <em class='comment'>// if we don't have a zone, create one</em>
+<a id='L254' name='L254'></a> 254     <em class='comment'>// the user's choice here can affect things like the colour of the preview</em>
+<a id='L255' name='L255'></a> 255     <strong class='reserved'>if</strong>( !<a href='../Y/12425.html' title='Multiple used in 53 places.'>m_zone</a> )
+<a id='L256' name='L256'></a> 256     <em class='brace'>{</em>
+<a id='L257' name='L257'></a> 257         <strong class='reserved'>if</strong>( <a href='../Y/11561.html' title='Multiple used in 243 places.'>m_params</a>.<a href='../Y/11934.html' title='Multiple used in 6 places.'>m_sourceZone</a> )
+<a id='L258' name='L258'></a> 258             <a href='../Y/12425.html' title='Multiple used in 53 places.'>m_zone</a> = <a href='../S/805.html#L118' title='Defined at 118 in tools/zone_create_helper.cpp.'>createZoneFromExisting</a>( *<a href='../Y/11561.html' title='Multiple used in 243 places.'>m_params</a>.<a href='../Y/11934.html' title='Multiple used in 6 places.'>m_sourceZone</a> );
+<a id='L259' name='L259'></a> 259         <strong class='reserved'>else</strong>
+<a id='L260' name='L260'></a> 260             <a href='../Y/12425.html' title='Multiple used in 53 places.'>m_zone</a> = <a href='../S/805.html#L52' title='Defined at 52 in tools/zone_create_helper.cpp.'>createNewZone</a>( <a href='../Y/11561.html' title='Multiple used in 243 places.'>m_params</a>.<a href='../Y/11108.html' title='Multiple used in 6 places.'>m_keepout</a> );
+<a id='L261' name='L261'></a> 261 
+<a id='L262' name='L262'></a> 262         <strong class='reserved'>if</strong>( <a href='../Y/12425.html' title='Multiple used in 53 places.'>m_zone</a> )
+<a id='L263' name='L263'></a> 263         <em class='brace'>{</em>
+<a id='L264' name='L264'></a> 264             <a href='../Y/12206.html' title='Multiple used in 36 places.'>m_tool</a>.<a href='../Y/1536.html' title='Multiple used in 8 places.'>GetManager</a>()-&gt;<a href='../Y/3195.html' title='Multiple used in 158 places.'>RunAction</a>( <a href='../Y/2808.html' title='Multiple used in 1029 places.'>PCB_ACTIONS</a>::<a href='../Y/14341.html' title='Multiple used in 60 places.'>selectionClear</a>, <strong class='reserved'>true</strong> );
+<a id='L265' name='L265'></a> 265 
+<a id='L266' name='L266'></a> 266             <em class='comment'>// set up poperties from zone</em>
+<a id='L267' name='L267'></a> 267             <strong class='reserved'>const</strong> <strong class='reserved'>auto</strong>&amp; <a href='../S/275.html#L48' title='Defined at 48 in dialogs/dialog_print_pcbnew.cpp.'>settings</a> = *<a href='../S/805.html#L38' title='Defined at 38 in tools/zone_create_helper.cpp.'>m_parentView</a>.<a href='../Y/1603.html' title='Multiple used in 32 places.'>GetPainter</a>()-&gt;<a href='../S/435.html#L417' title='Defined at 417 in footprint_edit_frame.cpp.'>GetSettings</a>();
+<a id='L268' name='L268'></a> 268             <a href='../Y/391.html' title='Multiple used in 170 places.'>COLOR4D</a> <a href='../Y/6989.html' title='Multiple used in 156 places.'>color</a> = <a href='../S/275.html#L48' title='Defined at 48 in dialogs/dialog_print_pcbnew.cpp.'>settings</a>.<a href='../D/1130.html' title='Multiple defined in 2 places.'>GetColor</a>( <a href='../Y/13059.html' title='Multiple used in 610 places.'>nullptr</a>, <a href='../Y/12425.html' title='Multiple used in 53 places.'>m_zone</a>-&gt;<a href='../D/1216.html' title='Multiple defined in 2 places.'>GetLayer</a>() );
+<a id='L269' name='L269'></a> 269 
+<a id='L270' name='L270'></a> 270             <a href='../Y/11648.html' title='Multiple used in 10 places.'>m_previewItem</a>.<a href='../Y/3881.html' title='Multiple used in 33 places.'>SetStrokeColor</a>( <a href='../Y/391.html' title='Multiple used in 170 places.'>COLOR4D</a>::<a href='../Y/4831.html' title='Multiple used in 25 places.'>WHITE</a> );
+<a id='L271' name='L271'></a> 271             <a href='../Y/11648.html' title='Multiple used in 10 places.'>m_previewItem</a>.<a href='../Y/3513.html' title='Multiple used in 18 places.'>SetFillColor</a>( <a href='../Y/6989.html' title='Multiple used in 156 places.'>color</a>.<a href='../Y/4898.html' title='Multiple used in 4 places.'>WithAlpha</a>( 0.2 ) );
+<a id='L272' name='L272'></a> 272 
+<a id='L273' name='L273'></a> 273             <a href='../S/805.html#L38' title='Defined at 38 in tools/zone_create_helper.cpp.'>m_parentView</a>.<a href='../S/628.html#L470' title='Defined at 470 in ratsnest/ratsnest_data.cpp.'>SetVisible</a>( &amp;<a href='../Y/11648.html' title='Multiple used in 10 places.'>m_previewItem</a>, <strong class='reserved'>true</strong> );
+<a id='L274' name='L274'></a> 274 
+<a id='L275' name='L275'></a> 275             <a href='../Y/5571.html' title='Multiple used in 18 places.'>aMgr</a>.<a href='../Y/3646.html' title='Multiple used in 3 places.'>SetLeaderMode</a>( <a href='../Y/12425.html' title='Multiple used in 53 places.'>m_zone</a>-&gt;<a href='../Y/1458.html' title='Multiple used in 4 places.'>GetHV45</a>() ? <a href='../Y/2896.html' title='Multiple used in 17 places.'>POLYGON_GEOM_MANAGER</a>::<a href='../Y/2344.html' title='Multiple used in 8 places.'>LEADER_MODE</a>::<a href='../Y/621.html' title='Multiple used in 5 places.'>DEG45</a>
+<a id='L276' name='L276'></a> 276                                                   : <a href='../Y/2896.html' title='Multiple used in 17 places.'>POLYGON_GEOM_MANAGER</a>::<a href='../Y/2344.html' title='Multiple used in 8 places.'>LEADER_MODE</a>::<a href='../Y/662.html' title='Multiple used in 5 places.'>DIRECT</a> );
+<a id='L277' name='L277'></a> 277         <em class='brace'>}</em>
+<a id='L278' name='L278'></a> 278     <em class='brace'>}</em>
+<a id='L279' name='L279'></a> 279 
+<a id='L280' name='L280'></a> 280     <strong class='reserved'>return</strong> <a href='../Y/12425.html' title='Multiple used in 53 places.'>m_zone</a> != <a href='../Y/13059.html' title='Multiple used in 610 places.'>nullptr</a>;
+<a id='L281' name='L281'></a> 281 <em class='brace'>}</em>
+<a id='L282' name='L282'></a> 282 
+<a id='L283' name='L283'></a> 283 
+<a id='L284' name='L284'></a> 284 <strong class='reserved'>void</strong> <a href='../S/805.html#L44' title='Defined at 44 in tools/zone_create_helper.cpp.'>ZONE_CREATE_HELPER</a>::<a href='../S/806.html#L80' title='Referred from 80 in tools/zone_create_helper.h.'>OnGeometryChange</a>( <strong class='reserved'>const</strong> <a href='../Y/2896.html' title='Multiple used in 17 places.'>POLYGON_GEOM_MANAGER</a>&amp; <a href='../Y/5571.html' title='Multiple used in 18 places.'>aMgr</a> )
+<a id='L285' name='L285'></a> 285 <em class='brace'>{</em>
+<a id='L286' name='L286'></a> 286     <em class='comment'>// send the points to the preview item</em>
+<a id='L287' name='L287'></a> 287     <a href='../Y/11648.html' title='Multiple used in 10 places.'>m_previewItem</a>.SetPoints( <a href='../Y/5571.html' title='Multiple used in 18 places.'>aMgr</a>.<a href='../Y/1532.html' title='Multiple used in 2 places.'>GetLockedInPoints</a>(), <a href='../Y/5571.html' title='Multiple used in 18 places.'>aMgr</a>.<a href='../Y/1504.html' title='Multiple used in 2 places.'>GetLeaderLinePoints</a>() );
+<a id='L288' name='L288'></a> 288     <a href='../S/805.html#L38' title='Defined at 38 in tools/zone_create_helper.cpp.'>m_parentView</a>.<a href='../D/3313.html' title='Multiple defined in 6 places.'>Update</a>( &amp;<a href='../Y/11648.html' title='Multiple used in 10 places.'>m_previewItem</a>, <a href='../D/1894.html' title='Multiple defined in 2 places.'>KIGFX</a>::<a href='../Y/1172.html' title='Multiple used in 24 places.'>GEOMETRY</a> );
+<a id='L289' name='L289'></a> 289 <em class='brace'>}</em>
+<a id='L290' name='L290'></a> 290 
+<a id='L291' name='L291'></a> 291 
+<a id='L292' name='L292'></a> 292 <strong class='reserved'>void</strong> <a href='../S/805.html#L44' title='Defined at 44 in tools/zone_create_helper.cpp.'>ZONE_CREATE_HELPER</a>::<a href='../S/806.html#L84' title='Referred from 84 in tools/zone_create_helper.h.'>OnComplete</a>( <strong class='reserved'>const</strong> <a href='../Y/2896.html' title='Multiple used in 17 places.'>POLYGON_GEOM_MANAGER</a>&amp; <a href='../Y/5571.html' title='Multiple used in 18 places.'>aMgr</a> )
+<a id='L293' name='L293'></a> 293 <em class='brace'>{</em>
+<a id='L294' name='L294'></a> 294     <strong class='reserved'>auto</strong>&amp; <a href='../Y/7968.html' title='Multiple used in 4 places.'>finalPoints</a> = <a href='../Y/5571.html' title='Multiple used in 18 places.'>aMgr</a>.<a href='../Y/1532.html' title='Multiple used in 2 places.'>GetLockedInPoints</a>();
+<a id='L295' name='L295'></a> 295 
+<a id='L296' name='L296'></a> 296     <strong class='reserved'>if</strong>( <a href='../Y/7968.html' title='Multiple used in 4 places.'>finalPoints</a>.<a href='../Y/2956.html' title='Multiple used in 91 places.'>PointCount</a>() &lt; 3 )
+<a id='L297' name='L297'></a> 297     <em class='brace'>{</em>
+<a id='L298' name='L298'></a> 298         <em class='comment'>// just scrap the zone in progress</em>
+<a id='L299' name='L299'></a> 299         <a href='../Y/12425.html' title='Multiple used in 53 places.'>m_zone</a> = <a href='../Y/13059.html' title='Multiple used in 610 places.'>nullptr</a>;
+<a id='L300' name='L300'></a> 300     <em class='brace'>}</em>
+<a id='L301' name='L301'></a> 301     <strong class='reserved'>else</strong>
+<a id='L302' name='L302'></a> 302     <em class='brace'>{</em>
+<a id='L303' name='L303'></a> 303         <em class='comment'>// if m_params.m_mode == DRAWING_TOOL::ZONE_MODE::CUTOUT, m_zone</em>
+<a id='L304' name='L304'></a> 304         <em class='comment'>// will be merged to the existing zone as a new hole.</em>
+<a id='L305' name='L305'></a> 305         <a href='../Y/12425.html' title='Multiple used in 53 places.'>m_zone</a>-&gt;<a href='../Y/2736.html' title='Multiple used in 73 places.'>Outline</a>()-&gt;<a href='../Y/2675.html' title='Multiple used in 25 places.'>NewOutline</a>();
+<a id='L306' name='L306'></a> 306         <strong class='reserved'>auto</strong>* <a href='../Y/13222.html' title='Multiple used in 175 places.'>outline</a> = <a href='../Y/12425.html' title='Multiple used in 53 places.'>m_zone</a>-&gt;<a href='../Y/2736.html' title='Multiple used in 73 places.'>Outline</a>();
+<a id='L307' name='L307'></a> 307 
+<a id='L308' name='L308'></a> 308         <strong class='reserved'>for</strong>( <strong class='reserved'>int</strong> <a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a> = 0; <a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a> &lt; <a href='../Y/7968.html' title='Multiple used in 4 places.'>finalPoints</a>.<a href='../Y/2956.html' title='Multiple used in 91 places.'>PointCount</a>(); ++<a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a> )
+<a id='L309' name='L309'></a> 309             <a href='../Y/13222.html' title='Multiple used in 175 places.'>outline</a>-&gt;<a href='../Y/179.html' title='Multiple used in 398 places.'>Append</a>( <a href='../Y/7968.html' title='Multiple used in 4 places.'>finalPoints</a>.<a href='../Y/438.html' title='Multiple used in 149 places.'>CPoint</a>( <a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a> ) );
+<a id='L310' name='L310'></a> 310 
+<a id='L311' name='L311'></a> 311         <em class='comment'>// In DEG45 mode, we may have intermediate points in the leader that should be</em>
+<a id='L312' name='L312'></a> 312         <em class='comment'>// included as they are shown in the preview.  These typically maintain the</em>
+<a id='L313' name='L313'></a> 313         <em class='comment'>// 45 constraint</em>
+<a id='L314' name='L314'></a> 314         <strong class='reserved'>if</strong>( <a href='../Y/5571.html' title='Multiple used in 18 places.'>aMgr</a>.<a href='../Y/1505.html' title='Multiple used in 2 places.'>GetLeaderMode</a>() == <a href='../Y/2896.html' title='Multiple used in 17 places.'>POLYGON_GEOM_MANAGER</a>::<a href='../Y/2344.html' title='Multiple used in 8 places.'>LEADER_MODE</a>::<a href='../Y/621.html' title='Multiple used in 5 places.'>DEG45</a> )
+<a id='L315' name='L315'></a> 315         <em class='brace'>{</em>
+<a id='L316' name='L316'></a> 316             <strong class='reserved'>const</strong> <strong class='reserved'>auto</strong>&amp; <a href='../Y/13803.html' title='Multiple used in 123 places.'>pts</a> = <a href='../Y/5571.html' title='Multiple used in 18 places.'>aMgr</a>.<a href='../Y/1504.html' title='Multiple used in 2 places.'>GetLeaderLinePoints</a>();
+<a id='L317' name='L317'></a> 317             <strong class='reserved'>for</strong>( <strong class='reserved'>int</strong> <a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a> = 1; <a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a> &lt; <a href='../Y/13803.html' title='Multiple used in 123 places.'>pts</a>.<a href='../Y/2956.html' title='Multiple used in 91 places.'>PointCount</a>(); <a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a>++ )
+<a id='L318' name='L318'></a> 318                 <a href='../Y/13222.html' title='Multiple used in 175 places.'>outline</a>-&gt;<a href='../Y/179.html' title='Multiple used in 398 places.'>Append</a>( <a href='../Y/13803.html' title='Multiple used in 123 places.'>pts</a>.<a href='../Y/438.html' title='Multiple used in 149 places.'>CPoint</a>( <a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a> ) );
+<a id='L319' name='L319'></a> 319         <em class='brace'>}</em>
+<a id='L320' name='L320'></a> 320 
+<a id='L321' name='L321'></a> 321         <a href='../Y/13222.html' title='Multiple used in 175 places.'>outline</a>-&gt;<a href='../Y/2736.html' title='Multiple used in 73 places.'>Outline</a>( 0 ).<a href='../Y/3393.html' title='Multiple used in 19 places.'>SetClosed</a>( <strong class='reserved'>true</strong> );
+<a id='L322' name='L322'></a> 322         <a href='../Y/13222.html' title='Multiple used in 175 places.'>outline</a>-&gt;RemoveNullSegments();
+<a id='L323' name='L323'></a> 323         <a href='../Y/13222.html' title='Multiple used in 175 places.'>outline</a>-&gt;<a href='../Y/4007.html' title='Multiple used in 64 places.'>Simplify</a>( <a href='../Y/3235.html' title='Multiple used in 305 places.'>SHAPE_POLY_SET</a>::<a href='../Y/2886.html' title='Multiple used in 40 places.'>PM_FAST</a> );
+<a id='L324' name='L324'></a> 324 
+<a id='L325' name='L325'></a> 325         <em class='comment'>// hand the zone over to the committer</em>
+<a id='L326' name='L326'></a> 326         <a href='../S/805.html#L181' title='Defined at 181 in tools/zone_create_helper.cpp.'>commitZone</a>( <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/12717.html' title='Multiple used in 65 places.'>move</a>( <a href='../Y/12425.html' title='Multiple used in 53 places.'>m_zone</a> ) );
+<a id='L327' name='L327'></a> 327         <a href='../Y/12425.html' title='Multiple used in 53 places.'>m_zone</a> = <a href='../Y/13059.html' title='Multiple used in 610 places.'>nullptr</a>;
+<a id='L328' name='L328'></a> 328     <em class='brace'>}</em>
+<a id='L329' name='L329'></a> 329 
+<a id='L330' name='L330'></a> 330     <a href='../S/805.html#L38' title='Defined at 38 in tools/zone_create_helper.cpp.'>m_parentView</a>.<a href='../S/628.html#L470' title='Defined at 470 in ratsnest/ratsnest_data.cpp.'>SetVisible</a>( &amp;<a href='../Y/11648.html' title='Multiple used in 10 places.'>m_previewItem</a>, <strong class='reserved'>false</strong> );
+<a id='L331' name='L331'></a> 331 <em class='brace'>}</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L38'>[^]</a><a href='#L292'>[v]</a><a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

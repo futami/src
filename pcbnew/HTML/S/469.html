@@ -1,0 +1,229 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>grid_layer_box_helpers.cpp</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/grid_layer_box_helpers.cpp</h2>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L48'>[^]</a><a href='#L189'>[v]</a>[top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L48' title='Defined at 48.'>Draw</a></li>
+<li><a href='#L82' title='Defined at 82.'>m_value</a></li>
+<li><a href='#L87' title='Defined at 87.'>Clone</a></li>
+<li><a href='#L93' title='Defined at 93.'>Create</a></li>
+<li><a href='#L107' title='Defined at 107.'>GetValue</a></li>
+<li><a href='#L113' title='Defined at 113.'>SetSize</a></li>
+<li><a href='#L131' title='Defined at 131.'>BeginEdit</a></li>
+<li><a href='#L166' title='Defined at 166.'>EndEdit</a></li>
+<li><a href='#L183' title='Defined at 183.'>ApplyEdit</a></li>
+<li><a href='#L189' title='Defined at 189.'>Reset</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * This program source code file is part of KiCad, a free EDA CAD application.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 2018 KiCad Developers, see AUTHORS.txt for contributors.</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> *</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> * This program is free software; you can redistribute it and/or</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> * modify it under the terms of the GNU General Public License</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * as published by the Free Software Foundation; either version 2</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * of the License, or (at your option) any later version.</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> *</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> * This program is distributed in the hope that it will be useful,</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> * but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * GNU General Public License for more details.</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> *</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> * You should have received a copy of the GNU General Public License</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> * along with this program; if not, you may find one here:</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> * or you may search the http://www.gnu.org website for the version 2 license,</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> * or you may write to the Free Software Foundation, Inc.,</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'> * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'> */</em>
+<a id='L23' name='L23'></a>  23 
+<a id='L24' name='L24'></a>  24 <em class='sharp'>#include</em> &lt;<a href='470.html'>grid_layer_box_helpers.h</a>&gt;
+<a id='L25' name='L25'></a>  25 
+<a id='L26' name='L26'></a>  26 <em class='sharp'>#include</em> &lt;<a href='58.html'>class_board.h</a>&gt;
+<a id='L27' name='L27'></a>  27 <em class='sharp'>#include</em> &lt;<a href='586.html'>pcb_edit_frame.h</a>&gt;
+<a id='L28' name='L28'></a>  28 <em class='sharp'>#include</em> &lt;<a href='590.html'>pcb_layer_box_selector.h</a>&gt;
+<a id='L29' name='L29'></a>  29 <em class='sharp'>#include</em> &lt;settings/color_settings.h&gt;
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#include</em> &lt;widgets/layer_box_selector.h&gt;
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#include</em> &lt;wx/textctrl.h&gt;
+<a id='L32' name='L32'></a>  32 
+<a id='L33' name='L33'></a>  33 
+<a id='L34' name='L34'></a>  34 <em class='comment'>//-------- Custom wxGridCellRenderers --------------------------------------------------</em>
+<a id='L35' name='L35'></a>  35 
+<a id='L36' name='L36'></a>  36 
+<a id='L37' name='L37'></a>  37 <a href='../D/1059.html' title='Multiple defined in 2 places.'>GRID_CELL_LAYER_RENDERER</a>::<a href='../R/1021.html' title='Multiple referred from 10 places.'>GRID_CELL_LAYER_RENDERER</a>( <a href='../S/581.html#L68' title='Defined at 68 in pcb_base_frame.cpp.'>PCB_BASE_FRAME</a>* <a href='../Y/5337.html' title='Multiple used in 222 places.'>aFrame</a> ) :
+<a id='L38' name='L38'></a>  38         <a href='../D/4159.html' title='Multiple defined in 14 places.'>m_frame</a>( <a href='../Y/5337.html' title='Multiple used in 222 places.'>aFrame</a> )
+<a id='L39' name='L39'></a>  39 <em class='brace'>{</em>
+<a id='L40' name='L40'></a>  40 <em class='brace'>}</em>
+<a id='L41' name='L41'></a>  41 
+<a id='L42' name='L42'></a>  42 
+<a id='L43' name='L43'></a>  43 <a href='../D/1059.html' title='Multiple defined in 2 places.'>GRID_CELL_LAYER_RENDERER</a>::~<a href='../R/1021.html' title='Multiple referred from 10 places.'>GRID_CELL_LAYER_RENDERER</a>()
+<a id='L44' name='L44'></a>  44 <em class='brace'>{</em>
+<a id='L45' name='L45'></a>  45 <em class='brace'>}</em>
+<a id='L46' name='L46'></a>  46 
+<a id='L47' name='L47'></a>  47 
+<a id='L48' name='L48'></a>  48 <strong class='reserved'>void</strong> <a href='../D/1059.html' title='Multiple defined in 2 places.'>GRID_CELL_LAYER_RENDERER</a>::<a href='../R/786.html' title='Multiple referred from 3 places.'>Draw</a>( <a href='../Y/15743.html' title='Multiple used in 49 places.'>wxGrid</a>&amp; <a href='../Y/5367.html' title='Multiple used in 34 places.'>aGrid</a>, <a href='../Y/15745.html' title='Multiple used in 27 places.'>wxGridCellAttr</a>&amp; <a href='../Y/5014.html' title='Multiple used in 17 places.'>aAttr</a>, <a href='../Y/15587.html' title='Multiple used in 6 places.'>wxDC</a>&amp; <a href='../Y/5171.html' title='Multiple used in 6 places.'>aDC</a>,
+<a id='L49' name='L49'></a>  49                                      <strong class='reserved'>const</strong> <a href='../Y/15890.html' title='Multiple used in 7 places.'>wxRect</a>&amp; <a href='../Y/5865.html' title='Multiple used in 56 places.'>aRect</a>, <strong class='reserved'>int</strong> <a href='../Y/5906.html' title='Multiple used in 158 places.'>aRow</a>, <strong class='reserved'>int</strong> <a href='../Y/5093.html' title='Multiple used in 100 places.'>aCol</a>, <strong class='reserved'>bool</strong> <a href='../Y/8658.html' title='Multiple used in 4 places.'>isSelected</a> )
+<a id='L50' name='L50'></a>  50 <em class='brace'>{</em>
+<a id='L51' name='L51'></a>  51     <a href='../Y/2321.html' title='Multiple used in 152 places.'>LAYER_NUM</a> <a href='../Y/15283.html' title='Multiple used in 208 places.'>value</a> = <a href='../Y/5367.html' title='Multiple used in 34 places.'>aGrid</a>.<a href='../S/440.html#L165' title='Defined at 165 in footprint_preview_panel.cpp.'>GetTable</a>()-&gt;<a href='../D/1381.html' title='Multiple defined in 3 places.'>GetValueAsLong</a>( <a href='../Y/5906.html' title='Multiple used in 158 places.'>aRow</a>, <a href='../Y/5093.html' title='Multiple used in 100 places.'>aCol</a> );
+<a id='L52' name='L52'></a>  52 
+<a id='L53' name='L53'></a>  53     <a href='../Y/15890.html' title='Multiple used in 7 places.'>wxRect</a> <a href='../Y/13884.html' title='Multiple used in 72 places.'>rect</a> = <a href='../Y/5865.html' title='Multiple used in 56 places.'>aRect</a>;
+<a id='L54' name='L54'></a>  54     <a href='../Y/13884.html' title='Multiple used in 72 places.'>rect</a>.<a href='../Y/2058.html' title='Multiple used in 63 places.'>Inflate</a>( -1 );
+<a id='L55' name='L55'></a>  55 
+<a id='L56' name='L56'></a>  56     <em class='comment'>// erase background</em>
+<a id='L57' name='L57'></a>  57     wxGridCellRenderer::<a href='../D/817.html' title='Multiple defined in 2 places.'>Draw</a>( <a href='../Y/5367.html' title='Multiple used in 34 places.'>aGrid</a>, <a href='../Y/5014.html' title='Multiple used in 17 places.'>aAttr</a>, <a href='../Y/5171.html' title='Multiple used in 6 places.'>aDC</a>, <a href='../Y/5865.html' title='Multiple used in 56 places.'>aRect</a>, <a href='../Y/5906.html' title='Multiple used in 158 places.'>aRow</a>, <a href='../Y/5093.html' title='Multiple used in 100 places.'>aCol</a>, <a href='../Y/8658.html' title='Multiple used in 4 places.'>isSelected</a> );
+<a id='L58' name='L58'></a>  58 
+<a id='L59' name='L59'></a>  59     <em class='comment'>// draw the swatch</em>
+<a id='L60' name='L60'></a>  60     <a href='../Y/15534.html' title='Multiple used in 18 places.'>wxBitmap</a> <a href='../Y/6688.html' title='Multiple used in 18 places.'>bitmap</a>( 14, 14 );
+<a id='L61' name='L61'></a>  61     <a href='../Y/392.html' title='Multiple used in 32 places.'>COLOR_SETTINGS</a>* <a href='../Y/7172.html' title='Multiple used in 26 places.'>cs</a> = <a href='../D/4159.html' title='Multiple defined in 14 places.'>m_frame</a>-&gt;<a href='../D/1133.html' title='Multiple defined in 4 places.'>GetColorSettings</a>();
+<a id='L62' name='L62'></a>  62     <a href='../Y/2333.html' title='Multiple used in 6 places.'>LAYER_SELECTOR</a>::<a href='../Y/804.html' title='Multiple used in 5 places.'>DrawColorSwatch</a>( <a href='../Y/6688.html' title='Multiple used in 18 places.'>bitmap</a>,
+<a id='L63' name='L63'></a>  63                                      <a href='../Y/7172.html' title='Multiple used in 26 places.'>cs</a>-&gt;<a href='../D/1130.html' title='Multiple defined in 2 places.'>GetColor</a>( <a href='../Y/4660.html' title='Multiple used in 48 places.'>ToLAYER_ID</a>( <a href='../Y/2329.html' title='Multiple used in 22 places.'>LAYER_PCB_BACKGROUND</a> ) ),
+<a id='L64' name='L64'></a>  64                                      <a href='../Y/7172.html' title='Multiple used in 26 places.'>cs</a>-&gt;<a href='../D/1130.html' title='Multiple defined in 2 places.'>GetColor</a>( <a href='../Y/4660.html' title='Multiple used in 48 places.'>ToLAYER_ID</a>( <a href='../Y/15283.html' title='Multiple used in 208 places.'>value</a> ) ) );
+<a id='L65' name='L65'></a>  65     <a href='../Y/5171.html' title='Multiple used in 6 places.'>aDC</a>.DrawBitmap( <a href='../Y/6688.html' title='Multiple used in 18 places.'>bitmap</a>, <a href='../Y/13884.html' title='Multiple used in 72 places.'>rect</a>.<a href='../Y/1506.html' title='Multiple used in 17 places.'>GetLeft</a>() + 4, <a href='../Y/13884.html' title='Multiple used in 72 places.'>rect</a>.<a href='../Y/1772.html' title='Multiple used in 16 places.'>GetTop</a>() + 3, <strong class='reserved'>true</strong> );
+<a id='L66' name='L66'></a>  66 
+<a id='L67' name='L67'></a>  67     <em class='comment'>// draw the text</em>
+<a id='L68' name='L68'></a>  68     <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../Y/14850.html' title='Multiple used in 362 places.'>text</a> = <a href='../D/4159.html' title='Multiple defined in 14 places.'>m_frame</a>-&gt;<a href='../D/1112.html' title='Multiple defined in 2 places.'>GetBoard</a>()-&gt;<a href='../D/1221.html' title='Multiple defined in 4 places.'>GetLayerName</a>( <a href='../Y/4660.html' title='Multiple used in 48 places.'>ToLAYER_ID</a>( <a href='../Y/15283.html' title='Multiple used in 208 places.'>value</a> ) );
+<a id='L69' name='L69'></a>  69     <a href='../Y/13884.html' title='Multiple used in 72 places.'>rect</a>.SetLeft( <a href='../Y/13884.html' title='Multiple used in 72 places.'>rect</a>.<a href='../Y/1506.html' title='Multiple used in 17 places.'>GetLeft</a>() + <a href='../Y/6688.html' title='Multiple used in 18 places.'>bitmap</a>.<a href='../Y/1809.html' title='Multiple used in 240 places.'>GetWidth</a>() + 8 );
+<a id='L70' name='L70'></a>  70     SetTextColoursAndFont( <a href='../Y/5367.html' title='Multiple used in 34 places.'>aGrid</a>, <a href='../Y/5014.html' title='Multiple used in 17 places.'>aAttr</a>, <a href='../Y/5171.html' title='Multiple used in 6 places.'>aDC</a>, <a href='../Y/8658.html' title='Multiple used in 4 places.'>isSelected</a> );
+<a id='L71' name='L71'></a>  71     <a href='../Y/5367.html' title='Multiple used in 34 places.'>aGrid</a>.DrawTextRectangle( <a href='../Y/5171.html' title='Multiple used in 6 places.'>aDC</a>, <a href='../Y/14850.html' title='Multiple used in 362 places.'>text</a>, <a href='../Y/13884.html' title='Multiple used in 72 places.'>rect</a>, <a href='../Y/15489.html' title='Multiple used in 78 places.'>wxALIGN_LEFT</a>, <a href='../Y/15488.html' title='Multiple used in 18 places.'>wxALIGN_CENTRE</a> );
+<a id='L72' name='L72'></a>  72 <em class='brace'>}</em>
+<a id='L73' name='L73'></a>  73 
+<a id='L74' name='L74'></a>  74 
+<a id='L75' name='L75'></a>  75 
+<a id='L76' name='L76'></a>  76 <em class='comment'>//-------- Custom wxGridCellEditors ----------------------------------------------------</em>
+<a id='L77' name='L77'></a>  77 <em class='comment'>//</em>
+<a id='L78' name='L78'></a>  78 <em class='comment'>// Note: this implementation is an adaptation of wxGridCellChoiceEditor</em>
+<a id='L79' name='L79'></a>  79 
+<a id='L80' name='L80'></a>  80 
+<a id='L81' name='L81'></a>  81 <a href='../Y/1189.html' title='Multiple used in 16 places.'>GRID_CELL_LAYER_SELECTOR</a>::<a href='../Y/1189.html' title='Multiple used in 16 places.'>GRID_CELL_LAYER_SELECTOR</a>( <a href='../S/581.html#L68' title='Defined at 68 in pcb_base_frame.cpp.'>PCB_BASE_FRAME</a>* <a href='../Y/5337.html' title='Multiple used in 222 places.'>aFrame</a>, <a href='../Y/2380.html' title='Multiple used in 386 places.'>LSET</a> <a href='../Y/5550.html' title='Multiple used in 40 places.'>aMask</a> ) :
+<a id='L82' name='L82'></a>  82         <a href='../D/4159.html' title='Multiple defined in 14 places.'>m_frame</a>( <a href='../Y/5337.html' title='Multiple used in 222 places.'>aFrame</a> ), <a href='../S/679.html#L154' title='Defined at 154 in router/pns_optimizer.cpp.'>m_mask</a>( <a href='../Y/5550.html' title='Multiple used in 40 places.'>aMask</a> ), <a href='../R/4070.html' title='Multiple referred from 37 places.'>m_value</a>( 0 )
+<a id='L83' name='L83'></a>  83 <em class='brace'>{</em>
+<a id='L84' name='L84'></a>  84 <em class='brace'>}</em>
+<a id='L85' name='L85'></a>  85 
+<a id='L86' name='L86'></a>  86 
+<a id='L87' name='L87'></a>  87 <a href='../Y/15750.html' title='Multiple used in 4 places.'>wxGridCellEditor</a>* <a href='../Y/1189.html' title='Multiple used in 16 places.'>GRID_CELL_LAYER_SELECTOR</a>::<a href='../R/433.html' title='Multiple referred from 69 places.'>Clone</a>() <strong class='reserved'>const</strong>
+<a id='L88' name='L88'></a>  88 <em class='brace'>{</em>
+<a id='L89' name='L89'></a>  89     <strong class='reserved'>return</strong> <strong class='reserved'>new</strong> <a href='../Y/1189.html' title='Multiple used in 16 places.'>GRID_CELL_LAYER_SELECTOR</a>( <a href='../D/4159.html' title='Multiple defined in 14 places.'>m_frame</a>, <a href='../S/679.html#L154' title='Defined at 154 in router/pns_optimizer.cpp.'>m_mask</a> );
+<a id='L90' name='L90'></a>  90 <em class='brace'>}</em>
+<a id='L91' name='L91'></a>  91 
+<a id='L92' name='L92'></a>  92 
+<a id='L93' name='L93'></a>  93 <strong class='reserved'>void</strong> <a href='../Y/1189.html' title='Multiple used in 16 places.'>GRID_CELL_LAYER_SELECTOR</a>::<a href='../R/473.html' title='Multiple referred from 67 places.'>Create</a>( <a href='../Y/15994.html' title='Multiple used in 253 places.'>wxWindow</a>* <a href='../Y/5754.html' title='Multiple used in 610 places.'>aParent</a>, <a href='../Y/15996.html' title='Multiple used in 143 places.'>wxWindowID</a> <a href='../Y/5389.html' title='Multiple used in 71 places.'>aId</a>,
+<a id='L94' name='L94'></a>  94                                         <a href='../Y/15680.html' title='Multiple used in 3 places.'>wxEvtHandler</a>* <a href='../Y/5277.html' title='Multiple used in 3 places.'>aEventHandler</a> )
+<a id='L95' name='L95'></a>  95 <em class='brace'>{</em>
+<a id='L96' name='L96'></a>  96     <a href='../Y/10568.html' title='Multiple used in 3 places.'>m_control</a> = <strong class='reserved'>new</strong> <a href='../Y/2824.html' title='Multiple used in 43 places.'>PCB_LAYER_BOX_SELECTOR</a>( <a href='../Y/5754.html' title='Multiple used in 610 places.'>aParent</a>, <a href='../Y/5389.html' title='Multiple used in 71 places.'>aId</a>, <a href='../Y/15676.html' title='Multiple used in 516 places.'>wxEmptyString</a>,
+<a id='L97' name='L97'></a>  97                     <a href='../Y/15609.html' title='Multiple used in 1643 places.'>wxDefaultPosition</a>, <a href='../Y/15610.html' title='Multiple used in 1594 places.'>wxDefaultSize</a>, 0, <a href='../Y/13059.html' title='Multiple used in 610 places.'>nullptr</a>,
+<a id='L98' name='L98'></a>  98                     <a href='../Y/15547.html' title='Multiple used in 2 places.'>wxCB_READONLY</a> | <a href='../Y/15969.html' title='Multiple used in 16 places.'>wxTE_PROCESS_ENTER</a> | wxTE_PROCESS_TAB | <a href='../Y/15524.html' title='Multiple used in 3 places.'>wxBORDER_NONE</a> );
+<a id='L99' name='L99'></a>  99 
+<a id='L100' name='L100'></a> 100     <a href='../Y/2389.html' title='Multiple used in 14 places.'>LayerBox</a>()-&gt;<a href='../Y/3363.html' title='Multiple used in 14 places.'>SetBoardFrame</a>( <a href='../D/4159.html' title='Multiple defined in 14 places.'>m_frame</a> );
+<a id='L101' name='L101'></a> 101     <a href='../Y/2389.html' title='Multiple used in 14 places.'>LayerBox</a>()-&gt;<a href='../Y/3716.html' title='Multiple used in 11 places.'>SetNotAllowedLayerSet</a>( <a href='../S/679.html#L154' title='Defined at 154 in router/pns_optimizer.cpp.'>m_mask</a> );
+<a id='L102' name='L102'></a> 102 
+<a id='L103' name='L103'></a> 103     <a href='../Y/15750.html' title='Multiple used in 4 places.'>wxGridCellEditor</a>::<a href='../D/497.html' title='Multiple defined in 5 places.'>Create</a>(<a href='../Y/5754.html' title='Multiple used in 610 places.'>aParent</a>, <a href='../Y/5389.html' title='Multiple used in 71 places.'>aId</a>, <a href='../Y/5277.html' title='Multiple used in 3 places.'>aEventHandler</a>);
+<a id='L104' name='L104'></a> 104 <em class='brace'>}</em>
+<a id='L105' name='L105'></a> 105 
+<a id='L106' name='L106'></a> 106 
+<a id='L107' name='L107'></a> 107 <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../Y/1189.html' title='Multiple used in 16 places.'>GRID_CELL_LAYER_SELECTOR</a>::<a href='../R/1335.html' title='Multiple referred from 690 places.'>GetValue</a>() <strong class='reserved'>const</strong>
+<a id='L108' name='L108'></a> 108 <em class='brace'>{</em>
+<a id='L109' name='L109'></a> 109     <strong class='reserved'>return</strong> <a href='../D/4159.html' title='Multiple defined in 14 places.'>m_frame</a>-&gt;<a href='../D/1112.html' title='Multiple defined in 2 places.'>GetBoard</a>()-&gt;<a href='../D/1221.html' title='Multiple defined in 4 places.'>GetLayerName</a>( <a href='../Y/4660.html' title='Multiple used in 48 places.'>ToLAYER_ID</a>( <a href='../Y/2389.html' title='Multiple used in 14 places.'>LayerBox</a>()-&gt;<a href='../S/713.html#L95' title='Defined at 95 in sel_layer.cpp.'>GetLayerSelection</a>() ) );
+<a id='L110' name='L110'></a> 110 <em class='brace'>}</em>
+<a id='L111' name='L111'></a> 111 
+<a id='L112' name='L112'></a> 112 
+<a id='L113' name='L113'></a> 113 <strong class='reserved'>void</strong> <a href='../Y/1189.html' title='Multiple used in 16 places.'>GRID_CELL_LAYER_SELECTOR</a>::<a href='../R/2956.html' title='Multiple referred from 61 places.'>SetSize</a>( <strong class='reserved'>const</strong> <a href='../Y/15890.html' title='Multiple used in 7 places.'>wxRect</a>&amp; <a href='../Y/5865.html' title='Multiple used in 56 places.'>aRect</a> )
+<a id='L114' name='L114'></a> 114 <em class='brace'>{</em>
+<a id='L115' name='L115'></a> 115     <a href='../Y/15890.html' title='Multiple used in 7 places.'>wxRect</a> <a href='../Y/13884.html' title='Multiple used in 72 places.'>rect</a>( <a href='../Y/5865.html' title='Multiple used in 56 places.'>aRect</a> );
+<a id='L116' name='L116'></a> 116     <a href='../Y/13884.html' title='Multiple used in 72 places.'>rect</a>.<a href='../Y/2058.html' title='Multiple used in 63 places.'>Inflate</a>( -1 );
+<a id='L117' name='L117'></a> 117 
+<a id='L118' name='L118'></a> 118 <em class='sharp'>#if</em> !<strong class='reserved'>defined</strong>( __WXMSW__ ) &amp;&amp; !<strong class='reserved'>defined</strong>( <a href='../Y/4949.html' title='Multiple used in 2 places.'>__WXGTK20__</a> )
+<a id='L119' name='L119'></a> 119     <em class='comment'>// Only implemented in generic wxBitmapComboBox; MSW and GTK use native controls</em>
+<a id='L120' name='L120'></a> 120     <a href='../Y/2389.html' title='Multiple used in 14 places.'>LayerBox</a>()-&gt;SetButtonPosition( 0, 0, <a href='../Y/15886.html' title='Multiple used in 906 places.'>wxRIGHT</a>, 0 );
+<a id='L121' name='L121'></a> 121 <em class='sharp'>#endif</em>
+<a id='L122' name='L122'></a> 122 
+<a id='L123' name='L123'></a> 123 <em class='sharp'>#if</em> <strong class='reserved'>defined</strong>( <a href='../Y/4951.html' title='Multiple used in 12 places.'>__WXMAC__</a> )
+<a id='L124' name='L124'></a> 124     <a href='../Y/13884.html' title='Multiple used in 72 places.'>rect</a>.<a href='../Y/2058.html' title='Multiple used in 63 places.'>Inflate</a>( 3 );      <em class='comment'>// no FOCUS_RING, even on Mac</em>
+<a id='L125' name='L125'></a> 125 <em class='sharp'>#endif</em>
+<a id='L126' name='L126'></a> 126 
+<a id='L127' name='L127'></a> 127     <a href='../Y/2389.html' title='Multiple used in 14 places.'>LayerBox</a>()-&gt;<a href='../S/469.html#L113' title='Defined at 113 in grid_layer_box_helpers.cpp.'>SetSize</a>( <a href='../Y/13884.html' title='Multiple used in 72 places.'>rect</a>, wxSIZE_ALLOW_MINUS_ONE );
+<a id='L128' name='L128'></a> 128 <em class='brace'>}</em>
+<a id='L129' name='L129'></a> 129 
+<a id='L130' name='L130'></a> 130 
+<a id='L131' name='L131'></a> 131 <strong class='reserved'>void</strong> <a href='../Y/1189.html' title='Multiple used in 16 places.'>GRID_CELL_LAYER_SELECTOR</a>::<a href='../S/470.html#L67' title='Referred from 67 in grid_layer_box_helpers.h.'>BeginEdit</a>( <strong class='reserved'>int</strong> <a href='../Y/5906.html' title='Multiple used in 158 places.'>aRow</a>, <strong class='reserved'>int</strong> <a href='../Y/5093.html' title='Multiple used in 100 places.'>aCol</a>, <a href='../Y/15743.html' title='Multiple used in 49 places.'>wxGrid</a>* <a href='../Y/5367.html' title='Multiple used in 34 places.'>aGrid</a> )
+<a id='L132' name='L132'></a> 132 <em class='brace'>{</em>
+<a id='L133' name='L133'></a> 133     <strong class='reserved'>auto</strong>* <a href='../Y/7796.html' title='Multiple used in 3 places.'>evtHandler</a> = <strong class='reserved'>static_cast</strong>&lt;wxGridCellEditorEvtHandler*&gt;( <a href='../Y/10568.html' title='Multiple used in 3 places.'>m_control</a>-&gt;<a href='../Y/1397.html' title='Multiple used in 3 places.'>GetEventHandler</a>() );
+<a id='L134' name='L134'></a> 134 
+<a id='L135' name='L135'></a> 135     <em class='comment'>// Don't immediately end if we get a kill focus event within BeginEdit</em>
+<a id='L136' name='L136'></a> 136     <a href='../Y/7796.html' title='Multiple used in 3 places.'>evtHandler</a>-&gt;<a href='../Y/3591.html' title='Multiple used in 2 places.'>SetInSetFocus</a>( <strong class='reserved'>true</strong> );
+<a id='L137' name='L137'></a> 137 
+<a id='L138' name='L138'></a> 138     <a href='../S/469.html#L82' title='Defined at 82 in grid_layer_box_helpers.cpp.'>m_value</a> = (<a href='../Y/2321.html' title='Multiple used in 152 places.'>LAYER_NUM</a>) <a href='../Y/5367.html' title='Multiple used in 34 places.'>aGrid</a>-&gt;<a href='../S/440.html#L165' title='Defined at 165 in footprint_preview_panel.cpp.'>GetTable</a>()-&gt;<a href='../D/1381.html' title='Multiple defined in 3 places.'>GetValueAsLong</a>( <a href='../Y/5906.html' title='Multiple used in 158 places.'>aRow</a>, <a href='../Y/5093.html' title='Multiple used in 100 places.'>aCol</a> );
+<a id='L139' name='L139'></a> 139 
+<a id='L140' name='L140'></a> 140     <em class='comment'>// Footprints are defined in a global context and may contain layers not enabled</em>
+<a id='L141' name='L141'></a> 141     <em class='comment'>// on the current board.  Check and display all layers if so.</em>
+<a id='L142' name='L142'></a> 142     <strong class='reserved'>bool</strong> <a href='../Y/7227.html' title='Multiple used in 2 places.'>currentLayerEnabled</a> = <a href='../D/4159.html' title='Multiple defined in 14 places.'>m_frame</a>-&gt;<a href='../D/1112.html' title='Multiple defined in 2 places.'>GetBoard</a>()-&gt;<a href='../Y/2145.html' title='Multiple used in 11 places.'>IsLayerEnabled</a>( <a href='../Y/4660.html' title='Multiple used in 48 places.'>ToLAYER_ID</a>( <a href='../S/469.html#L82' title='Defined at 82 in grid_layer_box_helpers.cpp.'>m_value</a> ) );
+<a id='L143' name='L143'></a> 143     <a href='../Y/2389.html' title='Multiple used in 14 places.'>LayerBox</a>()-&gt;<a href='../Y/3997.html' title='Multiple used in 3 places.'>ShowNonActivatedLayers</a>( !<a href='../Y/7227.html' title='Multiple used in 2 places.'>currentLayerEnabled</a> );
+<a id='L144' name='L144'></a> 144     <a href='../Y/2389.html' title='Multiple used in 14 places.'>LayerBox</a>()-&gt;<a href='../S/589.html#L84' title='Defined at 84 in pcb_layer_box_selector.cpp.'>Resync</a>();
+<a id='L145' name='L145'></a> 145 
+<a id='L146' name='L146'></a> 146     <a href='../Y/2389.html' title='Multiple used in 14 places.'>LayerBox</a>()-&gt;<a href='../Y/3640.html' title='Multiple used in 23 places.'>SetLayerSelection</a>( <a href='../S/469.html#L82' title='Defined at 82 in grid_layer_box_helpers.cpp.'>m_value</a> );
+<a id='L147' name='L147'></a> 147     <a href='../Y/2389.html' title='Multiple used in 14 places.'>LayerBox</a>()-&gt;<a href='../Y/3529.html' title='Multiple used in 47 places.'>SetFocus</a>();
+<a id='L148' name='L148'></a> 148 
+<a id='L149' name='L149'></a> 149 <em class='sharp'>#ifdef</em> __WXOSX_COCOA__
+<a id='L150' name='L150'></a> 150     <em class='comment'>// This is a work around for the combobox being simply dismissed when a</em>
+<a id='L151' name='L151'></a> 151     <em class='comment'>// choice is made in it under OS X. The bug is almost certainly due to a</em>
+<a id='L152' name='L152'></a> 152     <em class='comment'>// problem in focus events generation logic but it's not obvious to fix and</em>
+<a id='L153' name='L153'></a> 153     <em class='comment'>// for now this at least allows to use wxGrid.</em>
+<a id='L154' name='L154'></a> 154     <strong class='reserved'>if</strong>( !<a href='../Y/2389.html' title='Multiple used in 14 places.'>LayerBox</a>()-&gt;IsPopupShown() )
+<a id='L155' name='L155'></a> 155         <a href='../Y/2389.html' title='Multiple used in 14 places.'>LayerBox</a>()-&gt;<a href='../Y/2970.html' title='Multiple used in 5 places.'>Popup</a>();
+<a id='L156' name='L156'></a> 156 <em class='sharp'>#endif</em>
+<a id='L157' name='L157'></a> 157 
+<a id='L158' name='L158'></a> 158     <em class='comment'>// When dropping down the menu, a kill focus event</em>
+<a id='L159' name='L159'></a> 159     <em class='comment'>// happens after this point, so we can't reset the flag yet.</em>
+<a id='L160' name='L160'></a> 160 <em class='sharp'>#if</em> !<strong class='reserved'>defined</strong>(<a href='../Y/4949.html' title='Multiple used in 2 places.'>__WXGTK20__</a>)
+<a id='L161' name='L161'></a> 161     <a href='../Y/7796.html' title='Multiple used in 3 places.'>evtHandler</a>-&gt;<a href='../Y/3591.html' title='Multiple used in 2 places.'>SetInSetFocus</a>( <strong class='reserved'>false</strong> );
+<a id='L162' name='L162'></a> 162 <em class='sharp'>#endif</em>
+<a id='L163' name='L163'></a> 163 <em class='brace'>}</em>
+<a id='L164' name='L164'></a> 164 
+<a id='L165' name='L165'></a> 165 
+<a id='L166' name='L166'></a> 166 <strong class='reserved'>bool</strong> <a href='../Y/1189.html' title='Multiple used in 16 places.'>GRID_CELL_LAYER_SELECTOR</a>::<a href='../S/470.html#L68' title='Referred from 68 in grid_layer_box_helpers.h.'>EndEdit</a>( <strong class='reserved'>int</strong> , <strong class='reserved'>int</strong> , <strong class='reserved'>const</strong> <a href='../Y/15743.html' title='Multiple used in 49 places.'>wxGrid</a>* , <strong class='reserved'>const</strong> <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>&amp; ,
+<a id='L167' name='L167'></a> 167                                         <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> *<a href='../Y/12987.html' title='Multiple used in 14 places.'>newval</a> )
+<a id='L168' name='L168'></a> 168 <em class='brace'>{</em>
+<a id='L169' name='L169'></a> 169     <strong class='reserved'>const</strong> <a href='../Y/2321.html' title='Multiple used in 152 places.'>LAYER_NUM</a> <a href='../Y/15283.html' title='Multiple used in 208 places.'>value</a> = <a href='../Y/2389.html' title='Multiple used in 14 places.'>LayerBox</a>()-&gt;<a href='../S/713.html#L95' title='Defined at 95 in sel_layer.cpp.'>GetLayerSelection</a>();
+<a id='L170' name='L170'></a> 170 
+<a id='L171' name='L171'></a> 171     <strong class='reserved'>if</strong> ( <a href='../Y/15283.html' title='Multiple used in 208 places.'>value</a> == <a href='../S/469.html#L82' title='Defined at 82 in grid_layer_box_helpers.cpp.'>m_value</a> )
+<a id='L172' name='L172'></a> 172         <strong class='reserved'>return</strong> <strong class='reserved'>false</strong>;
+<a id='L173' name='L173'></a> 173 
+<a id='L174' name='L174'></a> 174     <a href='../S/469.html#L82' title='Defined at 82 in grid_layer_box_helpers.cpp.'>m_value</a> = <a href='../Y/15283.html' title='Multiple used in 208 places.'>value</a>;
+<a id='L175' name='L175'></a> 175 
+<a id='L176' name='L176'></a> 176     <strong class='reserved'>if</strong> ( <a href='../Y/12987.html' title='Multiple used in 14 places.'>newval</a> )
+<a id='L177' name='L177'></a> 177         *<a href='../Y/12987.html' title='Multiple used in 14 places.'>newval</a> = <a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>();
+<a id='L178' name='L178'></a> 178 
+<a id='L179' name='L179'></a> 179     <strong class='reserved'>return</strong> <strong class='reserved'>true</strong>;
+<a id='L180' name='L180'></a> 180 <em class='brace'>}</em>
+<a id='L181' name='L181'></a> 181 
+<a id='L182' name='L182'></a> 182 
+<a id='L183' name='L183'></a> 183 <strong class='reserved'>void</strong> <a href='../Y/1189.html' title='Multiple used in 16 places.'>GRID_CELL_LAYER_SELECTOR</a>::<a href='../S/470.html#L69' title='Referred from 69 in grid_layer_box_helpers.h.'>ApplyEdit</a>( <strong class='reserved'>int</strong> <a href='../Y/5906.html' title='Multiple used in 158 places.'>aRow</a>, <strong class='reserved'>int</strong> <a href='../Y/5093.html' title='Multiple used in 100 places.'>aCol</a>, <a href='../Y/15743.html' title='Multiple used in 49 places.'>wxGrid</a>* <a href='../Y/5367.html' title='Multiple used in 34 places.'>aGrid</a> )
+<a id='L184' name='L184'></a> 184 <em class='brace'>{</em>
+<a id='L185' name='L185'></a> 185     <a href='../Y/5367.html' title='Multiple used in 34 places.'>aGrid</a>-&gt;<a href='../S/440.html#L165' title='Defined at 165 in footprint_preview_panel.cpp.'>GetTable</a>()-&gt;<a href='../D/3097.html' title='Multiple defined in 3 places.'>SetValueAsLong</a>( <a href='../Y/5906.html' title='Multiple used in 158 places.'>aRow</a>, <a href='../Y/5093.html' title='Multiple used in 100 places.'>aCol</a>, (<strong class='reserved'>long</strong>) <a href='../S/469.html#L82' title='Defined at 82 in grid_layer_box_helpers.cpp.'>m_value</a> );
+<a id='L186' name='L186'></a> 186 <em class='brace'>}</em>
+<a id='L187' name='L187'></a> 187 
+<a id='L188' name='L188'></a> 188 
+<a id='L189' name='L189'></a> 189 <strong class='reserved'>void</strong> <a href='../Y/1189.html' title='Multiple used in 16 places.'>GRID_CELL_LAYER_SELECTOR</a>::<a href='../R/2683.html' title='Multiple referred from 26 places.'>Reset</a>()
+<a id='L190' name='L190'></a> 190 <em class='brace'>{</em>
+<a id='L191' name='L191'></a> 191     <a href='../Y/2389.html' title='Multiple used in 14 places.'>LayerBox</a>()-&gt;<a href='../Y/3640.html' title='Multiple used in 23 places.'>SetLayerSelection</a>( <a href='../S/469.html#L82' title='Defined at 82 in grid_layer_box_helpers.cpp.'>m_value</a> );
+<a id='L192' name='L192'></a> 192 <em class='brace'>}</em>
+<a id='L193' name='L193'></a> 193 
+<a id='L194' name='L194'></a> 194 
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L48'>[^]</a><a href='#L189'>[v]</a><a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

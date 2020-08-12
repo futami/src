@@ -1,0 +1,301 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>pcbplot.h</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/pcbplot.h</h2>
+<em class='comment'>/* [&lt;][&gt;][^][v][top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'><a href='../J/527.html' title='Multiple included from 14 places.'>INCLUDED FROM</a></h2>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * This program source code file is part of KiCad, a free EDA CAD application.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 1992-2016 KiCad Developers, see AUTHORS.txt for contributors.</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> *</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> * This program is free software; you can redistribute it and/or</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> * modify it under the terms of the GNU General Public License</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * as published by the Free Software Foundation; either version 2</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * of the License, or (at your option) any later version.</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> *</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> * This program is distributed in the hope that it will be useful,</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> * but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * GNU General Public License for more details.</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> *</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> * You should have received a copy of the GNU General Public License</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> * along with this program; if not, you may find one here:</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> * or you may search the http://www.gnu.org website for the version 2 license,</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> * or you may write to the Free Software Foundation, Inc.,</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'> * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'> */</em>
+<a id='L23' name='L23'></a>  23 
+<a id='L24' name='L24'></a>  24 <em class='comment'>/**</em>
+<a id='L25' name='L25'></a>  25 <em class='comment'> * @file pcbnew/pcbplot.h</em>
+<a id='L26' name='L26'></a>  26 <em class='comment'> * @brief Board plot function definition file.</em>
+<a id='L27' name='L27'></a>  27 <em class='comment'> */</em>
+<a id='L28' name='L28'></a>  28 
+<a id='L29' name='L29'></a>  29 <em class='sharp'>#ifndef</em> <a href='../S/578.html#L30' title='Defined at 30 in pcbplot.h.'>PCBPLOT_H_</a>
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#define</em> <a href='../S/578.html#L29' title='Referred from 29 in pcbplot.h.'>PCBPLOT_H_</a>
+<a id='L31' name='L31'></a>  31 
+<a id='L32' name='L32'></a>  32 <em class='sharp'>#include</em> &lt;layers_id_colors_and_visibility.h&gt;
+<a id='L33' name='L33'></a>  33 <em class='sharp'>#include</em> &lt;math/util.h&gt; <em class='comment'>// for KiROUND</em>
+<a id='L34' name='L34'></a>  34 <em class='sharp'>#include</em> &lt;pad_shapes.h&gt;
+<a id='L35' name='L35'></a>  35 <em class='sharp'>#include</em> &lt;<a href='598.html'>pcb_plot_params.h</a>&gt;
+<a id='L36' name='L36'></a>  36 <em class='sharp'>#include</em> &lt;pgm_base.h&gt;
+<a id='L37' name='L37'></a>  37 <em class='sharp'>#include</em> &lt;settings/color_settings.h&gt;
+<a id='L38' name='L38'></a>  38 <em class='sharp'>#include</em> &lt;settings/settings_manager.h&gt;
+<a id='L39' name='L39'></a>  39 <em class='sharp'>#include</em> &lt;wx/filename.h&gt;
+<a id='L40' name='L40'></a>  40 
+<a id='L41' name='L41'></a>  41 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../Y/2880.html' title='Multiple used in 29 places.'>PLOTTER</a>;
+<a id='L42' name='L42'></a>  42 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../S/74.html#L56' title='Defined at 56 in class_pcb_text.cpp.'>TEXTE_PCB</a>;
+<a id='L43' name='L43'></a>  43 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../D/777.html' title='Multiple defined in 2 places.'>D_PAD</a>;
+<a id='L44' name='L44'></a>  44 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../D/717.html' title='Multiple defined in 2 places.'>DRAWSEGMENT</a>;
+<a id='L45' name='L45'></a>  45 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../S/60.html#L53' title='Defined at 53 in class_dimension.cpp.'>DIMENSION</a>;
+<a id='L46' name='L46'></a>  46 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../D/2056.html' title='Multiple defined in 3 places.'>MODULE</a>;
+<a id='L47' name='L47'></a>  47 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../D/848.html' title='Multiple defined in 2 places.'>EDGE_MODULE</a>;
+<a id='L48' name='L48'></a>  48 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../D/2527.html' title='Multiple defined in 3 places.'>PCB_TARGET</a>;
+<a id='L49' name='L49'></a>  49 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../S/76.html#L67' title='Defined at 67 in class_text_mod.cpp.'>TEXTE_MODULE</a>;
+<a id='L50' name='L50'></a>  50 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../S/80.html#L93' title='Defined at 93 in class_zone.cpp.'>ZONE_CONTAINER</a>;
+<a id='L51' name='L51'></a>  51 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../S/57.html#L104' title='Defined at 104 in class_board.cpp.'>BOARD</a>;
+<a id='L52' name='L52'></a>  52 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../Y/3094.html' title='Multiple used in 30 places.'>REPORTER</a>;
+<a id='L53' name='L53'></a>  53 
+<a id='L54' name='L54'></a>  54 
+<a id='L55' name='L55'></a>  55 <em class='comment'>// Define min and max reasonable values for plot/print scale</em>
+<a id='L56' name='L56'></a>  56 <em class='sharp'>#define</em> <a href='../R/2446.html' title='Multiple referred from 4 places.'>PLOT_MIN_SCALE</a> 0.01
+<a id='L57' name='L57'></a>  57 <em class='sharp'>#define</em> <a href='../R/2445.html' title='Multiple referred from 4 places.'>PLOT_MAX_SCALE</a> 100.0
+<a id='L58' name='L58'></a>  58 
+<a id='L59' name='L59'></a>  59 <em class='comment'>// Small drill marks (small pad holes) diameter value</em>
+<a id='L60' name='L60'></a>  60 <em class='sharp'>#define</em> <a href='../R/2752.html' title='Multiple referred from 2 places.'>SMALL_DRILL</a> <a href='../Y/2278.html' title='Multiple used in 168 places.'>KiROUND</a>( 0.35 * <a href='../Y/2000.html' title='Multiple used in 41 places.'>IU_PER_MM</a> )
+<a id='L61' name='L61'></a>  61 
+<a id='L62' name='L62'></a>  62 
+<a id='L63' name='L63'></a>  63 <em class='comment'>// A helper class to plot board items</em>
+<a id='L64' name='L64'></a>  64 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../Y/271.html' title='Multiple used in 21 places.'>BRDITEMS_PLOTTER</a> : <a href='../Y/13804.html' title='Multiple used in 833 places.'>public</a> <a href='../S/597.html#L100' title='Defined at 100 in pcb_plot_params.cpp.'>PCB_PLOT_PARAMS</a>
+<a id='L65' name='L65'></a>  65 <em class='brace'>{</em>
+<a id='L66' name='L66'></a>  66     <a href='../Y/2880.html' title='Multiple used in 29 places.'>PLOTTER</a>*    <a href='../Y/11622.html' title='Multiple used in 77 places.'>m_plotter</a>;
+<a id='L67' name='L67'></a>  67     <a href='../S/57.html#L104' title='Defined at 104 in class_board.cpp.'>BOARD</a>*      <a href='../D/4144.html' title='Multiple defined in 3 places.'>m_board</a>;
+<a id='L68' name='L68'></a>  68     <a href='../Y/2380.html' title='Multiple used in 386 places.'>LSET</a>        <a href='../Y/11165.html' title='Multiple used in 31 places.'>m_layerMask</a>;
+<a id='L69' name='L69'></a>  69 
+<a id='L70' name='L70'></a>  70 <a href='../Y/13804.html' title='Multiple used in 833 places.'>public</a>:
+<a id='L71' name='L71'></a>  71     <a href='../Y/271.html' title='Multiple used in 21 places.'>BRDITEMS_PLOTTER</a>( <a href='../Y/2880.html' title='Multiple used in 29 places.'>PLOTTER</a>* <a href='../Y/5793.html' title='Multiple used in 84 places.'>aPlotter</a>, <a href='../S/57.html#L104' title='Defined at 104 in class_board.cpp.'>BOARD</a>* <a href='../Y/5041.html' title='Multiple used in 458 places.'>aBoard</a>, <strong class='reserved'>const</strong> <a href='../S/597.html#L100' title='Defined at 100 in pcb_plot_params.cpp.'>PCB_PLOT_PARAMS</a>&amp; <a href='../Y/5792.html' title='Multiple used in 29 places.'>aPlotOpts</a> )
+<a id='L72' name='L72'></a>  72             : <a href='../S/597.html#L100' title='Defined at 100 in pcb_plot_params.cpp.'>PCB_PLOT_PARAMS</a>( <a href='../Y/5792.html' title='Multiple used in 29 places.'>aPlotOpts</a> )
+<a id='L73' name='L73'></a>  73     <em class='brace'>{</em>
+<a id='L74' name='L74'></a>  74         <a href='../Y/11622.html' title='Multiple used in 77 places.'>m_plotter</a> = <a href='../Y/5793.html' title='Multiple used in 84 places.'>aPlotter</a>;
+<a id='L75' name='L75'></a>  75         <a href='../D/4144.html' title='Multiple defined in 3 places.'>m_board</a> = <a href='../Y/5041.html' title='Multiple used in 458 places.'>aBoard</a>;
+<a id='L76' name='L76'></a>  76     <em class='brace'>}</em>
+<a id='L77' name='L77'></a>  77 
+<a id='L78' name='L78'></a>  78     <em class='comment'>/**</em>
+<a id='L79' name='L79'></a>  79 <em class='comment'>     * @return a 'width adjustment' for the postscript engine</em>
+<a id='L80' name='L80'></a>  80 <em class='comment'>     * (useful for controlling toner bleeding during direct transfer)</em>
+<a id='L81' name='L81'></a>  81 <em class='comment'>     * added to track width and via/pads size</em>
+<a id='L82' name='L82'></a>  82 <em class='comment'>     */</em>
+<a id='L83' name='L83'></a>  83     <strong class='reserved'>int</strong> <a href='../Y/8254.html' title='Multiple used in 6 places.'>getFineWidthAdj</a>()
+<a id='L84' name='L84'></a>  84     <em class='brace'>{</em>
+<a id='L85' name='L85'></a>  85         <strong class='reserved'>if</strong>( <a href='../Y/1435.html' title='Multiple used in 14 places.'>GetFormat</a>() == <a href='../Y/2881.html' title='Multiple used in 72 places.'>PLOT_FORMAT</a>::<a href='../Y/2901.html' title='Multiple used in 9 places.'>POST</a> )
+<a id='L86' name='L86'></a>  86             <strong class='reserved'>return</strong> <a href='../Y/1810.html' title='Multiple used in 2 places.'>GetWidthAdjust</a>();
+<a id='L87' name='L87'></a>  87         <strong class='reserved'>else</strong>
+<a id='L88' name='L88'></a>  88             <strong class='reserved'>return</strong> 0;
+<a id='L89' name='L89'></a>  89     <em class='brace'>}</em>
+<a id='L90' name='L90'></a>  90 
+<a id='L91' name='L91'></a>  91     <em class='comment'>// Basic functions to plot a board item</em>
+<a id='L92' name='L92'></a>  92     <strong class='reserved'>void</strong> <a href='../S/80.html#L236' title='Defined at 236 in class_zone.cpp.'>SetLayerSet</a>( <a href='../Y/2380.html' title='Multiple used in 386 places.'>LSET</a> <a href='../Y/5480.html' title='Multiple used in 85 places.'>aLayerMask</a> )     <em class='brace'>{</em> <a href='../Y/11165.html' title='Multiple used in 31 places.'>m_layerMask</a> = <a href='../Y/5480.html' title='Multiple used in 85 places.'>aLayerMask</a>; <em class='brace'>}</em>
+<a id='L93' name='L93'></a>  93     <strong class='reserved'>void</strong> <a href='../S/605.html#L458' title='Defined at 458 in plot_brditems_plotter.cpp.'>PlotFootprintGraphicItems</a>( <a href='../D/2056.html' title='Multiple defined in 3 places.'>MODULE</a>* <a href='../Y/5598.html' title='Multiple used in 419 places.'>aModule</a> );
+<a id='L94' name='L94'></a>  94     <strong class='reserved'>void</strong> <a href='../S/605.html#L471' title='Defined at 471 in plot_brditems_plotter.cpp.'>PlotFootprintGraphicItem</a>( <a href='../D/848.html' title='Multiple defined in 2 places.'>EDGE_MODULE</a>* <a href='../Y/5238.html' title='Multiple used in 25 places.'>aEdge</a> );
+<a id='L95' name='L95'></a>  95     <strong class='reserved'>void</strong> <a href='../S/605.html#L321' title='Defined at 321 in plot_brditems_plotter.cpp.'>PlotFootprintTextItem</a>( <a href='../S/76.html#L67' title='Defined at 67 in class_text_mod.cpp.'>TEXTE_MODULE</a>* <a href='../Y/6050.html' title='Multiple used in 11 places.'>aTextMod</a>, <a href='../Y/391.html' title='Multiple used in 170 places.'>COLOR4D</a> <a href='../Y/5096.html' title='Multiple used in 92 places.'>aColor</a> );
+<a id='L96' name='L96'></a>  96 
+<a id='L97' name='L97'></a>  97     <em class='comment'>/*</em>
+<a id='L98' name='L98'></a>  98 <em class='comment'>     * Reference, Value, and other fields are plotted only if the corresponding option is enabled.</em>
+<a id='L99' name='L99'></a>  99 <em class='comment'>     * Invisible text fields are plotted only if PlotInvisibleText option is set.</em>
+<a id='L100' name='L100'></a> 100 <em class='comment'>     */</em>
+<a id='L101' name='L101'></a> 101     <strong class='reserved'>void</strong> <a href='../S/605.html#L255' title='Defined at 255 in plot_brditems_plotter.cpp.'>PlotFootprintTextItems</a>( <a href='../D/2056.html' title='Multiple defined in 3 places.'>MODULE</a>* <a href='../Y/5598.html' title='Multiple used in 419 places.'>aModule</a> );
+<a id='L102' name='L102'></a> 102 
+<a id='L103' name='L103'></a> 103     <strong class='reserved'>void</strong> <a href='../S/605.html#L356' title='Defined at 356 in plot_brditems_plotter.cpp.'>PlotDimension</a>( <a href='../S/60.html#L53' title='Defined at 53 in class_dimension.cpp.'>DIMENSION</a>* Dimension );
+<a id='L104' name='L104'></a> 104     <strong class='reserved'>void</strong> <a href='../S/605.html#L404' title='Defined at 404 in plot_brditems_plotter.cpp.'>PlotPcbTarget</a>( <a href='../D/2527.html' title='Multiple defined in 3 places.'>PCB_TARGET</a>* PtMire );
+<a id='L105' name='L105'></a> 105     <strong class='reserved'>void</strong> <a href='../S/605.html#L686' title='Defined at 686 in plot_brditems_plotter.cpp.'>PlotFilledAreas</a>( <a href='../S/80.html#L93' title='Defined at 93 in class_zone.cpp.'>ZONE_CONTAINER</a>* <a href='../Y/6194.html' title='Multiple used in 262 places.'>aZone</a>, <a href='../Y/3235.html' title='Multiple used in 305 places.'>SHAPE_POLY_SET</a>&amp; <a href='../Y/5813.html' title='Multiple used in 5 places.'>aPolysList</a> );
+<a id='L106' name='L106'></a> 106     <strong class='reserved'>void</strong> <a href='../S/605.html#L626' title='Defined at 626 in plot_brditems_plotter.cpp.'>PlotTextePcb</a>( <a href='../S/74.html#L56' title='Defined at 56 in class_pcb_text.cpp.'>TEXTE_PCB</a>* <a href='../Y/13794.html' title='Multiple used in 17 places.'>pt_texte</a> );
+<a id='L107' name='L107'></a> 107     <strong class='reserved'>void</strong> <a href='../S/605.html#L785' title='Defined at 785 in plot_brditems_plotter.cpp.'>PlotDrawSegment</a>( <a href='../D/717.html' title='Multiple defined in 2 places.'>DRAWSEGMENT</a>* <a href='../Y/2992.html' title='Multiple used in 11 places.'>PtSegm</a> );
+<a id='L108' name='L108'></a> 108 
+<a id='L109' name='L109'></a> 109     <em class='comment'>/**</em>
+<a id='L110' name='L110'></a> 110 <em class='comment'>     * Plot a pad.</em>
+<a id='L111' name='L111'></a> 111 <em class='comment'>     * unlike other items, a pad had not a specific color,</em>
+<a id='L112' name='L112'></a> 112 <em class='comment'>     * and be drawn as a non filled item although the plot mode is filled</em>
+<a id='L113' name='L113'></a> 113 <em class='comment'>     * color and plot mode are needed by this function</em>
+<a id='L114' name='L114'></a> 114 <em class='comment'>     */</em>
+<a id='L115' name='L115'></a> 115     <strong class='reserved'>void</strong> <a href='../S/605.html#L86' title='Defined at 86 in plot_brditems_plotter.cpp.'>PlotPad</a>( <a href='../D/777.html' title='Multiple defined in 2 places.'>D_PAD</a>* <a href='../Y/5725.html' title='Multiple used in 420 places.'>aPad</a>, <a href='../Y/391.html' title='Multiple used in 170 places.'>COLOR4D</a> <a href='../Y/5096.html' title='Multiple used in 92 places.'>aColor</a>, <a href='../Y/836.html' title='Multiple used in 8 places.'>EDA_DRAW_MODE_T</a> <a href='../Y/5790.html' title='Multiple used in 11 places.'>aPlotMode</a> );
+<a id='L116' name='L116'></a> 116 
+<a id='L117' name='L117'></a> 117     <em class='comment'>/**</em>
+<a id='L118' name='L118'></a> 118 <em class='comment'>     * plot items like text and graphics,</em>
+<a id='L119' name='L119'></a> 119 <em class='comment'>     *  but not tracks and modules</em>
+<a id='L120' name='L120'></a> 120 <em class='comment'>     */</em>
+<a id='L121' name='L121'></a> 121     <strong class='reserved'>void</strong> <a href='../S/605.html#L306' title='Defined at 306 in plot_brditems_plotter.cpp.'>PlotBoardGraphicItems</a>();
+<a id='L122' name='L122'></a> 122 
+<a id='L123' name='L123'></a> 123     <em class='comment'>/** Function PlotDrillMarks</em>
+<a id='L124' name='L124'></a> 124 <em class='comment'>     * Draw a drill mark for pads and vias.</em>
+<a id='L125' name='L125'></a> 125 <em class='comment'>     * Must be called after all drawings, because it</em>
+<a id='L126' name='L126'></a> 126 <em class='comment'>     * redraw the drill mark on a pad or via, as a negative (i.e. white) shape in</em>
+<a id='L127' name='L127'></a> 127 <em class='comment'>     * FILLED plot mode (for PS and PDF outputs)</em>
+<a id='L128' name='L128'></a> 128 <em class='comment'>     */</em>
+<a id='L129' name='L129'></a> 129     <strong class='reserved'>void</strong> <a href='../S/605.html#L926' title='Defined at 926 in plot_brditems_plotter.cpp.'>PlotDrillMarks</a>();
+<a id='L130' name='L130'></a> 130 
+<a id='L131' name='L131'></a> 131     <em class='comment'>/**</em>
+<a id='L132' name='L132'></a> 132 <em class='comment'>     * Function getColor</em>
+<a id='L133' name='L133'></a> 133 <em class='comment'>     * @return the layer color</em>
+<a id='L134' name='L134'></a> 134 <em class='comment'>     * @param aLayer = the layer id</em>
+<a id='L135' name='L135'></a> 135 <em class='comment'>     * White color is special: cannot be seen on a white paper</em>
+<a id='L136' name='L136'></a> 136 <em class='comment'>     * and in B&amp;W mode, is plotted as white but other colors are plotted in BLACK</em>
+<a id='L137' name='L137'></a> 137 <em class='comment'>     * so the returned color is LIGHTGRAY when the layer color is WHITE</em>
+<a id='L138' name='L138'></a> 138 <em class='comment'>     */</em>
+<a id='L139' name='L139'></a> 139     <a href='../Y/391.html' title='Multiple used in 170 places.'>COLOR4D</a> <a href='../D/3966.html' title='Multiple defined in 2 places.'>getColor</a>( <a href='../Y/2321.html' title='Multiple used in 152 places.'>LAYER_NUM</a> <a href='../Y/5477.html' title='Multiple used in 585 places.'>aLayer</a> );
+<a id='L140' name='L140'></a> 140 
+<a id='L141' name='L141'></a> 141 <a href='../Y/13721.html' title='Multiple used in 310 places.'>private</a>:
+<a id='L142' name='L142'></a> 142     <em class='comment'>/** Helper function to plot a single drill mark. It compensate and clamp</em>
+<a id='L143' name='L143'></a> 143 <em class='comment'>     * the drill mark size depending on the current plot options</em>
+<a id='L144' name='L144'></a> 144 <em class='comment'>     */</em>
+<a id='L145' name='L145'></a> 145     <strong class='reserved'>void</strong> <a href='../S/605.html#L903' title='Defined at 903 in plot_brditems_plotter.cpp.'>plotOneDrillMark</a>( <a href='../Y/2757.html' title='Multiple used in 12 places.'>PAD_DRILL_SHAPE_T</a> <a href='../Y/5226.html' title='Multiple used in 4 places.'>aDrillShape</a>,
+<a id='L146' name='L146'></a> 146                            <strong class='reserved'>const</strong> <a href='../Y/15871.html' title='Multiple used in 1252 places.'>wxPoint</a>&amp; <a href='../Y/5225.html' title='Multiple used in 4 places.'>aDrillPos</a>, <a href='../Y/15943.html' title='Multiple used in 474 places.'>wxSize</a> <a href='../Y/5227.html' title='Multiple used in 9 places.'>aDrillSize</a>,
+<a id='L147' name='L147'></a> 147                            <strong class='reserved'>const</strong> <a href='../Y/15943.html' title='Multiple used in 474 places.'>wxSize</a>&amp; <a href='../Y/5734.html' title='Multiple used in 4 places.'>aPadSize</a>,
+<a id='L148' name='L148'></a> 148                            <strong class='reserved'>double</strong> <a href='../Y/5690.html' title='Multiple used in 16 places.'>aOrientation</a>, <strong class='reserved'>int</strong> <a href='../Y/5972.html' title='Multiple used in 4 places.'>aSmallDrill</a> );
+<a id='L149' name='L149'></a> 149 
+<a id='L150' name='L150'></a> 150 <em class='brace'>}</em>;
+<a id='L151' name='L151'></a> 151 
+<a id='L152' name='L152'></a> 152 <a href='../Y/2880.html' title='Multiple used in 29 places.'>PLOTTER</a>* <a href='../S/604.html#L1081' title='Defined at 1081 in plot_board_layers.cpp.'>StartPlotBoard</a>( <a href='../S/57.html#L104' title='Defined at 104 in class_board.cpp.'>BOARD</a>* <a href='../Y/5041.html' title='Multiple used in 458 places.'>aBoard</a>,
+<a id='L153' name='L153'></a> 153                          <a href='../S/597.html#L100' title='Defined at 100 in pcb_plot_params.cpp.'>PCB_PLOT_PARAMS</a>* <a href='../Y/5792.html' title='Multiple used in 29 places.'>aPlotOpts</a>,
+<a id='L154' name='L154'></a> 154                          <strong class='reserved'>int</strong> <a href='../Y/5477.html' title='Multiple used in 585 places.'>aLayer</a>,
+<a id='L155' name='L155'></a> 155                          <strong class='reserved'>const</strong> <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>&amp; <a href='../Y/5348.html' title='Multiple used in 28 places.'>aFullFileName</a>,
+<a id='L156' name='L156'></a> 156                          <strong class='reserved'>const</strong> <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>&amp; <a href='../Y/5950.html' title='Multiple used in 6 places.'>aSheetDesc</a> );
+<a id='L157' name='L157'></a> 157 
+<a id='L158' name='L158'></a> 158 <em class='comment'>/**</em>
+<a id='L159' name='L159'></a> 159 <em class='comment'> * Function PlotOneBoardLayer</em>
+<a id='L160' name='L160'></a> 160 <em class='comment'> * main function to plot one copper or technical layer.</em>
+<a id='L161' name='L161'></a> 161 <em class='comment'> * It prepare options and calls the specialized plot function,</em>
+<a id='L162' name='L162'></a> 162 <em class='comment'> * according to the layer type</em>
+<a id='L163' name='L163'></a> 163 <em class='comment'> * @param aBoard = the board to plot</em>
+<a id='L164' name='L164'></a> 164 <em class='comment'> * @param aPlotter = the plotter to use</em>
+<a id='L165' name='L165'></a> 165 <em class='comment'> * @param aLayer = the layer id to plot</em>
+<a id='L166' name='L166'></a> 166 <em class='comment'> * @param aPlotOpt = the plot options (files, sketch). Has meaning for some formats only</em>
+<a id='L167' name='L167'></a> 167 <em class='comment'> */</em>
+<a id='L168' name='L168'></a> 168 <strong class='reserved'>void</strong> <a href='../S/604.html#L64' title='Defined at 64 in plot_board_layers.cpp.'>PlotOneBoardLayer</a>( <a href='../S/57.html#L104' title='Defined at 104 in class_board.cpp.'>BOARD</a> *<a href='../Y/5041.html' title='Multiple used in 458 places.'>aBoard</a>, <a href='../Y/2880.html' title='Multiple used in 29 places.'>PLOTTER</a>* <a href='../Y/5793.html' title='Multiple used in 84 places.'>aPlotter</a>, <a href='../S/423.html#L118' title='Defined at 118 in exporters/gendrill_file_writer_base.h.'>PCB_LAYER_ID</a> <a href='../Y/5477.html' title='Multiple used in 585 places.'>aLayer</a>,
+<a id='L169' name='L169'></a> 169                         <strong class='reserved'>const</strong> <a href='../S/597.html#L100' title='Defined at 100 in pcb_plot_params.cpp.'>PCB_PLOT_PARAMS</a>&amp; <a href='../Y/5791.html' title='Multiple used in 30 places.'>aPlotOpt</a> );
+<a id='L170' name='L170'></a> 170 
+<a id='L171' name='L171'></a> 171 <em class='comment'>/**</em>
+<a id='L172' name='L172'></a> 172 <em class='comment'> * Function PlotStandardLayer</em>
+<a id='L173' name='L173'></a> 173 <em class='comment'> * plot copper or technical layers.</em>
+<a id='L174' name='L174'></a> 174 <em class='comment'> * not used for silk screen layers, because these layers have specific</em>
+<a id='L175' name='L175'></a> 175 <em class='comment'> * requirements, mainly for pads</em>
+<a id='L176' name='L176'></a> 176 <em class='comment'> * @param aBoard = the board to plot</em>
+<a id='L177' name='L177'></a> 177 <em class='comment'> * @param aPlotter = the plotter to use</em>
+<a id='L178' name='L178'></a> 178 <em class='comment'> * @param aLayerMask = the mask to define the layers to plot</em>
+<a id='L179' name='L179'></a> 179 <em class='comment'> * @param aPlotOpt = the plot options (files, sketch). Has meaning for some formats only</em>
+<a id='L180' name='L180'></a> 180 <em class='comment'> *</em>
+<a id='L181' name='L181'></a> 181 <em class='comment'> * aPlotOpt has 3 important options to control this plot,</em>
+<a id='L182' name='L182'></a> 182 <em class='comment'> * which are set, depending on the layer type to plot</em>
+<a id='L183' name='L183'></a> 183 <em class='comment'> *      SetEnablePlotVia( bool aEnable )</em>
+<a id='L184' name='L184'></a> 184 <em class='comment'> *          aEnable = true to plot vias, false to skip vias (has meaning</em>
+<a id='L185' name='L185'></a> 185 <em class='comment'> *                      only for solder mask layers).</em>
+<a id='L186' name='L186'></a> 186 <em class='comment'> *      SetSkipPlotNPTH_Pads( bool aSkip )</em>
+<a id='L187' name='L187'></a> 187 <em class='comment'> *          aSkip = true to skip NPTH Pads, when the pad size and the pad hole</em>
+<a id='L188' name='L188'></a> 188 <em class='comment'> *                  have the same size. Used in GERBER format only.</em>
+<a id='L189' name='L189'></a> 189 <em class='comment'> *      SetDrillMarksType( DrillMarksType aVal ) controle the actual hole:</em>
+<a id='L190' name='L190'></a> 190 <em class='comment'> *              no hole, small hole, actual hole</em>
+<a id='L191' name='L191'></a> 191 <em class='comment'> */</em>
+<a id='L192' name='L192'></a> 192 <strong class='reserved'>void</strong> <a href='../S/604.html#L206' title='Defined at 206 in plot_board_layers.cpp.'>PlotStandardLayer</a>( <a href='../S/57.html#L104' title='Defined at 104 in class_board.cpp.'>BOARD</a>* <a href='../Y/5041.html' title='Multiple used in 458 places.'>aBoard</a>, <a href='../Y/2880.html' title='Multiple used in 29 places.'>PLOTTER</a>* <a href='../Y/5793.html' title='Multiple used in 84 places.'>aPlotter</a>, <a href='../Y/2380.html' title='Multiple used in 386 places.'>LSET</a> <a href='../Y/5480.html' title='Multiple used in 85 places.'>aLayerMask</a>,
+<a id='L193' name='L193'></a> 193                         <strong class='reserved'>const</strong> <a href='../S/597.html#L100' title='Defined at 100 in pcb_plot_params.cpp.'>PCB_PLOT_PARAMS</a>&amp; <a href='../Y/5791.html' title='Multiple used in 30 places.'>aPlotOpt</a> );
+<a id='L194' name='L194'></a> 194 
+<a id='L195' name='L195'></a> 195 <em class='comment'>/**</em>
+<a id='L196' name='L196'></a> 196 <em class='comment'> * Function PlotLayerOutlines</em>
+<a id='L197' name='L197'></a> 197 <em class='comment'> * plot copper outline of a copper layer.</em>
+<a id='L198' name='L198'></a> 198 <em class='comment'> * @param aBoard = the board to plot</em>
+<a id='L199' name='L199'></a> 199 <em class='comment'> * @param aPlotter = the plotter to use</em>
+<a id='L200' name='L200'></a> 200 <em class='comment'> * @param aLayerMask = the mask to define the layers to plot</em>
+<a id='L201' name='L201'></a> 201 <em class='comment'> * @param aPlotOpt = the plot options. Has meaning for some formats only</em>
+<a id='L202' name='L202'></a> 202 <em class='comment'> */</em>
+<a id='L203' name='L203'></a> 203 <strong class='reserved'>void</strong> <a href='../S/604.html#L639' title='Defined at 639 in plot_board_layers.cpp.'>PlotLayerOutlines</a>( <a href='../S/57.html#L104' title='Defined at 104 in class_board.cpp.'>BOARD</a> *<a href='../Y/5041.html' title='Multiple used in 458 places.'>aBoard</a>, <a href='../Y/2880.html' title='Multiple used in 29 places.'>PLOTTER</a>* <a href='../Y/5793.html' title='Multiple used in 84 places.'>aPlotter</a>,
+<a id='L204' name='L204'></a> 204                         <a href='../Y/2380.html' title='Multiple used in 386 places.'>LSET</a> <a href='../Y/5480.html' title='Multiple used in 85 places.'>aLayerMask</a>, <strong class='reserved'>const</strong> <a href='../S/597.html#L100' title='Defined at 100 in pcb_plot_params.cpp.'>PCB_PLOT_PARAMS</a>&amp; <a href='../Y/5791.html' title='Multiple used in 30 places.'>aPlotOpt</a> );
+<a id='L205' name='L205'></a> 205 
+<a id='L206' name='L206'></a> 206 <em class='comment'>/**</em>
+<a id='L207' name='L207'></a> 207 <em class='comment'> * Function BuildPlotFileName (helper function)</em>
+<a id='L208' name='L208'></a> 208 <em class='comment'> * Complete a plot filename: forces the output directory,</em>
+<a id='L209' name='L209'></a> 209 <em class='comment'> * add a suffix to the name and sets the specified extension</em>
+<a id='L210' name='L210'></a> 210 <em class='comment'> * the suffix is usually the layer name</em>
+<a id='L211' name='L211'></a> 211 <em class='comment'> * replaces not allowed chars in suffix by '_'</em>
+<a id='L212' name='L212'></a> 212 <em class='comment'> * @param aFilename = the wxFileName to initialize</em>
+<a id='L213' name='L213'></a> 213 <em class='comment'> *                  Contains the base filename</em>
+<a id='L214' name='L214'></a> 214 <em class='comment'> * @param aOutputDir = the path</em>
+<a id='L215' name='L215'></a> 215 <em class='comment'> * @param aSuffix = the suffix to add to the base filename</em>
+<a id='L216' name='L216'></a> 216 <em class='comment'> * @param aExtension = the file extension</em>
+<a id='L217' name='L217'></a> 217 <em class='comment'> */</em>
+<a id='L218' name='L218'></a> 218 <strong class='reserved'>void</strong> <a href='../S/577.html#L373' title='Defined at 373 in pcbplot.cpp.'>BuildPlotFileName</a>( <a href='../Y/15715.html' title='Multiple used in 165 places.'>wxFileName</a>*     <a href='../Y/5294.html' title='Multiple used in 40 places.'>aFilename</a>,
+<a id='L219' name='L219'></a> 219                         <strong class='reserved'>const</strong> <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>&amp; <a href='../Y/5710.html' title='Multiple used in 3 places.'>aOutputDir</a>,
+<a id='L220' name='L220'></a> 220                         <strong class='reserved'>const</strong> <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>&amp; <a href='../Y/6033.html' title='Multiple used in 6 places.'>aSuffix</a>,
+<a id='L221' name='L221'></a> 221                         <strong class='reserved'>const</strong> <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>&amp; <a href='../Y/5286.html' title='Multiple used in 6 places.'>aExtension</a> );
+<a id='L222' name='L222'></a> 222 
+<a id='L223' name='L223'></a> 223 
+<a id='L224' name='L224'></a> 224 <em class='comment'>/**</em>
+<a id='L225' name='L225'></a> 225 <em class='comment'> * Function GetGerberProtelExtension</em>
+<a id='L226' name='L226'></a> 226 <em class='comment'> * @return the appropriate Gerber file extension for \a aLayer</em>
+<a id='L227' name='L227'></a> 227 <em class='comment'> * used by Protel, and still sometimes in use (although the</em>
+<a id='L228' name='L228'></a> 228 <em class='comment'> * official Gerber Ext is now .gbr)</em>
+<a id='L229' name='L229'></a> 229 <em class='comment'> */</em>
+<a id='L230' name='L230'></a> 230 <strong class='reserved'>const</strong> <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../S/577.html#L48' title='Defined at 48 in pcbplot.cpp.'>GetGerberProtelExtension</a>( <a href='../Y/2321.html' title='Multiple used in 152 places.'>LAYER_NUM</a> <a href='../Y/5477.html' title='Multiple used in 585 places.'>aLayer</a> );
+<a id='L231' name='L231'></a> 231 
+<a id='L232' name='L232'></a> 232 <em class='comment'>/**</em>
+<a id='L233' name='L233'></a> 233 <em class='comment'> * Function GetGerberFileFunctionAttribute</em>
+<a id='L234' name='L234'></a> 234 <em class='comment'> * Returns the "file function" attribute for \a aLayer, as defined in the</em>
+<a id='L235' name='L235'></a> 235 <em class='comment'> * Gerber file format specification J1 (chapter 5). The returned string includes</em>
+<a id='L236' name='L236'></a> 236 <em class='comment'> * the "%TF.FileFunction" attribute prefix and the "*%" suffix.</em>
+<a id='L237' name='L237'></a> 237 <em class='comment'> * @param aBoard = the board, needed to get the total count of copper layers</em>
+<a id='L238' name='L238'></a> 238 <em class='comment'> * @param aLayer = the layer number to create the attribute for</em>
+<a id='L239' name='L239'></a> 239 <em class='comment'> * @return The attribute, as a text string</em>
+<a id='L240' name='L240'></a> 240 <em class='comment'> */</em>
+<a id='L241' name='L241'></a> 241 <strong class='reserved'>const</strong> <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../S/577.html#L89' title='Defined at 89 in pcbplot.cpp.'>GetGerberFileFunctionAttribute</a>( <strong class='reserved'>const</strong> <a href='../S/57.html#L104' title='Defined at 104 in class_board.cpp.'>BOARD</a> *<a href='../Y/5041.html' title='Multiple used in 458 places.'>aBoard</a>, <a href='../Y/2321.html' title='Multiple used in 152 places.'>LAYER_NUM</a> <a href='../Y/5477.html' title='Multiple used in 585 places.'>aLayer</a> );
+<a id='L242' name='L242'></a> 242 
+<a id='L243' name='L243'></a> 243 <em class='comment'>/**</em>
+<a id='L244' name='L244'></a> 244 <em class='comment'> * Calculates some X2 attributes, as defined in the</em>
+<a id='L245' name='L245'></a> 245 <em class='comment'> * Gerber file format specification J4 (chapter 5) and add them</em>
+<a id='L246' name='L246'></a> 246 <em class='comment'> * the to the gerber file header:</em>
+<a id='L247' name='L247'></a> 247 <em class='comment'> * TF.GenerationSoftware</em>
+<a id='L248' name='L248'></a> 248 <em class='comment'> * TF.CreationDate</em>
+<a id='L249' name='L249'></a> 249 <em class='comment'> * TF.ProjectId</em>
+<a id='L250' name='L250'></a> 250 <em class='comment'> * file format attribute is not added</em>
+<a id='L251' name='L251'></a> 251 <em class='comment'> * @param aPlotter = the current plotter.</em>
+<a id='L252' name='L252'></a> 252 <em class='comment'> * @param aBoard = the board, needed to extract some info</em>
+<a id='L253' name='L253'></a> 253 <em class='comment'> * @param aUseX1CompatibilityMode = false to generate X2 attributes, true to</em>
+<a id='L254' name='L254'></a> 254 <em class='comment'> * use X1 compatibility (X2 attributes added as structured comments,</em>
+<a id='L255' name='L255'></a> 255 <em class='comment'> * starting by "G04 #@! " followed by the X2 attribute</em>
+<a id='L256' name='L256'></a> 256 <em class='comment'> */</em>
+<a id='L257' name='L257'></a> 257 <strong class='reserved'>void</strong> <a href='../S/577.html#L282' title='Defined at 282 in pcbplot.cpp.'>AddGerberX2Header</a>( <a href='../Y/2880.html' title='Multiple used in 29 places.'>PLOTTER</a> * <a href='../Y/5793.html' title='Multiple used in 84 places.'>aPlotter</a>,
+<a id='L258' name='L258'></a> 258             <strong class='reserved'>const</strong> <a href='../S/57.html#L104' title='Defined at 104 in class_board.cpp.'>BOARD</a> *<a href='../Y/5041.html' title='Multiple used in 458 places.'>aBoard</a>, <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/6127.html' title='Multiple used in 13 places.'>aUseX1CompatibilityMode</a> = <a href='../Y/7859.html' title='Multiple used in 200 places.'>false</a> );
+<a id='L259' name='L259'></a> 259 
+<a id='L260' name='L260'></a> 260 <em class='comment'>/**</em>
+<a id='L261' name='L261'></a> 261 <em class='comment'> * Calculates some X2 attributes, as defined in the Gerber file format</em>
+<a id='L262' name='L262'></a> 262 <em class='comment'> * specification and add them to the gerber file header:</em>
+<a id='L263' name='L263'></a> 263 <em class='comment'> * TF.GenerationSoftware</em>
+<a id='L264' name='L264'></a> 264 <em class='comment'> * TF.CreationDate</em>
+<a id='L265' name='L265'></a> 265 <em class='comment'> * TF.ProjectId</em>
+<a id='L266' name='L266'></a> 266 <em class='comment'> * TF.FileFunction</em>
+<a id='L267' name='L267'></a> 267 <em class='comment'> * TF.FilePolarity</em>
+<a id='L268' name='L268'></a> 268 <em class='comment'> *</em>
+<a id='L269' name='L269'></a> 269 <em class='comment'> * @param aPlotter = the current plotter.</em>
+<a id='L270' name='L270'></a> 270 <em class='comment'> * @param aBoard = the board, needed to extract some info</em>
+<a id='L271' name='L271'></a> 271 <em class='comment'> * @param aLayer = the layer number to create the attribute for</em>
+<a id='L272' name='L272'></a> 272 <em class='comment'> * @param aUseX1CompatibilityMode = false to generate X2 attributes, true to</em>
+<a id='L273' name='L273'></a> 273 <em class='comment'> * use X1 compatibility (X2 attributes added as structured comments,</em>
+<a id='L274' name='L274'></a> 274 <em class='comment'> * starting by "G04 #@! " followed by the X2 attribute</em>
+<a id='L275' name='L275'></a> 275 <em class='comment'> */</em>
+<a id='L276' name='L276'></a> 276 <strong class='reserved'>void</strong> <a href='../S/577.html#L354' title='Defined at 354 in pcbplot.cpp.'>AddGerberX2Attribute</a>( <a href='../Y/2880.html' title='Multiple used in 29 places.'>PLOTTER</a> * <a href='../Y/5793.html' title='Multiple used in 84 places.'>aPlotter</a>, <strong class='reserved'>const</strong> <a href='../S/57.html#L104' title='Defined at 104 in class_board.cpp.'>BOARD</a> *<a href='../Y/5041.html' title='Multiple used in 458 places.'>aBoard</a>,
+<a id='L277' name='L277'></a> 277                            <a href='../Y/2321.html' title='Multiple used in 152 places.'>LAYER_NUM</a> <a href='../Y/5477.html' title='Multiple used in 585 places.'>aLayer</a>, <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/6127.html' title='Multiple used in 13 places.'>aUseX1CompatibilityMode</a> );
+<a id='L278' name='L278'></a> 278 
+<a id='L279' name='L279'></a> 279 <em class='sharp'>#endif</em> <em class='comment'>// PCBPLOT_H_</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;][^][v]<a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

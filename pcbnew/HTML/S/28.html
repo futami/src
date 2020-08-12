@@ -1,0 +1,290 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>autorouter/rect_placement/rect_placement.cpp</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/827.html'>autorouter</a>/<a href='../files/828.html'>rect_placement</a>/rect_placement.cpp</h2>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L44'>[^]</a><a href='#L189'>[v]</a>[top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L44' title='Defined at 44.'>Init</a></li>
+<li><a href='#L57' title='Defined at 57.'>End</a></li>
+<li><a href='#L69' title='Defined at 69.'>IsFree</a></li>
+<li><a href='#L89' title='Defined at 89.'>AddPosition</a></li>
+<li><a href='#L115' title='Defined at 115.'>AddRect</a></li>
+<li><a href='#L130' title='Defined at 130.'>AddAtEmptySpot</a></li>
+<li><a href='#L189' title='Defined at 189.'>AddAtEmptySpotAutoGrow</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>// ----------------------------------------------------------------------------------------</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'>// Name        : rect_placement.cpp</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'>// Description : A class that fits subrectangles into a power-of-2 rectangle</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'>// (C) Copyright 2000-2002 by Javier Arevalo</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'>// This code is free to use and modify for all purposes</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'>// ----------------------------------------------------------------------------------------</em>
+<a id='L7' name='L7'></a>   7 
+<a id='L8' name='L8'></a>   8 <em class='comment'>/*</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> *  You have a bunch of rectangular pieces. You need to arrange them in a</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> *  rectangular surface so that they don't overlap, keeping the total area of the</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> *  rectangle as small as possible. This is fairly common when arranging characters</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> *  in a bitmapped font, lightmaps for a 3D engine, and I guess other situations as</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> *  well.</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> *</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> *  The idea of this algorithm is that, as we add rectangles, we can pre-select</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> *  "interesting" places where we can try to add the next rectangles. For optimal</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> *  results, the rectangles should be added in order. I initially tried using area</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> *  as a sorting criteria, but it didn't work well with very tall or very flat</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> *  rectangles. I then tried using the longest dimension as a selector, and it</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> *  worked much better. So much for intuition...</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'> *</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'> *  These "interesting" places are just to the right and just below the currently</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'> *  added rectangle. The first rectangle, obviously, goes at the top left, the next</em>
+<a id='L24' name='L24'></a>  24 <em class='comment'> *  one would go either to the right or below this one, and so on. It is a weird way</em>
+<a id='L25' name='L25'></a>  25 <em class='comment'> *  to do it, but it seems to work very nicely.</em>
+<a id='L26' name='L26'></a>  26 <em class='comment'> *</em>
+<a id='L27' name='L27'></a>  27 <em class='comment'> *  The way we search here is fairly brute-force, the fact being that for most off-</em>
+<a id='L28' name='L28'></a>  28 <em class='comment'> *  line purposes the performance seems more than adequate. I have generated a</em>
+<a id='L29' name='L29'></a>  29 <em class='comment'> *  japanese font with around 8500 characters and all the time was spent generating</em>
+<a id='L30' name='L30'></a>  30 <em class='comment'> *  the bitmaps.</em>
+<a id='L31' name='L31'></a>  31 <em class='comment'> *</em>
+<a id='L32' name='L32'></a>  32 <em class='comment'> *  Also, for all we care, we could grow the parent rectangle.</em>
+<a id='L33' name='L33'></a>  33 <em class='comment'> *</em>
+<a id='L34' name='L34'></a>  34 <em class='comment'> *  I'd be interested in hearing of other approaches to this problem. Make sure</em>
+<a id='L35' name='L35'></a>  35 <em class='comment'> *  to post them on http://www.flipcode.com</em>
+<a id='L36' name='L36'></a>  36 <em class='comment'> */</em>
+<a id='L37' name='L37'></a>  37 
+<a id='L38' name='L38'></a>  38 <em class='sharp'>#include</em> "<a href='29.html'>rect_placement.h</a>"
+<a id='L39' name='L39'></a>  39 
+<a id='L40' name='L40'></a>  40 <em class='comment'>// --------------------------------------------------------------------------------</em>
+<a id='L41' name='L41'></a>  41 <em class='comment'>// Name        :</em>
+<a id='L42' name='L42'></a>  42 <em class='comment'>// Description :</em>
+<a id='L43' name='L43'></a>  43 <em class='comment'>// --------------------------------------------------------------------------------</em>
+<a id='L44' name='L44'></a>  44 <strong class='reserved'>void</strong> <a href='../Y/444.html' title='Multiple used in 17 places.'>CRectPlacement</a>::<a href='../R/1736.html' title='Multiple referred from 20 places.'>Init</a>( <strong class='reserved'>int</strong> <a href='../Y/15409.html' title='Multiple used in 126 places.'>w</a>, <strong class='reserved'>int</strong> <a href='../Y/8327.html' title='Multiple used in 70 places.'>h</a> )
+<a id='L45' name='L45'></a>  45 <em class='brace'>{</em>
+<a id='L46' name='L46'></a>  46     <a href='../S/28.html#L57' title='Defined at 57 in autorouter/rect_placement/rect_placement.cpp.'>End</a>();
+<a id='L47' name='L47'></a>  47     <a href='../Y/11888.html' title='Multiple used in 31 places.'>m_size</a> = <a href='../Y/4132.html' title='Multiple used in 25 places.'>TRect</a>( 0, 0, <a href='../Y/15409.html' title='Multiple used in 126 places.'>w</a>, <a href='../Y/8327.html' title='Multiple used in 70 places.'>h</a> );
+<a id='L48' name='L48'></a>  48     <a href='../Y/12328.html' title='Multiple used in 10 places.'>m_vPositions</a>.<a href='../S/330.html#L228' title='Defined at 228 in dialogs/panel_fp_lib_table.cpp.'>push_back</a>( <a href='../S/29.html#L25' title='Defined at 25 in autorouter/rect_placement/rect_placement.h.'>TPos</a>( 0, 0 ) );
+<a id='L49' name='L49'></a>  49     <a href='../S/80.html#L41' title='Defined at 41 in class_zone.cpp.'>m_area</a> = 0;
+<a id='L50' name='L50'></a>  50 <em class='brace'>}</em>
+<a id='L51' name='L51'></a>  51 
+<a id='L52' name='L52'></a>  52 
+<a id='L53' name='L53'></a>  53 <em class='comment'>// --------------------------------------------------------------------------------</em>
+<a id='L54' name='L54'></a>  54 <em class='comment'>// Name        :</em>
+<a id='L55' name='L55'></a>  55 <em class='comment'>// Description :</em>
+<a id='L56' name='L56'></a>  56 <em class='comment'>// --------------------------------------------------------------------------------</em>
+<a id='L57' name='L57'></a>  57 <strong class='reserved'>void</strong> <a href='../Y/444.html' title='Multiple used in 17 places.'>CRectPlacement</a>::<a href='../R/849.html' title='Multiple referred from 13 places.'>End</a>()
+<a id='L58' name='L58'></a>  58 <em class='brace'>{</em>
+<a id='L59' name='L59'></a>  59     <a href='../Y/12328.html' title='Multiple used in 10 places.'>m_vPositions</a>.<a href='../S/513.html#L53' title='Defined at 53 in netinfo_list.cpp.'>clear</a>();
+<a id='L60' name='L60'></a>  60     <a href='../Y/12329.html' title='Multiple used in 5 places.'>m_vRects</a>.<a href='../S/513.html#L53' title='Defined at 53 in netinfo_list.cpp.'>clear</a>();
+<a id='L61' name='L61'></a>  61     <a href='../Y/11888.html' title='Multiple used in 31 places.'>m_size</a>.<a href='../Y/15409.html' title='Multiple used in 126 places.'>w</a> = 0;
+<a id='L62' name='L62'></a>  62 <em class='brace'>}</em>
+<a id='L63' name='L63'></a>  63 
+<a id='L64' name='L64'></a>  64 
+<a id='L65' name='L65'></a>  65 <em class='comment'>// --------------------------------------------------------------------------------</em>
+<a id='L66' name='L66'></a>  66 <em class='comment'>// Name        : IsFree</em>
+<a id='L67' name='L67'></a>  67 <em class='comment'>// Description : Check if the given rectangle is partially or totally used</em>
+<a id='L68' name='L68'></a>  68 <em class='comment'>// --------------------------------------------------------------------------------</em>
+<a id='L69' name='L69'></a>  69 <strong class='reserved'>bool</strong> <a href='../Y/444.html' title='Multiple used in 17 places.'>CRectPlacement</a>::<a href='../R/1777.html' title='Multiple referred from 4 places.'>IsFree</a>( <strong class='reserved'>const</strong> <a href='../Y/4132.html' title='Multiple used in 25 places.'>TRect</a>&amp; <a href='../Y/13841.html' title='Multiple used in 165 places.'>r</a> ) <strong class='reserved'>const</strong>
+<a id='L70' name='L70'></a>  70 <em class='brace'>{</em>
+<a id='L71' name='L71'></a>  71     <strong class='reserved'>if</strong>( !<a href='../Y/11888.html' title='Multiple used in 31 places.'>m_size</a>.<a href='../D/485.html' title='Multiple defined in 2 places.'>Contains</a>( <a href='../Y/13841.html' title='Multiple used in 165 places.'>r</a> ) )
+<a id='L72' name='L72'></a>  72         <strong class='reserved'>return</strong> <strong class='reserved'>false</strong>;
+<a id='L73' name='L73'></a>  73 
+<a id='L74' name='L74'></a>  74     <strong class='reserved'>for</strong>( <a href='../S/29.html#L71' title='Defined at 71 in autorouter/rect_placement/rect_placement.h.'>CRectArray</a>::<a href='../Y/7060.html' title='Multiple used in 42 places.'>const_iterator</a> <a href='../Y/8702.html' title='Multiple used in 290 places.'>it</a> = <a href='../Y/12329.html' title='Multiple used in 5 places.'>m_vRects</a>.<a href='../S/330.html#L221' title='Defined at 221 in dialogs/panel_fp_lib_table.cpp.'>begin</a>();
+<a id='L75' name='L75'></a>  75          <a href='../Y/8702.html' title='Multiple used in 290 places.'>it</a> != <a href='../Y/12329.html' title='Multiple used in 5 places.'>m_vRects</a>.<a href='../Y/7716.html' title='Multiple used in 512 places.'>end</a>(); ++<a href='../Y/8702.html' title='Multiple used in 290 places.'>it</a> )
+<a id='L76' name='L76'></a>  76     <em class='brace'>{</em>
+<a id='L77' name='L77'></a>  77         <strong class='reserved'>if</strong>( <a href='../Y/8702.html' title='Multiple used in 290 places.'>it</a>-&gt;<a href='../Y/2080.html' title='Multiple used in 39 places.'>Intersects</a>( <a href='../Y/13841.html' title='Multiple used in 165 places.'>r</a> ) )
+<a id='L78' name='L78'></a>  78             <strong class='reserved'>return</strong> <strong class='reserved'>false</strong>;
+<a id='L79' name='L79'></a>  79     <em class='brace'>}</em>
+<a id='L80' name='L80'></a>  80 
+<a id='L81' name='L81'></a>  81     <strong class='reserved'>return</strong> <strong class='reserved'>true</strong>;
+<a id='L82' name='L82'></a>  82 <em class='brace'>}</em>
+<a id='L83' name='L83'></a>  83 
+<a id='L84' name='L84'></a>  84 
+<a id='L85' name='L85'></a>  85 <em class='comment'>// --------------------------------------------------------------------------------</em>
+<a id='L86' name='L86'></a>  86 <em class='comment'>// Name        : AddPosition</em>
+<a id='L87' name='L87'></a>  87 <em class='comment'>// Description : Add new anchor point</em>
+<a id='L88' name='L88'></a>  88 <em class='comment'>// --------------------------------------------------------------------------------</em>
+<a id='L89' name='L89'></a>  89 <strong class='reserved'>void</strong> <a href='../Y/444.html' title='Multiple used in 17 places.'>CRectPlacement</a>::<a href='../R/121.html' title='Multiple referred from 3 places.'>AddPosition</a>( <strong class='reserved'>const</strong> <a href='../S/29.html#L25' title='Defined at 25 in autorouter/rect_placement/rect_placement.h.'>TPos</a>&amp; <a href='../Y/13246.html' title='Multiple used in 314 places.'>p</a> )
+<a id='L90' name='L90'></a>  90 <em class='brace'>{</em>
+<a id='L91' name='L91'></a>  91     <em class='comment'>// Try to insert anchor as close as possible to the top left corner</em>
+<a id='L92' name='L92'></a>  92     <em class='comment'>// So it will be tried first</em>
+<a id='L93' name='L93'></a>  93     <strong class='reserved'>bool</strong> <a href='../Y/6519.html' title='Multiple used in 9 places.'>bFound</a> = <strong class='reserved'>false</strong>;
+<a id='L94' name='L94'></a>  94     <a href='../S/29.html#L70' title='Defined at 70 in autorouter/rect_placement/rect_placement.h.'>CPosArray</a>::<a href='../Y/8755.html' title='Multiple used in 171 places.'>iterator</a> <a href='../Y/8702.html' title='Multiple used in 290 places.'>it</a>;
+<a id='L95' name='L95'></a>  95 
+<a id='L96' name='L96'></a>  96     <strong class='reserved'>for</strong>( <a href='../Y/8702.html' title='Multiple used in 290 places.'>it</a> = <a href='../Y/12328.html' title='Multiple used in 10 places.'>m_vPositions</a>.<a href='../S/330.html#L221' title='Defined at 221 in dialogs/panel_fp_lib_table.cpp.'>begin</a>();
+<a id='L97' name='L97'></a>  97          !<a href='../Y/6519.html' title='Multiple used in 9 places.'>bFound</a> &amp;&amp; <a href='../Y/8702.html' title='Multiple used in 290 places.'>it</a> != <a href='../Y/12328.html' title='Multiple used in 10 places.'>m_vPositions</a>.<a href='../Y/7716.html' title='Multiple used in 512 places.'>end</a>();
+<a id='L98' name='L98'></a>  98          ++<a href='../Y/8702.html' title='Multiple used in 290 places.'>it</a> )
+<a id='L99' name='L99'></a>  99     <em class='brace'>{</em>
+<a id='L100' name='L100'></a> 100         <strong class='reserved'>if</strong>( <a href='../Y/13246.html' title='Multiple used in 314 places.'>p</a>.<a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a> + <a href='../Y/13246.html' title='Multiple used in 314 places.'>p</a>.<a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a> &lt; <a href='../Y/8702.html' title='Multiple used in 290 places.'>it</a>-&gt;<a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a> + <a href='../Y/8702.html' title='Multiple used in 290 places.'>it</a>-&gt;<a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a> )
+<a id='L101' name='L101'></a> 101             <a href='../Y/6519.html' title='Multiple used in 9 places.'>bFound</a> = <strong class='reserved'>true</strong>;
+<a id='L102' name='L102'></a> 102     <em class='brace'>}</em>
+<a id='L103' name='L103'></a> 103 
+<a id='L104' name='L104'></a> 104     <strong class='reserved'>if</strong>( <a href='../Y/6519.html' title='Multiple used in 9 places.'>bFound</a> )
+<a id='L105' name='L105'></a> 105         <a href='../Y/12328.html' title='Multiple used in 10 places.'>m_vPositions</a>.<a href='../S/330.html#L223' title='Defined at 223 in dialogs/panel_fp_lib_table.cpp.'>insert</a>( <a href='../Y/8702.html' title='Multiple used in 290 places.'>it</a>, <a href='../Y/13246.html' title='Multiple used in 314 places.'>p</a> );
+<a id='L106' name='L106'></a> 106     <strong class='reserved'>else</strong>
+<a id='L107' name='L107'></a> 107         <a href='../Y/12328.html' title='Multiple used in 10 places.'>m_vPositions</a>.<a href='../S/330.html#L228' title='Defined at 228 in dialogs/panel_fp_lib_table.cpp.'>push_back</a>( <a href='../Y/13246.html' title='Multiple used in 314 places.'>p</a> );
+<a id='L108' name='L108'></a> 108 <em class='brace'>}</em>
+<a id='L109' name='L109'></a> 109 
+<a id='L110' name='L110'></a> 110 
+<a id='L111' name='L111'></a> 111 <em class='comment'>// --------------------------------------------------------------------------------</em>
+<a id='L112' name='L112'></a> 112 <em class='comment'>// Name        : AddRect</em>
+<a id='L113' name='L113'></a> 113 <em class='comment'>// Description : Add the given rect and updates anchor points</em>
+<a id='L114' name='L114'></a> 114 <em class='comment'>// --------------------------------------------------------------------------------</em>
+<a id='L115' name='L115'></a> 115 <strong class='reserved'>void</strong> <a href='../Y/444.html' title='Multiple used in 17 places.'>CRectPlacement</a>::<a href='../R/129.html' title='Multiple referred from 2 places.'>AddRect</a>( <strong class='reserved'>const</strong> <a href='../Y/4132.html' title='Multiple used in 25 places.'>TRect</a>&amp; <a href='../Y/13841.html' title='Multiple used in 165 places.'>r</a> )
+<a id='L116' name='L116'></a> 116 <em class='brace'>{</em>
+<a id='L117' name='L117'></a> 117     <a href='../Y/12329.html' title='Multiple used in 5 places.'>m_vRects</a>.<a href='../S/330.html#L228' title='Defined at 228 in dialogs/panel_fp_lib_table.cpp.'>push_back</a>( <a href='../Y/13841.html' title='Multiple used in 165 places.'>r</a> );
+<a id='L118' name='L118'></a> 118     <a href='../S/80.html#L41' title='Defined at 41 in class_zone.cpp.'>m_area</a> += <a href='../Y/13841.html' title='Multiple used in 165 places.'>r</a>.<a href='../Y/15409.html' title='Multiple used in 126 places.'>w</a> * <a href='../Y/13841.html' title='Multiple used in 165 places.'>r</a>.<a href='../Y/8327.html' title='Multiple used in 70 places.'>h</a>;
+<a id='L119' name='L119'></a> 119 
+<a id='L120' name='L120'></a> 120     <em class='comment'>// Add two new anchor points</em>
+<a id='L121' name='L121'></a> 121     <a href='../S/28.html#L89' title='Defined at 89 in autorouter/rect_placement/rect_placement.cpp.'>AddPosition</a>( <a href='../S/29.html#L25' title='Defined at 25 in autorouter/rect_placement/rect_placement.h.'>TPos</a>( <a href='../Y/13841.html' title='Multiple used in 165 places.'>r</a>.<a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a>, <a href='../Y/13841.html' title='Multiple used in 165 places.'>r</a>.<a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a> + <a href='../Y/13841.html' title='Multiple used in 165 places.'>r</a>.<a href='../Y/8327.html' title='Multiple used in 70 places.'>h</a> ) );
+<a id='L122' name='L122'></a> 122     <a href='../S/28.html#L89' title='Defined at 89 in autorouter/rect_placement/rect_placement.cpp.'>AddPosition</a>( <a href='../S/29.html#L25' title='Defined at 25 in autorouter/rect_placement/rect_placement.h.'>TPos</a>( <a href='../Y/13841.html' title='Multiple used in 165 places.'>r</a>.<a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a> + <a href='../Y/13841.html' title='Multiple used in 165 places.'>r</a>.<a href='../Y/15409.html' title='Multiple used in 126 places.'>w</a>, <a href='../Y/13841.html' title='Multiple used in 165 places.'>r</a>.<a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a> ) );
+<a id='L123' name='L123'></a> 123 <em class='brace'>}</em>
+<a id='L124' name='L124'></a> 124 
+<a id='L125' name='L125'></a> 125 
+<a id='L126' name='L126'></a> 126 <em class='comment'>// --------------------------------------------------------------------------------</em>
+<a id='L127' name='L127'></a> 127 <em class='comment'>// Name        : AddAtEmptySpot</em>
+<a id='L128' name='L128'></a> 128 <em class='comment'>// Description : Add the given rectangle</em>
+<a id='L129' name='L129'></a> 129 <em class='comment'>// --------------------------------------------------------------------------------</em>
+<a id='L130' name='L130'></a> 130 <strong class='reserved'>bool</strong> <a href='../Y/444.html' title='Multiple used in 17 places.'>CRectPlacement</a>::<a href='../R/93.html' title='Multiple referred from 4 places.'>AddAtEmptySpot</a>( <a href='../Y/4132.html' title='Multiple used in 25 places.'>TRect</a>&amp; <a href='../Y/13841.html' title='Multiple used in 165 places.'>r</a> )
+<a id='L131' name='L131'></a> 131 <em class='brace'>{</em>
+<a id='L132' name='L132'></a> 132     <em class='comment'>// Find a valid spot among available anchors.</em>
+<a id='L133' name='L133'></a> 133     <strong class='reserved'>bool</strong> <a href='../Y/6519.html' title='Multiple used in 9 places.'>bFound</a> = <strong class='reserved'>false</strong>;
+<a id='L134' name='L134'></a> 134     <a href='../S/29.html#L70' title='Defined at 70 in autorouter/rect_placement/rect_placement.h.'>CPosArray</a>::<a href='../Y/8755.html' title='Multiple used in 171 places.'>iterator</a> <a href='../Y/8702.html' title='Multiple used in 290 places.'>it</a>;
+<a id='L135' name='L135'></a> 135 
+<a id='L136' name='L136'></a> 136     <strong class='reserved'>for</strong>( <a href='../Y/8702.html' title='Multiple used in 290 places.'>it</a> = <a href='../Y/12328.html' title='Multiple used in 10 places.'>m_vPositions</a>.<a href='../S/330.html#L221' title='Defined at 221 in dialogs/panel_fp_lib_table.cpp.'>begin</a>();
+<a id='L137' name='L137'></a> 137          !<a href='../Y/6519.html' title='Multiple used in 9 places.'>bFound</a> &amp;&amp; <a href='../Y/8702.html' title='Multiple used in 290 places.'>it</a> != <a href='../Y/12328.html' title='Multiple used in 10 places.'>m_vPositions</a>.<a href='../Y/7716.html' title='Multiple used in 512 places.'>end</a>();
+<a id='L138' name='L138'></a> 138          ++<a href='../Y/8702.html' title='Multiple used in 290 places.'>it</a> )
+<a id='L139' name='L139'></a> 139     <em class='brace'>{</em>
+<a id='L140' name='L140'></a> 140         <a href='../Y/4132.html' title='Multiple used in 25 places.'>TRect</a> <a href='../Y/3142.html' title='Multiple used in 4 places.'>Rect</a>( <a href='../Y/8702.html' title='Multiple used in 290 places.'>it</a>-&gt;<a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a>, <a href='../Y/8702.html' title='Multiple used in 290 places.'>it</a>-&gt;<a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a>, <a href='../Y/13841.html' title='Multiple used in 165 places.'>r</a>.<a href='../Y/15409.html' title='Multiple used in 126 places.'>w</a>, <a href='../Y/13841.html' title='Multiple used in 165 places.'>r</a>.<a href='../Y/8327.html' title='Multiple used in 70 places.'>h</a> );
+<a id='L141' name='L141'></a> 141 
+<a id='L142' name='L142'></a> 142         <strong class='reserved'>if</strong>( <a href='../S/28.html#L69' title='Defined at 69 in autorouter/rect_placement/rect_placement.cpp.'>IsFree</a>( <a href='../Y/3142.html' title='Multiple used in 4 places.'>Rect</a> ) )
+<a id='L143' name='L143'></a> 143         <em class='brace'>{</em>
+<a id='L144' name='L144'></a> 144             <a href='../Y/13841.html' title='Multiple used in 165 places.'>r</a> = <a href='../Y/3142.html' title='Multiple used in 4 places.'>Rect</a>;
+<a id='L145' name='L145'></a> 145             <a href='../Y/6519.html' title='Multiple used in 9 places.'>bFound</a> = <strong class='reserved'>true</strong>;
+<a id='L146' name='L146'></a> 146             <strong class='reserved'>break</strong>; <em class='comment'>// Don't let the loop increase the iterator.</em>
+<a id='L147' name='L147'></a> 147         <em class='brace'>}</em>
+<a id='L148' name='L148'></a> 148     <em class='brace'>}</em>
+<a id='L149' name='L149'></a> 149 
+<a id='L150' name='L150'></a> 150     <strong class='reserved'>if</strong>( <a href='../Y/6519.html' title='Multiple used in 9 places.'>bFound</a> )
+<a id='L151' name='L151'></a> 151     <em class='brace'>{</em>
+<a id='L152' name='L152'></a> 152         <strong class='reserved'>int</strong> <a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a>, <a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a>;
+<a id='L153' name='L153'></a> 153 
+<a id='L154' name='L154'></a> 154         <em class='comment'>// Remove the used anchor point</em>
+<a id='L155' name='L155'></a> 155         <a href='../Y/12328.html' title='Multiple used in 10 places.'>m_vPositions</a>.<a href='../S/330.html#L230' title='Defined at 230 in dialogs/panel_fp_lib_table.cpp.'>erase</a>( <a href='../Y/8702.html' title='Multiple used in 290 places.'>it</a> );
+<a id='L156' name='L156'></a> 156 
+<a id='L157' name='L157'></a> 157         <em class='comment'>// Sometimes, anchors end up displaced from the optimal position</em>
+<a id='L158' name='L158'></a> 158         <em class='comment'>// due to irregular sizes of the subrects.</em>
+<a id='L159' name='L159'></a> 159         <em class='comment'>// So, try to adjut it up &amp; left as much as possible.</em>
+<a id='L160' name='L160'></a> 160         <strong class='reserved'>for</strong>( <a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a> = 1; <a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a> &lt;= <a href='../Y/13841.html' title='Multiple used in 165 places.'>r</a>.<a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a>; <a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a>++ )
+<a id='L161' name='L161'></a> 161         <em class='brace'>{</em>
+<a id='L162' name='L162'></a> 162             <strong class='reserved'>if</strong>( !<a href='../S/28.html#L69' title='Defined at 69 in autorouter/rect_placement/rect_placement.cpp.'>IsFree</a>( <a href='../Y/4132.html' title='Multiple used in 25 places.'>TRect</a>( <a href='../Y/13841.html' title='Multiple used in 165 places.'>r</a>.<a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a> - <a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a>, <a href='../Y/13841.html' title='Multiple used in 165 places.'>r</a>.<a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a>, <a href='../Y/13841.html' title='Multiple used in 165 places.'>r</a>.<a href='../Y/15409.html' title='Multiple used in 126 places.'>w</a>, <a href='../Y/13841.html' title='Multiple used in 165 places.'>r</a>.<a href='../Y/8327.html' title='Multiple used in 70 places.'>h</a> ) ) )
+<a id='L163' name='L163'></a> 163                 <strong class='reserved'>break</strong>;
+<a id='L164' name='L164'></a> 164         <em class='brace'>}</em>
+<a id='L165' name='L165'></a> 165 
+<a id='L166' name='L166'></a> 166         <strong class='reserved'>for</strong>( <a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a> = 1; <a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a> &lt;= <a href='../Y/13841.html' title='Multiple used in 165 places.'>r</a>.<a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a>; <a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a>++ )
+<a id='L167' name='L167'></a> 167         <em class='brace'>{</em>
+<a id='L168' name='L168'></a> 168             <strong class='reserved'>if</strong>( !<a href='../S/28.html#L69' title='Defined at 69 in autorouter/rect_placement/rect_placement.cpp.'>IsFree</a>( <a href='../Y/4132.html' title='Multiple used in 25 places.'>TRect</a>( <a href='../Y/13841.html' title='Multiple used in 165 places.'>r</a>.<a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a>, <a href='../Y/13841.html' title='Multiple used in 165 places.'>r</a>.<a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a> - <a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a>, <a href='../Y/13841.html' title='Multiple used in 165 places.'>r</a>.<a href='../Y/15409.html' title='Multiple used in 126 places.'>w</a>, <a href='../Y/13841.html' title='Multiple used in 165 places.'>r</a>.<a href='../Y/8327.html' title='Multiple used in 70 places.'>h</a> ) ) )
+<a id='L169' name='L169'></a> 169                 <strong class='reserved'>break</strong>;
+<a id='L170' name='L170'></a> 170         <em class='brace'>}</em>
+<a id='L171' name='L171'></a> 171 
+<a id='L172' name='L172'></a> 172         <strong class='reserved'>if</strong>( <a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a> &gt; <a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a> )
+<a id='L173' name='L173'></a> 173             <a href='../Y/13841.html' title='Multiple used in 165 places.'>r</a>.<a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a> -= <a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a> - 1;
+<a id='L174' name='L174'></a> 174         <strong class='reserved'>else</strong>
+<a id='L175' name='L175'></a> 175             <a href='../Y/13841.html' title='Multiple used in 165 places.'>r</a>.<a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a> -= <a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a> - 1;
+<a id='L176' name='L176'></a> 176 
+<a id='L177' name='L177'></a> 177         <a href='../S/28.html#L115' title='Defined at 115 in autorouter/rect_placement/rect_placement.cpp.'>AddRect</a>( <a href='../Y/13841.html' title='Multiple used in 165 places.'>r</a> );
+<a id='L178' name='L178'></a> 178     <em class='brace'>}</em>
+<a id='L179' name='L179'></a> 179 
+<a id='L180' name='L180'></a> 180     <strong class='reserved'>return</strong> <a href='../Y/6519.html' title='Multiple used in 9 places.'>bFound</a>;
+<a id='L181' name='L181'></a> 181 <em class='brace'>}</em>
+<a id='L182' name='L182'></a> 182 
+<a id='L183' name='L183'></a> 183 <em class='comment'>// --------------------------------------------------------------------------------</em>
+<a id='L184' name='L184'></a> 184 <em class='comment'>// Name        : AddAtEmptySpotAutoGrow</em>
+<a id='L185' name='L185'></a> 185 <em class='comment'>// Description : Add a rectangle of the given size, growing our area if needed</em>
+<a id='L186' name='L186'></a> 186 <em class='comment'>// Area grows only until the max given.</em>
+<a id='L187' name='L187'></a> 187 <em class='comment'>// Returns the placement of the rect in the rect's x,y coords</em>
+<a id='L188' name='L188'></a> 188 <em class='comment'>// --------------------------------------------------------------------------------</em>
+<a id='L189' name='L189'></a> 189 <strong class='reserved'>bool</strong> <a href='../Y/444.html' title='Multiple used in 17 places.'>CRectPlacement</a>::<a href='../R/94.html' title='Multiple referred from 2 places.'>AddAtEmptySpotAutoGrow</a>( <a href='../Y/4132.html' title='Multiple used in 25 places.'>TRect</a>* <a href='../Y/13267.html' title='Multiple used in 7 places.'>pRect</a>, <strong class='reserved'>int</strong> <a href='../Y/12496.html' title='Multiple used in 7 places.'>maxW</a>, <strong class='reserved'>int</strong> <a href='../Y/12489.html' title='Multiple used in 4 places.'>maxH</a> )
+<a id='L190' name='L190'></a> 190 <em class='brace'>{</em>
+<a id='L191' name='L191'></a> 191     <strong class='reserved'>double</strong> <a href='../Y/8307.html' title='Multiple used in 2 places.'>growing_factor</a> = 1.2;    <em class='comment'>// Must be &gt; 1.0, and event &gt; 1.1 for fast optimization</em>
+<a id='L192' name='L192'></a> 192 
+<a id='L193' name='L193'></a> 193 <em class='sharp'>    #define</em> <a href='../R/1030.html' title='Multiple referred from 6 places.'>GROW</a>(<a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a>) ((<a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a> * <a href='../Y/8307.html' title='Multiple used in 2 places.'>growing_factor</a>) + 1)
+<a id='L194' name='L194'></a> 194 
+<a id='L195' name='L195'></a> 195     <strong class='reserved'>if</strong>( <a href='../Y/13267.html' title='Multiple used in 7 places.'>pRect</a>-&gt;<a href='../Y/15409.html' title='Multiple used in 126 places.'>w</a> &lt;= 0 )
+<a id='L196' name='L196'></a> 196         <strong class='reserved'>return</strong> <strong class='reserved'>true</strong>;
+<a id='L197' name='L197'></a> 197 
+<a id='L198' name='L198'></a> 198     <strong class='reserved'>int</strong> <a href='../Y/13181.html' title='Multiple used in 2 places.'>orgW</a>    = <a href='../Y/11888.html' title='Multiple used in 31 places.'>m_size</a>.<a href='../Y/15409.html' title='Multiple used in 126 places.'>w</a>;
+<a id='L199' name='L199'></a> 199     <strong class='reserved'>int</strong> <a href='../Y/13179.html' title='Multiple used in 2 places.'>orgH</a>    = <a href='../Y/11888.html' title='Multiple used in 31 places.'>m_size</a>.<a href='../Y/8327.html' title='Multiple used in 70 places.'>h</a>;
+<a id='L200' name='L200'></a> 200 
+<a id='L201' name='L201'></a> 201     <em class='comment'>// Try to add it in the existing space</em>
+<a id='L202' name='L202'></a> 202     <strong class='reserved'>while</strong>( !<a href='../S/28.html#L130' title='Defined at 130 in autorouter/rect_placement/rect_placement.cpp.'>AddAtEmptySpot</a>( *<a href='../Y/13267.html' title='Multiple used in 7 places.'>pRect</a> ) )
+<a id='L203' name='L203'></a> 203     <em class='brace'>{</em>
+<a id='L204' name='L204'></a> 204         <strong class='reserved'>int</strong> <a href='../Y/13813.html' title='Multiple used in 12 places.'>pw</a>  = <a href='../Y/11888.html' title='Multiple used in 31 places.'>m_size</a>.<a href='../Y/15409.html' title='Multiple used in 126 places.'>w</a>;
+<a id='L205' name='L205'></a> 205         <strong class='reserved'>int</strong> <a href='../Y/13486.html' title='Multiple used in 11 places.'>ph</a>  = <a href='../Y/11888.html' title='Multiple used in 31 places.'>m_size</a>.<a href='../Y/8327.html' title='Multiple used in 70 places.'>h</a>;
+<a id='L206' name='L206'></a> 206 
+<a id='L207' name='L207'></a> 207         <em class='comment'>// Sanity check - if area is complete.</em>
+<a id='L208' name='L208'></a> 208         <strong class='reserved'>if</strong>( <a href='../Y/13813.html' title='Multiple used in 12 places.'>pw</a> &gt;= <a href='../Y/12496.html' title='Multiple used in 7 places.'>maxW</a> &amp;&amp; <a href='../Y/13486.html' title='Multiple used in 11 places.'>ph</a> &gt;= <a href='../Y/12489.html' title='Multiple used in 4 places.'>maxH</a> )
+<a id='L209' name='L209'></a> 209         <em class='brace'>{</em>
+<a id='L210' name='L210'></a> 210             <a href='../Y/11888.html' title='Multiple used in 31 places.'>m_size</a>.<a href='../Y/15409.html' title='Multiple used in 126 places.'>w</a>    = <a href='../Y/13181.html' title='Multiple used in 2 places.'>orgW</a>;
+<a id='L211' name='L211'></a> 211             <a href='../Y/11888.html' title='Multiple used in 31 places.'>m_size</a>.<a href='../Y/8327.html' title='Multiple used in 70 places.'>h</a>    = <a href='../Y/13179.html' title='Multiple used in 2 places.'>orgH</a>;
+<a id='L212' name='L212'></a> 212             <strong class='reserved'>return</strong> <strong class='reserved'>false</strong>;
+<a id='L213' name='L213'></a> 213         <em class='brace'>}</em>
+<a id='L214' name='L214'></a> 214 
+<a id='L215' name='L215'></a> 215         <em class='comment'>// Try growing the smallest dim</em>
+<a id='L216' name='L216'></a> 216         <strong class='reserved'>if</strong>( <a href='../Y/13813.html' title='Multiple used in 12 places.'>pw</a> &lt; <a href='../Y/12496.html' title='Multiple used in 7 places.'>maxW</a> &amp;&amp; ( <a href='../Y/13813.html' title='Multiple used in 12 places.'>pw</a> &lt; <a href='../Y/13486.html' title='Multiple used in 11 places.'>ph</a> || ( (<a href='../Y/13813.html' title='Multiple used in 12 places.'>pw</a> == <a href='../Y/13486.html' title='Multiple used in 11 places.'>ph</a>) &amp;&amp; (<a href='../Y/13267.html' title='Multiple used in 7 places.'>pRect</a>-&gt;<a href='../Y/15409.html' title='Multiple used in 126 places.'>w</a> &gt;= <a href='../Y/13267.html' title='Multiple used in 7 places.'>pRect</a>-&gt;<a href='../Y/8327.html' title='Multiple used in 70 places.'>h</a>) ) ) )
+<a id='L217' name='L217'></a> 217             <a href='../Y/11888.html' title='Multiple used in 31 places.'>m_size</a>.<a href='../Y/15409.html' title='Multiple used in 126 places.'>w</a> = <a href='../S/28.html#L193' title='Defined at 193 in autorouter/rect_placement/rect_placement.cpp.'>GROW</a>( <a href='../Y/13813.html' title='Multiple used in 12 places.'>pw</a> );
+<a id='L218' name='L218'></a> 218         <strong class='reserved'>else</strong>
+<a id='L219' name='L219'></a> 219             <a href='../Y/11888.html' title='Multiple used in 31 places.'>m_size</a>.<a href='../Y/8327.html' title='Multiple used in 70 places.'>h</a> = <a href='../S/28.html#L193' title='Defined at 193 in autorouter/rect_placement/rect_placement.cpp.'>GROW</a>( <a href='../Y/13486.html' title='Multiple used in 11 places.'>ph</a> );
+<a id='L220' name='L220'></a> 220 
+<a id='L221' name='L221'></a> 221         <strong class='reserved'>if</strong>( <a href='../S/28.html#L130' title='Defined at 130 in autorouter/rect_placement/rect_placement.cpp.'>AddAtEmptySpot</a>( *<a href='../Y/13267.html' title='Multiple used in 7 places.'>pRect</a> ) )
+<a id='L222' name='L222'></a> 222             <strong class='reserved'>break</strong>;
+<a id='L223' name='L223'></a> 223 
+<a id='L224' name='L224'></a> 224         <em class='comment'>// Try growing the other dim instead</em>
+<a id='L225' name='L225'></a> 225         <strong class='reserved'>if</strong>( <a href='../Y/13813.html' title='Multiple used in 12 places.'>pw</a> != <a href='../Y/11888.html' title='Multiple used in 31 places.'>m_size</a>.<a href='../Y/15409.html' title='Multiple used in 126 places.'>w</a> )
+<a id='L226' name='L226'></a> 226         <em class='brace'>{</em>
+<a id='L227' name='L227'></a> 227             <a href='../Y/11888.html' title='Multiple used in 31 places.'>m_size</a>.<a href='../Y/15409.html' title='Multiple used in 126 places.'>w</a> = <a href='../Y/13813.html' title='Multiple used in 12 places.'>pw</a>;
+<a id='L228' name='L228'></a> 228 
+<a id='L229' name='L229'></a> 229             <strong class='reserved'>if</strong>( <a href='../Y/13486.html' title='Multiple used in 11 places.'>ph</a> &lt; <a href='../Y/12496.html' title='Multiple used in 7 places.'>maxW</a> )
+<a id='L230' name='L230'></a> 230                 <a href='../Y/11888.html' title='Multiple used in 31 places.'>m_size</a>.<a href='../Y/8327.html' title='Multiple used in 70 places.'>h</a> = <a href='../S/28.html#L193' title='Defined at 193 in autorouter/rect_placement/rect_placement.cpp.'>GROW</a>( <a href='../Y/13486.html' title='Multiple used in 11 places.'>ph</a> );
+<a id='L231' name='L231'></a> 231         <em class='brace'>}</em>
+<a id='L232' name='L232'></a> 232         <strong class='reserved'>else</strong>
+<a id='L233' name='L233'></a> 233         <em class='brace'>{</em>
+<a id='L234' name='L234'></a> 234             <a href='../Y/11888.html' title='Multiple used in 31 places.'>m_size</a>.<a href='../Y/8327.html' title='Multiple used in 70 places.'>h</a> = <a href='../Y/13486.html' title='Multiple used in 11 places.'>ph</a>;
+<a id='L235' name='L235'></a> 235 
+<a id='L236' name='L236'></a> 236             <strong class='reserved'>if</strong>( <a href='../Y/13813.html' title='Multiple used in 12 places.'>pw</a> &lt; <a href='../Y/12496.html' title='Multiple used in 7 places.'>maxW</a> )
+<a id='L237' name='L237'></a> 237                 <a href='../Y/11888.html' title='Multiple used in 31 places.'>m_size</a>.<a href='../Y/15409.html' title='Multiple used in 126 places.'>w</a> = <a href='../S/28.html#L193' title='Defined at 193 in autorouter/rect_placement/rect_placement.cpp.'>GROW</a>( <a href='../Y/13813.html' title='Multiple used in 12 places.'>pw</a> );
+<a id='L238' name='L238'></a> 238         <em class='brace'>}</em>
+<a id='L239' name='L239'></a> 239 
+<a id='L240' name='L240'></a> 240         <strong class='reserved'>if</strong>( <a href='../Y/13813.html' title='Multiple used in 12 places.'>pw</a> != <a href='../Y/11888.html' title='Multiple used in 31 places.'>m_size</a>.<a href='../Y/15409.html' title='Multiple used in 126 places.'>w</a> || <a href='../Y/13486.html' title='Multiple used in 11 places.'>ph</a> != <a href='../Y/11888.html' title='Multiple used in 31 places.'>m_size</a>.<a href='../Y/8327.html' title='Multiple used in 70 places.'>h</a> )
+<a id='L241' name='L241'></a> 241             <strong class='reserved'>if</strong>( <a href='../S/28.html#L130' title='Defined at 130 in autorouter/rect_placement/rect_placement.cpp.'>AddAtEmptySpot</a>( *<a href='../Y/13267.html' title='Multiple used in 7 places.'>pRect</a> ) )
+<a id='L242' name='L242'></a> 242                 <strong class='reserved'>break</strong>;
+<a id='L243' name='L243'></a> 243 
+<a id='L244' name='L244'></a> 244 
+<a id='L245' name='L245'></a> 245 
+<a id='L246' name='L246'></a> 246         <em class='comment'>// Grow both if possible, and reloop.</em>
+<a id='L247' name='L247'></a> 247         <a href='../Y/11888.html' title='Multiple used in 31 places.'>m_size</a>.<a href='../Y/15409.html' title='Multiple used in 126 places.'>w</a>    = <a href='../Y/13813.html' title='Multiple used in 12 places.'>pw</a>;
+<a id='L248' name='L248'></a> 248         <a href='../Y/11888.html' title='Multiple used in 31 places.'>m_size</a>.<a href='../Y/8327.html' title='Multiple used in 70 places.'>h</a>    = <a href='../Y/13486.html' title='Multiple used in 11 places.'>ph</a>;
+<a id='L249' name='L249'></a> 249 
+<a id='L250' name='L250'></a> 250         <strong class='reserved'>if</strong>( <a href='../Y/13813.html' title='Multiple used in 12 places.'>pw</a> &lt; <a href='../Y/12496.html' title='Multiple used in 7 places.'>maxW</a> )
+<a id='L251' name='L251'></a> 251             <a href='../Y/11888.html' title='Multiple used in 31 places.'>m_size</a>.<a href='../Y/15409.html' title='Multiple used in 126 places.'>w</a> = <a href='../S/28.html#L193' title='Defined at 193 in autorouter/rect_placement/rect_placement.cpp.'>GROW</a>( <a href='../Y/13813.html' title='Multiple used in 12 places.'>pw</a> );
+<a id='L252' name='L252'></a> 252 
+<a id='L253' name='L253'></a> 253         <strong class='reserved'>if</strong>( <a href='../Y/13486.html' title='Multiple used in 11 places.'>ph</a> &lt; <a href='../Y/12489.html' title='Multiple used in 4 places.'>maxH</a> )
+<a id='L254' name='L254'></a> 254             <a href='../Y/11888.html' title='Multiple used in 31 places.'>m_size</a>.<a href='../Y/8327.html' title='Multiple used in 70 places.'>h</a> = <a href='../S/28.html#L193' title='Defined at 193 in autorouter/rect_placement/rect_placement.cpp.'>GROW</a>( <a href='../Y/13486.html' title='Multiple used in 11 places.'>ph</a> );
+<a id='L255' name='L255'></a> 255     <em class='brace'>}</em>
+<a id='L256' name='L256'></a> 256 
+<a id='L257' name='L257'></a> 257     <strong class='reserved'>return</strong> <strong class='reserved'>true</strong>;
+<a id='L258' name='L258'></a> 258 <em class='brace'>}</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L44'>[^]</a><a href='#L189'>[v]</a><a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

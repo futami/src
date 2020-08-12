@@ -1,0 +1,131 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>altium2kicadpcb_plugin/altium_circuit_studio_plugin.cpp</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/826.html'>altium2kicadpcb_plugin</a>/altium_circuit_studio_plugin.cpp</h2>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L53'>[^]</a><a href='#L65'>[v]</a>[top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L53' title='Defined at 53.'>PluginName</a></li>
+<li><a href='#L59' title='Defined at 59.'>GetFileExtension</a></li>
+<li><a href='#L65' title='Defined at 65.'>Load</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * This program source code file is part of KiCad, a free EDA CAD application.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 2019 Thomas Pointhuber &lt;thomas.pointhuber@gmx.at&gt;</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> *</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> * This program is free software; you can redistribute it and/or</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> * modify it under the terms of the GNU General Public License</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * as published by the Free Software Foundation; either version 2</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * of the License, or (at your option) any later version.</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> *</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> * This program is distributed in the hope that it will be useful,</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> * but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * GNU General Public License for more details.</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> *</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> * You should have received a copy of the GNU General Public License</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> * along with this program; if not, you may find one here:</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> * or you may search the http://www.gnu.org website for the version 2 license,</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> * or you may write to the Free Software Foundation, Inc.,</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'> * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'> */</em>
+<a id='L23' name='L23'></a>  23 
+<a id='L24' name='L24'></a>  24 <em class='comment'>/**</em>
+<a id='L25' name='L25'></a>  25 <em class='comment'> * @file altium_plugin.cpp</em>
+<a id='L26' name='L26'></a>  26 <em class='comment'> * @brief Pcbnew PLUGIN for Altium *.PcbDoc format.</em>
+<a id='L27' name='L27'></a>  27 <em class='comment'> */</em>
+<a id='L28' name='L28'></a>  28 
+<a id='L29' name='L29'></a>  29 <em class='sharp'>#include</em> &lt;iomanip&gt;
+<a id='L30' name='L30'></a>  30 
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#include</em> &lt;wx/string.h&gt;
+<a id='L32' name='L32'></a>  32 
+<a id='L33' name='L33'></a>  33 <em class='sharp'>#include</em> &lt;<a href='6.html'>altium_circuit_studio_plugin.h</a>&gt;
+<a id='L34' name='L34'></a>  34 <em class='sharp'>#include</em> &lt;<a href='15.html'>altium_pcb.h</a>&gt;
+<a id='L35' name='L35'></a>  35 
+<a id='L36' name='L36'></a>  36 <em class='sharp'>#include</em> &lt;<a href='58.html'>class_board.h</a>&gt;
+<a id='L37' name='L37'></a>  37 
+<a id='L38' name='L38'></a>  38 <em class='sharp'>#include</em> &lt;compoundfilereader.h&gt;
+<a id='L39' name='L39'></a>  39 <em class='sharp'>#include</em> &lt;utf.h&gt;
+<a id='L40' name='L40'></a>  40 
+<a id='L41' name='L41'></a>  41 <a href='../R/31.html' title='Multiple referred from 9 places.'>ALTIUM_CIRCUIT_STUDIO_PLUGIN</a>::<a href='../D/34.html' title='Multiple defined in 2 places.'>ALTIUM_CIRCUIT_STUDIO_PLUGIN</a>()
+<a id='L42' name='L42'></a>  42 <em class='brace'>{</em>
+<a id='L43' name='L43'></a>  43     <a href='../D/4144.html' title='Multiple defined in 3 places.'>m_board</a> = <a href='../Y/13059.html' title='Multiple used in 610 places.'>nullptr</a>;
+<a id='L44' name='L44'></a>  44     <a href='../Y/11669.html' title='Multiple used in 24 places.'>m_props</a> = <a href='../Y/13059.html' title='Multiple used in 610 places.'>nullptr</a>;
+<a id='L45' name='L45'></a>  45 <em class='brace'>}</em>
+<a id='L46' name='L46'></a>  46 
+<a id='L47' name='L47'></a>  47 
+<a id='L48' name='L48'></a>  48 <a href='../R/31.html' title='Multiple referred from 9 places.'>ALTIUM_CIRCUIT_STUDIO_PLUGIN</a>::~<a href='../D/34.html' title='Multiple defined in 2 places.'>ALTIUM_CIRCUIT_STUDIO_PLUGIN</a>()
+<a id='L49' name='L49'></a>  49 <em class='brace'>{</em>
+<a id='L50' name='L50'></a>  50 <em class='brace'>}</em>
+<a id='L51' name='L51'></a>  51 
+<a id='L52' name='L52'></a>  52 
+<a id='L53' name='L53'></a>  53 <strong class='reserved'>const</strong> <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../D/34.html' title='Multiple defined in 2 places.'>ALTIUM_CIRCUIT_STUDIO_PLUGIN</a>::<a href='../R/2546.html' title='Multiple referred from 11 places.'>PluginName</a>() <strong class='reserved'>const</strong>
+<a id='L54' name='L54'></a>  54 <em class='brace'>{</em>
+<a id='L55' name='L55'></a>  55     <strong class='reserved'>return</strong> <a href='../Y/15966.html' title='Multiple used in 1011 places.'>wxT</a>( "Altium Circuit Studio" );
+<a id='L56' name='L56'></a>  56 <em class='brace'>}</em>
+<a id='L57' name='L57'></a>  57 
+<a id='L58' name='L58'></a>  58 
+<a id='L59' name='L59'></a>  59 <strong class='reserved'>const</strong> <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../D/34.html' title='Multiple defined in 2 places.'>ALTIUM_CIRCUIT_STUDIO_PLUGIN</a>::<a href='../R/1137.html' title='Multiple referred from 17 places.'>GetFileExtension</a>() <strong class='reserved'>const</strong>
+<a id='L60' name='L60'></a>  60 <em class='brace'>{</em>
+<a id='L61' name='L61'></a>  61     <strong class='reserved'>return</strong> <a href='../Y/15966.html' title='Multiple used in 1011 places.'>wxT</a>( "CSPcbDoc" );
+<a id='L62' name='L62'></a>  62 <em class='brace'>}</em>
+<a id='L63' name='L63'></a>  63 
+<a id='L64' name='L64'></a>  64 
+<a id='L65' name='L65'></a>  65 <a href='../S/57.html#L104' title='Defined at 104 in class_board.cpp.'>BOARD</a>* <a href='../D/34.html' title='Multiple defined in 2 places.'>ALTIUM_CIRCUIT_STUDIO_PLUGIN</a>::<a href='../R/1908.html' title='Multiple referred from 41 places.'>Load</a>(
+<a id='L66' name='L66'></a>  66         <strong class='reserved'>const</strong> <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>&amp; <a href='../Y/5291.html' title='Multiple used in 126 places.'>aFileName</a>, <a href='../S/57.html#L104' title='Defined at 104 in class_board.cpp.'>BOARD</a>* <a href='../Y/5001.html' title='Multiple used in 40 places.'>aAppendToMe</a>, <strong class='reserved'>const</strong> <a href='../S/715.html#L184' title='Defined at 184 in specctra_import_export/specctra.h.'>PROPERTIES</a>* <a href='../Y/5841.html' title='Multiple used in 192 places.'>aProperties</a> )
+<a id='L67' name='L67'></a>  67 <em class='brace'>{</em>
+<a id='L68' name='L68'></a>  68     <a href='../Y/11669.html' title='Multiple used in 24 places.'>m_props</a> = <a href='../Y/5841.html' title='Multiple used in 192 places.'>aProperties</a>;
+<a id='L69' name='L69'></a>  69 
+<a id='L70' name='L70'></a>  70     <a href='../D/4144.html' title='Multiple defined in 3 places.'>m_board</a> = <a href='../Y/5001.html' title='Multiple used in 40 places.'>aAppendToMe</a> ? <a href='../Y/5001.html' title='Multiple used in 40 places.'>aAppendToMe</a> : <strong class='reserved'>new</strong> <a href='../S/57.html#L104' title='Defined at 104 in class_board.cpp.'>BOARD</a>();
+<a id='L71' name='L71'></a>  71 
+<a id='L72' name='L72'></a>  72     <em class='comment'>// Give the filename to the board if it's new</em>
+<a id='L73' name='L73'></a>  73     <strong class='reserved'>if</strong>( !<a href='../Y/5001.html' title='Multiple used in 40 places.'>aAppendToMe</a> )
+<a id='L74' name='L74'></a>  74         <a href='../D/4144.html' title='Multiple defined in 3 places.'>m_board</a>-&gt;<a href='../Y/3511.html' title='Multiple used in 20 places.'>SetFileName</a>( <a href='../Y/5291.html' title='Multiple used in 126 places.'>aFileName</a> );
+<a id='L75' name='L75'></a>  75 
+<a id='L76' name='L76'></a>  76     <em class='comment'>// clang-format off</em>
+<a id='L77' name='L77'></a>  77     <strong class='reserved'>const</strong> <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/12456.html' title='Multiple used in 97 places.'>map</a>&lt;<a href='../Y/50.html' title='Multiple used in 88 places.'>ALTIUM_PCB_DIR</a>, <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../D/4641.html' title='Multiple defined in 2 places.'>string</a>&gt; <a href='../Y/12459.html' title='Multiple used in 6 places.'>mapping</a> = <em class='brace'>{</em>
+<a id='L78' name='L78'></a>  78             <em class='brace'>{</em> <a href='../Y/50.html' title='Multiple used in 88 places.'>ALTIUM_PCB_DIR</a>::<a href='../Y/968.html' title='Multiple used in 5 places.'>FILE_HEADER</a>, "FileHeader" <em class='brace'>}</em>,
+<a id='L79' name='L79'></a>  79             <em class='brace'>{</em> <a href='../Y/50.html' title='Multiple used in 88 places.'>ALTIUM_PCB_DIR</a>::<a href='../Y/74.html' title='Multiple used in 5 places.'>ARCS6</a>, "00C595EB90524FFC8C3BD9670020A2\\Data" <em class='brace'>}</em>,
+<a id='L80' name='L80'></a>  80             <em class='brace'>{</em> <a href='../Y/50.html' title='Multiple used in 88 places.'>ALTIUM_PCB_DIR</a>::<a href='../Y/246.html' title='Multiple used in 5 places.'>BOARD6</a>, "88857D7F1DF64F7BBB61848C965636\\Data" <em class='brace'>}</em>,
+<a id='L81' name='L81'></a>  81             <em class='brace'>{</em> <a href='../Y/50.html' title='Multiple used in 88 places.'>ALTIUM_PCB_DIR</a>::<a href='../Y/247.html' title='Multiple used in 5 places.'>BOARDREGIONS</a>, "8957CF30F167408D9D263D23FE7C89\\Data" <em class='brace'>}</em>,
+<a id='L82' name='L82'></a>  82             <em class='brace'>{</em> <a href='../Y/50.html' title='Multiple used in 88 places.'>ALTIUM_PCB_DIR</a>::<a href='../Y/364.html' title='Multiple used in 5 places.'>CLASSES6</a>, "847EFBF87A5149B1AA326A52AD6357\\Data" <em class='brace'>}</em>,
+<a id='L83' name='L83'></a>  83             <em class='brace'>{</em> <a href='../Y/50.html' title='Multiple used in 88 places.'>ALTIUM_PCB_DIR</a>::<a href='../Y/414.html' title='Multiple used in 5 places.'>COMPONENTS6</a>, "465416896A15486999A39C643935D2\\Data" <em class='brace'>}</em>,
+<a id='L84' name='L84'></a>  84             <em class='brace'>{</em> <a href='../Y/50.html' title='Multiple used in 88 places.'>ALTIUM_PCB_DIR</a>::<a href='../Y/413.html' title='Multiple used in 5 places.'>COMPONENTBODIES6</a>, "1849D9B5512D452A93EABF4E40B122\\Data" <em class='brace'>}</em>, <em class='comment'>// or B6AD30D75241498BA2536EBF001752 ?</em>
+<a id='L85' name='L85'></a>  85             <em class='brace'>{</em> <a href='../Y/50.html' title='Multiple used in 88 places.'>ALTIUM_PCB_DIR</a>::<a href='../Y/660.html' title='Multiple used in 5 places.'>DIMENSIONS6</a>, "16C81DBC13C447FF8B42A426677F3C\\Data" <em class='brace'>}</em>,
+<a id='L86' name='L86'></a>  86             <em class='brace'>{</em> <a href='../Y/50.html' title='Multiple used in 88 places.'>ALTIUM_PCB_DIR</a>::<a href='../Y/975.html' title='Multiple used in 5 places.'>FILLS6</a>, "4E83BDC3253747F08E9006D7F57020\\Data" <em class='brace'>}</em>,
+<a id='L87' name='L87'></a>  87             <em class='brace'>{</em> <a href='../Y/50.html' title='Multiple used in 88 places.'>ALTIUM_PCB_DIR</a>::<a href='../Y/2518.html' title='Multiple used in 6 places.'>MODELS</a>, "C0F7599ECC6A4D648DF5BB557679AF\\Data" <em class='brace'>}</em>,
+<a id='L88' name='L88'></a>  88             <em class='brace'>{</em> <a href='../Y/50.html' title='Multiple used in 88 places.'>ALTIUM_PCB_DIR</a>::<a href='../Y/2614.html' title='Multiple used in 5 places.'>NETS6</a>, "D95A0DA2FE9047779A5194C127F30B\\Data" <em class='brace'>}</em>,
+<a id='L89' name='L89'></a>  89             <em class='brace'>{</em> <a href='../Y/50.html' title='Multiple used in 88 places.'>ALTIUM_PCB_DIR</a>::<a href='../Y/2744.html' title='Multiple used in 5 places.'>PADS6</a>, "47D69BC5107A4B8DB8DAA23E39C238\\Data" <em class='brace'>}</em>,
+<a id='L90' name='L90'></a>  90             <em class='brace'>{</em> <a href='../Y/50.html' title='Multiple used in 88 places.'>ALTIUM_PCB_DIR</a>::<a href='../Y/2892.html' title='Multiple used in 5 places.'>POLYGONS6</a>, "D7038392280E4E229B9D9B5426B295\\Data" <em class='brace'>}</em>,
+<a id='L91' name='L91'></a>  91             <em class='brace'>{</em> <a href='../Y/50.html' title='Multiple used in 88 places.'>ALTIUM_PCB_DIR</a>::<a href='../Y/3087.html' title='Multiple used in 5 places.'>REGIONS6</a>, "FFDDC21382BB42FE8A7D0C328D272C\\Data" <em class='brace'>}</em>,
+<a id='L92' name='L92'></a>  92             <em class='brace'>{</em> <a href='../Y/50.html' title='Multiple used in 88 places.'>ALTIUM_PCB_DIR</a>::<a href='../Y/3117.html' title='Multiple used in 5 places.'>RULES6</a>, "48B2FA96DB7546818752B34373D6C6\\Data" <em class='brace'>}</em>,
+<a id='L93' name='L93'></a>  93             <em class='brace'>{</em> <a href='../Y/50.html' title='Multiple used in 88 places.'>ALTIUM_PCB_DIR</a>::<a href='../Y/3228.html' title='Multiple used in 5 places.'>SHAPEBASEDREGIONS6</a>, "D5F54B536E124FB89E2D51B1121508\\Data" <em class='brace'>}</em>,
+<a id='L94' name='L94'></a>  94             <em class='brace'>{</em> <a href='../Y/50.html' title='Multiple used in 88 places.'>ALTIUM_PCB_DIR</a>::<a href='../Y/4081.html' title='Multiple used in 5 places.'>TEXTS6</a>, "349ABBB211DB4F5B8AE41B1B49555A\\Data" <em class='brace'>}</em>,
+<a id='L95' name='L95'></a>  95             <em class='brace'>{</em> <a href='../Y/50.html' title='Multiple used in 88 places.'>ALTIUM_PCB_DIR</a>::<a href='../Y/4119.html' title='Multiple used in 5 places.'>TRACKS6</a>, "530C20C225354B858B2578CAB8C08D\\Data" <em class='brace'>}</em>,
+<a id='L96' name='L96'></a>  96             <em class='brace'>{</em> <a href='../Y/50.html' title='Multiple used in 88 places.'>ALTIUM_PCB_DIR</a>::<a href='../Y/4794.html' title='Multiple used in 5 places.'>VIAS6</a>, "CA5F5989BCDB404DA70A9D1D3D5758\\Data" <em class='brace'>}</em>
+<a id='L97' name='L97'></a>  97     <em class='brace'>}</em>;
+<a id='L98' name='L98'></a>  98     <em class='comment'>// clang-format on</em>
+<a id='L99' name='L99'></a>  99 
+<a id='L100' name='L100'></a> 100     <a href='../S/14.html#L50' title='Defined at 50 in altium2kicadpcb_plugin/altium_pcb.cpp.'>ParseAltiumPcb</a>( <a href='../D/4144.html' title='Multiple defined in 3 places.'>m_board</a>, <a href='../Y/5291.html' title='Multiple used in 126 places.'>aFileName</a>, <a href='../Y/12459.html' title='Multiple used in 6 places.'>mapping</a> );
+<a id='L101' name='L101'></a> 101 
+<a id='L102' name='L102'></a> 102     <strong class='reserved'>return</strong> <a href='../D/4144.html' title='Multiple defined in 3 places.'>m_board</a>;
+<a id='L103' name='L103'></a> 103 <em class='brace'>}</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L53'>[^]</a><a href='#L65'>[v]</a><a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

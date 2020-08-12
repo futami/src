@@ -1,0 +1,321 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>router/pns_line.h</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/840.html'>router</a>/pns_line.h</h2>
+<em class='comment'>/* [&lt;][&gt;][^][v][top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'><a href='../J/566.html' title='Multiple included from 23 places.'>INCLUDED FROM</a></h2>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * KiRouter - a push-and-(sometimes-)shove PCB router</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 2013-2017 CERN</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> * Copyright (C) 2016 KiCad Developers, see AUTHORS.txt for contributors.</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> * Author: Tomasz Wlostowski &lt;tomasz.wlostowski@cern.ch&gt;</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> *</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * This program is free software: you can redistribute it and/or modify it</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * under the terms of the GNU General Public License as published by the</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> * Free Software Foundation, either version 3 of the License, or (at your</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> * option) any later version.</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> *</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * This program is distributed in the hope that it will be useful, but</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> * General Public License for more details.</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> *</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * You should have received a copy of the GNU General Public License along</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> * with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> */</em>
+<a id='L21' name='L21'></a>  21 
+<a id='L22' name='L22'></a>  22 <em class='sharp'>#ifndef</em> <a href='../S/662.html#L23' title='Defined at 23 in router/pns_line.h.'>__PNS_LINE_H</a>
+<a id='L23' name='L23'></a>  23 <em class='sharp'>#define</em> <a href='../S/662.html#L22' title='Referred from 22 in router/pns_line.h.'>__PNS_LINE_H</a>
+<a id='L24' name='L24'></a>  24 
+<a id='L25' name='L25'></a>  25 <em class='sharp'>#include</em> &lt;math/box2.h&gt;
+<a id='L26' name='L26'></a>  26 <em class='sharp'>#include</em> &lt;math/vector2d.h&gt;
+<a id='L27' name='L27'></a>  27 
+<a id='L28' name='L28'></a>  28 <em class='sharp'>#include</em> &lt;geometry/direction45.h&gt;
+<a id='L29' name='L29'></a>  29 <em class='sharp'>#include</em> &lt;geometry/seg.h&gt;
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#include</em> &lt;geometry/shape.h&gt;
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#include</em> &lt;geometry/shape_line_chain.h&gt;
+<a id='L32' name='L32'></a>  32 
+<a id='L33' name='L33'></a>  33 <em class='sharp'>#include</em> "<a href='654.html'>pns_item.h</a>"
+<a id='L34' name='L34'></a>  34 <em class='sharp'>#include</em> "<a href='702.html'>pns_via.h</a>"
+<a id='L35' name='L35'></a>  35 <em class='sharp'>#include</em> "<a href='666.html'>pns_link_holder.h</a>"
+<a id='L36' name='L36'></a>  36 
+<a id='L37' name='L37'></a>  37 <a href='../Y/12795.html' title='Multiple used in 89 places.'>namespace</a> <a href='../D/2558.html' title='Multiple defined in 30 places.'>PNS</a> <em class='brace'>{</em>
+<a id='L38' name='L38'></a>  38 
+<a id='L39' name='L39'></a>  39 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../Y/2374.html' title='Multiple used in 44 places.'>LINKED_ITEM</a>;
+<a id='L40' name='L40'></a>  40 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../D/2147.html' title='Multiple defined in 2 places.'>NODE</a>;
+<a id='L41' name='L41'></a>  41 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../D/3347.html' title='Multiple defined in 2 places.'>VIA</a>;
+<a id='L42' name='L42'></a>  42 
+<a id='L43' name='L43'></a>  43 <em class='comment'>/**</em>
+<a id='L44' name='L44'></a>  44 <em class='comment'> * LINE</em>
+<a id='L45' name='L45'></a>  45 <em class='comment'> *</em>
+<a id='L46' name='L46'></a>  46 <em class='comment'> * Represents a track on a PCB, connecting two non-trivial joints (that is,</em>
+<a id='L47' name='L47'></a>  47 <em class='comment'> * vias, pads, junctions between multiple traces or two traces different widths</em>
+<a id='L48' name='L48'></a>  48 <em class='comment'> * and combinations of these). PNS_LINEs are NOT stored in the model (NODE).</em>
+<a id='L49' name='L49'></a>  49 <em class='comment'> * Instead, they are assembled on-the-fly, based on a via/pad/segment that</em>
+<a id='L50' name='L50'></a>  50 <em class='comment'> * belongs to/starts/ends them.</em>
+<a id='L51' name='L51'></a>  51 <em class='comment'> *</em>
+<a id='L52' name='L52'></a>  52 <em class='comment'> * PNS_LINEs can be either loose (consisting of segments that do not belong to</em>
+<a id='L53' name='L53'></a>  53 <em class='comment'> * any NODE) or owned (with segments taken from a NODE) - these are</em>
+<a id='L54' name='L54'></a>  54 <em class='comment'> * returned by NODE::AssembleLine and friends.</em>
+<a id='L55' name='L55'></a>  55 <em class='comment'> *</em>
+<a id='L56' name='L56'></a>  56 <em class='comment'> * A LINE may have a VIA attached at its end (i.e. the last point) - this is used by via</em>
+<a id='L57' name='L57'></a>  57 <em class='comment'> * dragging/force propagation stuff.</em>
+<a id='L58' name='L58'></a>  58 <em class='comment'> */</em>
+<a id='L59' name='L59'></a>  59 
+<a id='L60' name='L60'></a>  60 <em class='sharp'>#define</em> <a href='../R/2448.html' title='Multiple referred from 2 places.'>PNS_HULL_MARGIN</a> 10
+<a id='L61' name='L61'></a>  61 
+<a id='L62' name='L62'></a>  62 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a> : <a href='../Y/13804.html' title='Multiple used in 833 places.'>public</a> <a href='../Y/2375.html' title='Multiple used in 13 places.'>LINK_HOLDER</a>
+<a id='L63' name='L63'></a>  63 <em class='brace'>{</em>
+<a id='L64' name='L64'></a>  64 <a href='../Y/13804.html' title='Multiple used in 833 places.'>public</a>:
+<a id='L65' name='L65'></a>  65 
+<a id='L66' name='L66'></a>  66     <em class='comment'>/**</em>
+<a id='L67' name='L67'></a>  67 <em class='comment'>     * Constructor</em>
+<a id='L68' name='L68'></a>  68 <em class='comment'>     * Makes an empty line.</em>
+<a id='L69' name='L69'></a>  69 <em class='comment'>     */</em>
+<a id='L70' name='L70'></a>  70     <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>() : <a href='../Y/2375.html' title='Multiple used in 13 places.'>LINK_HOLDER</a>( <a href='../S/654.html#L62' title='Defined at 62 in router/pns_item.h.'>LINE_T</a> )
+<a id='L71' name='L71'></a>  71     <em class='brace'>{</em>
+<a id='L72' name='L72'></a>  72         <a href='../Y/10992.html' title='Multiple used in 10 places.'>m_hasVia</a> = <a href='../Y/7859.html' title='Multiple used in 200 places.'>false</a>;
+<a id='L73' name='L73'></a>  73         <a href='../Y/12391.html' title='Multiple used in 101 places.'>m_width</a> = 1;        <em class='comment'>// Dummy value</em>
+<a id='L74' name='L74'></a>  74         <a href='../S/661.html#L41' title='Defined at 41 in router/pns_line.cpp.'>m_snapThreshhold</a> = 0;
+<a id='L75' name='L75'></a>  75     <em class='brace'>}</em>
+<a id='L76' name='L76'></a>  76 
+<a id='L77' name='L77'></a>  77     <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>( <strong class='reserved'>const</strong> <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>&amp; <a href='../Y/5700.html' title='Multiple used in 324 places.'>aOther</a> );
+<a id='L78' name='L78'></a>  78 
+<a id='L79' name='L79'></a>  79     <em class='comment'>/**</em>
+<a id='L80' name='L80'></a>  80 <em class='comment'>     * Constructor</em>
+<a id='L81' name='L81'></a>  81 <em class='comment'>     * Copies properties (net, layers, etc.) from a base line and replaces the shape</em>
+<a id='L82' name='L82'></a>  82 <em class='comment'>     * by another</em>
+<a id='L83' name='L83'></a>  83 <em class='comment'>     **/</em>
+<a id='L84' name='L84'></a>  84     <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>( <strong class='reserved'>const</strong> <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>&amp; <a href='../Y/5028.html' title='Multiple used in 22 places.'>aBase</a>, <strong class='reserved'>const</strong> <a href='../Y/3234.html' title='Multiple used in 316 places.'>SHAPE_LINE_CHAIN</a>&amp; <a href='../Y/5510.html' title='Multiple used in 153 places.'>aLine</a> )
+<a id='L85' name='L85'></a>  85             : <a href='../Y/2375.html' title='Multiple used in 13 places.'>LINK_HOLDER</a>( <a href='../Y/5028.html' title='Multiple used in 22 places.'>aBase</a> ),
+<a id='L86' name='L86'></a>  86               <a href='../Y/11210.html' title='Multiple used in 46 places.'>m_line</a>( <a href='../Y/5510.html' title='Multiple used in 153 places.'>aLine</a> ),
+<a id='L87' name='L87'></a>  87               <a href='../Y/12391.html' title='Multiple used in 101 places.'>m_width</a>( <a href='../Y/5028.html' title='Multiple used in 22 places.'>aBase</a>.<a href='../Y/12391.html' title='Multiple used in 101 places.'>m_width</a> ),
+<a id='L88' name='L88'></a>  88               <a href='../S/661.html#L41' title='Defined at 41 in router/pns_line.cpp.'>m_snapThreshhold</a>( <a href='../Y/5028.html' title='Multiple used in 22 places.'>aBase</a>.<a href='../S/661.html#L41' title='Defined at 41 in router/pns_line.cpp.'>m_snapThreshhold</a> )
+<a id='L89' name='L89'></a>  89     <em class='brace'>{</em>
+<a id='L90' name='L90'></a>  90         <a href='../Y/11385.html' title='Multiple used in 50 places.'>m_net</a> = <a href='../Y/5028.html' title='Multiple used in 22 places.'>aBase</a>.<a href='../Y/11385.html' title='Multiple used in 50 places.'>m_net</a>;
+<a id='L91' name='L91'></a>  91         <a href='../Y/11176.html' title='Multiple used in 88 places.'>m_layers</a> = <a href='../Y/5028.html' title='Multiple used in 22 places.'>aBase</a>.<a href='../Y/11176.html' title='Multiple used in 88 places.'>m_layers</a>;
+<a id='L92' name='L92'></a>  92         <a href='../Y/10992.html' title='Multiple used in 10 places.'>m_hasVia</a> = <a href='../Y/7859.html' title='Multiple used in 200 places.'>false</a>;
+<a id='L93' name='L93'></a>  93     <em class='brace'>}</em>
+<a id='L94' name='L94'></a>  94 
+<a id='L95' name='L95'></a>  95     <em class='comment'>/**</em>
+<a id='L96' name='L96'></a>  96 <em class='comment'>     * Constructor</em>
+<a id='L97' name='L97'></a>  97 <em class='comment'>     * Constructs a LINE for a lone VIA (ie a stitching via).</em>
+<a id='L98' name='L98'></a>  98 <em class='comment'>     * @param aVia</em>
+<a id='L99' name='L99'></a>  99 <em class='comment'>     */</em>
+<a id='L100' name='L100'></a> 100     <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>( <strong class='reserved'>const</strong> <a href='../D/3347.html' title='Multiple defined in 2 places.'>VIA</a>&amp; <a href='../Y/6149.html' title='Multiple used in 117 places.'>aVia</a> ) :
+<a id='L101' name='L101'></a> 101         <a href='../Y/2375.html' title='Multiple used in 13 places.'>LINK_HOLDER</a>( <a href='../S/654.html#L62' title='Defined at 62 in router/pns_item.h.'>LINE_T</a> )
+<a id='L102' name='L102'></a> 102     <em class='brace'>{</em>
+<a id='L103' name='L103'></a> 103         <a href='../Y/10992.html' title='Multiple used in 10 places.'>m_hasVia</a> = <a href='../Y/15117.html' title='Multiple used in 143 places.'>true</a>;
+<a id='L104' name='L104'></a> 104         <a href='../Y/12339.html' title='Multiple used in 7 places.'>m_via</a> = <a href='../Y/6149.html' title='Multiple used in 117 places.'>aVia</a>;
+<a id='L105' name='L105'></a> 105         <a href='../Y/12391.html' title='Multiple used in 101 places.'>m_width</a> = <a href='../Y/6149.html' title='Multiple used in 117 places.'>aVia</a>.<a href='../Y/767.html' title='Multiple used in 4 places.'>Diameter</a>();
+<a id='L106' name='L106'></a> 106         <a href='../Y/11385.html' title='Multiple used in 50 places.'>m_net</a> = <a href='../Y/6149.html' title='Multiple used in 117 places.'>aVia</a>.<a href='../Y/2660.html' title='Multiple used in 85 places.'>Net</a>();
+<a id='L107' name='L107'></a> 107         <a href='../Y/11176.html' title='Multiple used in 88 places.'>m_layers</a> = <a href='../Y/6149.html' title='Multiple used in 117 places.'>aVia</a>.<a href='../Y/2392.html' title='Multiple used in 74 places.'>Layers</a>();
+<a id='L108' name='L108'></a> 108         <a href='../Y/11697.html' title='Multiple used in 16 places.'>m_rank</a> = <a href='../Y/6149.html' title='Multiple used in 117 places.'>aVia</a>.<a href='../S/661.html#L862' title='Defined at 862 in router/pns_line.cpp.'>Rank</a>();
+<a id='L109' name='L109'></a> 109         <a href='../S/661.html#L41' title='Defined at 41 in router/pns_line.cpp.'>m_snapThreshhold</a> = 0;
+<a id='L110' name='L110'></a> 110     <em class='brace'>}</em>
+<a id='L111' name='L111'></a> 111 
+<a id='L112' name='L112'></a> 112     ~<a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>();
+<a id='L113' name='L113'></a> 113 
+<a id='L114' name='L114'></a> 114     <strong class='reserved'>static</strong> <strong class='reserved'>inline</strong> <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/480.html' title='Multiple used in 23 places.'>ClassOf</a>( <strong class='reserved'>const</strong> <a href='../D/1783.html' title='Multiple defined in 2 places.'>ITEM</a>* <a href='../Y/5437.html' title='Multiple used in 845 places.'>aItem</a> )
+<a id='L115' name='L115'></a> 115     <em class='brace'>{</em>
+<a id='L116' name='L116'></a> 116         <strong class='reserved'>return</strong> <a href='../Y/5437.html' title='Multiple used in 845 places.'>aItem</a> &amp;&amp; <a href='../S/654.html#L62' title='Defined at 62 in router/pns_item.h.'>LINE_T</a> == <a href='../Y/5437.html' title='Multiple used in 845 places.'>aItem</a>-&gt;<a href='../Y/2281.html' title='Multiple used in 35 places.'>Kind</a>();
+<a id='L117' name='L117'></a> 117     <em class='brace'>}</em>
+<a id='L118' name='L118'></a> 118 
+<a id='L119' name='L119'></a> 119     <em class='comment'>/// @copydoc ITEM::Clone()</em>
+<a id='L120' name='L120'></a> 120     <a href='../Y/15387.html' title='Multiple used in 761 places.'>virtual</a> <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>* <a href='../D/456.html' title='Multiple defined in 19 places.'>Clone</a>() <strong class='reserved'>const</strong> <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a>;
+<a id='L121' name='L121'></a> 121 
+<a id='L122' name='L122'></a> 122     <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>&amp; <a href='../Y/13158.html' title='Multiple used in 60 places.'>operator</a>=( <strong class='reserved'>const</strong> <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>&amp; <a href='../Y/5700.html' title='Multiple used in 324 places.'>aOther</a> );
+<a id='L123' name='L123'></a> 123 
+<a id='L124' name='L124'></a> 124     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/2150.html' title='Multiple used in 2 places.'>IsLinkedChecked</a>() <strong class='reserved'>const</strong>
+<a id='L125' name='L125'></a> 125     <em class='brace'>{</em>
+<a id='L126' name='L126'></a> 126         <strong class='reserved'>return</strong> <a href='../Y/2149.html' title='Multiple used in 11 places.'>IsLinked</a>() &amp;&amp; <a href='../Y/2411.html' title='Multiple used in 12 places.'>LinkCount</a>() == <a href='../Y/3316.html' title='Multiple used in 117 places.'>SegmentCount</a>();
+<a id='L127' name='L127'></a> 127     <em class='brace'>}</em>
+<a id='L128' name='L128'></a> 128 
+<a id='L129' name='L129'></a> 129     <em class='comment'>///&gt; Assigns a shape to the line (a polyline/line chain)</em>
+<a id='L130' name='L130'></a> 130     <strong class='reserved'>void</strong> <a href='../Y/3834.html' title='Multiple used in 179 places.'>SetShape</a>( <strong class='reserved'>const</strong> <a href='../Y/3234.html' title='Multiple used in 316 places.'>SHAPE_LINE_CHAIN</a>&amp; <a href='../Y/5510.html' title='Multiple used in 153 places.'>aLine</a> )
+<a id='L131' name='L131'></a> 131     <em class='brace'>{</em>
+<a id='L132' name='L132'></a> 132         <a href='../Y/11210.html' title='Multiple used in 46 places.'>m_line</a> = <a href='../Y/5510.html' title='Multiple used in 153 places.'>aLine</a>;
+<a id='L133' name='L133'></a> 133         <a href='../Y/11210.html' title='Multiple used in 46 places.'>m_line</a>.<a href='../S/528.html#L245' title='Defined at 245 in pcad2kicadpcb_plugin/pcad2kicad_common.cpp.'>SetWidth</a>( <a href='../Y/12391.html' title='Multiple used in 101 places.'>m_width</a> );
+<a id='L134' name='L134'></a> 134     <em class='brace'>}</em>
+<a id='L135' name='L135'></a> 135 
+<a id='L136' name='L136'></a> 136     <em class='comment'>///&gt; Returns the shape of the line</em>
+<a id='L137' name='L137'></a> 137     <strong class='reserved'>const</strong> <a href='../Y/3226.html' title='Multiple used in 68 places.'>SHAPE</a>* <a href='../Y/3976.html' title='Multiple used in 29 places.'>Shape</a>() <strong class='reserved'>const</strong> <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a>
+<a id='L138' name='L138'></a> 138     <em class='brace'>{</em>
+<a id='L139' name='L139'></a> 139         <strong class='reserved'>return</strong> &amp;<a href='../Y/11210.html' title='Multiple used in 46 places.'>m_line</a>;
+<a id='L140' name='L140'></a> 140     <em class='brace'>}</em>
+<a id='L141' name='L141'></a> 141 
+<a id='L142' name='L142'></a> 142     <em class='comment'>///&gt; Modifiable accessor to the underlying shape</em>
+<a id='L143' name='L143'></a> 143     <a href='../Y/3234.html' title='Multiple used in 316 places.'>SHAPE_LINE_CHAIN</a>&amp; <a href='../S/707.html#L340' title='Defined at 340 in router/router_preview_item.cpp.'>Line</a>()
+<a id='L144' name='L144'></a> 144     <em class='brace'>{</em>
+<a id='L145' name='L145'></a> 145         <strong class='reserved'>return</strong> <a href='../Y/11210.html' title='Multiple used in 46 places.'>m_line</a>;
+<a id='L146' name='L146'></a> 146     <em class='brace'>}</em>
+<a id='L147' name='L147'></a> 147 
+<a id='L148' name='L148'></a> 148     <em class='comment'>///&gt; Const accessor to the underlying shape</em>
+<a id='L149' name='L149'></a> 149     <strong class='reserved'>const</strong> <a href='../Y/3234.html' title='Multiple used in 316 places.'>SHAPE_LINE_CHAIN</a>&amp; <a href='../Y/374.html' title='Multiple used in 104 places.'>CLine</a>() <strong class='reserved'>const</strong>
+<a id='L150' name='L150'></a> 150     <em class='brace'>{</em>
+<a id='L151' name='L151'></a> 151         <strong class='reserved'>return</strong> <a href='../Y/11210.html' title='Multiple used in 46 places.'>m_line</a>;
+<a id='L152' name='L152'></a> 152     <em class='brace'>}</em>
+<a id='L153' name='L153'></a> 153 
+<a id='L154' name='L154'></a> 154     <em class='comment'>///&gt; Returns the number of segments in the line</em>
+<a id='L155' name='L155'></a> 155     <strong class='reserved'>int</strong> <a href='../Y/3316.html' title='Multiple used in 117 places.'>SegmentCount</a>() <strong class='reserved'>const</strong>
+<a id='L156' name='L156'></a> 156     <em class='brace'>{</em>
+<a id='L157' name='L157'></a> 157         <strong class='reserved'>return</strong> <a href='../Y/11210.html' title='Multiple used in 46 places.'>m_line</a>.<a href='../Y/3316.html' title='Multiple used in 117 places.'>SegmentCount</a>();
+<a id='L158' name='L158'></a> 158     <em class='brace'>}</em>
+<a id='L159' name='L159'></a> 159 
+<a id='L160' name='L160'></a> 160     <em class='comment'>///&gt; Returns the number of points in the line</em>
+<a id='L161' name='L161'></a> 161     <strong class='reserved'>int</strong> <a href='../Y/2956.html' title='Multiple used in 91 places.'>PointCount</a>() <strong class='reserved'>const</strong>
+<a id='L162' name='L162'></a> 162     <em class='brace'>{</em>
+<a id='L163' name='L163'></a> 163         <strong class='reserved'>return</strong> <a href='../Y/11210.html' title='Multiple used in 46 places.'>m_line</a>.<a href='../Y/2956.html' title='Multiple used in 91 places.'>PointCount</a>();
+<a id='L164' name='L164'></a> 164     <em class='brace'>}</em>
+<a id='L165' name='L165'></a> 165 
+<a id='L166' name='L166'></a> 166     <em class='comment'>///&gt; Returns the number of arcs in the line</em>
+<a id='L167' name='L167'></a> 167     <strong class='reserved'>int</strong> <a href='../Y/205.html' title='Multiple used in 4 places.'>ArcCount</a>() <strong class='reserved'>const</strong>
+<a id='L168' name='L168'></a> 168     <em class='brace'>{</em>
+<a id='L169' name='L169'></a> 169         <strong class='reserved'>return</strong> <a href='../Y/11210.html' title='Multiple used in 46 places.'>m_line</a>.<a href='../Y/205.html' title='Multiple used in 4 places.'>ArcCount</a>();
+<a id='L170' name='L170'></a> 170     <em class='brace'>}</em>
+<a id='L171' name='L171'></a> 171 
+<a id='L172' name='L172'></a> 172     <em class='comment'>///&gt; Returns the aIdx-th point of the line</em>
+<a id='L173' name='L173'></a> 173     <strong class='reserved'>const</strong> <a href='../Y/4788.html' title='Multiple used in 795 places.'>VECTOR2I</a>&amp; <a href='../Y/438.html' title='Multiple used in 149 places.'>CPoint</a>( <strong class='reserved'>int</strong> <a href='../Y/5390.html' title='Multiple used in 8 places.'>aIdx</a> ) <strong class='reserved'>const</strong>
+<a id='L174' name='L174'></a> 174     <em class='brace'>{</em>
+<a id='L175' name='L175'></a> 175         <strong class='reserved'>return</strong> <a href='../Y/11210.html' title='Multiple used in 46 places.'>m_line</a>.<a href='../Y/438.html' title='Multiple used in 149 places.'>CPoint</a>( <a href='../Y/5390.html' title='Multiple used in 8 places.'>aIdx</a> );
+<a id='L176' name='L176'></a> 176     <em class='brace'>}</em>
+<a id='L177' name='L177'></a> 177 
+<a id='L178' name='L178'></a> 178     <em class='comment'>///&gt; Returns the aIdx-th segment of the line</em>
+<a id='L179' name='L179'></a> 179     <strong class='reserved'>const</strong> <a href='../Y/3207.html' title='Multiple used in 183 places.'>SEG</a> <a href='../Y/445.html' title='Multiple used in 94 places.'>CSegment</a>( <strong class='reserved'>int</strong> <a href='../Y/5390.html' title='Multiple used in 8 places.'>aIdx</a> ) <strong class='reserved'>const</strong>
+<a id='L180' name='L180'></a> 180     <em class='brace'>{</em>
+<a id='L181' name='L181'></a> 181         <strong class='reserved'>return</strong> <a href='../Y/11210.html' title='Multiple used in 46 places.'>m_line</a>.<a href='../Y/445.html' title='Multiple used in 94 places.'>CSegment</a>( <a href='../Y/5390.html' title='Multiple used in 8 places.'>aIdx</a> );
+<a id='L182' name='L182'></a> 182     <em class='brace'>}</em>
+<a id='L183' name='L183'></a> 183 
+<a id='L184' name='L184'></a> 184     <em class='comment'>///&gt; Sets line width</em>
+<a id='L185' name='L185'></a> 185     <strong class='reserved'>void</strong> <a href='../S/528.html#L245' title='Defined at 245 in pcad2kicadpcb_plugin/pcad2kicad_common.cpp.'>SetWidth</a>( <strong class='reserved'>int</strong> <a href='../Y/6171.html' title='Multiple used in 160 places.'>aWidth</a> )
+<a id='L186' name='L186'></a> 186     <em class='brace'>{</em>
+<a id='L187' name='L187'></a> 187         <a href='../Y/12391.html' title='Multiple used in 101 places.'>m_width</a> = <a href='../Y/6171.html' title='Multiple used in 160 places.'>aWidth</a>;
+<a id='L188' name='L188'></a> 188         <a href='../Y/11210.html' title='Multiple used in 46 places.'>m_line</a>.<a href='../S/528.html#L245' title='Defined at 245 in pcad2kicadpcb_plugin/pcad2kicad_common.cpp.'>SetWidth</a>( <a href='../Y/6171.html' title='Multiple used in 160 places.'>aWidth</a> );
+<a id='L189' name='L189'></a> 189     <em class='brace'>}</em>
+<a id='L190' name='L190'></a> 190 
+<a id='L191' name='L191'></a> 191     <em class='comment'>///&gt; Returns line width</em>
+<a id='L192' name='L192'></a> 192     <strong class='reserved'>int</strong> <a href='../Y/4896.html' title='Multiple used in 56 places.'>Width</a>() <strong class='reserved'>const</strong>
+<a id='L193' name='L193'></a> 193     <em class='brace'>{</em>
+<a id='L194' name='L194'></a> 194         <strong class='reserved'>return</strong> <a href='../Y/12391.html' title='Multiple used in 101 places.'>m_width</a>;
+<a id='L195' name='L195'></a> 195     <em class='brace'>}</em>
+<a id='L196' name='L196'></a> 196 
+<a id='L197' name='L197'></a> 197     <em class='comment'>///&gt; Returns true if the line is geometrically identical as line aOther</em>
+<a id='L198' name='L198'></a> 198     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../S/661.html#L825' title='Defined at 825 in router/pns_line.cpp.'>CompareGeometry</a>( <strong class='reserved'>const</strong> <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>&amp; <a href='../Y/5700.html' title='Multiple used in 324 places.'>aOther</a> );
+<a id='L199' name='L199'></a> 199 
+<a id='L200' name='L200'></a> 200     <em class='comment'>///&gt; Reverses the point/vertex order</em>
+<a id='L201' name='L201'></a> 201     <strong class='reserved'>void</strong> <a href='../D/2811.html' title='Multiple defined in 2 places.'>Reverse</a>();
+<a id='L202' name='L202'></a> 202 
+<a id='L203' name='L203'></a> 203     <em class='comment'>///&gt; Clips the line to the nearest obstacle, traversing from the line's start vertex (0).</em>
+<a id='L204' name='L204'></a> 204     <em class='comment'>///&gt; Returns the clipped line.</em>
+<a id='L205' name='L205'></a> 205     <strong class='reserved'>const</strong> <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a> <a href='../S/661.html#L431' title='Defined at 431 in router/pns_line.cpp.'>ClipToNearestObstacle</a>( <a href='../D/2147.html' title='Multiple defined in 2 places.'>NODE</a>* <a href='../Y/5655.html' title='Multiple used in 329 places.'>aNode</a> ) <strong class='reserved'>const</strong>;
+<a id='L206' name='L206'></a> 206 
+<a id='L207' name='L207'></a> 207     <em class='comment'>///&gt; Clips the line to a given range of vertices.</em>
+<a id='L208' name='L208'></a> 208     <strong class='reserved'>void</strong> <a href='../S/661.html#L881' title='Defined at 881 in router/pns_line.cpp.'>ClipVertexRange</a> ( <strong class='reserved'>int</strong> <a href='../Y/6000.html' title='Multiple used in 114 places.'>aStart</a>, <strong class='reserved'>int</strong> <a href='../Y/5251.html' title='Multiple used in 84 places.'>aEnd</a> );
+<a id='L209' name='L209'></a> 209 
+<a id='L210' name='L210'></a> 210     <em class='comment'>///&gt; Returns the number of corners of angles specified by mask aAngles.</em>
+<a id='L211' name='L211'></a> 211     <strong class='reserved'>int</strong> <a href='../S/661.html#L134' title='Defined at 134 in router/pns_line.cpp.'>CountCorners</a>( <strong class='reserved'>int</strong> <a href='../Y/5000.html' title='Multiple used in 3 places.'>aAngles</a> ) <strong class='reserved'>const</strong>;
+<a id='L212' name='L212'></a> 212 
+<a id='L213' name='L213'></a> 213     <em class='comment'>///&gt; Calculates a line thightly wrapping a convex hull</em>
+<a id='L214' name='L214'></a> 214     <em class='comment'>///&gt; of an obstacle object (aObstacle).</em>
+<a id='L215' name='L215'></a> 215     <em class='comment'>///&gt; aPrePath = path from origin to the obstacle</em>
+<a id='L216' name='L216'></a> 216     <em class='comment'>///&gt; aWalkaroundPath = path around the obstacle</em>
+<a id='L217' name='L217'></a> 217     <em class='comment'>///&gt; aPostPath = past from obstacle till the end</em>
+<a id='L218' name='L218'></a> 218     <em class='comment'>///&gt; aCW = whether to walk around in clockwise or counter-clockwise direction.</em>
+<a id='L219' name='L219'></a> 219     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../D/3396.html' title='Multiple defined in 2 places.'>Walkaround</a>( <a href='../Y/3234.html' title='Multiple used in 316 places.'>SHAPE_LINE_CHAIN</a> <a href='../Y/5666.html' title='Multiple used in 72 places.'>aObstacle</a>,
+<a id='L220' name='L220'></a> 220             <a href='../Y/3234.html' title='Multiple used in 316 places.'>SHAPE_LINE_CHAIN</a>&amp; <a href='../Y/5821.html' title='Multiple used in 9 places.'>aPre</a>,
+<a id='L221' name='L221'></a> 221             <a href='../Y/3234.html' title='Multiple used in 316 places.'>SHAPE_LINE_CHAIN</a>&amp; <a href='../Y/6165.html' title='Multiple used in 13 places.'>aWalk</a>,
+<a id='L222' name='L222'></a> 222             <a href='../Y/3234.html' title='Multiple used in 316 places.'>SHAPE_LINE_CHAIN</a>&amp; <a href='../Y/5819.html' title='Multiple used in 10 places.'>aPost</a>,
+<a id='L223' name='L223'></a> 223             <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/5170.html' title='Multiple used in 8 places.'>aCw</a> ) <strong class='reserved'>const</strong>;
+<a id='L224' name='L224'></a> 224 
+<a id='L225' name='L225'></a> 225     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../D/3396.html' title='Multiple defined in 2 places.'>Walkaround</a>( <strong class='reserved'>const</strong> <a href='../Y/3234.html' title='Multiple used in 316 places.'>SHAPE_LINE_CHAIN</a>&amp; <a href='../Y/5666.html' title='Multiple used in 72 places.'>aObstacle</a>,
+<a id='L226' name='L226'></a> 226             <a href='../Y/3234.html' title='Multiple used in 316 places.'>SHAPE_LINE_CHAIN</a>&amp; <a href='../Y/5766.html' title='Multiple used in 74 places.'>aPath</a>,
+<a id='L227' name='L227'></a> 227             <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/5170.html' title='Multiple used in 8 places.'>aCw</a> ) <strong class='reserved'>const</strong>;
+<a id='L228' name='L228'></a> 228 
+<a id='L229' name='L229'></a> 229     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../S/661.html#L402' title='Defined at 402 in router/pns_line.cpp.'>Is45Degree</a>() <strong class='reserved'>const</strong>;
+<a id='L230' name='L230'></a> 230 
+<a id='L231' name='L231'></a> 231     <em class='comment'>///&gt; Prints out all linked segments</em>
+<a id='L232' name='L232'></a> 232     <strong class='reserved'>void</strong> <a href='../Y/3995.html' title='Multiple used in 2 places.'>ShowLinks</a>() <strong class='reserved'>const</strong>;
+<a id='L233' name='L233'></a> 233 
+<a id='L234' name='L234'></a> 234     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/937.html' title='Multiple used in 24 places.'>EndsWithVia</a>() <strong class='reserved'>const</strong> <em class='brace'>{</em> <strong class='reserved'>return</strong> <a href='../Y/10992.html' title='Multiple used in 10 places.'>m_hasVia</a>; <em class='brace'>}</em>
+<a id='L235' name='L235'></a> 235 
+<a id='L236' name='L236'></a> 236     <strong class='reserved'>void</strong> <a href='../S/661.html#L839' title='Defined at 839 in router/pns_line.cpp.'>AppendVia</a>( <strong class='reserved'>const</strong> <a href='../D/3347.html' title='Multiple defined in 2 places.'>VIA</a>&amp; <a href='../Y/6149.html' title='Multiple used in 117 places.'>aVia</a> );
+<a id='L237' name='L237'></a> 237     <strong class='reserved'>void</strong> <a href='../Y/3165.html' title='Multiple used in 10 places.'>RemoveVia</a>() <em class='brace'>{</em> <a href='../Y/10992.html' title='Multiple used in 10 places.'>m_hasVia</a> = <a href='../Y/7859.html' title='Multiple used in 200 places.'>false</a>; <em class='brace'>}</em>
+<a id='L238' name='L238'></a> 238 
+<a id='L239' name='L239'></a> 239     <strong class='reserved'>const</strong> <a href='../D/3347.html' title='Multiple defined in 2 places.'>VIA</a>&amp; <a href='../Y/4822.html' title='Multiple used in 33 places.'>Via</a>() <strong class='reserved'>const</strong> <em class='brace'>{</em> <strong class='reserved'>return</strong> <a href='../Y/12339.html' title='Multiple used in 7 places.'>m_via</a>; <em class='brace'>}</em>
+<a id='L240' name='L240'></a> 240 
+<a id='L241' name='L241'></a> 241     <a href='../Y/15387.html' title='Multiple used in 761 places.'>virtual</a> <strong class='reserved'>void</strong> <a href='../S/661.html#L88' title='Defined at 88 in router/pns_line.cpp.'>Mark</a>( <strong class='reserved'>int</strong> <a href='../Y/5546.html' title='Multiple used in 35 places.'>aMarker</a> ) <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a>;
+<a id='L242' name='L242'></a> 242     <a href='../Y/15387.html' title='Multiple used in 761 places.'>virtual</a> <strong class='reserved'>void</strong> <a href='../S/661.html#L98' title='Defined at 98 in router/pns_line.cpp.'>Unmark</a>( <strong class='reserved'>int</strong> <a href='../Y/5546.html' title='Multiple used in 35 places.'>aMarker</a> = -1 ) <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a>;
+<a id='L243' name='L243'></a> 243     <a href='../Y/15387.html' title='Multiple used in 761 places.'>virtual</a> <strong class='reserved'>int</strong> <a href='../S/661.html#L107' title='Defined at 107 in router/pns_line.cpp.'>Marker</a>() <strong class='reserved'>const</strong> <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a>;
+<a id='L244' name='L244'></a> 244 
+<a id='L245' name='L245'></a> 245     <strong class='reserved'>void</strong> <a href='../S/661.html#L575' title='Defined at 575 in router/pns_line.cpp.'>DragSegment</a>( <strong class='reserved'>const</strong> <a href='../Y/4788.html' title='Multiple used in 795 places.'>VECTOR2I</a>&amp; <a href='../Y/5716.html' title='Multiple used in 361 places.'>aP</a>, <strong class='reserved'>int</strong> <a href='../Y/5409.html' title='Multiple used in 115 places.'>aIndex</a>, <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/5341.html' title='Multiple used in 6 places.'>aFreeAngle</a> = <a href='../Y/7859.html' title='Multiple used in 200 places.'>false</a> );
+<a id='L246' name='L246'></a> 246     <strong class='reserved'>void</strong> <a href='../S/661.html#L563' title='Defined at 563 in router/pns_line.cpp.'>DragCorner</a>( <strong class='reserved'>const</strong> <a href='../Y/4788.html' title='Multiple used in 795 places.'>VECTOR2I</a>&amp; <a href='../Y/5716.html' title='Multiple used in 361 places.'>aP</a>, <strong class='reserved'>int</strong> <a href='../Y/5409.html' title='Multiple used in 115 places.'>aIndex</a>, <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/5341.html' title='Multiple used in 6 places.'>aFreeAngle</a> = <a href='../Y/7859.html' title='Multiple used in 200 places.'>false</a> );
+<a id='L247' name='L247'></a> 247 
+<a id='L248' name='L248'></a> 248     <strong class='reserved'>void</strong> <a href='../S/661.html#L852' title='Defined at 852 in router/pns_line.cpp.'>SetRank</a>( <strong class='reserved'>int</strong> <a href='../Y/5854.html' title='Multiple used in 5 places.'>aRank</a> ) <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a>;
+<a id='L249' name='L249'></a> 249     <strong class='reserved'>int</strong> <a href='../S/661.html#L862' title='Defined at 862 in router/pns_line.cpp.'>Rank</a>() <strong class='reserved'>const</strong> <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a>;
+<a id='L250' name='L250'></a> 250 
+<a id='L251' name='L251'></a> 251     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../S/661.html#L901' title='Defined at 901 in router/pns_line.cpp.'>HasLoops</a>() <strong class='reserved'>const</strong>;
+<a id='L252' name='L252'></a> 252     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../S/661.html#L1011' title='Defined at 1011 in router/pns_line.cpp.'>HasLockedSegments</a>() <strong class='reserved'>const</strong>;
+<a id='L253' name='L253'></a> 253 
+<a id='L254' name='L254'></a> 254     <strong class='reserved'>void</strong> <a href='../D/434.html' title='Multiple defined in 11 places.'>Clear</a>();
+<a id='L255' name='L255'></a> 255     <strong class='reserved'>void</strong> <a href='../Y/2567.html' title='Multiple used in 47 places.'>Merge</a> ( <strong class='reserved'>const</strong> <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>&amp; <a href='../Y/5700.html' title='Multiple used in 324 places.'>aOther</a> );
+<a id='L256' name='L256'></a> 256 
+<a id='L257' name='L257'></a> 257     <a href='../Y/2700.html' title='Multiple used in 25 places.'>OPT_BOX2I</a> <a href='../D/422.html' title='Multiple defined in 5 places.'>ChangedArea</a>( <strong class='reserved'>const</strong> <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>* <a href='../Y/5700.html' title='Multiple used in 324 places.'>aOther</a> ) <strong class='reserved'>const</strong>;
+<a id='L258' name='L258'></a> 258 
+<a id='L259' name='L259'></a> 259     <strong class='reserved'>void</strong> <a href='../Y/3859.html' title='Multiple used in 3 places.'>SetSnapThreshhold</a>( <strong class='reserved'>int</strong> <a href='../Y/6059.html' title='Multiple used in 2 places.'>aThreshhold</a> )
+<a id='L260' name='L260'></a> 260     <em class='brace'>{</em>
+<a id='L261' name='L261'></a> 261         <a href='../S/661.html#L41' title='Defined at 41 in router/pns_line.cpp.'>m_snapThreshhold</a> = <a href='../Y/6059.html' title='Multiple used in 2 places.'>aThreshhold</a>;
+<a id='L262' name='L262'></a> 262     <em class='brace'>}</em>
+<a id='L263' name='L263'></a> 263 
+<a id='L264' name='L264'></a> 264     <strong class='reserved'>int</strong> GetSnapThreshhold() <strong class='reserved'>const</strong>
+<a id='L265' name='L265'></a> 265     <em class='brace'>{</em>
+<a id='L266' name='L266'></a> 266         <strong class='reserved'>return</strong> <a href='../S/661.html#L41' title='Defined at 41 in router/pns_line.cpp.'>m_snapThreshhold</a>;
+<a id='L267' name='L267'></a> 267     <em class='brace'>}</em>
+<a id='L268' name='L268'></a> 268 
+<a id='L269' name='L269'></a> 269 <a href='../Y/13721.html' title='Multiple used in 310 places.'>private</a>:
+<a id='L270' name='L270'></a> 270     <strong class='reserved'>void</strong> <a href='../S/661.html#L674' title='Defined at 674 in router/pns_line.cpp.'>dragSegment45</a>( <strong class='reserved'>const</strong> <a href='../Y/4788.html' title='Multiple used in 795 places.'>VECTOR2I</a>&amp; <a href='../Y/5716.html' title='Multiple used in 361 places.'>aP</a>, <strong class='reserved'>int</strong> <a href='../Y/5409.html' title='Multiple used in 115 places.'>aIndex</a> );
+<a id='L271' name='L271'></a> 271     <strong class='reserved'>void</strong> <a href='../S/661.html#L534' title='Defined at 534 in router/pns_line.cpp.'>dragCorner45</a>( <strong class='reserved'>const</strong> <a href='../Y/4788.html' title='Multiple used in 795 places.'>VECTOR2I</a>&amp; <a href='../Y/5716.html' title='Multiple used in 361 places.'>aP</a>, <strong class='reserved'>int</strong> <a href='../Y/5409.html' title='Multiple used in 115 places.'>aIndex</a> );
+<a id='L272' name='L272'></a> 272     <strong class='reserved'>void</strong> dragSegmentFree( <strong class='reserved'>const</strong> <a href='../Y/4788.html' title='Multiple used in 795 places.'>VECTOR2I</a>&amp; <a href='../Y/5716.html' title='Multiple used in 361 places.'>aP</a>, <strong class='reserved'>int</strong> <a href='../Y/5409.html' title='Multiple used in 115 places.'>aIndex</a> );
+<a id='L273' name='L273'></a> 273     <strong class='reserved'>void</strong> <a href='../S/661.html#L557' title='Defined at 557 in router/pns_line.cpp.'>dragCornerFree</a>( <strong class='reserved'>const</strong> <a href='../Y/4788.html' title='Multiple used in 795 places.'>VECTOR2I</a>&amp; <a href='../Y/5716.html' title='Multiple used in 361 places.'>aP</a>, <strong class='reserved'>int</strong> <a href='../Y/5409.html' title='Multiple used in 115 places.'>aIndex</a> );
+<a id='L274' name='L274'></a> 274 
+<a id='L275' name='L275'></a> 275     <a href='../Y/4788.html' title='Multiple used in 795 places.'>VECTOR2I</a> <a href='../S/661.html#L629' title='Defined at 629 in router/pns_line.cpp.'>snapToNeighbourSegments</a>(
+<a id='L276' name='L276'></a> 276             <strong class='reserved'>const</strong> <a href='../Y/3234.html' title='Multiple used in 316 places.'>SHAPE_LINE_CHAIN</a>&amp; <a href='../Y/5766.html' title='Multiple used in 74 places.'>aPath</a>, <strong class='reserved'>const</strong> <a href='../Y/4788.html' title='Multiple used in 795 places.'>VECTOR2I</a>&amp; <a href='../Y/5716.html' title='Multiple used in 361 places.'>aP</a>, <strong class='reserved'>int</strong> <a href='../Y/5409.html' title='Multiple used in 115 places.'>aIndex</a> ) <strong class='reserved'>const</strong>;
+<a id='L277' name='L277'></a> 277 
+<a id='L278' name='L278'></a> 278     <a href='../Y/4788.html' title='Multiple used in 795 places.'>VECTOR2I</a> <a href='../S/661.html#L587' title='Defined at 587 in router/pns_line.cpp.'>snapDraggedCorner</a>(
+<a id='L279' name='L279'></a> 279             <strong class='reserved'>const</strong> <a href='../Y/3234.html' title='Multiple used in 316 places.'>SHAPE_LINE_CHAIN</a>&amp; <a href='../Y/5766.html' title='Multiple used in 74 places.'>aPath</a>, <strong class='reserved'>const</strong> <a href='../Y/4788.html' title='Multiple used in 795 places.'>VECTOR2I</a>&amp; <a href='../Y/5716.html' title='Multiple used in 361 places.'>aP</a>, <strong class='reserved'>int</strong> <a href='../Y/5409.html' title='Multiple used in 115 places.'>aIndex</a> ) <strong class='reserved'>const</strong>;
+<a id='L280' name='L280'></a> 280 
+<a id='L281' name='L281'></a> 281     <em class='comment'>///&gt; The actual shape of the line</em>
+<a id='L282' name='L282'></a> 282     <a href='../Y/3234.html' title='Multiple used in 316 places.'>SHAPE_LINE_CHAIN</a> <a href='../Y/11210.html' title='Multiple used in 46 places.'>m_line</a>;
+<a id='L283' name='L283'></a> 283 
+<a id='L284' name='L284'></a> 284     <em class='comment'>///&gt; our width</em>
+<a id='L285' name='L285'></a> 285     <strong class='reserved'>int</strong> <a href='../Y/12391.html' title='Multiple used in 101 places.'>m_width</a>;
+<a id='L286' name='L286'></a> 286 
+<a id='L287' name='L287'></a> 287     <em class='comment'>///&gt; If true, the line ends with a via</em>
+<a id='L288' name='L288'></a> 288     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/10992.html' title='Multiple used in 10 places.'>m_hasVia</a>;
+<a id='L289' name='L289'></a> 289 
+<a id='L290' name='L290'></a> 290     <em class='comment'>///&gt; Width to smooth out jagged segments</em>
+<a id='L291' name='L291'></a> 291     <strong class='reserved'>int</strong> <a href='../S/661.html#L41' title='Defined at 41 in router/pns_line.cpp.'>m_snapThreshhold</a>;
+<a id='L292' name='L292'></a> 292 
+<a id='L293' name='L293'></a> 293     <em class='comment'>///&gt; Via at the end point, if m_hasVia == true</em>
+<a id='L294' name='L294'></a> 294     <a href='../D/3347.html' title='Multiple defined in 2 places.'>VIA</a> <a href='../Y/12339.html' title='Multiple used in 7 places.'>m_via</a>;
+<a id='L295' name='L295'></a> 295 <em class='brace'>}</em>;
+<a id='L296' name='L296'></a> 296 
+<a id='L297' name='L297'></a> 297 <em class='brace'>}</em>
+<a id='L298' name='L298'></a> 298 
+<a id='L299' name='L299'></a> 299 <em class='sharp'>#endif</em>    <em class='comment'>// __PNS_LINE_H</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;][^][v]<a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

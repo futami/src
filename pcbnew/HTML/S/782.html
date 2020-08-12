@@ -1,0 +1,463 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>tools/pcb_actions.h</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/843.html'>tools</a>/pcb_actions.h</h2>
+<em class='comment'>/* [&lt;][&gt;][^][v][top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'><a href='../J/649.html' title='Multiple included from 56 places.'>INCLUDED FROM</a></h2>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * This program source code file is part of KiCad, a free EDA CAD application.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 2013-2016 CERN</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> * Copyright (C) 2016 KiCad Developers, see AUTHORS.txt for contributors.</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> * @author Maciej Suminski &lt;maciej.suminski@cern.ch&gt;</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> *</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * This program is free software; you can redistribute it and/or</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * modify it under the terms of the GNU General Public License</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> * as published by the Free Software Foundation; either version 2</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> * of the License, or (at your option) any later version.</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> *</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * This program is distributed in the hope that it will be useful,</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> * GNU General Public License for more details.</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> *</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * You should have received a copy of the GNU General Public License</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> * along with this program; if not, you may find one here:</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'> * or you may search the http://www.gnu.org website for the version 2 license,</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'> * or you may write to the Free Software Foundation, Inc.,</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'> * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA</em>
+<a id='L24' name='L24'></a>  24 <em class='comment'> */</em>
+<a id='L25' name='L25'></a>  25 
+<a id='L26' name='L26'></a>  26 <em class='sharp'>#ifndef</em> <a href='../S/782.html#L27' title='Defined at 27 in tools/pcb_actions.h.'>__PCB_ACTIONS_H</a>
+<a id='L27' name='L27'></a>  27 <em class='sharp'>#define</em> <a href='../S/782.html#L26' title='Referred from 26 in tools/pcb_actions.h.'>__PCB_ACTIONS_H</a>
+<a id='L28' name='L28'></a>  28 
+<a id='L29' name='L29'></a>  29 <em class='sharp'>#include</em> &lt;tool/tool_action.h&gt;
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#include</em> &lt;tool/actions.h&gt;
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#include</em> &lt;core/optional.h&gt;
+<a id='L32' name='L32'></a>  32 
+<a id='L33' name='L33'></a>  33 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../Y/4100.html' title='Multiple used in 418 places.'>TOOL_EVENT</a>;
+<a id='L34' name='L34'></a>  34 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../Y/4104.html' title='Multiple used in 13 places.'>TOOL_MANAGER</a>;
+<a id='L35' name='L35'></a>  35 
+<a id='L36' name='L36'></a>  36 <strong class='reserved'>enum</strong> <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../Y/4921.html' title='Multiple used in 18 places.'>ZONE_MODE</a>
+<a id='L37' name='L37'></a>  37 <em class='brace'>{</em>
+<a id='L38' name='L38'></a>  38     <a href='../Y/26.html' title='Multiple used in 5 places.'>ADD</a>,             <em class='comment'>///&lt; Add a new zone/keepout with fresh settings</em>
+<a id='L39' name='L39'></a>  39     <a href='../Y/454.html' title='Multiple used in 4 places.'>CUTOUT</a>,          <em class='comment'>///&lt; Make a cutout to an existing zone</em>
+<a id='L40' name='L40'></a>  40     <a href='../Y/3252.html' title='Multiple used in 5 places.'>SIMILAR</a>,         <em class='comment'>///&lt; Add a new zone with the same settings as an existing one</em>
+<a id='L41' name='L41'></a>  41     <a href='../Y/1184.html' title='Multiple used in 9 places.'>GRAPHIC_POLYGON</a>
+<a id='L42' name='L42'></a>  42 <em class='brace'>}</em>;
+<a id='L43' name='L43'></a>  43 
+<a id='L44' name='L44'></a>  44 
+<a id='L45' name='L45'></a>  45 <em class='comment'>/**</em>
+<a id='L46' name='L46'></a>  46 <em class='comment'> * PCB_ACTIONS</em>
+<a id='L47' name='L47'></a>  47 <em class='comment'> *</em>
+<a id='L48' name='L48'></a>  48 <em class='comment'> * Gathers all the actions that are shared by tools. The instance of PCB_ACTIONS is created</em>
+<a id='L49' name='L49'></a>  49 <em class='comment'> * inside of ACTION_MANAGER object that registers the actions.</em>
+<a id='L50' name='L50'></a>  50 <em class='comment'> */</em>
+<a id='L51' name='L51'></a>  51 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../Y/2808.html' title='Multiple used in 1029 places.'>PCB_ACTIONS</a> : <a href='../Y/13804.html' title='Multiple used in 833 places.'>public</a> <a href='../Y/4.html' title='Multiple used in 272 places.'>ACTIONS</a>
+<a id='L52' name='L52'></a>  52 <em class='brace'>{</em>
+<a id='L53' name='L53'></a>  53 <a href='../Y/13804.html' title='Multiple used in 833 places.'>public</a>:
+<a id='L54' name='L54'></a>  54     <em class='comment'>// Selection Tool</em>
+<a id='L55' name='L55'></a>  55     <em class='comment'>/// Activation of the selection tool</em>
+<a id='L56' name='L56'></a>  56     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/14338.html' title='Multiple used in 3 places.'>selectionActivate</a>;
+<a id='L57' name='L57'></a>  57 
+<a id='L58' name='L58'></a>  58     <em class='comment'>/// Select a single item under the cursor position</em>
+<a id='L59' name='L59'></a>  59     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/14343.html' title='Multiple used in 10 places.'>selectionCursor</a>;
+<a id='L60' name='L60'></a>  60 
+<a id='L61' name='L61'></a>  61     <em class='comment'>/// Clears the current selection</em>
+<a id='L62' name='L62'></a>  62     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/14341.html' title='Multiple used in 60 places.'>selectionClear</a>;
+<a id='L63' name='L63'></a>  63 
+<a id='L64' name='L64'></a>  64     <em class='comment'>/// Selects an item (specified as the event parameter).</em>
+<a id='L65' name='L65'></a>  65     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/14317.html' title='Multiple used in 24 places.'>selectItem</a>;
+<a id='L66' name='L66'></a>  66     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/15209.html' title='Multiple used in 3 places.'>unselectItem</a>;
+<a id='L67' name='L67'></a>  67 
+<a id='L68' name='L68'></a>  68     <em class='comment'>/// Selects a list of items (specified as the event parameter)</em>
+<a id='L69' name='L69'></a>  69     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/14318.html' title='Multiple used in 6 places.'>selectItems</a>;
+<a id='L70' name='L70'></a>  70     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/15210.html' title='Multiple used in 3 places.'>unselectItems</a>;
+<a id='L71' name='L71'></a>  71 
+<a id='L72' name='L72'></a>  72     <em class='comment'>/// Runs a selection menu to select from a list of items</em>
+<a id='L73' name='L73'></a>  73     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/14345.html' title='Multiple used in 3 places.'>selectionMenu</a>;
+<a id='L74' name='L74'></a>  74 
+<a id='L75' name='L75'></a>  75     <em class='comment'>/// Selects tracks between junctions or expands an existing selection to pads or the</em>
+<a id='L76' name='L76'></a>  76     <em class='comment'>/// entire connection.</em>
+<a id='L77' name='L77'></a>  77     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/14316.html' title='Multiple used in 6 places.'>selectConnection</a>;
+<a id='L78' name='L78'></a>  78 
+<a id='L79' name='L79'></a>  79     <em class='comment'>/// Selects all connections belonging to a single net.</em>
+<a id='L80' name='L80'></a>  80     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../S/801.html#L996' title='Defined at 996 in tools/selection_tool.cpp.'>selectNet</a>;
+<a id='L81' name='L81'></a>  81 
+<a id='L82' name='L82'></a>  82     <em class='comment'>/// Selects all components on sheet from Eeschema crossprobing.</em>
+<a id='L83' name='L83'></a>  83     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/14322.html' title='Multiple used in 4 places.'>selectOnSheetFromEeschema</a>;
+<a id='L84' name='L84'></a>  84 
+<a id='L85' name='L85'></a>  85     <em class='comment'>/// Selects all components on the same sheet as the selected footprint.</em>
+<a id='L86' name='L86'></a>  86     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../S/801.html#L1161' title='Defined at 1161 in tools/selection_tool.cpp.'>selectSameSheet</a>;
+<a id='L87' name='L87'></a>  87 
+<a id='L88' name='L88'></a>  88     <em class='comment'>/// Filters the items in the current selection (invokes dialog)</em>
+<a id='L89' name='L89'></a>  89     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../S/801.html#L1312' title='Defined at 1312 in tools/selection_tool.cpp.'>filterSelection</a>;
+<a id='L90' name='L90'></a>  90 
+<a id='L91' name='L91'></a>  91     <em class='comment'>/// move or drag an item</em>
+<a id='L92' name='L92'></a>  92     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/12717.html' title='Multiple used in 65 places.'>move</a>;
+<a id='L93' name='L93'></a>  93     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/7519.html' title='Multiple used in 5 places.'>drag</a>;
+<a id='L94' name='L94'></a>  94 
+<a id='L95' name='L95'></a>  95     <em class='comment'>/// move with a reference point</em>
+<a id='L96' name='L96'></a>  96     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/12721.html' title='Multiple used in 7 places.'>moveWithReference</a>;
+<a id='L97' name='L97'></a>  97 
+<a id='L98' name='L98'></a>  98     <em class='comment'>/// Rotation of selected objects</em>
+<a id='L99' name='L99'></a>  99     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/14063.html' title='Multiple used in 5 places.'>rotateCw</a>;
+<a id='L100' name='L100'></a> 100     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/14062.html' title='Multiple used in 5 places.'>rotateCcw</a>;
+<a id='L101' name='L101'></a> 101 
+<a id='L102' name='L102'></a> 102     <em class='comment'>/// Flipping of selected objects</em>
+<a id='L103' name='L103'></a> 103     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8012.html' title='Multiple used in 11 places.'>flip</a>;
+<a id='L104' name='L104'></a> 104 
+<a id='L105' name='L105'></a> 105     <em class='comment'>/// Mirroring of selected items</em>
+<a id='L106' name='L106'></a> 106     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/12633.html' title='Multiple used in 47 places.'>mirror</a>;
+<a id='L107' name='L107'></a> 107 
+<a id='L108' name='L108'></a> 108     <em class='comment'>/// Updates selected tracks &amp; vias to the current track &amp; via dimensions</em>
+<a id='L109' name='L109'></a> 109     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/6857.html' title='Multiple used in 3 places.'>changeTrackWidth</a>;
+<a id='L110' name='L110'></a> 110 
+<a id='L111' name='L111'></a> 111     <em class='comment'>/// Activation of the edit tool</em>
+<a id='L112' name='L112'></a> 112     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/13759.html' title='Multiple used in 138 places.'>properties</a>;
+<a id='L113' name='L113'></a> 113 
+<a id='L114' name='L114'></a> 114     <em class='comment'>/// Activation of the exact move tool</em>
+<a id='L115' name='L115'></a> 115     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/12719.html' title='Multiple used in 5 places.'>moveExact</a>;
+<a id='L116' name='L116'></a> 116 
+<a id='L117' name='L117'></a> 117     <em class='comment'>/// Activation of the duplication tool</em>
+<a id='L118' name='L118'></a> 118     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/7616.html' title='Multiple used in 6 places.'>duplicate</a>;
+<a id='L119' name='L119'></a> 119 
+<a id='L120' name='L120'></a> 120     <em class='comment'>/// Activation of the duplication tool with incrementing (e.g. pad number)</em>
+<a id='L121' name='L121'></a> 121     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/7618.html' title='Multiple used in 4 places.'>duplicateIncrement</a>;
+<a id='L122' name='L122'></a> 122 
+<a id='L123' name='L123'></a> 123     <em class='comment'>/// Deleting a BOARD_ITEM</em>
+<a id='L124' name='L124'></a> 124     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/13973.html' title='Multiple used in 3 places.'>remove</a>;
+<a id='L125' name='L125'></a> 125     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/7337.html' title='Multiple used in 3 places.'>deleteFull</a>;
+<a id='L126' name='L126'></a> 126 
+<a id='L127' name='L127'></a> 127     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/14320.html' title='Multiple used in 6 places.'>selectLayerPair</a>;
+<a id='L128' name='L128'></a> 128 
+<a id='L129' name='L129'></a> 129     <em class='comment'>/// Break a single track into two segments at the cursor</em>
+<a id='L130' name='L130'></a> 130     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../S/709.html#L1082' title='Defined at 1082 in router/router_tool.cpp.'>breakTrack</a>;
+<a id='L131' name='L131'></a> 131 
+<a id='L132' name='L132'></a> 132     <em class='comment'>/// Breaks track when router is not activated</em>
+<a id='L133' name='L133'></a> 133     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8573.html' title='Multiple used in 4 places.'>inlineBreakTrack</a>;
+<a id='L134' name='L134'></a> 134 
+<a id='L135' name='L135'></a> 135     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/7520.html' title='Multiple used in 7 places.'>drag45Degree</a>;
+<a id='L136' name='L136'></a> 136     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/7524.html' title='Multiple used in 8 places.'>dragFreeAngle</a>;
+<a id='L137' name='L137'></a> 137 
+<a id='L138' name='L138'></a> 138 
+<a id='L139' name='L139'></a> 139     <em class='comment'>// Drawing Tool Activations</em>
+<a id='L140' name='L140'></a> 140     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/7539.html' title='Multiple used in 10 places.'>drawLine</a>;
+<a id='L141' name='L141'></a> 141     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/7543.html' title='Multiple used in 11 places.'>drawPolygon</a>;
+<a id='L142' name='L142'></a> 142     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/7544.html' title='Multiple used in 10 places.'>drawRectangle</a>;
+<a id='L143' name='L143'></a> 143     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/7536.html' title='Multiple used in 10 places.'>drawCircle</a>;
+<a id='L144' name='L144'></a> 144     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../S/763.html#L1264' title='Defined at 1264 in tools/drawing_tool.cpp.'>drawArc</a>;
+<a id='L145' name='L145'></a> 145     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/13530.html' title='Multiple used in 10 places.'>placeText</a>;
+<a id='L146' name='L146'></a> 146     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/7537.html' title='Multiple used in 6 places.'>drawDimension</a>;
+<a id='L147' name='L147'></a> 147     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/7548.html' title='Multiple used in 7 places.'>drawZone</a>;
+<a id='L148' name='L148'></a> 148     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/7547.html' title='Multiple used in 6 places.'>drawVia</a>;
+<a id='L149' name='L149'></a> 149     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/7550.html' title='Multiple used in 11 places.'>drawZoneKeepout</a>;
+<a id='L150' name='L150'></a> 150     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/7549.html' title='Multiple used in 5 places.'>drawZoneCutout</a>;
+<a id='L151' name='L151'></a> 151     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/7546.html' title='Multiple used in 5 places.'>drawSimilarZone</a>;
+<a id='L152' name='L152'></a> 152     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/13529.html' title='Multiple used in 6 places.'>placeTarget</a>;
+<a id='L153' name='L153'></a> 153     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../S/21.html#L97' title='Defined at 97 in autorouter/ar_autoplacer.cpp.'>placeModule</a>;
+<a id='L154' name='L154'></a> 154     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/13525.html' title='Multiple used in 4 places.'>placeImportedGraphics</a>;
+<a id='L155' name='L155'></a> 155     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/14362.html' title='Multiple used in 7 places.'>setAnchor</a>;
+<a id='L156' name='L156'></a> 156     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/7339.html' title='Multiple used in 5 places.'>deleteLastPoint</a>;
+<a id='L157' name='L157'></a> 157     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/6948.html' title='Multiple used in 5 places.'>closeOutline</a>;
+<a id='L158' name='L158'></a> 158 
+<a id='L159' name='L159'></a> 159     <em class='comment'>/// Increase width of currently drawn line</em>
+<a id='L160' name='L160'></a> 160     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8522.html' title='Multiple used in 6 places.'>incWidth</a>;
+<a id='L161' name='L161'></a> 161 
+<a id='L162' name='L162'></a> 162     <em class='comment'>/// Decrease width of currently drawn line</em>
+<a id='L163' name='L163'></a> 163     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/7304.html' title='Multiple used in 6 places.'>decWidth</a>;
+<a id='L164' name='L164'></a> 164 
+<a id='L165' name='L165'></a> 165     <em class='comment'>/// Switch posture when drawing arc</em>
+<a id='L166' name='L166'></a> 166     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/6405.html' title='Multiple used in 3 places.'>arcPosture</a>;
+<a id='L167' name='L167'></a> 167 
+<a id='L168' name='L168'></a> 168     <em class='comment'>// Push and Shove Router Tool</em>
+<a id='L169' name='L169'></a> 169 
+<a id='L170' name='L170'></a> 170     <em class='comment'>/// Activation of the Push and Shove router</em>
+<a id='L171' name='L171'></a> 171     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/14083.html' title='Multiple used in 11 places.'>routeSingleTrack</a>;
+<a id='L172' name='L172'></a> 172 
+<a id='L173' name='L173'></a> 173     <em class='comment'>/// Activation of the Push and Shove router (differential pair mode)</em>
+<a id='L174' name='L174'></a> 174     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/14080.html' title='Multiple used in 7 places.'>routeDiffPair</a>;
+<a id='L175' name='L175'></a> 175 
+<a id='L176' name='L176'></a> 176     <em class='comment'>/// Activation of the Push and Shove router (tune single line mode)</em>
+<a id='L177' name='L177'></a> 177     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/14093.html' title='Multiple used in 4 places.'>routerTuneSingleTrace</a>;
+<a id='L178' name='L178'></a> 178 
+<a id='L179' name='L179'></a> 179     <em class='comment'>/// Activation of the Push and Shove router (diff pair tuning mode)</em>
+<a id='L180' name='L180'></a> 180     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/14091.html' title='Multiple used in 4 places.'>routerTuneDiffPair</a>;
+<a id='L181' name='L181'></a> 181 
+<a id='L182' name='L182'></a> 182     <em class='comment'>/// Activation of the Push and Shove router (skew tuning mode)</em>
+<a id='L183' name='L183'></a> 183     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/14092.html' title='Multiple used in 4 places.'>routerTuneDiffPairSkew</a>;
+<a id='L184' name='L184'></a> 184 
+<a id='L185' name='L185'></a> 185     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> routerUndoLastSegment;
+<a id='L186' name='L186'></a> 186 
+<a id='L187' name='L187'></a> 187     <em class='comment'>/// Activation of the Push and Shove settings dialogs</em>
+<a id='L188' name='L188'></a> 188     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/14088.html' title='Multiple used in 6 places.'>routerSettingsDialog</a>;
+<a id='L189' name='L189'></a> 189     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/14084.html' title='Multiple used in 4 places.'>routerDiffPairDialog</a>;
+<a id='L190' name='L190'></a> 190 
+<a id='L191' name='L191'></a> 191     <em class='comment'>/// Actions to enable switching modes via hotkey assignments</em>
+<a id='L192' name='L192'></a> 192     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/14085.html' title='Multiple used in 4 places.'>routerHighlightMode</a>;
+<a id='L193' name='L193'></a> 193     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/14089.html' title='Multiple used in 4 places.'>routerShoveMode</a>;
+<a id='L194' name='L194'></a> 194     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/14095.html' title='Multiple used in 4 places.'>routerWalkaroundMode</a>;
+<a id='L195' name='L195'></a> 195 
+<a id='L196' name='L196'></a> 196     <em class='comment'>/// Activation of the Push and Shove router (inline dragging mode)</em>
+<a id='L197' name='L197'></a> 197     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/14086.html' title='Multiple used in 5 places.'>routerInlineDrag</a>;
+<a id='L198' name='L198'></a> 198 
+<a id='L199' name='L199'></a> 199     <em class='comment'>// Point Editor</em>
+<a id='L200' name='L200'></a> 200     <em class='comment'>/// Break outline (insert additional points to an edge)</em>
+<a id='L201' name='L201'></a> 201     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/13592.html' title='Multiple used in 4 places.'>pointEditorAddCorner</a>;
+<a id='L202' name='L202'></a> 202 
+<a id='L203' name='L203'></a> 203     <em class='comment'>/// Removes a corner</em>
+<a id='L204' name='L204'></a> 204     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/13593.html' title='Multiple used in 4 places.'>pointEditorRemoveCorner</a>;
+<a id='L205' name='L205'></a> 205 
+<a id='L206' name='L206'></a> 206     <em class='comment'>// Placement tool</em>
+<a id='L207' name='L207'></a> 207     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/6309.html' title='Multiple used in 4 places.'>alignTop</a>;
+<a id='L208' name='L208'></a> 208     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/6303.html' title='Multiple used in 4 places.'>alignBottom</a>;
+<a id='L209' name='L209'></a> 209     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/6307.html' title='Multiple used in 4 places.'>alignLeft</a>;
+<a id='L210' name='L210'></a> 210     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/6308.html' title='Multiple used in 4 places.'>alignRight</a>;
+<a id='L211' name='L211'></a> 211     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/6304.html' title='Multiple used in 4 places.'>alignCenterX</a>;
+<a id='L212' name='L212'></a> 212     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/6305.html' title='Multiple used in 4 places.'>alignCenterY</a>;
+<a id='L213' name='L213'></a> 213     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/7486.html' title='Multiple used in 4 places.'>distributeHorizontally</a>;
+<a id='L214' name='L214'></a> 214     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/7487.html' title='Multiple used in 4 places.'>distributeVertically</a>;
+<a id='L215' name='L215'></a> 215 
+<a id='L216' name='L216'></a> 216     <em class='comment'>// Position Relative Tool</em>
+<a id='L217' name='L217'></a> 217     <em class='comment'>/// Activation of the position relative tool</em>
+<a id='L218' name='L218'></a> 218     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/13645.html' title='Multiple used in 4 places.'>positionRelative</a>;
+<a id='L219' name='L219'></a> 219 
+<a id='L220' name='L220'></a> 220     <em class='comment'>/// Selection of anchor item for position relative tool</em>
+<a id='L221' name='L221'></a> 221     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/14349.html' title='Multiple used in 4 places.'>selectpositionRelativeItem</a>;
+<a id='L222' name='L222'></a> 222 
+<a id='L223' name='L223'></a> 223     <em class='comment'>// Display modes</em>
+<a id='L224' name='L224'></a> 224     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/14436.html' title='Multiple used in 7 places.'>showRatsnest</a>;
+<a id='L225' name='L225'></a> 225     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/13860.html' title='Multiple used in 7 places.'>ratsnestLineMode</a>;
+<a id='L226' name='L226'></a> 226     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/15079.html' title='Multiple used in 6 places.'>trackDisplayMode</a>;
+<a id='L227' name='L227'></a> 227     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/13300.html' title='Multiple used in 11 places.'>padDisplayMode</a>;
+<a id='L228' name='L228'></a> 228     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/15327.html' title='Multiple used in 6 places.'>viaDisplayMode</a>;
+<a id='L229' name='L229'></a> 229     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/16090.html' title='Multiple used in 7 places.'>zoneDisplayEnable</a>;
+<a id='L230' name='L230'></a> 230     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/16089.html' title='Multiple used in 7 places.'>zoneDisplayDisable</a>;
+<a id='L231' name='L231'></a> 231     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/16091.html' title='Multiple used in 7 places.'>zoneDisplayOutlines</a>;
+<a id='L232' name='L232'></a> 232     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/16092.html' title='Multiple used in 4 places.'>zoneDisplayToggle</a>;
+<a id='L233' name='L233'></a> 233     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/14434.html' title='Multiple used in 5 places.'>showPadNumbers</a>;
+<a id='L234' name='L234'></a> 234     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/16127.html' title='Multiple used in 5 places.'>zoomFootprintAutomatically</a>;
+<a id='L235' name='L235'></a> 235 
+<a id='L236' name='L236'></a> 236     <em class='comment'>// Layer control</em>
+<a id='L237' name='L237'></a> 237     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8931.html' title='Multiple used in 9 places.'>layerTop</a>;
+<a id='L238' name='L238'></a> 238     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8890.html' title='Multiple used in 6 places.'>layerInner1</a>;
+<a id='L239' name='L239'></a> 239     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8901.html' title='Multiple used in 6 places.'>layerInner2</a>;
+<a id='L240' name='L240'></a> 240     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8912.html' title='Multiple used in 6 places.'>layerInner3</a>;
+<a id='L241' name='L241'></a> 241     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8914.html' title='Multiple used in 6 places.'>layerInner4</a>;
+<a id='L242' name='L242'></a> 242     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8915.html' title='Multiple used in 6 places.'>layerInner5</a>;
+<a id='L243' name='L243'></a> 243     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8916.html' title='Multiple used in 6 places.'>layerInner6</a>;
+<a id='L244' name='L244'></a> 244     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8917.html' title='Multiple used in 6 places.'>layerInner7</a>;
+<a id='L245' name='L245'></a> 245     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8918.html' title='Multiple used in 6 places.'>layerInner8</a>;
+<a id='L246' name='L246'></a> 246     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8919.html' title='Multiple used in 6 places.'>layerInner9</a>;
+<a id='L247' name='L247'></a> 247     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8891.html' title='Multiple used in 6 places.'>layerInner10</a>;
+<a id='L248' name='L248'></a> 248     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8892.html' title='Multiple used in 6 places.'>layerInner11</a>;
+<a id='L249' name='L249'></a> 249     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8893.html' title='Multiple used in 6 places.'>layerInner12</a>;
+<a id='L250' name='L250'></a> 250     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8894.html' title='Multiple used in 6 places.'>layerInner13</a>;
+<a id='L251' name='L251'></a> 251     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8895.html' title='Multiple used in 6 places.'>layerInner14</a>;
+<a id='L252' name='L252'></a> 252     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8896.html' title='Multiple used in 6 places.'>layerInner15</a>;
+<a id='L253' name='L253'></a> 253     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8897.html' title='Multiple used in 6 places.'>layerInner16</a>;
+<a id='L254' name='L254'></a> 254     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8898.html' title='Multiple used in 6 places.'>layerInner17</a>;
+<a id='L255' name='L255'></a> 255     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8899.html' title='Multiple used in 6 places.'>layerInner18</a>;
+<a id='L256' name='L256'></a> 256     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8900.html' title='Multiple used in 6 places.'>layerInner19</a>;
+<a id='L257' name='L257'></a> 257     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8902.html' title='Multiple used in 6 places.'>layerInner20</a>;
+<a id='L258' name='L258'></a> 258     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8903.html' title='Multiple used in 6 places.'>layerInner21</a>;
+<a id='L259' name='L259'></a> 259     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8904.html' title='Multiple used in 6 places.'>layerInner22</a>;
+<a id='L260' name='L260'></a> 260     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8905.html' title='Multiple used in 6 places.'>layerInner23</a>;
+<a id='L261' name='L261'></a> 261     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8906.html' title='Multiple used in 6 places.'>layerInner24</a>;
+<a id='L262' name='L262'></a> 262     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8907.html' title='Multiple used in 6 places.'>layerInner25</a>;
+<a id='L263' name='L263'></a> 263     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8908.html' title='Multiple used in 6 places.'>layerInner26</a>;
+<a id='L264' name='L264'></a> 264     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8909.html' title='Multiple used in 6 places.'>layerInner27</a>;
+<a id='L265' name='L265'></a> 265     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8910.html' title='Multiple used in 6 places.'>layerInner28</a>;
+<a id='L266' name='L266'></a> 266     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8911.html' title='Multiple used in 6 places.'>layerInner29</a>;
+<a id='L267' name='L267'></a> 267     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8913.html' title='Multiple used in 6 places.'>layerInner30</a>;
+<a id='L268' name='L268'></a> 268     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8876.html' title='Multiple used in 9 places.'>layerBottom</a>;
+<a id='L269' name='L269'></a> 269     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8923.html' title='Multiple used in 5 places.'>layerNext</a>;
+<a id='L270' name='L270'></a> 270     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8926.html' title='Multiple used in 5 places.'>layerPrev</a>;
+<a id='L271' name='L271'></a> 271     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8875.html' title='Multiple used in 5 places.'>layerAlphaInc</a>;
+<a id='L272' name='L272'></a> 272     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8874.html' title='Multiple used in 5 places.'>layerAlphaDec</a>;
+<a id='L273' name='L273'></a> 273     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8930.html' title='Multiple used in 4 places.'>layerToggle</a>;
+<a id='L274' name='L274'></a> 274 
+<a id='L275' name='L275'></a> 275     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8877.html' title='Multiple used in 9 places.'>layerChanged</a>;        <em class='comment'>// notification</em>
+<a id='L276' name='L276'></a> 276 
+<a id='L277' name='L277'></a> 277     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8013.html' title='Multiple used in 4 places.'>flipBoard</a>;
+<a id='L278' name='L278'></a> 278 
+<a id='L279' name='L279'></a> 279     <em class='comment'>// Track &amp; via size control</em>
+<a id='L280' name='L280'></a> 280     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/15091.html' title='Multiple used in 3 places.'>trackWidthInc</a>;
+<a id='L281' name='L281'></a> 281     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/15090.html' title='Multiple used in 3 places.'>trackWidthDec</a>;
+<a id='L282' name='L282'></a> 282     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/15341.html' title='Multiple used in 4 places.'>viaSizeInc</a>;
+<a id='L283' name='L283'></a> 283     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/15340.html' title='Multiple used in 4 places.'>viaSizeDec</a>;
+<a id='L284' name='L284'></a> 284 
+<a id='L285' name='L285'></a> 285     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/15087.html' title='Multiple used in 10 places.'>trackViaSizeChanged</a>;   <em class='comment'>// notification</em>
+<a id='L286' name='L286'></a> 286 
+<a id='L287' name='L287'></a> 287     <em class='comment'>// Zone actions</em>
+<a id='L288' name='L288'></a> 288     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/16095.html' title='Multiple used in 6 places.'>zoneFill</a>;
+<a id='L289' name='L289'></a> 289     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/16096.html' title='Multiple used in 6 places.'>zoneFillAll</a>;
+<a id='L290' name='L290'></a> 290     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/16111.html' title='Multiple used in 5 places.'>zoneUnfill</a>;
+<a id='L291' name='L291'></a> 291     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/16112.html' title='Multiple used in 6 places.'>zoneUnfillAll</a>;
+<a id='L292' name='L292'></a> 292     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/16104.html' title='Multiple used in 5 places.'>zoneMerge</a>;
+<a id='L293' name='L293'></a> 293 
+<a id='L294' name='L294'></a> 294     <em class='comment'>/// Duplicate zone onto another layer</em>
+<a id='L295' name='L295'></a> 295     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/16094.html' title='Multiple used in 5 places.'>zoneDuplicate</a>;
+<a id='L296' name='L296'></a> 296 
+<a id='L297' name='L297'></a> 297     <em class='comment'>// Global edit tool</em>
+<a id='L298' name='L298'></a> 298     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/6711.html' title='Multiple used in 5 places.'>boardSetup</a>;
+<a id='L299' name='L299'></a> 299     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/7664.html' title='Multiple used in 4 places.'>editTracksAndVias</a>;
+<a id='L300' name='L300'></a> 300     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/7662.html' title='Multiple used in 4 places.'>editTextAndGraphics</a>;
+<a id='L301' name='L301'></a> 301     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8274.html' title='Multiple used in 4 places.'>globalDeletions</a>;
+<a id='L302' name='L302'></a> 302     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/6915.html' title='Multiple used in 4 places.'>cleanupTracksAndVias</a>;
+<a id='L303' name='L303'></a> 303     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/6914.html' title='Multiple used in 6 places.'>cleanupGraphics</a>;
+<a id='L304' name='L304'></a> 304     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/15213.html' title='Multiple used in 5 places.'>updateFootprint</a>;
+<a id='L305' name='L305'></a> 305     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/15214.html' title='Multiple used in 5 places.'>updateFootprints</a>;
+<a id='L306' name='L306'></a> 306     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/6854.html' title='Multiple used in 5 places.'>changeFootprint</a>;
+<a id='L307' name='L307'></a> 307     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/6855.html' title='Multiple used in 5 places.'>changeFootprints</a>;
+<a id='L308' name='L308'></a> 308     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/14776.html' title='Multiple used in 4 places.'>swapLayers</a>;
+<a id='L309' name='L309'></a> 309 
+<a id='L310' name='L310'></a> 310     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8509.html' title='Multiple used in 4 places.'>importNetlist</a>;
+<a id='L311' name='L311'></a> 311 
+<a id='L312' name='L312'></a> 312     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8510.html' title='Multiple used in 4 places.'>importSpecctraSession</a>;
+<a id='L313' name='L313'></a> 313     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/7820.html' title='Multiple used in 4 places.'>exportSpecctraDSN</a>;
+<a id='L314' name='L314'></a> 314 
+<a id='L315' name='L315'></a> 315     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8242.html' title='Multiple used in 5 places.'>generateGerbers</a>;
+<a id='L316' name='L316'></a> 316     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8241.html' title='Multiple used in 4 places.'>generateDrillFiles</a>;
+<a id='L317' name='L317'></a> 317     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8243.html' title='Multiple used in 4 places.'>generatePosFile</a>;
+<a id='L318' name='L318'></a> 318     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8244.html' title='Multiple used in 5 places.'>generateReportFile</a>;
+<a id='L319' name='L319'></a> 319     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8240.html' title='Multiple used in 5 places.'>generateD356File</a>;
+<a id='L320' name='L320'></a> 320     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8239.html' title='Multiple used in 5 places.'>generateBOM</a>;
+<a id='L321' name='L321'></a> 321 
+<a id='L322' name='L322'></a> 322     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/9081.html' title='Multiple used in 4 places.'>listNets</a>;
+<a id='L323' name='L323'></a> 323     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/14129.html' title='Multiple used in 5 places.'>runDRC</a>;
+<a id='L324' name='L324'></a> 324 
+<a id='L325' name='L325'></a> 325     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/7657.html' title='Multiple used in 4 places.'>editFpInFpEditor</a>;
+<a id='L326' name='L326'></a> 326     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/14431.html' title='Multiple used in 6 places.'>showLayersManager</a>;
+<a id='L327' name='L327'></a> 327     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/14432.html' title='Multiple used in 6 places.'>showMicrowaveToolbar</a>;
+<a id='L328' name='L328'></a> 328     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/14435.html' title='Multiple used in 6 places.'>showPythonConsole</a>;
+<a id='L329' name='L329'></a> 329 
+<a id='L330' name='L330'></a> 330     <em class='comment'>// Module editor tools</em>
+<a id='L331' name='L331'></a> 331 
+<a id='L332' name='L332'></a> 332     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/14987.html' title='Multiple used in 6 places.'>toggleFootprintTree</a>;
+<a id='L333' name='L333'></a> 333 
+<a id='L334' name='L334'></a> 334     <em class='comment'>// We don't use ACTION::new here because we need to distinguish between New Library</em>
+<a id='L335' name='L335'></a> 335     <em class='comment'>// and New Footprint.</em>
+<a id='L336' name='L336'></a> 336     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/12897.html' title='Multiple used in 11 places.'>newFootprint</a>;
+<a id='L337' name='L337'></a> 337 
+<a id='L338' name='L338'></a> 338     <em class='comment'>// Create a new footprint using the Footprint Wizard</em>
+<a id='L339' name='L339'></a> 339     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../S/506.html#L31' title='Defined at 31 in microwave/microwave_footprint.cpp.'>createFootprint</a>;
+<a id='L340' name='L340'></a> 340 
+<a id='L341' name='L341'></a> 341     <em class='comment'>// We don't use ACTION::save here because we need to distinguish between saving to</em>
+<a id='L342' name='L342'></a> 342     <em class='comment'>// the library and saving to the board (which have different tooltips and icons).</em>
+<a id='L343' name='L343'></a> 343     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/14184.html' title='Multiple used in 6 places.'>saveToBoard</a>;
+<a id='L344' name='L344'></a> 344     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/14185.html' title='Multiple used in 6 places.'>saveToLibrary</a>;
+<a id='L345' name='L345'></a> 345 
+<a id='L346' name='L346'></a> 346     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/7656.html' title='Multiple used in 4 places.'>editFootprint</a>;
+<a id='L347' name='L347'></a> 347     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/7336.html' title='Multiple used in 4 places.'>deleteFootprint</a>;
+<a id='L348' name='L348'></a> 348     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/7258.html' title='Multiple used in 5 places.'>cutFootprint</a>;
+<a id='L349' name='L349'></a> 349     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/7111.html' title='Multiple used in 4 places.'>copyFootprint</a>;
+<a id='L350' name='L350'></a> 350     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/13431.html' title='Multiple used in 4 places.'>pasteFootprint</a>;
+<a id='L351' name='L351'></a> 351     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8505.html' title='Multiple used in 5 places.'>importFootprint</a>;
+<a id='L352' name='L352'></a> 352     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/7819.html' title='Multiple used in 5 places.'>exportFootprint</a>;
+<a id='L353' name='L353'></a> 353 
+<a id='L354' name='L354'></a> 354     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8048.html' title='Multiple used in 6 places.'>footprintProperties</a>;
+<a id='L355' name='L355'></a> 355     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/7314.html' title='Multiple used in 5 places.'>defaultPadProperties</a>;
+<a id='L356' name='L356'></a> 356 
+<a id='L357' name='L357'></a> 357     <em class='comment'>/// Activation of the drawing tool (placing a PAD)</em>
+<a id='L358' name='L358'></a> 358     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/13528.html' title='Multiple used in 7 places.'>placePad</a>;
+<a id='L359' name='L359'></a> 359 
+<a id='L360' name='L360'></a> 360     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../S/773.html#L558' title='Defined at 558 in tools/pad_tool.cpp.'>explodePad</a>;
+<a id='L361' name='L361'></a> 361     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../S/773.html#L605' title='Defined at 605 in tools/pad_tool.cpp.'>recombinePad</a>;
+<a id='L362' name='L362'></a> 362 
+<a id='L363' name='L363'></a> 363     <em class='comment'>/// Tool for quick pad enumeration</em>
+<a id='L364' name='L364'></a> 364     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/7756.html' title='Multiple used in 4 places.'>enumeratePads</a>;
+<a id='L365' name='L365'></a> 365 
+<a id='L366' name='L366'></a> 366     <em class='comment'>/// Tool for creating an array of objects</em>
+<a id='L367' name='L367'></a> 367     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/7159.html' title='Multiple used in 4 places.'>createArray</a>;
+<a id='L368' name='L368'></a> 368 
+<a id='L369' name='L369'></a> 369     <em class='comment'>/// Display module edges as outlines</em>
+<a id='L370' name='L370'></a> 370     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8288.html' title='Multiple used in 9 places.'>graphicsOutlines</a>;
+<a id='L371' name='L371'></a> 371 
+<a id='L372' name='L372'></a> 372     <em class='comment'>/// Display texts as lines</em>
+<a id='L373' name='L373'></a> 373     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/14868.html' title='Multiple used in 9 places.'>textOutlines</a>;
+<a id='L374' name='L374'></a> 374 
+<a id='L375' name='L375'></a> 375     <em class='comment'>// Pad tools</em>
+<a id='L376' name='L376'></a> 376 
+<a id='L377' name='L377'></a> 377     <em class='comment'>/// Copy the selected pad's settings to the board design settings</em>
+<a id='L378' name='L378'></a> 378     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../S/773.html#L135' title='Defined at 135 in tools/pad_tool.cpp.'>copyPadSettings</a>;
+<a id='L379' name='L379'></a> 379 
+<a id='L380' name='L380'></a> 380     <em class='comment'>/// Copy the default pad settings to the selected pad</em>
+<a id='L381' name='L381'></a> 381     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/6394.html' title='Multiple used in 4 places.'>applyPadSettings</a>;
+<a id='L382' name='L382'></a> 382 
+<a id='L383' name='L383'></a> 383     <em class='comment'>/// Copy the current pad's settings to other pads in the module or on the board</em>
+<a id='L384' name='L384'></a> 384     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../S/773.html#L210' title='Defined at 210 in tools/pad_tool.cpp.'>pushPadSettings</a>;
+<a id='L385' name='L385'></a> 385 
+<a id='L386' name='L386'></a> 386     <em class='comment'>// Microwave tools</em>
+<a id='L387' name='L387'></a> 387     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/12556.html' title='Multiple used in 5 places.'>microwaveCreateGap</a>;
+<a id='L388' name='L388'></a> 388 
+<a id='L389' name='L389'></a> 389     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/12558.html' title='Multiple used in 5 places.'>microwaveCreateStub</a>;
+<a id='L390' name='L390'></a> 390 
+<a id='L391' name='L391'></a> 391     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/12559.html' title='Multiple used in 5 places.'>microwaveCreateStubArc</a>;
+<a id='L392' name='L392'></a> 392 
+<a id='L393' name='L393'></a> 393     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/12555.html' title='Multiple used in 5 places.'>microwaveCreateFunctionShape</a>;
+<a id='L394' name='L394'></a> 394 
+<a id='L395' name='L395'></a> 395     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/12557.html' title='Multiple used in 5 places.'>microwaveCreateLine</a>;
+<a id='L396' name='L396'></a> 396 
+<a id='L397' name='L397'></a> 397     <em class='comment'>// Locking</em>
+<a id='L398' name='L398'></a> 398     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/14990.html' title='Multiple used in 4 places.'>toggleLock</a>;
+<a id='L399' name='L399'></a> 399     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/9116.html' title='Multiple used in 54 places.'>lock</a>;
+<a id='L400' name='L400'></a> 400     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/15201.html' title='Multiple used in 4 places.'>unlock</a>;
+<a id='L401' name='L401'></a> 401 
+<a id='L402' name='L402'></a> 402     <em class='comment'>// Miscellaneous</em>
+<a id='L403' name='L403'></a> 403     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/14347.html' title='Multiple used in 36 places.'>selectionTool</a>;
+<a id='L404' name='L404'></a> 404     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/13494.html' title='Multiple used in 9 places.'>pickerTool</a>;
+<a id='L405' name='L405'></a> 405     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/12528.html' title='Multiple used in 11 places.'>measureTool</a>;
+<a id='L406' name='L406'></a> 406     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/15221.html' title='Multiple used in 4 places.'>updateUnits</a>;
+<a id='L407' name='L407'></a> 407     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/7566.html' title='Multiple used in 5 places.'>drillOrigin</a>;
+<a id='L408' name='L408'></a> 408     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> placeFileOrigin;
+<a id='L409' name='L409'></a> 409     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/6392.html' title='Multiple used in 4 places.'>appendBoard</a>;
+<a id='L410' name='L410'></a> 410     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/14426.html' title='Multiple used in 5 places.'>showEeschema</a>;
+<a id='L411' name='L411'></a> 411     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/6713.html' title='Multiple used in 4 places.'>boardStatistics</a>;
+<a id='L412' name='L412'></a> 412 
+<a id='L413' name='L413'></a> 413     <em class='comment'>// Appearance controls</em>
+<a id='L414' name='L414'></a> 414     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/6921.html' title='Multiple used in 4 places.'>clearHighlight</a>;
+<a id='L415' name='L415'></a> 415     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../D/4030.html' title='Multiple defined in 2 places.'>highlightNet</a>;
+<a id='L416' name='L416'></a> 416     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/14989.html' title='Multiple used in 4 places.'>toggleLastNetHighlight</a>;
+<a id='L417' name='L417'></a> 417     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8399.html' title='Multiple used in 6 places.'>highlightNetTool</a>;
+<a id='L418' name='L418'></a> 418     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8398.html' title='Multiple used in 4 places.'>highlightNetSelection</a>;
+<a id='L419' name='L419'></a> 419     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8397.html' title='Multiple used in 5 places.'>highlightItem</a>;
+<a id='L420' name='L420'></a> 420     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8390.html' title='Multiple used in 5 places.'>hideNet</a>;
+<a id='L421' name='L421'></a> 421     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/14433.html' title='Multiple used in 5 places.'>showNet</a>;
+<a id='L422' name='L422'></a> 422 
+<a id='L423' name='L423'></a> 423     <em class='comment'>// Ratsnest</em>
+<a id='L424' name='L424'></a> 424     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/9107.html' title='Multiple used in 5 places.'>localRatsnestTool</a>;
+<a id='L425' name='L425'></a> 425     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8389.html' title='Multiple used in 5 places.'>hideDynamicRatsnest</a>;
+<a id='L426' name='L426'></a> 426     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/15216.html' title='Multiple used in 8 places.'>updateLocalRatsnest</a>;
+<a id='L427' name='L427'></a> 427 
+<a id='L428' name='L428'></a> 428     <em class='comment'>/// Find an item</em>
+<a id='L429' name='L429'></a> 429     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../D/3905.html' title='Multiple defined in 2 places.'>find</a>;
+<a id='L430' name='L430'></a> 430 
+<a id='L431' name='L431'></a> 431     <em class='comment'>/// Find an item and start moving</em>
+<a id='L432' name='L432'></a> 432     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/8250.html' title='Multiple used in 5 places.'>getAndPlace</a>;
+<a id='L433' name='L433'></a> 433 
+<a id='L434' name='L434'></a> 434     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/6493.html' title='Multiple used in 4 places.'>autoplaceOffboardComponents</a>;
+<a id='L435' name='L435'></a> 435     <strong class='reserved'>static</strong> <a href='../Y/4097.html' title='Multiple used in 452 places.'>TOOL_ACTION</a> <a href='../Y/6494.html' title='Multiple used in 4 places.'>autoplaceSelectedComponents</a>;
+<a id='L436' name='L436'></a> 436 
+<a id='L437' name='L437'></a> 437     <em class='comment'>///&gt; @copydoc COMMON_ACTIONS::TranslateLegacyId()</em>
+<a id='L438' name='L438'></a> 438     <a href='../Y/15387.html' title='Multiple used in 761 places.'>virtual</a> <a href='../Y/2699.html' title='Multiple used in 30 places.'>OPT</a>&lt;<a href='../Y/4100.html' title='Multiple used in 418 places.'>TOOL_EVENT</a>&gt; <a href='../S/781.html#L35' title='Defined at 35 in tools/pcb_actions.cpp.'>TranslateLegacyId</a>( <strong class='reserved'>int</strong> <a href='../Y/5389.html' title='Multiple used in 71 places.'>aId</a> ) <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a>;
+<a id='L439' name='L439'></a> 439 <em class='brace'>}</em>;
+<a id='L440' name='L440'></a> 440 
+<a id='L441' name='L441'></a> 441 <em class='sharp'>#endif</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;][^][v]<a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

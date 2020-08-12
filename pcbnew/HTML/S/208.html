@@ -1,0 +1,442 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>dialogs/dialog_global_edit_tracks_and_vias.cpp</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/831.html'>dialogs</a>/dialog_global_edit_tracks_and_vias.cpp</h2>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L87'>[^]</a><a href='#L396'>[v]</a>[top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L87' title='Defined at 87.'>OnNetFilterSelect</a></li>
+<li><a href='#L91' title='Defined at 91.'>OnNetclassFilterSelect</a></li>
+<li><a href='#L95' title='Defined at 95.'>OnLayerFilterSelect</a></li>
+<li><a href='#L162' title='Defined at 162.'>buildFilterLists</a></li>
+<li><a href='#L192' title='Defined at 192.'>buildNetclassesGrid</a></li>
+<li><a href='#L228' title='Defined at 228.'>TransferDataToWindow</a></li>
+<li><a href='#L262' title='Defined at 262.'>OnUpdateUI</a></li>
+<li><a href='#L275' title='Defined at 275.'>processItem</a></li>
+<li><a href='#L327' title='Defined at 327.'>visitItem</a></li>
+<li><a href='#L351' title='Defined at 351.'>TransferDataFromWindow</a></li>
+<li><a href='#L377' title='Defined at 377.'>AdjustNetclassGridColumns</a></li>
+<li><a href='#L389' title='Defined at 389.'>OnSizeNetclassGrid</a></li>
+<li><a href='#L396' title='Defined at 396.'>EditTracksAndVias</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * This program source code file is part of KiCad, a free EDA CAD application.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 2009-2016 Jean-Pierre Charras, jean-pierre.charras at wanadoo.fr</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> * Copyright (C) 1992-2018 KiCad Developers, see AUTHORS.txt for contributors.</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> *</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> * This program is free software; you can redistribute it and/or</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * modify it under the terms of the GNU General Public License</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * as published by the Free Software Foundation; either version 2</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> * of the License, or (at your option) any later version.</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> *</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> * This program is distributed in the hope that it will be useful,</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> * GNU General Public License for more details.</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> *</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> * You should have received a copy of the GNU General Public License</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * along with this program; if not, you may find one here:</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> * or you may search the http://www.gnu.org website for the version 2 license,</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'> * or you may write to the Free Software Foundation, Inc.,</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'> * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'> */</em>
+<a id='L24' name='L24'></a>  24 
+<a id='L25' name='L25'></a>  25 <em class='sharp'>#include</em> &lt;fctsys.h&gt;
+<a id='L26' name='L26'></a>  26 <em class='sharp'>#include</em> &lt;confirm.h&gt;
+<a id='L27' name='L27'></a>  27 <em class='sharp'>#include</em> &lt;<a href='586.html'>pcb_edit_frame.h</a>&gt;
+<a id='L28' name='L28'></a>  28 <em class='sharp'>#include</em> &lt;<a href='58.html'>class_board.h</a>&gt;
+<a id='L29' name='L29'></a>  29 <em class='sharp'>#include</em> &lt;<a href='79.html'>class_track.h</a>&gt;
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#include</em> &lt;<a href='91.html'>connectivity/connectivity_data.h</a>&gt;
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#include</em> &lt;view/view.h&gt;
+<a id='L32' name='L32'></a>  32 <em class='sharp'>#include</em> &lt;<a href='590.html'>pcb_layer_box_selector.h</a>&gt;
+<a id='L33' name='L33'></a>  33 <em class='sharp'>#include</em> &lt;tool/tool_manager.h&gt;
+<a id='L34' name='L34'></a>  34 <em class='sharp'>#include</em> &lt;tool/selection.h&gt;
+<a id='L35' name='L35'></a>  35 <em class='sharp'>#include</em> &lt;<a href='802.html'>tools/selection_tool.h</a>&gt;
+<a id='L36' name='L36'></a>  36 <em class='sharp'>#include</em> &lt;<a href='770.html'>tools/global_edit_tool.h</a>&gt;
+<a id='L37' name='L37'></a>  37 <em class='sharp'>#include</em> "<a href='211.html'>dialog_global_edit_tracks_and_vias_base.h</a>"
+<a id='L38' name='L38'></a>  38 
+<a id='L39' name='L39'></a>  39 <em class='comment'>// Columns of netclasses grid</em>
+<a id='L40' name='L40'></a>  40 <strong class='reserved'>enum</strong> <em class='brace'>{</em>
+<a id='L41' name='L41'></a>  41     <a href='../R/1024.html' title='Multiple referred from 2 places.'>GRID_NAME</a> = 0,
+<a id='L42' name='L42'></a>  42     <a href='../R/1025.html' title='Multiple referred from 3 places.'>GRID_TRACKSIZE</a>,
+<a id='L43' name='L43'></a>  43     <a href='../R/1027.html' title='Multiple referred from 3 places.'>GRID_VIASIZE</a>,
+<a id='L44' name='L44'></a>  44     <a href='../R/1026.html' title='Multiple referred from 3 places.'>GRID_VIADRILL</a>,
+<a id='L45' name='L45'></a>  45     <a href='../R/1029.html' title='Multiple referred from 3 places.'>GRID_uVIASIZE</a>,
+<a id='L46' name='L46'></a>  46     <a href='../R/1028.html' title='Multiple referred from 3 places.'>GRID_uVIADRILL</a>,
+<a id='L47' name='L47'></a>  47     GRID_DIFF_PAIR_WIDTH,        <em class='comment'>// not currently included in grid</em>
+<a id='L48' name='L48'></a>  48     GRID_DIFF_PAIR_GAP,          <em class='comment'>// not currently included in grid</em>
+<a id='L49' name='L49'></a>  49     GRID_DIFF_PAIR_VIA_GAP       <em class='comment'>// not currently included in grid</em>
+<a id='L50' name='L50'></a>  50 <em class='brace'>}</em>;
+<a id='L51' name='L51'></a>  51 
+<a id='L52' name='L52'></a>  52 
+<a id='L53' name='L53'></a>  53 <em class='comment'>// Globals to remember control settings during a session</em>
+<a id='L54' name='L54'></a>  54 <strong class='reserved'>static</strong> <strong class='reserved'>bool</strong>         <a href='../Y/8199.html' title='Multiple used in 3 places.'>g_modifyTracks</a> = <strong class='reserved'>true</strong>;
+<a id='L55' name='L55'></a>  55 <strong class='reserved'>static</strong> <strong class='reserved'>bool</strong>         <a href='../Y/8201.html' title='Multiple used in 3 places.'>g_modifyVias</a> = <strong class='reserved'>true</strong>;
+<a id='L56' name='L56'></a>  56 <strong class='reserved'>static</strong> <strong class='reserved'>bool</strong>         <a href='../Y/8185.html' title='Multiple used in 3 places.'>g_filterByNetclass</a>;
+<a id='L57' name='L57'></a>  57 <strong class='reserved'>static</strong> <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>     <a href='../Y/8204.html' title='Multiple used in 3 places.'>g_netclassFilter</a>;
+<a id='L58' name='L58'></a>  58 <strong class='reserved'>static</strong> <strong class='reserved'>bool</strong>         <a href='../Y/8184.html' title='Multiple used in 3 places.'>g_filterByNet</a>;
+<a id='L59' name='L59'></a>  59 <strong class='reserved'>static</strong> <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>     <a href='../Y/8203.html' title='Multiple used in 4 places.'>g_netFilter</a>;
+<a id='L60' name='L60'></a>  60 <strong class='reserved'>static</strong> <strong class='reserved'>bool</strong>         <a href='../Y/8183.html' title='Multiple used in 6 places.'>g_filterByLayer</a>;
+<a id='L61' name='L61'></a>  61 <strong class='reserved'>static</strong> <a href='../Y/2321.html' title='Multiple used in 152 places.'>LAYER_NUM</a>    <a href='../Y/8188.html' title='Multiple used in 6 places.'>g_layerFilter</a>;
+<a id='L62' name='L62'></a>  62 
+<a id='L63' name='L63'></a>  63 
+<a id='L64' name='L64'></a>  64 <strong class='reserved'>class</strong> <a href='../R/588.html' title='Multiple referred from 16 places.'>DIALOG_GLOBAL_EDIT_TRACKS_AND_VIAS</a> : <strong class='reserved'>public</strong> <a href='../D/614.html' title='Multiple defined in 2 places.'>DIALOG_GLOBAL_EDIT_TRACKS_AND_VIAS_BASE</a>
+<a id='L65' name='L65'></a>  65 <em class='brace'>{</em>
+<a id='L66' name='L66'></a>  66 <strong class='reserved'>private</strong>:
+<a id='L67' name='L67'></a>  67     <a href='../S/585.html#L356' title='Defined at 356 in pcb_edit_frame.cpp.'>PCB_EDIT_FRAME</a>* <a href='../D/4192.html' title='Multiple defined in 5 places.'>m_parent</a>;
+<a id='L68' name='L68'></a>  68     <a href='../S/57.html#L104' title='Defined at 104 in class_board.cpp.'>BOARD</a>*          <a href='../Y/10345.html' title='Multiple used in 71 places.'>m_brd</a>;
+<a id='L69' name='L69'></a>  69     <strong class='reserved'>int</strong>*            <a href='../Y/11488.html' title='Multiple used in 6 places.'>m_originalColWidths</a>;
+<a id='L70' name='L70'></a>  70     <strong class='reserved'>bool</strong>            <a href='../Y/10825.html' title='Multiple used in 8 places.'>m_failedDRC</a>;
+<a id='L71' name='L71'></a>  71 
+<a id='L72' name='L72'></a>  72 <strong class='reserved'>public</strong>:
+<a id='L73' name='L73'></a>  73     <a href='../D/613.html' title='Multiple defined in 3 places.'>DIALOG_GLOBAL_EDIT_TRACKS_AND_VIAS</a>( <a href='../S/585.html#L356' title='Defined at 356 in pcb_edit_frame.cpp.'>PCB_EDIT_FRAME</a>* <a href='../Y/5754.html' title='Multiple used in 610 places.'>aParent</a> );
+<a id='L74' name='L74'></a>  74     ~<a href='../D/613.html' title='Multiple defined in 3 places.'>DIALOG_GLOBAL_EDIT_TRACKS_AND_VIAS</a>() <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a>;
+<a id='L75' name='L75'></a>  75 
+<a id='L76' name='L76'></a>  76 <strong class='reserved'>private</strong>:
+<a id='L77' name='L77'></a>  77     <strong class='reserved'>void</strong> <a href='../D/4747.html' title='Multiple defined in 2 places.'>visitItem</a>( <a href='../Y/2870.html' title='Multiple used in 50 places.'>PICKED_ITEMS_LIST</a>* <a href='../Y/6100.html' title='Multiple used in 10 places.'>aUndoList</a>, <a href='../S/78.html#L38' title='Defined at 38 in class_track.cpp.'>TRACK</a>* <a href='../Y/5437.html' title='Multiple used in 845 places.'>aItem</a> );
+<a id='L78' name='L78'></a>  78     <strong class='reserved'>void</strong> <a href='../D/4474.html' title='Multiple defined in 2 places.'>processItem</a>( <a href='../Y/2870.html' title='Multiple used in 50 places.'>PICKED_ITEMS_LIST</a>* <a href='../Y/6100.html' title='Multiple used in 10 places.'>aUndoList</a>, <a href='../S/78.html#L38' title='Defined at 38 in class_track.cpp.'>TRACK</a>* <a href='../Y/5437.html' title='Multiple used in 845 places.'>aItem</a> );
+<a id='L79' name='L79'></a>  79 
+<a id='L80' name='L80'></a>  80     <strong class='reserved'>bool</strong> <a href='../D/3273.html' title='Multiple defined in 36 places.'>TransferDataToWindow</a>() <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a>;
+<a id='L81' name='L81'></a>  81     <strong class='reserved'>bool</strong> <a href='../D/3272.html' title='Multiple defined in 44 places.'>TransferDataFromWindow</a>() <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a>;
+<a id='L82' name='L82'></a>  82 
+<a id='L83' name='L83'></a>  83     <strong class='reserved'>void</strong> <a href='../D/2378.html' title='Multiple defined in 7 places.'>OnUpdateUI</a>( <a href='../Y/15987.html' title='Multiple used in 84 places.'>wxUpdateUIEvent</a>&amp; <a href='../Y/7792.html' title='Multiple used in 867 places.'>event</a> ) <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a>;
+<a id='L84' name='L84'></a>  84     <strong class='reserved'>void</strong> <a href='../S/208.html#L389' title='Defined at 389 in dialogs/dialog_global_edit_tracks_and_vias.cpp.'>OnSizeNetclassGrid</a>( <a href='../Y/15944.html' title='Multiple used in 43 places.'>wxSizeEvent</a>&amp; <a href='../Y/7792.html' title='Multiple used in 867 places.'>event</a> ) <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a>;
+<a id='L85' name='L85'></a>  85     <strong class='reserved'>void</strong> <a href='../S/208.html#L377' title='Defined at 377 in dialogs/dialog_global_edit_tracks_and_vias.cpp.'>AdjustNetclassGridColumns</a>( <strong class='reserved'>int</strong> <a href='../Y/6171.html' title='Multiple used in 160 places.'>aWidth</a> );
+<a id='L86' name='L86'></a>  86 
+<a id='L87' name='L87'></a>  87     <strong class='reserved'>void</strong> <a href='../R/2201.html' title='Multiple referred from 2 places.'>OnNetFilterSelect</a>( <a href='../Y/15577.html' title='Multiple used in 712 places.'>wxCommandEvent</a>&amp; <a href='../Y/7792.html' title='Multiple used in 867 places.'>event</a> )
+<a id='L88' name='L88'></a>  88     <em class='brace'>{</em>
+<a id='L89' name='L89'></a>  89         <a href='../Y/11394.html' title='Multiple used in 7 places.'>m_netFilterOpt</a>-&gt;<a href='../D/3095.html' title='Multiple defined in 3 places.'>SetValue</a>( <strong class='reserved'>true</strong> );
+<a id='L90' name='L90'></a>  90     <em class='brace'>}</em>
+<a id='L91' name='L91'></a>  91     <strong class='reserved'>void</strong> <a href='../R/2203.html' title='Multiple referred from 3 places.'>OnNetclassFilterSelect</a>( <a href='../Y/15577.html' title='Multiple used in 712 places.'>wxCommandEvent</a>&amp; <a href='../Y/7792.html' title='Multiple used in 867 places.'>event</a> ) <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a>
+<a id='L92' name='L92'></a>  92     <em class='brace'>{</em>
+<a id='L93' name='L93'></a>  93         <a href='../Y/11413.html' title='Multiple used in 7 places.'>m_netclassFilterOpt</a>-&gt;<a href='../D/3095.html' title='Multiple defined in 3 places.'>SetValue</a>( <strong class='reserved'>true</strong> );
+<a id='L94' name='L94'></a>  94     <em class='brace'>}</em>
+<a id='L95' name='L95'></a>  95     <strong class='reserved'>void</strong> <a href='../R/2178.html' title='Multiple referred from 6 places.'>OnLayerFilterSelect</a>( <a href='../Y/15577.html' title='Multiple used in 712 places.'>wxCommandEvent</a>&amp; <a href='../Y/7792.html' title='Multiple used in 867 places.'>event</a> ) <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a>
+<a id='L96' name='L96'></a>  96     <em class='brace'>{</em>
+<a id='L97' name='L97'></a>  97         <a href='../Y/11161.html' title='Multiple used in 14 places.'>m_layerFilterOpt</a>-&gt;<a href='../D/3095.html' title='Multiple defined in 3 places.'>SetValue</a>( <strong class='reserved'>true</strong> );
+<a id='L98' name='L98'></a>  98     <em class='brace'>}</em>
+<a id='L99' name='L99'></a>  99 
+<a id='L100' name='L100'></a> 100     <strong class='reserved'>void</strong> <a href='../S/208.html#L192' title='Defined at 192 in dialogs/dialog_global_edit_tracks_and_vias.cpp.'>buildNetclassesGrid</a>();
+<a id='L101' name='L101'></a> 101     <strong class='reserved'>void</strong> <a href='../S/208.html#L162' title='Defined at 162 in dialogs/dialog_global_edit_tracks_and_vias.cpp.'>buildFilterLists</a>();
+<a id='L102' name='L102'></a> 102 <em class='brace'>}</em>;
+<a id='L103' name='L103'></a> 103 
+<a id='L104' name='L104'></a> 104 
+<a id='L105' name='L105'></a> 105 <a href='../D/613.html' title='Multiple defined in 3 places.'>DIALOG_GLOBAL_EDIT_TRACKS_AND_VIAS</a>::<a href='../R/588.html' title='Multiple referred from 16 places.'>DIALOG_GLOBAL_EDIT_TRACKS_AND_VIAS</a>( <a href='../S/585.html#L356' title='Defined at 356 in pcb_edit_frame.cpp.'>PCB_EDIT_FRAME</a>* <a href='../Y/5754.html' title='Multiple used in 610 places.'>aParent</a> ) :
+<a id='L106' name='L106'></a> 106     <a href='../D/614.html' title='Multiple defined in 2 places.'>DIALOG_GLOBAL_EDIT_TRACKS_AND_VIAS_BASE</a>( <a href='../Y/5754.html' title='Multiple used in 610 places.'>aParent</a> )
+<a id='L107' name='L107'></a> 107 <em class='brace'>{</em>
+<a id='L108' name='L108'></a> 108     <a href='../D/4192.html' title='Multiple defined in 5 places.'>m_parent</a>  = <a href='../Y/5754.html' title='Multiple used in 610 places.'>aParent</a>;
+<a id='L109' name='L109'></a> 109     <a href='../Y/10345.html' title='Multiple used in 71 places.'>m_brd</a> = <a href='../D/4192.html' title='Multiple defined in 5 places.'>m_parent</a>-&gt;<a href='../D/1112.html' title='Multiple defined in 2 places.'>GetBoard</a>();
+<a id='L110' name='L110'></a> 110 
+<a id='L111' name='L111'></a> 111     <a href='../Y/11488.html' title='Multiple used in 6 places.'>m_originalColWidths</a> = <strong class='reserved'>new</strong> <strong class='reserved'>int</strong>[ <a href='../Y/11414.html' title='Multiple used in 43 places.'>m_netclassGrid</a>-&gt;<a href='../D/1267.html' title='Multiple defined in 2 places.'>GetNumberCols</a>() ];
+<a id='L112' name='L112'></a> 112 
+<a id='L113' name='L113'></a> 113     <strong class='reserved'>for</strong>( <strong class='reserved'>int</strong> <a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a> = 0; <a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a> &lt; <a href='../Y/11414.html' title='Multiple used in 43 places.'>m_netclassGrid</a>-&gt;<a href='../D/1267.html' title='Multiple defined in 2 places.'>GetNumberCols</a>(); ++<a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a> )
+<a id='L114' name='L114'></a> 114         <a href='../Y/11488.html' title='Multiple used in 6 places.'>m_originalColWidths</a>[ <a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a> ] = <a href='../Y/11414.html' title='Multiple used in 43 places.'>m_netclassGrid</a>-&gt;<a href='../Y/1296.html' title='Multiple used in 15 places.'>GetColSize</a>( <a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a> );
+<a id='L115' name='L115'></a> 115 
+<a id='L116' name='L116'></a> 116     <a href='../Y/10825.html' title='Multiple used in 8 places.'>m_failedDRC</a> = <strong class='reserved'>false</strong>;
+<a id='L117' name='L117'></a> 117 
+<a id='L118' name='L118'></a> 118     <a href='../S/208.html#L162' title='Defined at 162 in dialogs/dialog_global_edit_tracks_and_vias.cpp.'>buildFilterLists</a>();
+<a id='L119' name='L119'></a> 119 
+<a id='L120' name='L120'></a> 120     <a href='../D/4192.html' title='Multiple defined in 5 places.'>m_parent</a>-&gt;<a href='../S/762.html#L532' title='Defined at 532 in toolbars_pcb_editor.cpp.'>UpdateTrackWidthSelectBox</a>( <a href='../Y/12239.html' title='Multiple used in 10 places.'>m_trackWidthSelectBox</a>, <strong class='reserved'>false</strong> );
+<a id='L121' name='L121'></a> 121     <a href='../Y/12239.html' title='Multiple used in 10 places.'>m_trackWidthSelectBox</a>-&gt;<a href='../Y/179.html' title='Multiple used in 398 places.'>Append</a>( <a href='../Y/1947.html' title='Multiple used in 11 places.'>INDETERMINATE_ACTION</a> );
+<a id='L122' name='L122'></a> 122     <a href='../D/4192.html' title='Multiple defined in 5 places.'>m_parent</a>-&gt;<a href='../S/762.html#L574' title='Defined at 574 in toolbars_pcb_editor.cpp.'>UpdateViaSizeSelectBox</a>( <a href='../Y/12359.html' title='Multiple used in 10 places.'>m_viaSizesSelectBox</a>, <strong class='reserved'>false</strong> );
+<a id='L123' name='L123'></a> 123     <a href='../Y/12359.html' title='Multiple used in 10 places.'>m_viaSizesSelectBox</a>-&gt;<a href='../Y/179.html' title='Multiple used in 398 places.'>Append</a>( <a href='../Y/1947.html' title='Multiple used in 11 places.'>INDETERMINATE_ACTION</a> );
+<a id='L124' name='L124'></a> 124 
+<a id='L125' name='L125'></a> 125     <a href='../Y/11150.html' title='Multiple used in 11 places.'>m_layerBox</a>-&gt;<a href='../Y/3363.html' title='Multiple used in 14 places.'>SetBoardFrame</a>( <a href='../D/4192.html' title='Multiple defined in 5 places.'>m_parent</a> );
+<a id='L126' name='L126'></a> 126     <a href='../Y/11150.html' title='Multiple used in 11 places.'>m_layerBox</a>-&gt;<a href='../Y/3644.html' title='Multiple used in 10 places.'>SetLayersHotkeys</a>( <strong class='reserved'>false</strong> );
+<a id='L127' name='L127'></a> 127     <a href='../Y/11150.html' title='Multiple used in 11 places.'>m_layerBox</a>-&gt;<a href='../Y/3716.html' title='Multiple used in 11 places.'>SetNotAllowedLayerSet</a>( <a href='../Y/2380.html' title='Multiple used in 386 places.'>LSET</a>::<a href='../Y/160.html' title='Multiple used in 11 places.'>AllNonCuMask</a>() );
+<a id='L128' name='L128'></a> 128     <a href='../Y/11150.html' title='Multiple used in 11 places.'>m_layerBox</a>-&gt;<a href='../Y/3927.html' title='Multiple used in 6 places.'>SetUndefinedLayerName</a>( <a href='../Y/1947.html' title='Multiple used in 11 places.'>INDETERMINATE_ACTION</a> );
+<a id='L129' name='L129'></a> 129     <a href='../Y/11150.html' title='Multiple used in 11 places.'>m_layerBox</a>-&gt;<a href='../S/589.html#L84' title='Defined at 84 in pcb_layer_box_selector.cpp.'>Resync</a>();
+<a id='L130' name='L130'></a> 130 
+<a id='L131' name='L131'></a> 131     <a href='../Y/15724.html' title='Multiple used in 75 places.'>wxFont</a> <a href='../Y/8552.html' title='Multiple used in 46 places.'>infoFont</a> = <a href='../Y/15965.html' title='Multiple used in 31 places.'>wxSystemSettings</a>::<a href='../Y/1430.html' title='Multiple used in 12 places.'>GetFont</a>( <a href='../Y/15933.html' title='Multiple used in 10 places.'>wxSYS_DEFAULT_GUI_FONT</a> );
+<a id='L132' name='L132'></a> 132     <a href='../Y/8552.html' title='Multiple used in 46 places.'>infoFont</a>.<a href='../Y/3890.html' title='Multiple used in 9 places.'>SetSymbolicSize</a>( <a href='../Y/15702.html' title='Multiple used in 8 places.'>wxFONTSIZE_SMALL</a> );
+<a id='L133' name='L133'></a> 133     <a href='../Y/11414.html' title='Multiple used in 43 places.'>m_netclassGrid</a>-&gt;<a href='../Y/3444.html' title='Multiple used in 4 places.'>SetDefaultCellFont</a>( <a href='../Y/8552.html' title='Multiple used in 46 places.'>infoFont</a> );
+<a id='L134' name='L134'></a> 134     <a href='../S/208.html#L192' title='Defined at 192 in dialogs/dialog_global_edit_tracks_and_vias.cpp.'>buildNetclassesGrid</a>();
+<a id='L135' name='L135'></a> 135 
+<a id='L136' name='L136'></a> 136     <a href='../Y/11414.html' title='Multiple used in 43 places.'>m_netclassGrid</a>-&gt;<a href='../Y/3383.html' title='Multiple used in 7 places.'>SetCellHighlightPenWidth</a>( 0 );
+<a id='L137' name='L137'></a> 137     <a href='../Y/11836.html' title='Multiple used in 101 places.'>m_sdbSizerOK</a>-&gt;<a href='../Y/3441.html' title='Multiple used in 47 places.'>SetDefault</a>();
+<a id='L138' name='L138'></a> 138 
+<a id='L139' name='L139'></a> 139     <a href='../Y/11393.html' title='Multiple used in 17 places.'>m_netFilter</a>-&gt;<a href='../Y/532.html' title='Multiple used in 483 places.'>Connect</a>( <a href='../Y/2619.html' title='Multiple used in 4 places.'>NET_SELECTED</a>, <a href='../Y/15578.html' title='Multiple used in 715 places.'>wxCommandEventHandler</a>( <a href='../D/613.html' title='Multiple defined in 3 places.'>DIALOG_GLOBAL_EDIT_TRACKS_AND_VIAS</a>::<a href='../S/208.html#L87' title='Defined at 87 in dialogs/dialog_global_edit_tracks_and_vias.cpp.'>OnNetFilterSelect</a> ), <a href='../Y/2643.html' title='Multiple used in 1581 places.'>NULL</a>, <strong class='reserved'>this</strong> );
+<a id='L140' name='L140'></a> 140 
+<a id='L141' name='L141'></a> 141     <a href='../Y/1064.html' title='Multiple used in 33 places.'>FinishDialogSettings</a>();
+<a id='L142' name='L142'></a> 142 <em class='brace'>}</em>
+<a id='L143' name='L143'></a> 143 
+<a id='L144' name='L144'></a> 144 
+<a id='L145' name='L145'></a> 145 <a href='../R/588.html' title='Multiple referred from 16 places.'>DIALOG_GLOBAL_EDIT_TRACKS_AND_VIAS</a>::~<a href='../D/613.html' title='Multiple defined in 3 places.'>DIALOG_GLOBAL_EDIT_TRACKS_AND_VIAS</a>()
+<a id='L146' name='L146'></a> 146 <em class='brace'>{</em>
+<a id='L147' name='L147'></a> 147     <a href='../Y/8199.html' title='Multiple used in 3 places.'>g_modifyTracks</a> = <a href='../Y/12246.html' title='Multiple used in 30 places.'>m_tracks</a>-&gt;<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>();
+<a id='L148' name='L148'></a> 148     <a href='../Y/8201.html' title='Multiple used in 3 places.'>g_modifyVias</a> = <a href='../S/305.html#L53' title='Defined at 53 in dialogs/dialog_track_via_properties.cpp.'>m_vias</a>-&gt;<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>();
+<a id='L149' name='L149'></a> 149     <a href='../Y/8185.html' title='Multiple used in 3 places.'>g_filterByNetclass</a> = <a href='../Y/11413.html' title='Multiple used in 7 places.'>m_netclassFilterOpt</a>-&gt;<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>();
+<a id='L150' name='L150'></a> 150     <a href='../Y/8204.html' title='Multiple used in 3 places.'>g_netclassFilter</a> = <a href='../Y/11411.html' title='Multiple used in 13 places.'>m_netclassFilter</a>-&gt;<a href='../Y/1739.html' title='Multiple used in 8 places.'>GetStringSelection</a>();
+<a id='L151' name='L151'></a> 151     <a href='../Y/8184.html' title='Multiple used in 3 places.'>g_filterByNet</a> = <a href='../Y/11394.html' title='Multiple used in 7 places.'>m_netFilterOpt</a>-&gt;<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>();
+<a id='L152' name='L152'></a> 152     <a href='../Y/8203.html' title='Multiple used in 4 places.'>g_netFilter</a> = <a href='../Y/11393.html' title='Multiple used in 17 places.'>m_netFilter</a>-&gt;GetSelectedNetname();
+<a id='L153' name='L153'></a> 153     <a href='../Y/8183.html' title='Multiple used in 6 places.'>g_filterByLayer</a> = <a href='../Y/11161.html' title='Multiple used in 14 places.'>m_layerFilterOpt</a>-&gt;<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>();
+<a id='L154' name='L154'></a> 154     <a href='../Y/8188.html' title='Multiple used in 6 places.'>g_layerFilter</a> = <a href='../Y/11160.html' title='Multiple used in 27 places.'>m_layerFilter</a>-&gt;<a href='../S/713.html#L95' title='Defined at 95 in sel_layer.cpp.'>GetLayerSelection</a>();
+<a id='L155' name='L155'></a> 155 
+<a id='L156' name='L156'></a> 156     <a href='../Y/11393.html' title='Multiple used in 17 places.'>m_netFilter</a>-&gt;<a href='../Y/781.html' title='Multiple used in 457 places.'>Disconnect</a>( <a href='../Y/2619.html' title='Multiple used in 4 places.'>NET_SELECTED</a>, <a href='../Y/15578.html' title='Multiple used in 715 places.'>wxCommandEventHandler</a>( <a href='../D/613.html' title='Multiple defined in 3 places.'>DIALOG_GLOBAL_EDIT_TRACKS_AND_VIAS</a>::<a href='../S/208.html#L87' title='Defined at 87 in dialogs/dialog_global_edit_tracks_and_vias.cpp.'>OnNetFilterSelect</a> ), <a href='../Y/2643.html' title='Multiple used in 1581 places.'>NULL</a>, <strong class='reserved'>this</strong> );
+<a id='L157' name='L157'></a> 157 
+<a id='L158' name='L158'></a> 158     <strong class='reserved'>delete</strong>[] <a href='../Y/11488.html' title='Multiple used in 6 places.'>m_originalColWidths</a>;
+<a id='L159' name='L159'></a> 159 <em class='brace'>}</em>
+<a id='L160' name='L160'></a> 160 
+<a id='L161' name='L161'></a> 161 
+<a id='L162' name='L162'></a> 162 <strong class='reserved'>void</strong> <a href='../D/613.html' title='Multiple defined in 3 places.'>DIALOG_GLOBAL_EDIT_TRACKS_AND_VIAS</a>::<a href='../R/3473.html' title='Multiple referred from 2 places.'>buildFilterLists</a>()
+<a id='L163' name='L163'></a> 163 <em class='brace'>{</em>
+<a id='L164' name='L164'></a> 164     <em class='comment'>// Populate the net filter list with net names</em>
+<a id='L165' name='L165'></a> 165     <a href='../Y/11393.html' title='Multiple used in 17 places.'>m_netFilter</a>-&gt;<a href='../D/2988.html' title='Multiple defined in 5 places.'>SetBoard</a>( <a href='../Y/10345.html' title='Multiple used in 71 places.'>m_brd</a> );
+<a id='L166' name='L166'></a> 166     <a href='../Y/11393.html' title='Multiple used in 17 places.'>m_netFilter</a>-&gt;<a href='../Y/3707.html' title='Multiple used in 3 places.'>SetNetInfo</a>( &amp;<a href='../Y/10345.html' title='Multiple used in 71 places.'>m_brd</a>-&gt;<a href='../Y/1562.html' title='Multiple used in 14 places.'>GetNetInfo</a>() );
+<a id='L167' name='L167'></a> 167 
+<a id='L168' name='L168'></a> 168     <strong class='reserved'>if</strong>( !<a href='../Y/10345.html' title='Multiple used in 71 places.'>m_brd</a>-&gt;<a href='../Y/1471.html' title='Multiple used in 7 places.'>GetHighLightNetCodes</a>().<a href='../Y/7690.html' title='Multiple used in 167 places.'>empty</a>() )
+<a id='L169' name='L169'></a> 169         <a href='../Y/11393.html' title='Multiple used in 17 places.'>m_netFilter</a>-&gt;<a href='../Y/3830.html' title='Multiple used in 6 places.'>SetSelectedNetcode</a>( *<a href='../Y/10345.html' title='Multiple used in 71 places.'>m_brd</a>-&gt;<a href='../Y/1471.html' title='Multiple used in 7 places.'>GetHighLightNetCodes</a>().<a href='../S/330.html#L221' title='Defined at 221 in dialogs/panel_fp_lib_table.cpp.'>begin</a>() );
+<a id='L170' name='L170'></a> 170 
+<a id='L171' name='L171'></a> 171     <em class='comment'>// Populate the netclass filter list with netclass names</em>
+<a id='L172' name='L172'></a> 172     <a href='../Y/15511.html' title='Multiple used in 171 places.'>wxArrayString</a> <a href='../Y/12864.html' title='Multiple used in 4 places.'>netclassNames</a>;
+<a id='L173' name='L173'></a> 173     <a href='../Y/2602.html' title='Multiple used in 9 places.'>NETCLASSES</a>&amp;   <a href='../Y/12867.html' title='Multiple used in 6 places.'>netclasses</a> = <a href='../Y/10345.html' title='Multiple used in 71 places.'>m_brd</a>-&gt;<a href='../D/1162.html' title='Multiple defined in 2 places.'>GetDesignSettings</a>().<a href='../Y/1559.html' title='Multiple used in 25 places.'>GetNetClasses</a>();
+<a id='L174' name='L174'></a> 174 
+<a id='L175' name='L175'></a> 175     <a href='../Y/12864.html' title='Multiple used in 4 places.'>netclassNames</a>.<a href='../S/330.html#L228' title='Defined at 228 in dialogs/panel_fp_lib_table.cpp.'>push_back</a>( <a href='../Y/12867.html' title='Multiple used in 6 places.'>netclasses</a>.GetDefaultPtr()-&gt;<a href='../D/1251.html' title='Multiple defined in 2 places.'>GetName</a>() );
+<a id='L176' name='L176'></a> 176 
+<a id='L177' name='L177'></a> 177     <strong class='reserved'>for</strong>( <a href='../Y/2602.html' title='Multiple used in 9 places.'>NETCLASSES</a>::<a href='../Y/7060.html' title='Multiple used in 42 places.'>const_iterator</a> <a href='../Y/12798.html' title='Multiple used in 43 places.'>nc</a> = <a href='../Y/12867.html' title='Multiple used in 6 places.'>netclasses</a>.<a href='../S/330.html#L221' title='Defined at 221 in dialogs/panel_fp_lib_table.cpp.'>begin</a>(); <a href='../Y/12798.html' title='Multiple used in 43 places.'>nc</a> != <a href='../Y/12867.html' title='Multiple used in 6 places.'>netclasses</a>.<a href='../Y/7716.html' title='Multiple used in 512 places.'>end</a>(); ++<a href='../Y/12798.html' title='Multiple used in 43 places.'>nc</a> )
+<a id='L178' name='L178'></a> 178         <a href='../Y/12864.html' title='Multiple used in 4 places.'>netclassNames</a>.<a href='../S/330.html#L228' title='Defined at 228 in dialogs/panel_fp_lib_table.cpp.'>push_back</a>( <a href='../Y/12798.html' title='Multiple used in 43 places.'>nc</a>-&gt;<a href='../Y/14266.html' title='Multiple used in 220 places.'>second</a>-&gt;<a href='../D/1251.html' title='Multiple defined in 2 places.'>GetName</a>() );
+<a id='L179' name='L179'></a> 179 
+<a id='L180' name='L180'></a> 180     <a href='../Y/11411.html' title='Multiple used in 13 places.'>m_netclassFilter</a>-&gt;<a href='../S/711.html#L51' title='Defined at 51 in router/time_limit.cpp.'>Set</a>( <a href='../Y/12864.html' title='Multiple used in 4 places.'>netclassNames</a> );
+<a id='L181' name='L181'></a> 181     <a href='../Y/11411.html' title='Multiple used in 13 places.'>m_netclassFilter</a>-&gt;<a href='../Y/3880.html' title='Multiple used in 6 places.'>SetStringSelection</a>( <a href='../Y/10345.html' title='Multiple used in 71 places.'>m_brd</a>-&gt;<a href='../D/1162.html' title='Multiple defined in 2 places.'>GetDesignSettings</a>().GetCurrentNetClassName() );
+<a id='L182' name='L182'></a> 182 
+<a id='L183' name='L183'></a> 183     <em class='comment'>// Populate the layer filter list</em>
+<a id='L184' name='L184'></a> 184     <a href='../Y/11160.html' title='Multiple used in 27 places.'>m_layerFilter</a>-&gt;<a href='../Y/3363.html' title='Multiple used in 14 places.'>SetBoardFrame</a>( <a href='../D/4192.html' title='Multiple defined in 5 places.'>m_parent</a> );
+<a id='L185' name='L185'></a> 185     <a href='../Y/11160.html' title='Multiple used in 27 places.'>m_layerFilter</a>-&gt;<a href='../Y/3644.html' title='Multiple used in 10 places.'>SetLayersHotkeys</a>( <strong class='reserved'>false</strong> );
+<a id='L186' name='L186'></a> 186     <a href='../Y/11160.html' title='Multiple used in 27 places.'>m_layerFilter</a>-&gt;<a href='../Y/3716.html' title='Multiple used in 11 places.'>SetNotAllowedLayerSet</a>( <a href='../Y/2380.html' title='Multiple used in 386 places.'>LSET</a>::<a href='../Y/160.html' title='Multiple used in 11 places.'>AllNonCuMask</a>() );
+<a id='L187' name='L187'></a> 187     <a href='../Y/11160.html' title='Multiple used in 27 places.'>m_layerFilter</a>-&gt;<a href='../S/589.html#L84' title='Defined at 84 in pcb_layer_box_selector.cpp.'>Resync</a>();
+<a id='L188' name='L188'></a> 188     <a href='../Y/11160.html' title='Multiple used in 27 places.'>m_layerFilter</a>-&gt;<a href='../Y/3640.html' title='Multiple used in 23 places.'>SetLayerSelection</a>( <a href='../D/4192.html' title='Multiple defined in 5 places.'>m_parent</a>-&gt;<a href='../Y/1228.html' title='Multiple used in 46 places.'>GetActiveLayer</a>() );
+<a id='L189' name='L189'></a> 189 <em class='brace'>}</em>
+<a id='L190' name='L190'></a> 190 
+<a id='L191' name='L191'></a> 191 
+<a id='L192' name='L192'></a> 192 <strong class='reserved'>void</strong> <a href='../D/613.html' title='Multiple defined in 3 places.'>DIALOG_GLOBAL_EDIT_TRACKS_AND_VIAS</a>::<a href='../R/3482.html' title='Multiple referred from 2 places.'>buildNetclassesGrid</a>()
+<a id='L193' name='L193'></a> 193 <em class='brace'>{</em>
+<a id='L194' name='L194'></a> 194 <em class='sharp'>#define</em> <a href='../R/2731.html' title='Multiple referred from 10 places.'>SET_NETCLASS_VALUE</a>( <a href='../Y/14106.html' title='Multiple used in 370 places.'>row</a>, <a href='../Y/6976.html' title='Multiple used in 147 places.'>col</a>, <a href='../Y/15278.html' title='Multiple used in 85 places.'>val</a> ) \
+<a id='L195' name='L195'></a> 195         <a href='../Y/11414.html' title='Multiple used in 43 places.'>m_netclassGrid</a>-&gt;<a href='../Y/3386.html' title='Multiple used in 118 places.'>SetCellValue</a>( <a href='../Y/14106.html' title='Multiple used in 370 places.'>row</a>, <a href='../Y/6976.html' title='Multiple used in 147 places.'>col</a>, <a href='../Y/4045.html' title='Multiple used in 54 places.'>StringFromValue</a>( <a href='../S/738.html#L280' title='Defined at 280 in swig/pcbnew_scripting_helpers.cpp.'>GetUserUnits</a>(), <a href='../Y/15278.html' title='Multiple used in 85 places.'>val</a>, <strong class='reserved'>true</strong>, <strong class='reserved'>true</strong> ) )
+<a id='L196' name='L196'></a> 196 
+<a id='L197' name='L197'></a> 197     <a href='../Y/11414.html' title='Multiple used in 43 places.'>m_netclassGrid</a>-&gt;<a href='../Y/3386.html' title='Multiple used in 118 places.'>SetCellValue</a>( 0, <a href='../S/208.html#L42' title='Defined at 42 in dialogs/dialog_global_edit_tracks_and_vias.cpp.'>GRID_TRACKSIZE</a>, <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Track Width" ) );
+<a id='L198' name='L198'></a> 198     <a href='../Y/11414.html' title='Multiple used in 43 places.'>m_netclassGrid</a>-&gt;<a href='../Y/3386.html' title='Multiple used in 118 places.'>SetCellValue</a>( 0, <a href='../S/208.html#L43' title='Defined at 43 in dialogs/dialog_global_edit_tracks_and_vias.cpp.'>GRID_VIASIZE</a>, <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Via Size" ) );
+<a id='L199' name='L199'></a> 199     <a href='../Y/11414.html' title='Multiple used in 43 places.'>m_netclassGrid</a>-&gt;<a href='../Y/3386.html' title='Multiple used in 118 places.'>SetCellValue</a>( 0, <a href='../S/208.html#L44' title='Defined at 44 in dialogs/dialog_global_edit_tracks_and_vias.cpp.'>GRID_VIADRILL</a>, <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Via Drill" ) );
+<a id='L200' name='L200'></a> 200     <a href='../Y/11414.html' title='Multiple used in 43 places.'>m_netclassGrid</a>-&gt;<a href='../Y/3386.html' title='Multiple used in 118 places.'>SetCellValue</a>( 0, <a href='../S/208.html#L45' title='Defined at 45 in dialogs/dialog_global_edit_tracks_and_vias.cpp.'>GRID_uVIASIZE</a>, <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "uVia Size" ) );
+<a id='L201' name='L201'></a> 201     <a href='../Y/11414.html' title='Multiple used in 43 places.'>m_netclassGrid</a>-&gt;<a href='../Y/3386.html' title='Multiple used in 118 places.'>SetCellValue</a>( 0, <a href='../S/208.html#L46' title='Defined at 46 in dialogs/dialog_global_edit_tracks_and_vias.cpp.'>GRID_uVIADRILL</a>, <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "uVia Drill" ) );
+<a id='L202' name='L202'></a> 202 
+<a id='L203' name='L203'></a> 203     <a href='../Y/2602.html' title='Multiple used in 9 places.'>NETCLASSES</a>&amp; <a href='../Y/12867.html' title='Multiple used in 6 places.'>netclasses</a> = <a href='../Y/10345.html' title='Multiple used in 71 places.'>m_brd</a>-&gt;<a href='../D/1162.html' title='Multiple defined in 2 places.'>GetDesignSettings</a>().<a href='../Y/1559.html' title='Multiple used in 25 places.'>GetNetClasses</a>();
+<a id='L204' name='L204'></a> 204     <a href='../Y/2601.html' title='Multiple used in 38 places.'>NETCLASS</a>*   <a href='../Y/7313.html' title='Multiple used in 10 places.'>defaultNetclass</a> = <a href='../Y/10345.html' title='Multiple used in 71 places.'>m_brd</a>-&gt;<a href='../D/1162.html' title='Multiple defined in 2 places.'>GetDesignSettings</a>().<a href='../Y/1348.html' title='Multiple used in 25 places.'>GetDefault</a>();
+<a id='L205' name='L205'></a> 205     <a href='../Y/11414.html' title='Multiple used in 43 places.'>m_netclassGrid</a>-&gt;<a href='../S/337.html#L113' title='Defined at 113 in dialogs/panel_modedit_defaults.cpp.'>AppendRows</a>( <a href='../Y/12867.html' title='Multiple used in 6 places.'>netclasses</a>.<a href='../Y/1317.html' title='Multiple used in 234 places.'>GetCount</a>() + 1 );
+<a id='L206' name='L206'></a> 206 
+<a id='L207' name='L207'></a> 207     <a href='../Y/11414.html' title='Multiple used in 43 places.'>m_netclassGrid</a>-&gt;<a href='../Y/3386.html' title='Multiple used in 118 places.'>SetCellValue</a>( 1, <a href='../S/208.html#L41' title='Defined at 41 in dialogs/dialog_global_edit_tracks_and_vias.cpp.'>GRID_NAME</a>, <a href='../Y/7313.html' title='Multiple used in 10 places.'>defaultNetclass</a>-&gt;<a href='../D/1251.html' title='Multiple defined in 2 places.'>GetName</a>() );
+<a id='L208' name='L208'></a> 208     <a href='../S/208.html#L194' title='Defined at 194 in dialogs/dialog_global_edit_tracks_and_vias.cpp.'>SET_NETCLASS_VALUE</a>( 1, <a href='../S/208.html#L42' title='Defined at 42 in dialogs/dialog_global_edit_tracks_and_vias.cpp.'>GRID_TRACKSIZE</a>, <a href='../Y/7313.html' title='Multiple used in 10 places.'>defaultNetclass</a>-&gt;<a href='../Y/1775.html' title='Multiple used in 12 places.'>GetTrackWidth</a>() );
+<a id='L209' name='L209'></a> 209     <a href='../S/208.html#L194' title='Defined at 194 in dialogs/dialog_global_edit_tracks_and_vias.cpp.'>SET_NETCLASS_VALUE</a>( 1, <a href='../S/208.html#L43' title='Defined at 43 in dialogs/dialog_global_edit_tracks_and_vias.cpp.'>GRID_VIASIZE</a>, <a href='../Y/7313.html' title='Multiple used in 10 places.'>defaultNetclass</a>-&gt;<a href='../Y/1795.html' title='Multiple used in 11 places.'>GetViaDiameter</a>() );
+<a id='L210' name='L210'></a> 210     <a href='../S/208.html#L194' title='Defined at 194 in dialogs/dialog_global_edit_tracks_and_vias.cpp.'>SET_NETCLASS_VALUE</a>( 1, <a href='../S/208.html#L44' title='Defined at 44 in dialogs/dialog_global_edit_tracks_and_vias.cpp.'>GRID_VIADRILL</a>, <a href='../Y/7313.html' title='Multiple used in 10 places.'>defaultNetclass</a>-&gt;<a href='../Y/1796.html' title='Multiple used in 13 places.'>GetViaDrill</a>() );
+<a id='L211' name='L211'></a> 211     <a href='../S/208.html#L194' title='Defined at 194 in dialogs/dialog_global_edit_tracks_and_vias.cpp.'>SET_NETCLASS_VALUE</a>( 1, <a href='../S/208.html#L45' title='Defined at 45 in dialogs/dialog_global_edit_tracks_and_vias.cpp.'>GRID_uVIASIZE</a>, <a href='../Y/7313.html' title='Multiple used in 10 places.'>defaultNetclass</a>-&gt;<a href='../Y/1822.html' title='Multiple used in 5 places.'>GetuViaDiameter</a>() );
+<a id='L212' name='L212'></a> 212     <a href='../S/208.html#L194' title='Defined at 194 in dialogs/dialog_global_edit_tracks_and_vias.cpp.'>SET_NETCLASS_VALUE</a>( 1, <a href='../S/208.html#L46' title='Defined at 46 in dialogs/dialog_global_edit_tracks_and_vias.cpp.'>GRID_uVIADRILL</a>, <a href='../Y/7313.html' title='Multiple used in 10 places.'>defaultNetclass</a>-&gt;<a href='../Y/1823.html' title='Multiple used in 6 places.'>GetuViaDrill</a>() );
+<a id='L213' name='L213'></a> 213 
+<a id='L214' name='L214'></a> 214     <strong class='reserved'>int</strong> <a href='../Y/14106.html' title='Multiple used in 370 places.'>row</a> = 2;
+<a id='L215' name='L215'></a> 215     <strong class='reserved'>for</strong>( <strong class='reserved'>const</strong> <strong class='reserved'>auto</strong>&amp; <a href='../Y/12862.html' title='Multiple used in 45 places.'>netclass</a> : <a href='../Y/12867.html' title='Multiple used in 6 places.'>netclasses</a> )
+<a id='L216' name='L216'></a> 216     <em class='brace'>{</em>
+<a id='L217' name='L217'></a> 217         <a href='../Y/11414.html' title='Multiple used in 43 places.'>m_netclassGrid</a>-&gt;<a href='../Y/3386.html' title='Multiple used in 118 places.'>SetCellValue</a>( <a href='../Y/14106.html' title='Multiple used in 370 places.'>row</a>, <a href='../S/208.html#L41' title='Defined at 41 in dialogs/dialog_global_edit_tracks_and_vias.cpp.'>GRID_NAME</a>, <a href='../Y/12862.html' title='Multiple used in 45 places.'>netclass</a>.<a href='../Y/7986.html' title='Multiple used in 99 places.'>first</a> );
+<a id='L218' name='L218'></a> 218         <a href='../S/208.html#L194' title='Defined at 194 in dialogs/dialog_global_edit_tracks_and_vias.cpp.'>SET_NETCLASS_VALUE</a>( <a href='../Y/14106.html' title='Multiple used in 370 places.'>row</a>, <a href='../S/208.html#L42' title='Defined at 42 in dialogs/dialog_global_edit_tracks_and_vias.cpp.'>GRID_TRACKSIZE</a>, <a href='../Y/12862.html' title='Multiple used in 45 places.'>netclass</a>.<a href='../Y/14266.html' title='Multiple used in 220 places.'>second</a>-&gt;<a href='../Y/1775.html' title='Multiple used in 12 places.'>GetTrackWidth</a>() );
+<a id='L219' name='L219'></a> 219         <a href='../S/208.html#L194' title='Defined at 194 in dialogs/dialog_global_edit_tracks_and_vias.cpp.'>SET_NETCLASS_VALUE</a>( <a href='../Y/14106.html' title='Multiple used in 370 places.'>row</a>, <a href='../S/208.html#L43' title='Defined at 43 in dialogs/dialog_global_edit_tracks_and_vias.cpp.'>GRID_VIASIZE</a>, <a href='../Y/12862.html' title='Multiple used in 45 places.'>netclass</a>.<a href='../Y/14266.html' title='Multiple used in 220 places.'>second</a>-&gt;<a href='../Y/1795.html' title='Multiple used in 11 places.'>GetViaDiameter</a>() );
+<a id='L220' name='L220'></a> 220         <a href='../S/208.html#L194' title='Defined at 194 in dialogs/dialog_global_edit_tracks_and_vias.cpp.'>SET_NETCLASS_VALUE</a>( <a href='../Y/14106.html' title='Multiple used in 370 places.'>row</a>, <a href='../S/208.html#L44' title='Defined at 44 in dialogs/dialog_global_edit_tracks_and_vias.cpp.'>GRID_VIADRILL</a>, <a href='../Y/12862.html' title='Multiple used in 45 places.'>netclass</a>.<a href='../Y/14266.html' title='Multiple used in 220 places.'>second</a>-&gt;<a href='../Y/1796.html' title='Multiple used in 13 places.'>GetViaDrill</a>() );
+<a id='L221' name='L221'></a> 221         <a href='../S/208.html#L194' title='Defined at 194 in dialogs/dialog_global_edit_tracks_and_vias.cpp.'>SET_NETCLASS_VALUE</a>( <a href='../Y/14106.html' title='Multiple used in 370 places.'>row</a>, <a href='../S/208.html#L45' title='Defined at 45 in dialogs/dialog_global_edit_tracks_and_vias.cpp.'>GRID_uVIASIZE</a>, <a href='../Y/12862.html' title='Multiple used in 45 places.'>netclass</a>.<a href='../Y/14266.html' title='Multiple used in 220 places.'>second</a>-&gt;<a href='../Y/1822.html' title='Multiple used in 5 places.'>GetuViaDiameter</a>() );
+<a id='L222' name='L222'></a> 222         <a href='../S/208.html#L194' title='Defined at 194 in dialogs/dialog_global_edit_tracks_and_vias.cpp.'>SET_NETCLASS_VALUE</a>( <a href='../Y/14106.html' title='Multiple used in 370 places.'>row</a>, <a href='../S/208.html#L46' title='Defined at 46 in dialogs/dialog_global_edit_tracks_and_vias.cpp.'>GRID_uVIADRILL</a>, <a href='../Y/12862.html' title='Multiple used in 45 places.'>netclass</a>.<a href='../Y/14266.html' title='Multiple used in 220 places.'>second</a>-&gt;<a href='../Y/1823.html' title='Multiple used in 6 places.'>GetuViaDrill</a>() );
+<a id='L223' name='L223'></a> 223         <a href='../Y/14106.html' title='Multiple used in 370 places.'>row</a>++;
+<a id='L224' name='L224'></a> 224     <em class='brace'>}</em>
+<a id='L225' name='L225'></a> 225 <em class='brace'>}</em>
+<a id='L226' name='L226'></a> 226 
+<a id='L227' name='L227'></a> 227 
+<a id='L228' name='L228'></a> 228 <strong class='reserved'>bool</strong> <a href='../D/613.html' title='Multiple defined in 3 places.'>DIALOG_GLOBAL_EDIT_TRACKS_AND_VIAS</a>::<a href='../R/3145.html' title='Multiple referred from 65 places.'>TransferDataToWindow</a>()
+<a id='L229' name='L229'></a> 229 <em class='brace'>{</em>
+<a id='L230' name='L230'></a> 230     <a href='../Y/2805.html' title='Multiple used in 62 places.'>PCBNEW_SELECTION</a>&amp; <a href='../D/4567.html' title='Multiple defined in 2 places.'>selection</a> = <a href='../D/4192.html' title='Multiple defined in 5 places.'>m_parent</a>-&gt;<a href='../Y/1769.html' title='Multiple used in 41 places.'>GetToolManager</a>()-&gt;<a href='../Y/1767.html' title='Multiple used in 91 places.'>GetTool</a>&lt;<a href='../S/801.html#L137' title='Defined at 137 in tools/selection_tool.cpp.'>SELECTION_TOOL</a>&gt;()-&gt;<a href='../S/801.html#L332' title='Defined at 332 in tools/selection_tool.cpp.'>GetSelection</a>();
+<a id='L231' name='L231'></a> 231     <strong class='reserved'>auto</strong>              <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a> = <strong class='reserved'>dynamic_cast</strong>&lt;<a href='../Y/249.html' title='Multiple used in 141 places.'>BOARD_CONNECTED_ITEM</a>*&gt;( <a href='../D/4567.html' title='Multiple defined in 2 places.'>selection</a>.<a href='../Y/1110.html' title='Multiple used in 23 places.'>Front</a>() );
+<a id='L232' name='L232'></a> 232 
+<a id='L233' name='L233'></a> 233     <a href='../Y/12246.html' title='Multiple used in 30 places.'>m_tracks</a>-&gt;<a href='../D/3095.html' title='Multiple defined in 3 places.'>SetValue</a>( <a href='../Y/8199.html' title='Multiple used in 3 places.'>g_modifyTracks</a> );
+<a id='L234' name='L234'></a> 234     <a href='../S/305.html#L53' title='Defined at 53 in dialogs/dialog_track_via_properties.cpp.'>m_vias</a>-&gt;<a href='../D/3095.html' title='Multiple defined in 3 places.'>SetValue</a>( <a href='../Y/8201.html' title='Multiple used in 3 places.'>g_modifyVias</a> );
+<a id='L235' name='L235'></a> 235 
+<a id='L236' name='L236'></a> 236     <strong class='reserved'>if</strong>( <a href='../Y/8185.html' title='Multiple used in 3 places.'>g_filterByNetclass</a> &amp;&amp; <a href='../Y/11411.html' title='Multiple used in 13 places.'>m_netclassFilter</a>-&gt;<a href='../Y/3880.html' title='Multiple used in 6 places.'>SetStringSelection</a>( <a href='../Y/8204.html' title='Multiple used in 3 places.'>g_netclassFilter</a> ) )
+<a id='L237' name='L237'></a> 237         <a href='../Y/11413.html' title='Multiple used in 7 places.'>m_netclassFilterOpt</a>-&gt;<a href='../D/3095.html' title='Multiple defined in 3 places.'>SetValue</a>( <strong class='reserved'>true</strong> );
+<a id='L238' name='L238'></a> 238     <strong class='reserved'>else</strong> <strong class='reserved'>if</strong>( <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a> )
+<a id='L239' name='L239'></a> 239         <a href='../Y/11411.html' title='Multiple used in 13 places.'>m_netclassFilter</a>-&gt;<a href='../Y/3880.html' title='Multiple used in 6 places.'>SetStringSelection</a>( <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a>-&gt;<a href='../S/521.html#L57' title='Defined at 57 in netlist_reader/pcb_netlist.cpp.'>GetNet</a>()-&gt;<a href='../Y/1286.html' title='Multiple used in 5 places.'>GetClassName</a>() );
+<a id='L240' name='L240'></a> 240 
+<a id='L241' name='L241'></a> 241     <strong class='reserved'>if</strong>( <a href='../Y/8184.html' title='Multiple used in 3 places.'>g_filterByNet</a> &amp;&amp; <a href='../Y/10345.html' title='Multiple used in 71 places.'>m_brd</a>-&gt;<a href='../D/991.html' title='Multiple defined in 2 places.'>FindNet</a>( <a href='../Y/8203.html' title='Multiple used in 4 places.'>g_netFilter</a> ) != <a href='../Y/2643.html' title='Multiple used in 1581 places.'>NULL</a> )
+<a id='L242' name='L242'></a> 242     <em class='brace'>{</em>
+<a id='L243' name='L243'></a> 243         <a href='../Y/11393.html' title='Multiple used in 17 places.'>m_netFilter</a>-&gt;SetSelectedNet( <a href='../Y/8203.html' title='Multiple used in 4 places.'>g_netFilter</a> );
+<a id='L244' name='L244'></a> 244         <a href='../Y/11394.html' title='Multiple used in 7 places.'>m_netFilterOpt</a>-&gt;<a href='../D/3095.html' title='Multiple defined in 3 places.'>SetValue</a>( <strong class='reserved'>true</strong> );
+<a id='L245' name='L245'></a> 245     <em class='brace'>}</em>
+<a id='L246' name='L246'></a> 246     <strong class='reserved'>else</strong> <strong class='reserved'>if</strong>( <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a> )
+<a id='L247' name='L247'></a> 247         <a href='../Y/11393.html' title='Multiple used in 17 places.'>m_netFilter</a>-&gt;<a href='../Y/3830.html' title='Multiple used in 6 places.'>SetSelectedNetcode</a>( <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a>-&gt;<a href='../D/1256.html' title='Multiple defined in 2 places.'>GetNetCode</a>() );
+<a id='L248' name='L248'></a> 248 
+<a id='L249' name='L249'></a> 249     <strong class='reserved'>if</strong>( <a href='../Y/8183.html' title='Multiple used in 6 places.'>g_filterByLayer</a> &amp;&amp; <a href='../Y/11160.html' title='Multiple used in 27 places.'>m_layerFilter</a>-&gt;<a href='../Y/3640.html' title='Multiple used in 23 places.'>SetLayerSelection</a>( <a href='../Y/8188.html' title='Multiple used in 6 places.'>g_layerFilter</a> ) != <a href='../Y/15845.html' title='Multiple used in 22 places.'>wxNOT_FOUND</a> )
+<a id='L250' name='L250'></a> 250         <a href='../Y/11161.html' title='Multiple used in 14 places.'>m_layerFilterOpt</a>-&gt;<a href='../D/3095.html' title='Multiple defined in 3 places.'>SetValue</a>( <strong class='reserved'>true</strong> );
+<a id='L251' name='L251'></a> 251     <strong class='reserved'>else</strong> <strong class='reserved'>if</strong>( <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a> )
+<a id='L252' name='L252'></a> 252         <a href='../Y/11160.html' title='Multiple used in 27 places.'>m_layerFilter</a>-&gt;<a href='../Y/3640.html' title='Multiple used in 23 places.'>SetLayerSelection</a>( <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a>-&gt;<a href='../D/1216.html' title='Multiple defined in 2 places.'>GetLayer</a>() );
+<a id='L253' name='L253'></a> 253 
+<a id='L254' name='L254'></a> 254     <a href='../Y/12239.html' title='Multiple used in 10 places.'>m_trackWidthSelectBox</a>-&gt;<a href='../Y/3831.html' title='Multiple used in 332 places.'>SetSelection</a>( (<strong class='reserved'>int</strong>) <a href='../Y/12239.html' title='Multiple used in 10 places.'>m_trackWidthSelectBox</a>-&gt;<a href='../Y/1317.html' title='Multiple used in 234 places.'>GetCount</a>() - 1 );
+<a id='L255' name='L255'></a> 255     <a href='../Y/12359.html' title='Multiple used in 10 places.'>m_viaSizesSelectBox</a>-&gt;<a href='../Y/3831.html' title='Multiple used in 332 places.'>SetSelection</a>( (<strong class='reserved'>int</strong>) <a href='../Y/12359.html' title='Multiple used in 10 places.'>m_viaSizesSelectBox</a>-&gt;<a href='../Y/1317.html' title='Multiple used in 234 places.'>GetCount</a>() - 1 );
+<a id='L256' name='L256'></a> 256     <a href='../Y/11150.html' title='Multiple used in 11 places.'>m_layerBox</a>-&gt;<a href='../Y/3880.html' title='Multiple used in 6 places.'>SetStringSelection</a>( <a href='../Y/1947.html' title='Multiple used in 11 places.'>INDETERMINATE_ACTION</a> );
+<a id='L257' name='L257'></a> 257 
+<a id='L258' name='L258'></a> 258     <strong class='reserved'>return</strong> <strong class='reserved'>true</strong>;
+<a id='L259' name='L259'></a> 259 <em class='brace'>}</em>
+<a id='L260' name='L260'></a> 260 
+<a id='L261' name='L261'></a> 261 
+<a id='L262' name='L262'></a> 262 <strong class='reserved'>void</strong> <a href='../D/613.html' title='Multiple defined in 3 places.'>DIALOG_GLOBAL_EDIT_TRACKS_AND_VIAS</a>::<a href='../R/2274.html' title='Multiple referred from 32 places.'>OnUpdateUI</a>( <a href='../Y/15987.html' title='Multiple used in 84 places.'>wxUpdateUIEvent</a>&amp;  )
+<a id='L263' name='L263'></a> 263 <em class='brace'>{</em>
+<a id='L264' name='L264'></a> 264     <a href='../Y/12239.html' title='Multiple used in 10 places.'>m_trackWidthSelectBox</a>-&gt;<a href='../Y/918.html' title='Multiple used in 251 places.'>Enable</a>( <a href='../Y/11855.html' title='Multiple used in 21 places.'>m_setToSpecifiedValues</a>-&gt;<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>() );
+<a id='L265' name='L265'></a> 265     <a href='../Y/12359.html' title='Multiple used in 10 places.'>m_viaSizesSelectBox</a>-&gt;<a href='../Y/918.html' title='Multiple used in 251 places.'>Enable</a>( <a href='../Y/11855.html' title='Multiple used in 21 places.'>m_setToSpecifiedValues</a>-&gt;<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>() );
+<a id='L266' name='L266'></a> 266 
+<a id='L267' name='L267'></a> 267     <strong class='reserved'>if</strong>( <a href='../Y/10825.html' title='Multiple used in 8 places.'>m_failedDRC</a> )
+<a id='L268' name='L268'></a> 268     <em class='brace'>{</em>
+<a id='L269' name='L269'></a> 269         <a href='../Y/10825.html' title='Multiple used in 8 places.'>m_failedDRC</a> = <strong class='reserved'>false</strong>;
+<a id='L270' name='L270'></a> 270         <a href='../Y/785.html' title='Multiple used in 89 places.'>DisplayError</a>( <strong class='reserved'>this</strong>, <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Some items failed DRC and were not modified." ) );
+<a id='L271' name='L271'></a> 271     <em class='brace'>}</em>
+<a id='L272' name='L272'></a> 272 <em class='brace'>}</em>
+<a id='L273' name='L273'></a> 273 
+<a id='L274' name='L274'></a> 274 
+<a id='L275' name='L275'></a> 275 <strong class='reserved'>void</strong> <a href='../D/613.html' title='Multiple defined in 3 places.'>DIALOG_GLOBAL_EDIT_TRACKS_AND_VIAS</a>::<a href='../R/4318.html' title='Multiple referred from 4 places.'>processItem</a>( <a href='../Y/2870.html' title='Multiple used in 50 places.'>PICKED_ITEMS_LIST</a>* <a href='../Y/6100.html' title='Multiple used in 10 places.'>aUndoList</a>, <a href='../S/78.html#L38' title='Defined at 38 in class_track.cpp.'>TRACK</a>* <a href='../Y/5437.html' title='Multiple used in 845 places.'>aItem</a> )
+<a id='L276' name='L276'></a> 276 <em class='brace'>{</em>
+<a id='L277' name='L277'></a> 277     <a href='../S/35.html#L561' title='Defined at 561 in board_design_settings.cpp.'>BOARD_DESIGN_SETTINGS</a>&amp; <a href='../Y/6752.html' title='Multiple used in 7 places.'>brdSettings</a> = <a href='../Y/10345.html' title='Multiple used in 71 places.'>m_brd</a>-&gt;<a href='../D/1162.html' title='Multiple defined in 2 places.'>GetDesignSettings</a>();
+<a id='L278' name='L278'></a> 278     <strong class='reserved'>bool</strong>                   <a href='../Y/8662.html' title='Multiple used in 3 places.'>isTrack</a> = <a href='../Y/5437.html' title='Multiple used in 845 places.'>aItem</a>-&gt;<a href='../Y/4696.html' title='Multiple used in 393 places.'>Type</a>() == <a href='../Y/2859.html' title='Multiple used in 83 places.'>PCB_TRACE_T</a>;
+<a id='L279' name='L279'></a> 279     <strong class='reserved'>bool</strong>                   <a href='../Y/8664.html' title='Multiple used in 2 places.'>isVia</a> = <a href='../Y/5437.html' title='Multiple used in 845 places.'>aItem</a>-&gt;<a href='../Y/4696.html' title='Multiple used in 393 places.'>Type</a>() == <a href='../Y/2861.html' title='Multiple used in 102 places.'>PCB_VIA_T</a>;
+<a id='L280' name='L280'></a> 280 
+<a id='L281' name='L281'></a> 281     <strong class='reserved'>if</strong>( <a href='../Y/11855.html' title='Multiple used in 21 places.'>m_setToSpecifiedValues</a>-&gt;<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>() )
+<a id='L282' name='L282'></a> 282     <em class='brace'>{</em>
+<a id='L283' name='L283'></a> 283         <strong class='reserved'>if</strong>( <a href='../Y/8662.html' title='Multiple used in 3 places.'>isTrack</a> &amp;&amp; <a href='../Y/12239.html' title='Multiple used in 10 places.'>m_trackWidthSelectBox</a>-&gt;<a href='../Y/1739.html' title='Multiple used in 8 places.'>GetStringSelection</a>() != <a href='../Y/1947.html' title='Multiple used in 11 places.'>INDETERMINATE_ACTION</a> )
+<a id='L284' name='L284'></a> 284         <em class='brace'>{</em>
+<a id='L285' name='L285'></a> 285             <strong class='reserved'>unsigned</strong> <strong class='reserved'>int</strong> <a href='../Y/13694.html' title='Multiple used in 2 places.'>prevTrackWidthIndex</a> = <a href='../Y/6752.html' title='Multiple used in 7 places.'>brdSettings</a>.<a href='../Y/1776.html' title='Multiple used in 12 places.'>GetTrackWidthIndex</a>();
+<a id='L286' name='L286'></a> 286             <a href='../Y/6752.html' title='Multiple used in 7 places.'>brdSettings</a>.<a href='../S/35.html#L878' title='Defined at 878 in board_design_settings.cpp.'>SetTrackWidthIndex</a>( (<strong class='reserved'>unsigned</strong>) <a href='../Y/12239.html' title='Multiple used in 10 places.'>m_trackWidthSelectBox</a>-&gt;<a href='../S/801.html#L332' title='Defined at 332 in tools/selection_tool.cpp.'>GetSelection</a>() );
+<a id='L287' name='L287'></a> 287 
+<a id='L288' name='L288'></a> 288             <strong class='reserved'>if</strong>( <a href='../D/4192.html' title='Multiple defined in 5 places.'>m_parent</a>-&gt;<a href='../S/409.html#L33' title='Defined at 33 in edit_track_width.cpp.'>SetTrackSegmentWidth</a>( <a href='../Y/5437.html' title='Multiple used in 845 places.'>aItem</a>, <a href='../Y/6100.html' title='Multiple used in 10 places.'>aUndoList</a>, <strong class='reserved'>false</strong> ) == <a href='../S/586.html#L71' title='Defined at 71 in pcb_edit_frame.h.'>TRACK_ACTION_DRC_ERROR</a> )
+<a id='L289' name='L289'></a> 289                 <a href='../Y/10825.html' title='Multiple used in 8 places.'>m_failedDRC</a> = <strong class='reserved'>true</strong>;
+<a id='L290' name='L290'></a> 290 
+<a id='L291' name='L291'></a> 291             <a href='../Y/6752.html' title='Multiple used in 7 places.'>brdSettings</a>.<a href='../S/35.html#L878' title='Defined at 878 in board_design_settings.cpp.'>SetTrackWidthIndex</a>( <a href='../Y/13694.html' title='Multiple used in 2 places.'>prevTrackWidthIndex</a> );
+<a id='L292' name='L292'></a> 292         <em class='brace'>}</em>
+<a id='L293' name='L293'></a> 293         <strong class='reserved'>else</strong> <strong class='reserved'>if</strong>( <a href='../Y/8664.html' title='Multiple used in 2 places.'>isVia</a> &amp;&amp; <a href='../Y/12359.html' title='Multiple used in 10 places.'>m_viaSizesSelectBox</a>-&gt;<a href='../Y/1739.html' title='Multiple used in 8 places.'>GetStringSelection</a>() != <a href='../Y/1947.html' title='Multiple used in 11 places.'>INDETERMINATE_ACTION</a> )
+<a id='L294' name='L294'></a> 294         <em class='brace'>{</em>
+<a id='L295' name='L295'></a> 295             <strong class='reserved'>unsigned</strong> <strong class='reserved'>int</strong> <a href='../Y/13696.html' title='Multiple used in 2 places.'>prevViaSizeIndex</a> = <a href='../Y/6752.html' title='Multiple used in 7 places.'>brdSettings</a>.<a href='../Y/1800.html' title='Multiple used in 12 places.'>GetViaSizeIndex</a>();
+<a id='L296' name='L296'></a> 296             <a href='../Y/6752.html' title='Multiple used in 7 places.'>brdSettings</a>.<a href='../S/35.html#L858' title='Defined at 858 in board_design_settings.cpp.'>SetViaSizeIndex</a>( (<strong class='reserved'>unsigned</strong>) <a href='../Y/12359.html' title='Multiple used in 10 places.'>m_viaSizesSelectBox</a>-&gt;<a href='../S/801.html#L332' title='Defined at 332 in tools/selection_tool.cpp.'>GetSelection</a>() );
+<a id='L297' name='L297'></a> 297 
+<a id='L298' name='L298'></a> 298             <strong class='reserved'>if</strong>( <a href='../D/4192.html' title='Multiple defined in 5 places.'>m_parent</a>-&gt;<a href='../S/409.html#L33' title='Defined at 33 in edit_track_width.cpp.'>SetTrackSegmentWidth</a>( <a href='../Y/5437.html' title='Multiple used in 845 places.'>aItem</a>, <a href='../Y/6100.html' title='Multiple used in 10 places.'>aUndoList</a>, <strong class='reserved'>false</strong> ) == <a href='../S/586.html#L71' title='Defined at 71 in pcb_edit_frame.h.'>TRACK_ACTION_DRC_ERROR</a> )
+<a id='L299' name='L299'></a> 299                 <a href='../Y/10825.html' title='Multiple used in 8 places.'>m_failedDRC</a> = <strong class='reserved'>true</strong>;
+<a id='L300' name='L300'></a> 300 
+<a id='L301' name='L301'></a> 301             <a href='../Y/6752.html' title='Multiple used in 7 places.'>brdSettings</a>.<a href='../S/35.html#L858' title='Defined at 858 in board_design_settings.cpp.'>SetViaSizeIndex</a>( <a href='../Y/13696.html' title='Multiple used in 2 places.'>prevViaSizeIndex</a> );
+<a id='L302' name='L302'></a> 302         <em class='brace'>}</em>
+<a id='L303' name='L303'></a> 303 
+<a id='L304' name='L304'></a> 304         <strong class='reserved'>if</strong>( <a href='../Y/8662.html' title='Multiple used in 3 places.'>isTrack</a> &amp;&amp; <a href='../Y/11150.html' title='Multiple used in 11 places.'>m_layerBox</a>-&gt;<a href='../S/713.html#L95' title='Defined at 95 in sel_layer.cpp.'>GetLayerSelection</a>() != <a href='../Y/4705.html' title='Multiple used in 96 places.'>UNDEFINED_LAYER</a> )
+<a id='L305' name='L305'></a> 305         <em class='brace'>{</em>
+<a id='L306' name='L306'></a> 306             <strong class='reserved'>if</strong>( <a href='../Y/6100.html' title='Multiple used in 10 places.'>aUndoList</a>-&gt;<a href='../Y/1044.html' title='Multiple used in 5 places.'>FindItem</a>( <a href='../Y/5437.html' title='Multiple used in 845 places.'>aItem</a> ) &lt; 0 )
+<a id='L307' name='L307'></a> 307             <em class='brace'>{</em>
+<a id='L308' name='L308'></a> 308                 <a href='../Y/1996.html' title='Multiple used in 25 places.'>ITEM_PICKER</a> <a href='../Y/13493.html' title='Multiple used in 64 places.'>picker</a>( <a href='../Y/13059.html' title='Multiple used in 610 places.'>nullptr</a>, <a href='../Y/5437.html' title='Multiple used in 845 places.'>aItem</a>, <a href='../Y/4725.html' title='Multiple used in 19 places.'>UR_CHANGED</a> );
+<a id='L309' name='L309'></a> 309                 <a href='../Y/13493.html' title='Multiple used in 64 places.'>picker</a>.<a href='../Y/3656.html' title='Multiple used in 14 places.'>SetLink</a>( <a href='../Y/5437.html' title='Multiple used in 845 places.'>aItem</a>-&gt;<a href='../D/456.html' title='Multiple defined in 19 places.'>Clone</a>() );
+<a id='L310' name='L310'></a> 310                 <a href='../Y/6100.html' title='Multiple used in 10 places.'>aUndoList</a>-&gt;<a href='../Y/2997.html' title='Multiple used in 26 places.'>PushItem</a>( <a href='../Y/13493.html' title='Multiple used in 64 places.'>picker</a> );
+<a id='L311' name='L311'></a> 311             <em class='brace'>}</em>
+<a id='L312' name='L312'></a> 312 
+<a id='L313' name='L313'></a> 313             <a href='../Y/5437.html' title='Multiple used in 845 places.'>aItem</a>-&gt;<a href='../D/3034.html' title='Multiple defined in 4 places.'>SetLayer</a>( <a href='../Y/4660.html' title='Multiple used in 48 places.'>ToLAYER_ID</a>( <a href='../Y/11150.html' title='Multiple used in 11 places.'>m_layerBox</a>-&gt;<a href='../S/713.html#L95' title='Defined at 95 in sel_layer.cpp.'>GetLayerSelection</a>() ) );
+<a id='L314' name='L314'></a> 314             <a href='../D/4192.html' title='Multiple defined in 5 places.'>m_parent</a>-&gt;<a href='../D/1112.html' title='Multiple defined in 2 places.'>GetBoard</a>()-&gt;<a href='../Y/1307.html' title='Multiple used in 44 places.'>GetConnectivity</a>()-&gt;<a href='../D/3313.html' title='Multiple defined in 6 places.'>Update</a>( <a href='../Y/5437.html' title='Multiple used in 845 places.'>aItem</a> );
+<a id='L315' name='L315'></a> 315         <em class='brace'>}</em>
+<a id='L316' name='L316'></a> 316     <em class='brace'>}</em>
+<a id='L317' name='L317'></a> 317     <strong class='reserved'>else</strong>
+<a id='L318' name='L318'></a> 318     <em class='brace'>{</em>
+<a id='L319' name='L319'></a> 319         <strong class='reserved'>if</strong>( <a href='../D/4192.html' title='Multiple defined in 5 places.'>m_parent</a>-&gt;<a href='../S/409.html#L33' title='Defined at 33 in edit_track_width.cpp.'>SetTrackSegmentWidth</a>( <a href='../Y/5437.html' title='Multiple used in 845 places.'>aItem</a>, <a href='../Y/6100.html' title='Multiple used in 10 places.'>aUndoList</a>, <strong class='reserved'>true</strong> ) == <a href='../S/586.html#L71' title='Defined at 71 in pcb_edit_frame.h.'>TRACK_ACTION_DRC_ERROR</a> )
+<a id='L320' name='L320'></a> 320             <a href='../Y/10825.html' title='Multiple used in 8 places.'>m_failedDRC</a> = <strong class='reserved'>true</strong>;
+<a id='L321' name='L321'></a> 321     <em class='brace'>}</em>
+<a id='L322' name='L322'></a> 322 
+<a id='L323' name='L323'></a> 323     <a href='../Y/10345.html' title='Multiple used in 71 places.'>m_brd</a>-&gt;<a href='../S/57.html#L1905' title='Defined at 1905 in class_board.cpp.'>OnItemChanged</a>( <a href='../Y/5437.html' title='Multiple used in 845 places.'>aItem</a> );
+<a id='L324' name='L324'></a> 324 <em class='brace'>}</em>
+<a id='L325' name='L325'></a> 325 
+<a id='L326' name='L326'></a> 326 
+<a id='L327' name='L327'></a> 327 <strong class='reserved'>void</strong> <a href='../D/613.html' title='Multiple defined in 3 places.'>DIALOG_GLOBAL_EDIT_TRACKS_AND_VIAS</a>::<a href='../R/4591.html' title='Multiple referred from 16 places.'>visitItem</a>( <a href='../Y/2870.html' title='Multiple used in 50 places.'>PICKED_ITEMS_LIST</a>* <a href='../Y/6100.html' title='Multiple used in 10 places.'>aUndoList</a>, <a href='../S/78.html#L38' title='Defined at 38 in class_track.cpp.'>TRACK</a>* <a href='../Y/5437.html' title='Multiple used in 845 places.'>aItem</a> )
+<a id='L328' name='L328'></a> 328 <em class='brace'>{</em>
+<a id='L329' name='L329'></a> 329     <strong class='reserved'>if</strong>( <a href='../Y/11394.html' title='Multiple used in 7 places.'>m_netFilterOpt</a>-&gt;<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>() &amp;&amp; <a href='../Y/11393.html' title='Multiple used in 17 places.'>m_netFilter</a>-&gt;<a href='../Y/1694.html' title='Multiple used in 8 places.'>GetSelectedNetcode</a>() &gt;= 0 )
+<a id='L330' name='L330'></a> 330     <em class='brace'>{</em>
+<a id='L331' name='L331'></a> 331         <strong class='reserved'>if</strong>( <a href='../Y/5437.html' title='Multiple used in 845 places.'>aItem</a>-&gt;<a href='../D/1256.html' title='Multiple defined in 2 places.'>GetNetCode</a>() != <a href='../Y/11393.html' title='Multiple used in 17 places.'>m_netFilter</a>-&gt;<a href='../Y/1694.html' title='Multiple used in 8 places.'>GetSelectedNetcode</a>() )
+<a id='L332' name='L332'></a> 332             <strong class='reserved'>return</strong>;
+<a id='L333' name='L333'></a> 333     <em class='brace'>}</em>
+<a id='L334' name='L334'></a> 334 
+<a id='L335' name='L335'></a> 335     <strong class='reserved'>if</strong>( <a href='../Y/11413.html' title='Multiple used in 7 places.'>m_netclassFilterOpt</a>-&gt;<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>() &amp;&amp; !<a href='../Y/11411.html' title='Multiple used in 13 places.'>m_netclassFilter</a>-&gt;<a href='../Y/1739.html' title='Multiple used in 8 places.'>GetStringSelection</a>().<a href='../Y/2119.html' title='Multiple used in 204 places.'>IsEmpty</a>() )
+<a id='L336' name='L336'></a> 336     <em class='brace'>{</em>
+<a id='L337' name='L337'></a> 337         <strong class='reserved'>if</strong>( <a href='../Y/5437.html' title='Multiple used in 845 places.'>aItem</a>-&gt;<a href='../S/33.html#L197' title='Defined at 197 in board_connected_item.cpp.'>GetNetClassName</a>() != <a href='../Y/11411.html' title='Multiple used in 13 places.'>m_netclassFilter</a>-&gt;<a href='../Y/1739.html' title='Multiple used in 8 places.'>GetStringSelection</a>() )
+<a id='L338' name='L338'></a> 338             <strong class='reserved'>return</strong>;
+<a id='L339' name='L339'></a> 339     <em class='brace'>}</em>
+<a id='L340' name='L340'></a> 340 
+<a id='L341' name='L341'></a> 341     <strong class='reserved'>if</strong>( <a href='../Y/11161.html' title='Multiple used in 14 places.'>m_layerFilterOpt</a>-&gt;<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>() &amp;&amp; <a href='../Y/11160.html' title='Multiple used in 27 places.'>m_layerFilter</a>-&gt;<a href='../S/713.html#L95' title='Defined at 95 in sel_layer.cpp.'>GetLayerSelection</a>() != <a href='../Y/4705.html' title='Multiple used in 96 places.'>UNDEFINED_LAYER</a> )
+<a id='L342' name='L342'></a> 342     <em class='brace'>{</em>
+<a id='L343' name='L343'></a> 343         <strong class='reserved'>if</strong>( <a href='../Y/5437.html' title='Multiple used in 845 places.'>aItem</a>-&gt;<a href='../D/1216.html' title='Multiple defined in 2 places.'>GetLayer</a>() != <a href='../Y/11160.html' title='Multiple used in 27 places.'>m_layerFilter</a>-&gt;<a href='../S/713.html#L95' title='Defined at 95 in sel_layer.cpp.'>GetLayerSelection</a>() )
+<a id='L344' name='L344'></a> 344             <strong class='reserved'>return</strong>;
+<a id='L345' name='L345'></a> 345     <em class='brace'>}</em>
+<a id='L346' name='L346'></a> 346 
+<a id='L347' name='L347'></a> 347     <a href='../D/4474.html' title='Multiple defined in 2 places.'>processItem</a>( <a href='../Y/6100.html' title='Multiple used in 10 places.'>aUndoList</a>, <a href='../Y/5437.html' title='Multiple used in 845 places.'>aItem</a> );
+<a id='L348' name='L348'></a> 348 <em class='brace'>}</em>
+<a id='L349' name='L349'></a> 349 
+<a id='L350' name='L350'></a> 350 
+<a id='L351' name='L351'></a> 351 <strong class='reserved'>bool</strong> <a href='../D/613.html' title='Multiple defined in 3 places.'>DIALOG_GLOBAL_EDIT_TRACKS_AND_VIAS</a>::<a href='../R/3144.html' title='Multiple referred from 63 places.'>TransferDataFromWindow</a>()
+<a id='L352' name='L352'></a> 352 <em class='brace'>{</em>
+<a id='L353' name='L353'></a> 353     <a href='../Y/2870.html' title='Multiple used in 50 places.'>PICKED_ITEMS_LIST</a> <a href='../Y/8742.html' title='Multiple used in 5 places.'>itemsListPicker</a>;
+<a id='L354' name='L354'></a> 354     <a href='../Y/15541.html' title='Multiple used in 11 places.'>wxBusyCursor</a> <a href='../Y/7598.html' title='Multiple used in 113 places.'>dummy</a>;
+<a id='L355' name='L355'></a> 355 
+<a id='L356' name='L356'></a> 356     <em class='comment'>// Examine segments</em>
+<a id='L357' name='L357'></a> 357     <strong class='reserved'>for</strong>( <strong class='reserved'>auto</strong> <a href='../Y/14298.html' title='Multiple used in 185 places.'>segment</a> : <a href='../Y/10345.html' title='Multiple used in 71 places.'>m_brd</a>-&gt;<a href='../Y/4679.html' title='Multiple used in 78 places.'>Tracks</a>() )
+<a id='L358' name='L358'></a> 358     <em class='brace'>{</em>
+<a id='L359' name='L359'></a> 359         <strong class='reserved'>if</strong>( <a href='../Y/12246.html' title='Multiple used in 30 places.'>m_tracks</a>-&gt;<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>() &amp;&amp; <a href='../Y/14298.html' title='Multiple used in 185 places.'>segment</a>-&gt;<a href='../Y/4696.html' title='Multiple used in 393 places.'>Type</a>() == <a href='../Y/2859.html' title='Multiple used in 83 places.'>PCB_TRACE_T</a> )
+<a id='L360' name='L360'></a> 360             <a href='../D/4747.html' title='Multiple defined in 2 places.'>visitItem</a>( &amp;<a href='../Y/8742.html' title='Multiple used in 5 places.'>itemsListPicker</a>, <a href='../Y/14298.html' title='Multiple used in 185 places.'>segment</a> );
+<a id='L361' name='L361'></a> 361         <strong class='reserved'>else</strong> <strong class='reserved'>if</strong> (<a href='../S/305.html#L53' title='Defined at 53 in dialogs/dialog_track_via_properties.cpp.'>m_vias</a>-&gt;<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>() &amp;&amp; <a href='../Y/14298.html' title='Multiple used in 185 places.'>segment</a>-&gt;<a href='../Y/4696.html' title='Multiple used in 393 places.'>Type</a>() == <a href='../Y/2861.html' title='Multiple used in 102 places.'>PCB_VIA_T</a> )
+<a id='L362' name='L362'></a> 362             <a href='../D/4747.html' title='Multiple defined in 2 places.'>visitItem</a>( &amp;<a href='../Y/8742.html' title='Multiple used in 5 places.'>itemsListPicker</a>, <a href='../Y/14298.html' title='Multiple used in 185 places.'>segment</a> );
+<a id='L363' name='L363'></a> 363     <em class='brace'>}</em>
+<a id='L364' name='L364'></a> 364 
+<a id='L365' name='L365'></a> 365     <strong class='reserved'>if</strong>( <a href='../Y/8742.html' title='Multiple used in 5 places.'>itemsListPicker</a>.<a href='../Y/1317.html' title='Multiple used in 234 places.'>GetCount</a>() &gt; 0 )
+<a id='L366' name='L366'></a> 366     <em class='brace'>{</em>
+<a id='L367' name='L367'></a> 367         <a href='../D/4192.html' title='Multiple defined in 5 places.'>m_parent</a>-&gt;<a href='../D/2938.html' title='Multiple defined in 2 places.'>SaveCopyInUndoList</a>( <a href='../Y/8742.html' title='Multiple used in 5 places.'>itemsListPicker</a>, <a href='../Y/4725.html' title='Multiple used in 19 places.'>UR_CHANGED</a> );
+<a id='L368' name='L368'></a> 368 
+<a id='L369' name='L369'></a> 369         <strong class='reserved'>for</strong>( <strong class='reserved'>auto</strong> <a href='../Y/14298.html' title='Multiple used in 185 places.'>segment</a> : <a href='../Y/10345.html' title='Multiple used in 71 places.'>m_brd</a>-&gt;<a href='../Y/4679.html' title='Multiple used in 78 places.'>Tracks</a>() )
+<a id='L370' name='L370'></a> 370             <a href='../D/4192.html' title='Multiple defined in 5 places.'>m_parent</a>-&gt;<a href='../S/581.html#L712' title='Defined at 712 in pcb_base_frame.cpp.'>GetCanvas</a>()-&gt;<a href='../S/583.html#L517' title='Defined at 517 in pcb_draw_panel_gal.cpp.'>GetView</a>()-&gt;<a href='../D/3313.html' title='Multiple defined in 6 places.'>Update</a>( <a href='../Y/14298.html' title='Multiple used in 185 places.'>segment</a> );
+<a id='L371' name='L371'></a> 371     <em class='brace'>}</em>
+<a id='L372' name='L372'></a> 372 
+<a id='L373' name='L373'></a> 373     <strong class='reserved'>return</strong> !<a href='../Y/10825.html' title='Multiple used in 8 places.'>m_failedDRC</a>;
+<a id='L374' name='L374'></a> 374 <em class='brace'>}</em>
+<a id='L375' name='L375'></a> 375 
+<a id='L376' name='L376'></a> 376 
+<a id='L377' name='L377'></a> 377 <strong class='reserved'>void</strong> <a href='../D/613.html' title='Multiple defined in 3 places.'>DIALOG_GLOBAL_EDIT_TRACKS_AND_VIAS</a>::<a href='../R/142.html' title='Multiple referred from 2 places.'>AdjustNetclassGridColumns</a>( <strong class='reserved'>int</strong> <a href='../Y/6171.html' title='Multiple used in 160 places.'>aWidth</a> )
+<a id='L378' name='L378'></a> 378 <em class='brace'>{</em>
+<a id='L379' name='L379'></a> 379     <strong class='reserved'>for</strong>( <strong class='reserved'>int</strong> <a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a> = 1; <a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a> &lt; <a href='../Y/11414.html' title='Multiple used in 43 places.'>m_netclassGrid</a>-&gt;<a href='../D/1267.html' title='Multiple defined in 2 places.'>GetNumberCols</a>(); <a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a>++ )
+<a id='L380' name='L380'></a> 380     <em class='brace'>{</em>
+<a id='L381' name='L381'></a> 381         <a href='../Y/11414.html' title='Multiple used in 43 places.'>m_netclassGrid</a>-&gt;<a href='../Y/3403.html' title='Multiple used in 108 places.'>SetColSize</a>( <a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a>, <a href='../Y/11488.html' title='Multiple used in 6 places.'>m_originalColWidths</a>[ <a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a> ] );
+<a id='L382' name='L382'></a> 382         <a href='../Y/6171.html' title='Multiple used in 160 places.'>aWidth</a> -= <a href='../Y/11488.html' title='Multiple used in 6 places.'>m_originalColWidths</a>[ <a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a> ];
+<a id='L383' name='L383'></a> 383     <em class='brace'>}</em>
+<a id='L384' name='L384'></a> 384 
+<a id='L385' name='L385'></a> 385     <a href='../Y/11414.html' title='Multiple used in 43 places.'>m_netclassGrid</a>-&gt;<a href='../Y/3403.html' title='Multiple used in 108 places.'>SetColSize</a>( 0, <a href='../Y/6171.html' title='Multiple used in 160 places.'>aWidth</a> );
+<a id='L386' name='L386'></a> 386 <em class='brace'>}</em>
+<a id='L387' name='L387'></a> 387 
+<a id='L388' name='L388'></a> 388 
+<a id='L389' name='L389'></a> 389 <strong class='reserved'>void</strong> <a href='../D/613.html' title='Multiple defined in 3 places.'>DIALOG_GLOBAL_EDIT_TRACKS_AND_VIAS</a>::<a href='../R/2255.html' title='Multiple referred from 7 places.'>OnSizeNetclassGrid</a>( <a href='../Y/15944.html' title='Multiple used in 43 places.'>wxSizeEvent</a>&amp; <a href='../Y/7792.html' title='Multiple used in 867 places.'>event</a> )
+<a id='L390' name='L390'></a> 390 <em class='brace'>{</em>
+<a id='L391' name='L391'></a> 391     <a href='../S/208.html#L377' title='Defined at 377 in dialogs/dialog_global_edit_tracks_and_vias.cpp.'>AdjustNetclassGridColumns</a>( <a href='../Y/7792.html' title='Multiple used in 867 places.'>event</a>.<a href='../Y/1710.html' title='Multiple used in 166 places.'>GetSize</a>().<a href='../Y/1817.html' title='Multiple used in 39 places.'>GetX</a>() );
+<a id='L392' name='L392'></a> 392     <a href='../Y/7792.html' title='Multiple used in 867 places.'>event</a>.<a href='../Y/4011.html' title='Multiple used in 349 places.'>Skip</a>();
+<a id='L393' name='L393'></a> 393 <em class='brace'>}</em>
+<a id='L394' name='L394'></a> 394 
+<a id='L395' name='L395'></a> 395 
+<a id='L396' name='L396'></a> 396 <strong class='reserved'>int</strong> <a href='../Y/1178.html' title='Multiple used in 25 places.'>GLOBAL_EDIT_TOOL</a>::<a href='../R/847.html' title='Multiple referred from 2 places.'>EditTracksAndVias</a>( <strong class='reserved'>const</strong> <a href='../Y/4100.html' title='Multiple used in 418 places.'>TOOL_EVENT</a>&amp; <a href='../Y/5276.html' title='Multiple used in 837 places.'>aEvent</a> )
+<a id='L397' name='L397'></a> 397 <em class='brace'>{</em>
+<a id='L398' name='L398'></a> 398     <a href='../S/585.html#L356' title='Defined at 356 in pcb_edit_frame.cpp.'>PCB_EDIT_FRAME</a>* <a href='../Y/7658.html' title='Multiple used in 96 places.'>editFrame</a> = <a href='../Y/8253.html' title='Multiple used in 66 places.'>getEditFrame</a>&lt;<a href='../S/585.html#L356' title='Defined at 356 in pcb_edit_frame.cpp.'>PCB_EDIT_FRAME</a>&gt;();
+<a id='L399' name='L399'></a> 399     <a href='../D/613.html' title='Multiple defined in 3 places.'>DIALOG_GLOBAL_EDIT_TRACKS_AND_VIAS</a> <a href='../Y/7493.html' title='Multiple used in 304 places.'>dlg</a>( <a href='../Y/7658.html' title='Multiple used in 96 places.'>editFrame</a> );
+<a id='L400' name='L400'></a> 400     
+<a id='L401' name='L401'></a> 401     <a href='../Y/7493.html' title='Multiple used in 304 places.'>dlg</a>.<a href='../Y/3999.html' title='Multiple used in 7 places.'>ShowQuasiModal</a>();       <em class='comment'>// QuasiModal required for NET_SELECTOR</em>
+<a id='L402' name='L402'></a> 402     <strong class='reserved'>return</strong> 0;
+<a id='L403' name='L403'></a> 403 <em class='brace'>}</em>
+<a id='L404' name='L404'></a> 404 
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L87'>[^]</a><a href='#L396'>[v]</a><a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

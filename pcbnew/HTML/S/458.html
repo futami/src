@@ -1,0 +1,273 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>github/github_getliblist.cpp</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/834.html'>github</a>/github_getliblist.cpp</h2>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L61'>[^]</a><a href='#L213'>[v]</a>[top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L61' title='Defined at 61.'>Get3DshapesLibsList</a></li>
+<li><a href='#L93' title='Defined at 93.'>GetFootprintLibraryList</a></li>
+<li><a href='#L179' title='Defined at 179.'>repoURL2listURL</a></li>
+<li><a href='#L213' title='Defined at 213.'>remoteGetJSON</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * This program source code file is part of KiCad, a free EDA CAD application.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 2015 Jean-Pierre Charras jp.charras at wanadoo.fr</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> * Copyright (C) 2013 SoftPLC Corporation, Dick Hollenbeck &lt;dick@softplc.com&gt;</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> * Copyright (C) 2015 KiCad Developers, see CHANGELOG.TXT for contributors.</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> *</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * This program is free software; you can redistribute it and/or</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * modify it under the terms of the GNU General Public License</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> * as published by the Free Software Foundation; either version 2</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> * of the License, or (at your option) any later version.</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> *</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * This program is distributed in the hope that it will be useful,</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> * GNU General Public License for more details.</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> *</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * You should have received a copy of the GNU General Public License</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> * along with this program; if not, you may find one here:</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'> * or you may search the http://www.gnu.org website for the version 2 license,</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'> * or you may write to the Free Software Foundation, Inc.,</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'> * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA</em>
+<a id='L24' name='L24'></a>  24 <em class='comment'> */</em>
+<a id='L25' name='L25'></a>  25 
+<a id='L26' name='L26'></a>  26 
+<a id='L27' name='L27'></a>  27 <em class='comment'>/*</em>
+<a id='L28' name='L28'></a>  28 <em class='comment'> *  While creating a wizard to edit the fp lib tables, and mainly the web viewer</em>
+<a id='L29' name='L29'></a>  29 <em class='comment'> *  which can read the list of pretty library on a github repos, I was told there is</em>
+<a id='L30' name='L30'></a>  30 <em class='comment'> *  this URL to retrieve info from any particular repo:</em>
+<a id='L31' name='L31'></a>  31 <em class='comment'> *</em>
+<a id='L32' name='L32'></a>  32 <em class='comment'> *  https://api.github.com/orgs/KiCad/repos</em>
+<a id='L33' name='L33'></a>  33 <em class='comment'> *  or</em>
+<a id='L34' name='L34'></a>  34 <em class='comment'> *  https://api.github.com/users/KiCad/repos</em>
+<a id='L35' name='L35'></a>  35 <em class='comment'> *</em>
+<a id='L36' name='L36'></a>  36 <em class='comment'> *  This gets just information on the repo in JSON format.</em>
+<a id='L37' name='L37'></a>  37 <em class='comment'> *</em>
+<a id='L38' name='L38'></a>  38 <em class='comment'> *  I used avhttp, already used in the pcbnew Github plugin to download</em>
+<a id='L39' name='L39'></a>  39 <em class='comment'> *  the json file.</em>
+<a id='L40' name='L40'></a>  40 <em class='comment'> *</em>
+<a id='L41' name='L41'></a>  41 <em class='comment'> *  JP Charras.</em>
+<a id='L42' name='L42'></a>  42 <em class='comment'> */</em>
+<a id='L43' name='L43'></a>  43 
+<a id='L44' name='L44'></a>  44 <em class='sharp'>#include</em> &lt;kicad_curl/kicad_curl_easy.h&gt;     <em class='comment'>// Include before any wx file</em>
+<a id='L45' name='L45'></a>  45 <em class='sharp'>#include</em> &lt;wx/uri.h&gt;
+<a id='L46' name='L46'></a>  46 
+<a id='L47' name='L47'></a>  47 <em class='sharp'>#include</em> &lt;<a href='459.html'>github_getliblist.h</a>&gt;
+<a id='L48' name='L48'></a>  48 <em class='sharp'>#include</em> &lt;macros.h&gt;
+<a id='L49' name='L49'></a>  49 <em class='sharp'>#include</em> &lt;common.h&gt;
+<a id='L50' name='L50'></a>  50 <em class='sharp'>#include</em> &lt;<a href='463.html'>html_link_parser.h</a>&gt;
+<a id='L51' name='L51'></a>  51 
+<a id='L52' name='L52'></a>  52 
+<a id='L53' name='L53'></a>  53 <a href='../R/1004.html' title='Multiple referred from 11 places.'>GITHUB_GETLIBLIST</a>::<a href='../S/458.html#L53' title='Defined at 53 in github/github_getliblist.cpp.'>GITHUB_GETLIBLIST</a>( <strong class='reserved'>const</strong> <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>&amp; <a href='../Y/5889.html' title='Multiple used in 15 places.'>aRepoURL</a> )
+<a id='L54' name='L54'></a>  54 <em class='brace'>{</em>
+<a id='L55' name='L55'></a>  55     <a href='../Y/11763.html' title='Multiple used in 7 places.'>m_repoURL</a> = <a href='../Y/5889.html' title='Multiple used in 15 places.'>aRepoURL</a>;
+<a id='L56' name='L56'></a>  56     <a href='../Y/11207.html' title='Multiple used in 4 places.'>m_libs_ext</a> =  <a href='../Y/15966.html' title='Multiple used in 1011 places.'>wxT</a>( ".pretty" );
+<a id='L57' name='L57'></a>  57     <a href='../Y/14713.html' title='Multiple used in 3 places.'>strcpy</a>( <a href='../Y/11470.html' title='Multiple used in 5 places.'>m_option_string</a>, "application/json" );
+<a id='L58' name='L58'></a>  58 <em class='brace'>}</em>
+<a id='L59' name='L59'></a>  59 
+<a id='L60' name='L60'></a>  60 
+<a id='L61' name='L61'></a>  61 <strong class='reserved'>bool</strong> <a href='../S/458.html#L53' title='Defined at 53 in github/github_getliblist.cpp.'>GITHUB_GETLIBLIST</a>::<a href='../R/1046.html' title='Multiple referred from 4 places.'>Get3DshapesLibsList</a>( <a href='../Y/15511.html' title='Multiple used in 171 places.'>wxArrayString</a>* <a href='../Y/5524.html' title='Multiple used in 246 places.'>aList</a>,
+<a id='L62' name='L62'></a>  62                         <strong class='reserved'>bool</strong> (*<a href='../Y/5298.html' title='Multiple used in 6 places.'>aFilter</a>)( <strong class='reserved'>const</strong> <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>&amp; <a href='../Y/5174.html' title='Multiple used in 106 places.'>aData</a> ) )
+<a id='L63' name='L63'></a>  63 <em class='brace'>{</em>
+<a id='L64' name='L64'></a>  64     <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../D/4641.html' title='Multiple defined in 2 places.'>string</a> <a href='../Y/8154.html' title='Multiple used in 7 places.'>fullURLCommand</a>;
+<a id='L65' name='L65'></a>  65 
+<a id='L66' name='L66'></a>  66     <a href='../Y/14713.html' title='Multiple used in 3 places.'>strcpy</a>( <a href='../Y/11470.html' title='Multiple used in 5 places.'>m_option_string</a>, "text/html" );
+<a id='L67' name='L67'></a>  67 
+<a id='L68' name='L68'></a>  68     <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../Y/7777.html' title='Multiple used in 22 places.'>errorMsg</a>;
+<a id='L69' name='L69'></a>  69 
+<a id='L70' name='L70'></a>  70     <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../Y/13996.html' title='Multiple used in 2 places.'>repoURL</a> = <a href='../Y/11763.html' title='Multiple used in 7 places.'>m_repoURL</a>;
+<a id='L71' name='L71'></a>  71     <a href='../Y/8154.html' title='Multiple used in 7 places.'>fullURLCommand</a> = <a href='../Y/13996.html' title='Multiple used in 2 places.'>repoURL</a>.<a href='../Y/15259.html' title='Multiple used in 4 places.'>utf8_str</a>();
+<a id='L72' name='L72'></a>  72     <strong class='reserved'>bool</strong> <a href='../Y/14764.html' title='Multiple used in 101 places.'>success</a> = <a href='../S/458.html#L213' title='Defined at 213 in github/github_getliblist.cpp.'>remoteGetJSON</a>( <a href='../Y/8154.html' title='Multiple used in 7 places.'>fullURLCommand</a>, &amp;<a href='../Y/7777.html' title='Multiple used in 22 places.'>errorMsg</a> );
+<a id='L73' name='L73'></a>  73 
+<a id='L74' name='L74'></a>  74     <strong class='reserved'>if</strong>( !<a href='../Y/14764.html' title='Multiple used in 101 places.'>success</a> )
+<a id='L75' name='L75'></a>  75     <em class='brace'>{</em>
+<a id='L76' name='L76'></a>  76         <a href='../Y/15836.html' title='Multiple used in 67 places.'>wxMessageBox</a>( <a href='../Y/7777.html' title='Multiple used in 22 places.'>errorMsg</a> );
+<a id='L77' name='L77'></a>  77         <strong class='reserved'>return</strong> <strong class='reserved'>false</strong>;
+<a id='L78' name='L78'></a>  78     <em class='brace'>}</em>
+<a id='L79' name='L79'></a>  79 
+<a id='L80' name='L80'></a>  80     <strong class='reserved'>if</strong>( <a href='../Y/5298.html' title='Multiple used in 6 places.'>aFilter</a> &amp;&amp; <a href='../Y/5524.html' title='Multiple used in 246 places.'>aList</a> )
+<a id='L81' name='L81'></a>  81     <em class='brace'>{</em>
+<a id='L82' name='L82'></a>  82         <em class='comment'>//Convert m_image (std::string) to a wxString for HTML_LINK_PARSER</em>
+<a id='L83' name='L83'></a>  83         <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../Y/6775.html' title='Multiple used in 75 places.'>buffer</a>( <a href='../Y/1271.html' title='Multiple used in 6 places.'>GetBuffer</a>() );
+<a id='L84' name='L84'></a>  84 
+<a id='L85' name='L85'></a>  85         <a href='../Y/1851.html' title='Multiple used in 8 places.'>HTML_LINK_PARSER</a> <a href='../Y/8440.html' title='Multiple used in 2 places.'>html_parser</a>( <a href='../Y/6775.html' title='Multiple used in 75 places.'>buffer</a>, *<a href='../Y/5524.html' title='Multiple used in 246 places.'>aList</a> );
+<a id='L86' name='L86'></a>  86         <a href='../Y/8440.html' title='Multiple used in 2 places.'>html_parser</a>.<a href='../Y/2941.html' title='Multiple used in 2 places.'>ParseLinks</a>( <a href='../Y/5298.html' title='Multiple used in 6 places.'>aFilter</a> );
+<a id='L87' name='L87'></a>  87     <em class='brace'>}</em>
+<a id='L88' name='L88'></a>  88 
+<a id='L89' name='L89'></a>  89     <strong class='reserved'>return</strong> <strong class='reserved'>true</strong>;
+<a id='L90' name='L90'></a>  90 <em class='brace'>}</em>
+<a id='L91' name='L91'></a>  91 
+<a id='L92' name='L92'></a>  92 
+<a id='L93' name='L93'></a>  93 <strong class='reserved'>bool</strong> <a href='../S/458.html#L53' title='Defined at 53 in github/github_getliblist.cpp.'>GITHUB_GETLIBLIST</a>::<a href='../S/459.html#L55' title='Referred from 55 in github/github_getliblist.h.'>GetFootprintLibraryList</a>( <a href='../Y/15511.html' title='Multiple used in 171 places.'>wxArrayString</a>&amp; <a href='../Y/5524.html' title='Multiple used in 246 places.'>aList</a> )
+<a id='L94' name='L94'></a>  94 <em class='brace'>{</em>
+<a id='L95' name='L95'></a>  95     <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../D/4641.html' title='Multiple defined in 2 places.'>string</a> <a href='../Y/8154.html' title='Multiple used in 7 places.'>fullURLCommand</a>;
+<a id='L96' name='L96'></a>  96     <strong class='reserved'>int</strong> <a href='../Y/13381.html' title='Multiple used in 30 places.'>page</a> = 1;
+<a id='L97' name='L97'></a>  97     <strong class='reserved'>int</strong> <a href='../Y/8718.html' title='Multiple used in 4 places.'>itemCountMax</a> = 99;              <em class='comment'>// Do not use a value &gt;= 100, it does not work</em>
+<a id='L98' name='L98'></a>  98 
+<a id='L99' name='L99'></a>  99     <a href='../Y/14713.html' title='Multiple used in 3 places.'>strcpy</a>( <a href='../Y/11470.html' title='Multiple used in 5 places.'>m_option_string</a>, "application/json" );
+<a id='L100' name='L100'></a> 100 
+<a id='L101' name='L101'></a> 101     <em class='comment'>// Github max items returned is 100 per page</em>
+<a id='L102' name='L102'></a> 102 
+<a id='L103' name='L103'></a> 103     <strong class='reserved'>if</strong>( !<a href='../S/458.html#L179' title='Defined at 179 in github/github_getliblist.cpp.'>repoURL2listURL</a>( <a href='../Y/11763.html' title='Multiple used in 7 places.'>m_repoURL</a>, &amp;<a href='../Y/8154.html' title='Multiple used in 7 places.'>fullURLCommand</a>, <a href='../Y/8718.html' title='Multiple used in 4 places.'>itemCountMax</a>, <a href='../Y/13381.html' title='Multiple used in 30 places.'>page</a> ) )
+<a id='L104' name='L104'></a> 104     <em class='brace'>{</em>
+<a id='L105' name='L105'></a> 105         <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../Y/12733.html' title='Multiple used in 994 places.'>msg</a> = <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>::<a href='../D/1022.html' title='Multiple defined in 7 places.'>Format</a>( <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "malformed URL:\n\"%s\"" ), <a href='../Y/1281.html' title='Multiple used in 79 places.'>GetChars</a>( <a href='../Y/11763.html' title='Multiple used in 7 places.'>m_repoURL</a> ) );
+<a id='L106' name='L106'></a> 106         <a href='../Y/15836.html' title='Multiple used in 67 places.'>wxMessageBox</a>( <a href='../Y/12733.html' title='Multiple used in 994 places.'>msg</a> );
+<a id='L107' name='L107'></a> 107         <strong class='reserved'>return</strong> <strong class='reserved'>false</strong>;
+<a id='L108' name='L108'></a> 108     <em class='brace'>}</em>
+<a id='L109' name='L109'></a> 109 
+<a id='L110' name='L110'></a> 110     <em class='comment'>// The URL lib names are relative to the server name.</em>
+<a id='L111' name='L111'></a> 111     <em class='comment'>// so add the server name to them.</em>
+<a id='L112' name='L112'></a> 112     <a href='../Y/15985.html' title='Multiple used in 6 places.'>wxURI</a> <a href='../Y/13995.html' title='Multiple used in 21 places.'>repo</a>( <a href='../Y/11763.html' title='Multiple used in 7 places.'>m_repoURL</a> );
+<a id='L113' name='L113'></a> 113     <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../Y/15233.html' title='Multiple used in 2 places.'>urlPrefix</a> = <a href='../Y/13995.html' title='Multiple used in 21 places.'>repo</a>.<a href='../Y/1687.html' title='Multiple used in 4 places.'>GetScheme</a>() + <a href='../Y/15966.html' title='Multiple used in 1011 places.'>wxT</a>( "://" ) + <a href='../Y/13995.html' title='Multiple used in 21 places.'>repo</a>.<a href='../Y/1700.html' title='Multiple used in 7 places.'>GetServer</a>() + <a href='../Y/15966.html' title='Multiple used in 1011 places.'>wxT</a>( "/" );
+<a id='L114' name='L114'></a> 114 
+<a id='L115' name='L115'></a> 115     <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../Y/7777.html' title='Multiple used in 22 places.'>errorMsg</a>;
+<a id='L116' name='L116'></a> 116     <strong class='reserved'>const</strong> <strong class='reserved'>char</strong>  <a href='../Y/14351.html' title='Multiple used in 2 places.'>sep</a> = ',';      <em class='comment'>// Separator fields, in json returned file</em>
+<a id='L117' name='L117'></a> 117     <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>    <a href='../Y/14963.html' title='Multiple used in 281 places.'>tmp</a>;
+<a id='L118' name='L118'></a> 118     <strong class='reserved'>int</strong> <a href='../Y/8749.html' title='Multiple used in 4 places.'>items_count_per_page</a> = 0;
+<a id='L119' name='L119'></a> 119     <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../D/4641.html' title='Multiple defined in 2 places.'>string</a>&amp; <a href='../Y/8773.html' title='Multiple used in 4 places.'>json_image</a> = <a href='../Y/1271.html' title='Multiple used in 6 places.'>GetBuffer</a>();
+<a id='L120' name='L120'></a> 120 
+<a id='L121' name='L121'></a> 121     <strong class='reserved'>while</strong>( 1 )
+<a id='L122' name='L122'></a> 122     <em class='brace'>{</em>
+<a id='L123' name='L123'></a> 123         <strong class='reserved'>bool</strong> <a href='../Y/14764.html' title='Multiple used in 101 places.'>success</a> = <a href='../S/458.html#L213' title='Defined at 213 in github/github_getliblist.cpp.'>remoteGetJSON</a>( <a href='../Y/8154.html' title='Multiple used in 7 places.'>fullURLCommand</a>, &amp;<a href='../Y/7777.html' title='Multiple used in 22 places.'>errorMsg</a> );
+<a id='L124' name='L124'></a> 124 
+<a id='L125' name='L125'></a> 125         <strong class='reserved'>if</strong>( !<a href='../Y/14764.html' title='Multiple used in 101 places.'>success</a> )
+<a id='L126' name='L126'></a> 126         <em class='brace'>{</em>
+<a id='L127' name='L127'></a> 127             <a href='../Y/15836.html' title='Multiple used in 67 places.'>wxMessageBox</a>( <a href='../Y/7777.html' title='Multiple used in 22 places.'>errorMsg</a> );
+<a id='L128' name='L128'></a> 128             <strong class='reserved'>return</strong> <strong class='reserved'>false</strong>;
+<a id='L129' name='L129'></a> 129         <em class='brace'>}</em>
+<a id='L130' name='L130'></a> 130 
+<a id='L131' name='L131'></a> 131 
+<a id='L132' name='L132'></a> 132         <strong class='reserved'>for</strong>( <strong class='reserved'>unsigned</strong> <a href='../Y/8489.html' title='Multiple used in 495 places.'>ii</a> = 0; <a href='../Y/8489.html' title='Multiple used in 495 places.'>ii</a> &lt; <a href='../Y/8773.html' title='Multiple used in 4 places.'>json_image</a>.<a href='../S/330.html#L214' title='Defined at 214 in dialogs/panel_fp_lib_table.cpp.'>size</a>(); <a href='../Y/8489.html' title='Multiple used in 495 places.'>ii</a>++ )
+<a id='L133' name='L133'></a> 133         <em class='brace'>{</em>
+<a id='L134' name='L134'></a> 134             <strong class='reserved'>if</strong>( <a href='../Y/8773.html' title='Multiple used in 4 places.'>json_image</a>[<a href='../Y/8489.html' title='Multiple used in 495 places.'>ii</a>] == <a href='../Y/14351.html' title='Multiple used in 2 places.'>sep</a> || <a href='../Y/8489.html' title='Multiple used in 495 places.'>ii</a> == <a href='../Y/8773.html' title='Multiple used in 4 places.'>json_image</a>.<a href='../S/330.html#L214' title='Defined at 214 in dialogs/panel_fp_lib_table.cpp.'>size</a>() - 1 )
+<a id='L135' name='L135'></a> 135             <em class='brace'>{</em>
+<a id='L136' name='L136'></a> 136                 <strong class='reserved'>if</strong>( <a href='../Y/14963.html' title='Multiple used in 281 places.'>tmp</a>.<a href='../Y/4037.html' title='Multiple used in 16 places.'>StartsWith</a>( <a href='../Y/15966.html' title='Multiple used in 1011 places.'>wxT</a>( "\"full_name\"" ) ) )
+<a id='L137' name='L137'></a> 137                 <em class='brace'>{</em>
+<a id='L138' name='L138'></a> 138 <em class='sharp'>                    #define</em> <a href='../R/2578.html' title='Multiple referred from 2 places.'>QUOTE</a> '\"'
+<a id='L139' name='L139'></a> 139                     <em class='comment'>// Remove useless quotes:</em>
+<a id='L140' name='L140'></a> 140                     <strong class='reserved'>if</strong>( <a href='../Y/14963.html' title='Multiple used in 281 places.'>tmp</a>[<a href='../Y/14963.html' title='Multiple used in 281 places.'>tmp</a>.<a href='../Y/2404.html' title='Multiple used in 77 places.'>Length</a>() - 1] == <a href='../S/458.html#L138' title='Defined at 138 in github/github_getliblist.cpp.'>QUOTE</a> )
+<a id='L141' name='L141'></a> 141                         <a href='../Y/14963.html' title='Multiple used in 281 places.'>tmp</a>.<a href='../Y/3158.html' title='Multiple used in 6 places.'>RemoveLast</a>();
+<a id='L142' name='L142'></a> 142 
+<a id='L143' name='L143'></a> 143                     <strong class='reserved'>if</strong>( <a href='../Y/14963.html' title='Multiple used in 281 places.'>tmp</a>.<a href='../Y/936.html' title='Multiple used in 12 places.'>EndsWith</a>( <a href='../Y/11207.html' title='Multiple used in 4 places.'>m_libs_ext</a> ) )
+<a id='L144' name='L144'></a> 144                     <em class='brace'>{</em>
+<a id='L145' name='L145'></a> 145                         <a href='../Y/5524.html' title='Multiple used in 246 places.'>aList</a>.<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../Y/14963.html' title='Multiple used in 281 places.'>tmp</a>.<a href='../Y/153.html' title='Multiple used in 11 places.'>AfterLast</a>( ':' ) );
+<a id='L146' name='L146'></a> 146                         <strong class='reserved'>int</strong> <a href='../Y/8479.html' title='Multiple used in 162 places.'>idx</a> = <a href='../Y/5524.html' title='Multiple used in 246 places.'>aList</a>.<a href='../Y/1317.html' title='Multiple used in 234 places.'>GetCount</a>() - 1;
+<a id='L147' name='L147'></a> 147 
+<a id='L148' name='L148'></a> 148                         <strong class='reserved'>if</strong>( <a href='../Y/5524.html' title='Multiple used in 246 places.'>aList</a>[<a href='../Y/8479.html' title='Multiple used in 162 places.'>idx</a>][0] == <a href='../S/458.html#L138' title='Defined at 138 in github/github_getliblist.cpp.'>QUOTE</a> )
+<a id='L149' name='L149'></a> 149                             <a href='../Y/5524.html' title='Multiple used in 246 places.'>aList</a>[<a href='../Y/8479.html' title='Multiple used in 162 places.'>idx</a>].<a href='../D/2784.html' title='Multiple defined in 16 places.'>Remove</a>( 0, 1 );
+<a id='L150' name='L150'></a> 150 
+<a id='L151' name='L151'></a> 151                         <a href='../Y/5524.html' title='Multiple used in 246 places.'>aList</a>[<a href='../Y/8479.html' title='Multiple used in 162 places.'>idx</a>].<a href='../S/655.html#L39' title='Defined at 39 in router/pns_itemset.cpp.'>Prepend</a>( <a href='../Y/15233.html' title='Multiple used in 2 places.'>urlPrefix</a> );
+<a id='L152' name='L152'></a> 152                     <em class='brace'>}</em>
+<a id='L153' name='L153'></a> 153 
+<a id='L154' name='L154'></a> 154                     <a href='../Y/8749.html' title='Multiple used in 4 places.'>items_count_per_page</a>++;
+<a id='L155' name='L155'></a> 155                 <em class='brace'>}</em>
+<a id='L156' name='L156'></a> 156 
+<a id='L157' name='L157'></a> 157                 <a href='../Y/14963.html' title='Multiple used in 281 places.'>tmp</a>.<a href='../D/434.html' title='Multiple defined in 11 places.'>Clear</a>();
+<a id='L158' name='L158'></a> 158             <em class='brace'>}</em>
+<a id='L159' name='L159'></a> 159             <strong class='reserved'>else</strong>
+<a id='L160' name='L160'></a> 160                 <a href='../Y/14963.html' title='Multiple used in 281 places.'>tmp</a> &lt;&lt; <a href='../Y/8773.html' title='Multiple used in 4 places.'>json_image</a>[<a href='../Y/8489.html' title='Multiple used in 495 places.'>ii</a>];
+<a id='L161' name='L161'></a> 161         <em class='brace'>}</em>
+<a id='L162' name='L162'></a> 162 
+<a id='L163' name='L163'></a> 163         <strong class='reserved'>if</strong>( <a href='../Y/8749.html' title='Multiple used in 4 places.'>items_count_per_page</a> &gt;= <a href='../Y/8718.html' title='Multiple used in 4 places.'>itemCountMax</a> )
+<a id='L164' name='L164'></a> 164         <em class='brace'>{</em>
+<a id='L165' name='L165'></a> 165             <a href='../Y/13381.html' title='Multiple used in 30 places.'>page</a>++;
+<a id='L166' name='L166'></a> 166             <a href='../S/458.html#L179' title='Defined at 179 in github/github_getliblist.cpp.'>repoURL2listURL</a>( <a href='../Y/11763.html' title='Multiple used in 7 places.'>m_repoURL</a>, &amp;<a href='../Y/8154.html' title='Multiple used in 7 places.'>fullURLCommand</a>, <a href='../Y/8718.html' title='Multiple used in 4 places.'>itemCountMax</a>, <a href='../Y/13381.html' title='Multiple used in 30 places.'>page</a> );
+<a id='L167' name='L167'></a> 167             <a href='../Y/8749.html' title='Multiple used in 4 places.'>items_count_per_page</a> = 0;
+<a id='L168' name='L168'></a> 168             <a href='../Y/485.html' title='Multiple used in 2 places.'>ClearBuffer</a>();
+<a id='L169' name='L169'></a> 169         <em class='brace'>}</em>
+<a id='L170' name='L170'></a> 170         <strong class='reserved'>else</strong>
+<a id='L171' name='L171'></a> 171             <strong class='reserved'>break</strong>;
+<a id='L172' name='L172'></a> 172     <em class='brace'>}</em>
+<a id='L173' name='L173'></a> 173 
+<a id='L174' name='L174'></a> 174     <a href='../Y/5524.html' title='Multiple used in 246 places.'>aList</a>.<a href='../Y/4017.html' title='Multiple used in 2 places.'>Sort</a>();
+<a id='L175' name='L175'></a> 175     <strong class='reserved'>return</strong> <strong class='reserved'>true</strong>;
+<a id='L176' name='L176'></a> 176 <em class='brace'>}</em>
+<a id='L177' name='L177'></a> 177 
+<a id='L178' name='L178'></a> 178 
+<a id='L179' name='L179'></a> 179 <strong class='reserved'>bool</strong> <a href='../S/458.html#L53' title='Defined at 53 in github/github_getliblist.cpp.'>GITHUB_GETLIBLIST</a>::<a href='../R/4369.html' title='Multiple referred from 3 places.'>repoURL2listURL</a>( <strong class='reserved'>const</strong> <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>&amp; <a href='../Y/5889.html' title='Multiple used in 15 places.'>aRepoURL</a>,
+<a id='L180' name='L180'></a> 180         <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../D/4641.html' title='Multiple defined in 2 places.'>string</a>* <a href='../Y/5351.html' title='Multiple used in 8 places.'>aFullURLCommand</a>,
+<a id='L181' name='L181'></a> 181         <strong class='reserved'>int</strong> <a href='../Y/5441.html' title='Multiple used in 3 places.'>aItemCountMax</a>, <strong class='reserved'>int</strong> <a href='../Y/5743.html' title='Multiple used in 40 places.'>aPage</a>  )
+<a id='L182' name='L182'></a> 182 <em class='brace'>{</em>
+<a id='L183' name='L183'></a> 183     <em class='comment'>// aListURL is e.g. "https://api.github.com/orgs/KiCad/repos"</em>
+<a id='L184' name='L184'></a> 184     <em class='comment'>// or "https://api.github.com/users/KiCad/repos"</em>
+<a id='L185' name='L185'></a> 185     <em class='comment'>// aRepoURL is e.g. "https://github.com/KiCad"</em>
+<a id='L186' name='L186'></a> 186     <em class='comment'>// Github has a default pagination set to 30 items.</em>
+<a id='L187' name='L187'></a> 187     <em class='comment'>// but allows up to 100 items max if we add the "?per_page=100" option</em>
+<a id='L188' name='L188'></a> 188 
+<a id='L189' name='L189'></a> 189     <a href='../Y/15985.html' title='Multiple used in 6 places.'>wxURI</a> <a href='../Y/13995.html' title='Multiple used in 21 places.'>repo</a>( <a href='../Y/5889.html' title='Multiple used in 15 places.'>aRepoURL</a> );
+<a id='L190' name='L190'></a> 190 
+<a id='L191' name='L191'></a> 191     <strong class='reserved'>if</strong>( <a href='../Y/13995.html' title='Multiple used in 21 places.'>repo</a>.<a href='../Y/1880.html' title='Multiple used in 3 places.'>HasServer</a>() &amp;&amp; <a href='../Y/13995.html' title='Multiple used in 21 places.'>repo</a>.<a href='../Y/1875.html' title='Multiple used in 2 places.'>HasPath</a>() )
+<a id='L192' name='L192'></a> 192     <em class='brace'>{</em>
+<a id='L193' name='L193'></a> 193         <em class='comment'>// goal: "https://api.github.com/users/KiCad"</em>
+<a id='L194' name='L194'></a> 194         <em class='comment'>//    or "https://api.github.com/orgs/KiCad"</em>
+<a id='L195' name='L195'></a> 195         <em class='comment'>// "https://api.github.com/users/..." works both for orgs and users</em>
+<a id='L196' name='L196'></a> 196         <em class='comment'>// if we just retrieve the .pretty list</em>
+<a id='L197' name='L197'></a> 197         <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../Y/14814.html' title='Multiple used in 5 places.'>target_url</a>( <a href='../Y/15966.html' title='Multiple used in 1011 places.'>wxT</a>( "https://api.github.com/users" ) );
+<a id='L198' name='L198'></a> 198         <a href='../Y/14814.html' title='Multiple used in 5 places.'>target_url</a>  += <a href='../Y/13995.html' title='Multiple used in 21 places.'>repo</a>.<a href='../D/1292.html' title='Multiple defined in 2 places.'>GetPath</a>();
+<a id='L199' name='L199'></a> 199         <a href='../Y/14814.html' title='Multiple used in 5 places.'>target_url</a>  += <a href='../Y/15966.html' title='Multiple used in 1011 places.'>wxT</a>( "/repos" );
+<a id='L200' name='L200'></a> 200 
+<a id='L201' name='L201'></a> 201         <em class='comment'>// Github has a default pagination set to 30 items.</em>
+<a id='L202' name='L202'></a> 202         <em class='comment'>// but allows up to 100 items max. Use this limit</em>
+<a id='L203' name='L203'></a> 203         <a href='../Y/14814.html' title='Multiple used in 5 places.'>target_url</a> += <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>::<a href='../D/1022.html' title='Multiple defined in 7 places.'>Format</a>( "?per_page=%d&amp;page=%d", <a href='../Y/5441.html' title='Multiple used in 3 places.'>aItemCountMax</a>, <a href='../Y/5743.html' title='Multiple used in 40 places.'>aPage</a> );
+<a id='L204' name='L204'></a> 204 
+<a id='L205' name='L205'></a> 205         *<a href='../Y/5351.html' title='Multiple used in 8 places.'>aFullURLCommand</a> = <a href='../Y/14814.html' title='Multiple used in 5 places.'>target_url</a>.<a href='../Y/15259.html' title='Multiple used in 4 places.'>utf8_str</a>();
+<a id='L206' name='L206'></a> 206         <strong class='reserved'>return</strong> <strong class='reserved'>true</strong>;
+<a id='L207' name='L207'></a> 207     <em class='brace'>}</em>
+<a id='L208' name='L208'></a> 208 
+<a id='L209' name='L209'></a> 209     <strong class='reserved'>return</strong> <strong class='reserved'>false</strong>;
+<a id='L210' name='L210'></a> 210 <em class='brace'>}</em>
+<a id='L211' name='L211'></a> 211 
+<a id='L212' name='L212'></a> 212 
+<a id='L213' name='L213'></a> 213 <strong class='reserved'>bool</strong> <a href='../S/458.html#L53' title='Defined at 53 in github/github_getliblist.cpp.'>GITHUB_GETLIBLIST</a>::<a href='../R/4353.html' title='Multiple referred from 3 places.'>remoteGetJSON</a>( <strong class='reserved'>const</strong> <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../D/4641.html' title='Multiple defined in 2 places.'>string</a>&amp; <a href='../Y/5351.html' title='Multiple used in 8 places.'>aFullURLCommand</a>, <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>* <a href='../Y/5606.html' title='Multiple used in 4 places.'>aMsgError</a> )
+<a id='L214' name='L214'></a> 214 <em class='brace'>{</em>
+<a id='L215' name='L215'></a> 215     <a href='../Y/2237.html' title='Multiple used in 2 places.'>KICAD_CURL_EASY</a> <a href='../Y/8780.html' title='Multiple used in 14 places.'>kcurl</a>;
+<a id='L216' name='L216'></a> 216 
+<a id='L217' name='L217'></a> 217     <a href='../Y/15822.html' title='Multiple used in 23 places.'>wxLogDebug</a>( <a href='../Y/15966.html' title='Multiple used in 1011 places.'>wxT</a>( "Attempting to download: " ) + <a href='../Y/5351.html' title='Multiple used in 8 places.'>aFullURLCommand</a> );
+<a id='L218' name='L218'></a> 218 
+<a id='L219' name='L219'></a> 219     <a href='../Y/8780.html' title='Multiple used in 14 places.'>kcurl</a>.<a href='../Y/3926.html' title='Multiple used in 2 places.'>SetURL</a>( <a href='../Y/5351.html' title='Multiple used in 8 places.'>aFullURLCommand</a> );
+<a id='L220' name='L220'></a> 220     <a href='../Y/8780.html' title='Multiple used in 14 places.'>kcurl</a>.<a href='../Y/3934.html' title='Multiple used in 2 places.'>SetUserAgent</a>( "http://kicad-pcb.org" );
+<a id='L221' name='L221'></a> 221     <a href='../Y/8780.html' title='Multiple used in 14 places.'>kcurl</a>.<a href='../Y/3559.html' title='Multiple used in 2 places.'>SetHeader</a>( "Accept", <a href='../Y/11470.html' title='Multiple used in 5 places.'>m_option_string</a> );
+<a id='L222' name='L222'></a> 222     <a href='../Y/8780.html' title='Multiple used in 14 places.'>kcurl</a>.<a href='../Y/3530.html' title='Multiple used in 2 places.'>SetFollowRedirects</a>( <strong class='reserved'>true</strong> );
+<a id='L223' name='L223'></a> 223 
+<a id='L224' name='L224'></a> 224     <strong class='reserved'>try</strong>
+<a id='L225' name='L225'></a> 225     <em class='brace'>{</em>
+<a id='L226' name='L226'></a> 226         <a href='../Y/8780.html' title='Multiple used in 14 places.'>kcurl</a>.<a href='../Y/2947.html' title='Multiple used in 2 places.'>Perform</a>();
+<a id='L227' name='L227'></a> 227         <a href='../Y/11046.html' title='Multiple used in 4 places.'>m_image</a> = <a href='../Y/8780.html' title='Multiple used in 14 places.'>kcurl</a>.<a href='../Y/1271.html' title='Multiple used in 6 places.'>GetBuffer</a>();
+<a id='L228' name='L228'></a> 228         <strong class='reserved'>return</strong> <strong class='reserved'>true</strong>;
+<a id='L229' name='L229'></a> 229     <em class='brace'>}</em>
+<a id='L230' name='L230'></a> 230     <strong class='reserved'>catch</strong>( <strong class='reserved'>const</strong> <a href='../Y/1984.html' title='Multiple used in 59 places.'>IO_ERROR</a>&amp; <a href='../Y/8610.html' title='Multiple used in 94 places.'>ioe</a> )
+<a id='L231' name='L231'></a> 231     <em class='brace'>{</em>
+<a id='L232' name='L232'></a> 232         <strong class='reserved'>if</strong>( <a href='../Y/5606.html' title='Multiple used in 4 places.'>aMsgError</a> )
+<a id='L233' name='L233'></a> 233         <em class='brace'>{</em>
+<a id='L234' name='L234'></a> 234             <a href='../Y/4745.html' title='Multiple used in 20 places.'>UTF8</a> <a href='../Y/8020.html' title='Multiple used in 8 places.'>fmt</a>( <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Error fetching JSON data from URL \"%s\".\nReason: \"%s\"" ) );
+<a id='L235' name='L235'></a> 235 
+<a id='L236' name='L236'></a> 236             <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../D/4641.html' title='Multiple defined in 2 places.'>string</a> <a href='../Y/12733.html' title='Multiple used in 994 places.'>msg</a> = <a href='../Y/4043.html' title='Multiple used in 26 places.'>StrPrintf</a>( <a href='../Y/8020.html' title='Multiple used in 8 places.'>fmt</a>.<a href='../Y/6800.html' title='Multiple used in 467 places.'>c_str</a>(),
+<a id='L237' name='L237'></a> 237                                          <a href='../Y/5351.html' title='Multiple used in 8 places.'>aFullURLCommand</a>.<a href='../Y/6800.html' title='Multiple used in 467 places.'>c_str</a>(),
+<a id='L238' name='L238'></a> 238                                          <a href='../Y/4115.html' title='Multiple used in 140 places.'>TO_UTF8</a>( <a href='../Y/8610.html' title='Multiple used in 94 places.'>ioe</a>.<a href='../Y/4895.html' title='Multiple used in 44 places.'>What</a>() ) );
+<a id='L239' name='L239'></a> 239 
+<a id='L240' name='L240'></a> 240             *<a href='../Y/5606.html' title='Multiple used in 4 places.'>aMsgError</a> = <a href='../Y/1012.html' title='Multiple used in 106 places.'>FROM_UTF8</a>( <a href='../Y/12733.html' title='Multiple used in 994 places.'>msg</a>.<a href='../Y/6800.html' title='Multiple used in 467 places.'>c_str</a>() );
+<a id='L241' name='L241'></a> 241         <em class='brace'>}</em>
+<a id='L242' name='L242'></a> 242         <strong class='reserved'>return</strong> <strong class='reserved'>false</strong>;
+<a id='L243' name='L243'></a> 243     <em class='brace'>}</em>
+<a id='L244' name='L244'></a> 244 <em class='brace'>}</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L61'>[^]</a><a href='#L213'>[v]</a><a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>dialogs/dialog_update_pcb.cpp</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/831.html'>dialogs</a>/dialog_update_pcb.cpp</h2>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L52'>[^]</a><a href='#L144'>[v]</a>[top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L52' title='Defined at 52.'>m_initialized</a></li>
+<li><a href='#L106' title='Defined at 106.'>PerformUpdate</a></li>
+<li><a href='#L137' title='Defined at 137.'>OnOptionChanged</a></li>
+<li><a href='#L144' title='Defined at 144.'>OnUpdateClick</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/**</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * @file pcbnew/dialogs/dialog_update_pcb.cpp</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> */</em>
+<a id='L4' name='L4'></a>   4 
+<a id='L5' name='L5'></a>   5 <em class='comment'>/*</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> * This program source code file is part of KiCad, a free EDA CAD application.</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> *</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * Copyright (C) 1992-2019 KiCad Developers, see AUTHORS.txt for contributors.</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> *</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> * This program is free software; you can redistribute it and/or</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> * modify it under the terms of the GNU General Public License</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> * as published by the Free Software Foundation; either version 2</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * of the License, or (at your option) any later version.</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> *</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> * This program is distributed in the hope that it will be useful,</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> * but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * GNU General Public License for more details.</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> *</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> * You should have received a copy of the GNU General Public License</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'> * along with this program; if not, you may find one here:</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'> * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'> * or you may search the http://www.gnu.org website for the version 2 license,</em>
+<a id='L24' name='L24'></a>  24 <em class='comment'> * or you may write to the Free Software Foundation, Inc.,</em>
+<a id='L25' name='L25'></a>  25 <em class='comment'> * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA</em>
+<a id='L26' name='L26'></a>  26 <em class='comment'> */</em>
+<a id='L27' name='L27'></a>  27 
+<a id='L28' name='L28'></a>  28 <em class='sharp'>#include</em> &lt;<a href='586.html'>pcb_edit_frame.h</a>&gt;
+<a id='L29' name='L29'></a>  29 <em class='sharp'>#include</em> &lt;<a href='576.html'>pcbnew_settings.h</a>&gt;
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#include</em> &lt;<a href='316.html'>dialog_update_pcb.h</a>&gt;
+<a id='L31' name='L31'></a>  31 
+<a id='L32' name='L32'></a>  32 <em class='sharp'>#include</em> &lt;<a href='629.html'>ratsnest/ratsnest_data.h</a>&gt;
+<a id='L33' name='L33'></a>  33 <em class='sharp'>#include</em> &lt;wx_html_report_panel.h&gt;
+<a id='L34' name='L34'></a>  34 <em class='sharp'>#include</em> &lt;<a href='522.html'>netlist_reader/pcb_netlist.h</a>&gt;
+<a id='L35' name='L35'></a>  35 <em class='sharp'>#include</em> &lt;<a href='515.html'>netlist_reader/board_netlist_updater.h</a>&gt;
+<a id='L36' name='L36'></a>  36 <em class='sharp'>#include</em> &lt;tool/tool_manager.h&gt;
+<a id='L37' name='L37'></a>  37 <em class='sharp'>#include</em> &lt;<a href='782.html'>tools/pcb_actions.h</a>&gt;
+<a id='L38' name='L38'></a>  38 <em class='sharp'>#include</em> &lt;<a href='802.html'>tools/selection_tool.h</a>&gt;
+<a id='L39' name='L39'></a>  39 <em class='sharp'>#include</em> &lt;<a href='58.html'>class_board.h</a>&gt;
+<a id='L40' name='L40'></a>  40 <em class='sharp'>#include</em> &lt;kiface_i.h&gt;
+<a id='L41' name='L41'></a>  41 
+<a id='L42' name='L42'></a>  42 <strong class='reserved'>using</strong> <strong class='reserved'>namespace</strong> <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/13533.html' title='Multiple used in 25 places.'>placeholders</a>;
+<a id='L43' name='L43'></a>  43 
+<a id='L44' name='L44'></a>  44 
+<a id='L45' name='L45'></a>  45 <strong class='reserved'>bool</strong> <a href='../S/315.html#L85' title='Defined at 85 in dialogs/dialog_update_pcb.cpp.'>DIALOG_UPDATE_PCB</a>::<a href='../Y/12381.html' title='Multiple used in 15 places.'>m_warnForNoNetPads</a> = <strong class='reserved'>false</strong>;
+<a id='L46' name='L46'></a>  46 
+<a id='L47' name='L47'></a>  47 
+<a id='L48' name='L48'></a>  48 <a href='../S/315.html#L85' title='Defined at 85 in dialogs/dialog_update_pcb.cpp.'>DIALOG_UPDATE_PCB</a>::<a href='../S/315.html#L85' title='Defined at 85 in dialogs/dialog_update_pcb.cpp.'>DIALOG_UPDATE_PCB</a>( <a href='../S/585.html#L356' title='Defined at 356 in pcb_edit_frame.cpp.'>PCB_EDIT_FRAME</a>* <a href='../Y/5754.html' title='Multiple used in 610 places.'>aParent</a>, <a href='../Y/2607.html' title='Multiple used in 58 places.'>NETLIST</a>* <a href='../Y/5626.html' title='Multiple used in 71 places.'>aNetlist</a> ) :
+<a id='L49' name='L49'></a>  49     <a href='../D/659.html' title='Multiple defined in 2 places.'>DIALOG_UPDATE_PCB_BASE</a>( <a href='../Y/5754.html' title='Multiple used in 610 places.'>aParent</a> ),
+<a id='L50' name='L50'></a>  50     <a href='../D/4159.html' title='Multiple defined in 14 places.'>m_frame</a>( <a href='../Y/5754.html' title='Multiple used in 610 places.'>aParent</a> ),
+<a id='L51' name='L51'></a>  51     <a href='../Y/11416.html' title='Multiple used in 22 places.'>m_netlist</a>( <a href='../Y/5626.html' title='Multiple used in 71 places.'>aNetlist</a> ),
+<a id='L52' name='L52'></a>  52     <a href='../R/4015.html' title='Multiple referred from 9 places.'>m_initialized</a>( <strong class='reserved'>false</strong> )
+<a id='L53' name='L53'></a>  53 <em class='brace'>{</em>
+<a id='L54' name='L54'></a>  54     <strong class='reserved'>auto</strong> <a href='../Y/6844.html' title='Multiple used in 311 places.'>cfg</a> = <a href='../D/4159.html' title='Multiple defined in 14 places.'>m_frame</a>-&gt;<a href='../S/581.html#L670' title='Defined at 670 in pcb_base_frame.cpp.'>GetPcbNewSettings</a>();
+<a id='L55' name='L55'></a>  55 
+<a id='L56' name='L56'></a>  56     <a href='../Y/10432.html' title='Multiple used in 10 places.'>m_cbRelinkFootprints</a>-&gt;<a href='../D/3095.html' title='Multiple defined in 3 places.'>SetValue</a>( <a href='../Y/6844.html' title='Multiple used in 311 places.'>cfg</a>-&gt;<a href='../Y/9821.html' title='Multiple used in 28 places.'>m_NetlistDialog</a>.<a href='../Y/6469.html' title='Multiple used in 4 places.'>associate_by_ref_sch</a> );
+<a id='L57' name='L57'></a>  57     <a href='../Y/10449.html' title='Multiple used in 20 places.'>m_cbUpdateFootprints</a>-&gt;<a href='../D/3095.html' title='Multiple defined in 3 places.'>SetValue</a>( <a href='../Y/6844.html' title='Multiple used in 311 places.'>cfg</a>-&gt;<a href='../Y/9821.html' title='Multiple used in 28 places.'>m_NetlistDialog</a>.<a href='../Y/15223.html' title='Multiple used in 6 places.'>update_footprints</a> );
+<a id='L58' name='L58'></a>  58     <a href='../Y/10415.html' title='Multiple used in 19 places.'>m_cbDeleteExtraFootprints</a>-&gt;<a href='../D/3095.html' title='Multiple defined in 3 places.'>SetValue</a>( <a href='../Y/6844.html' title='Multiple used in 311 places.'>cfg</a>-&gt;<a href='../Y/9821.html' title='Multiple used in 28 places.'>m_NetlistDialog</a>.<a href='../Y/7343.html' title='Multiple used in 6 places.'>delete_extra_footprints</a> );
+<a id='L59' name='L59'></a>  59     <a href='../Y/10417.html' title='Multiple used in 17 places.'>m_cbDeleteSinglePadNets</a>-&gt;<a href='../D/3095.html' title='Multiple defined in 3 places.'>SetValue</a>( <a href='../Y/6844.html' title='Multiple used in 311 places.'>cfg</a>-&gt;<a href='../Y/9821.html' title='Multiple used in 28 places.'>m_NetlistDialog</a>.<a href='../Y/7345.html' title='Multiple used in 6 places.'>delete_single_pad_nets</a> );
+<a id='L60' name='L60'></a>  60     <a href='../Y/10453.html' title='Multiple used in 18 places.'>m_cbWarnNoNetPad</a>-&gt;<a href='../D/3095.html' title='Multiple defined in 3 places.'>SetValue</a>( <a href='../Y/12381.html' title='Multiple used in 15 places.'>m_warnForNoNetPads</a> );
+<a id='L61' name='L61'></a>  61 
+<a id='L62' name='L62'></a>  62     <a href='../Y/11320.html' title='Multiple used in 17 places.'>m_messagePanel</a>-&gt;<a href='../Y/3630.html' title='Multiple used in 102 places.'>SetLabel</a>( <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>("Changes To Be Applied") );
+<a id='L63' name='L63'></a>  63     <a href='../Y/11320.html' title='Multiple used in 17 places.'>m_messagePanel</a>-&gt;<a href='../Y/3645.html' title='Multiple used in 3 places.'>SetLazyUpdate</a>( <strong class='reserved'>true</strong> );
+<a id='L64' name='L64'></a>  64     <a href='../Y/11416.html' title='Multiple used in 22 places.'>m_netlist</a>-&gt;<a href='../S/521.html#L198' title='Defined at 198 in netlist_reader/pcb_netlist.cpp.'>SortByReference</a>();
+<a id='L65' name='L65'></a>  65 
+<a id='L66' name='L66'></a>  66     <a href='../Y/11320.html' title='Multiple used in 17 places.'>m_messagePanel</a>-&gt;<a href='../Y/3952.html' title='Multiple used in 2 places.'>SetVisibleSeverities</a>( <a href='../Y/6844.html' title='Multiple used in 311 places.'>cfg</a>-&gt;<a href='../Y/9821.html' title='Multiple used in 28 places.'>m_NetlistDialog</a>.<a href='../Y/13998.html' title='Multiple used in 6 places.'>report_filter</a> );
+<a id='L67' name='L67'></a>  67 
+<a id='L68' name='L68'></a>  68     <a href='../Y/11320.html' title='Multiple used in 17 places.'>m_messagePanel</a>-&gt;<a href='../Y/1712.html' title='Multiple used in 28 places.'>GetSizer</a>()-&gt;<a href='../Y/3847.html' title='Multiple used in 78 places.'>SetSizeHints</a>( <strong class='reserved'>this</strong> );
+<a id='L69' name='L69'></a>  69     <a href='../Y/11320.html' title='Multiple used in 17 places.'>m_messagePanel</a>-&gt;<a href='../Y/2394.html' title='Multiple used in 151 places.'>Layout</a>();
+<a id='L70' name='L70'></a>  70 
+<a id='L71' name='L71'></a>  71     <em class='comment'>// We use a sdbSizer to get platform-dependent ordering of the action buttons, but</em>
+<a id='L72' name='L72'></a>  72     <em class='comment'>// that requires us to correct the button labels here.</em>
+<a id='L73' name='L73'></a>  73     <a href='../Y/11827.html' title='Multiple used in 66 places.'>m_sdbSizer1OK</a>-&gt;<a href='../Y/3630.html' title='Multiple used in 102 places.'>SetLabel</a>( <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Update PCB" ) );
+<a id='L74' name='L74'></a>  74     <a href='../Y/11826.html' title='Multiple used in 46 places.'>m_sdbSizer1Cancel</a>-&gt;<a href='../Y/3630.html' title='Multiple used in 102 places.'>SetLabel</a>( <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Close" ) );
+<a id='L75' name='L75'></a>  75     <a href='../Y/11824.html' title='Multiple used in 72 places.'>m_sdbSizer1</a>-&gt;<a href='../Y/2394.html' title='Multiple used in 151 places.'>Layout</a>();
+<a id='L76' name='L76'></a>  76 
+<a id='L77' name='L77'></a>  77     <a href='../Y/11827.html' title='Multiple used in 66 places.'>m_sdbSizer1OK</a>-&gt;<a href='../Y/3441.html' title='Multiple used in 47 places.'>SetDefault</a>();
+<a id='L78' name='L78'></a>  78     <a href='../Y/1064.html' title='Multiple used in 33 places.'>FinishDialogSettings</a>();
+<a id='L79' name='L79'></a>  79 
+<a id='L80' name='L80'></a>  80     <a href='../S/315.html#L52' title='Defined at 52 in dialogs/dialog_update_pcb.cpp.'>m_initialized</a> = <strong class='reserved'>true</strong>;
+<a id='L81' name='L81'></a>  81     <a href='../S/315.html#L106' title='Defined at 106 in dialogs/dialog_update_pcb.cpp.'>PerformUpdate</a>( <strong class='reserved'>true</strong> );
+<a id='L82' name='L82'></a>  82 <em class='brace'>}</em>
+<a id='L83' name='L83'></a>  83 
+<a id='L84' name='L84'></a>  84 
+<a id='L85' name='L85'></a>  85 <a href='../R/633.html' title='Multiple referred from 10 places.'>DIALOG_UPDATE_PCB</a>::~<a href='../S/315.html#L85' title='Defined at 85 in dialogs/dialog_update_pcb.cpp.'>DIALOG_UPDATE_PCB</a>()
+<a id='L86' name='L86'></a>  86 <em class='brace'>{</em>
+<a id='L87' name='L87'></a>  87     <a href='../Y/12381.html' title='Multiple used in 15 places.'>m_warnForNoNetPads</a> = <a href='../Y/10453.html' title='Multiple used in 18 places.'>m_cbWarnNoNetPad</a>-&gt;<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>();
+<a id='L88' name='L88'></a>  88 
+<a id='L89' name='L89'></a>  89     <strong class='reserved'>auto</strong> <a href='../Y/6844.html' title='Multiple used in 311 places.'>cfg</a> = <a href='../D/4159.html' title='Multiple defined in 14 places.'>m_frame</a>-&gt;<a href='../S/581.html#L670' title='Defined at 670 in pcb_base_frame.cpp.'>GetPcbNewSettings</a>();
+<a id='L90' name='L90'></a>  90 
+<a id='L91' name='L91'></a>  91     <a href='../Y/6844.html' title='Multiple used in 311 places.'>cfg</a>-&gt;<a href='../Y/9821.html' title='Multiple used in 28 places.'>m_NetlistDialog</a>.<a href='../Y/6469.html' title='Multiple used in 4 places.'>associate_by_ref_sch</a>    = <a href='../Y/10432.html' title='Multiple used in 10 places.'>m_cbRelinkFootprints</a>-&gt;<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>();
+<a id='L92' name='L92'></a>  92     <a href='../Y/6844.html' title='Multiple used in 311 places.'>cfg</a>-&gt;<a href='../Y/9821.html' title='Multiple used in 28 places.'>m_NetlistDialog</a>.<a href='../Y/15223.html' title='Multiple used in 6 places.'>update_footprints</a>       = <a href='../Y/10449.html' title='Multiple used in 20 places.'>m_cbUpdateFootprints</a>-&gt;<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>();
+<a id='L93' name='L93'></a>  93     <a href='../Y/6844.html' title='Multiple used in 311 places.'>cfg</a>-&gt;<a href='../Y/9821.html' title='Multiple used in 28 places.'>m_NetlistDialog</a>.<a href='../Y/7343.html' title='Multiple used in 6 places.'>delete_extra_footprints</a> = <a href='../Y/10415.html' title='Multiple used in 19 places.'>m_cbDeleteExtraFootprints</a>-&gt;<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>();
+<a id='L94' name='L94'></a>  94     <a href='../Y/6844.html' title='Multiple used in 311 places.'>cfg</a>-&gt;<a href='../Y/9821.html' title='Multiple used in 28 places.'>m_NetlistDialog</a>.<a href='../Y/7345.html' title='Multiple used in 6 places.'>delete_single_pad_nets</a>  = <a href='../Y/10417.html' title='Multiple used in 17 places.'>m_cbDeleteSinglePadNets</a>-&gt;<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>();
+<a id='L95' name='L95'></a>  95     <a href='../Y/6844.html' title='Multiple used in 311 places.'>cfg</a>-&gt;<a href='../Y/9821.html' title='Multiple used in 28 places.'>m_NetlistDialog</a>.<a href='../Y/13998.html' title='Multiple used in 6 places.'>report_filter</a>           = <a href='../Y/11320.html' title='Multiple used in 17 places.'>m_messagePanel</a>-&gt;<a href='../Y/1805.html' title='Multiple used in 2 places.'>GetVisibleSeverities</a>();
+<a id='L96' name='L96'></a>  96 
+<a id='L97' name='L97'></a>  97     <strong class='reserved'>if</strong>( <a href='../S/235.html#L71' title='Defined at 71 in dialogs/dialog_netlist.cpp.'>m_runDragCommand</a> )
+<a id='L98' name='L98'></a>  98     <em class='brace'>{</em>
+<a id='L99' name='L99'></a>  99         <a href='../D/1894.html' title='Multiple defined in 2 places.'>KIGFX</a>::<a href='../Y/4801.html' title='Multiple used in 18 places.'>VIEW_CONTROLS</a>* <a href='../Y/7080.html' title='Multiple used in 124 places.'>controls</a> = <a href='../D/4159.html' title='Multiple defined in 14 places.'>m_frame</a>-&gt;<a href='../S/581.html#L712' title='Defined at 712 in pcb_base_frame.cpp.'>GetCanvas</a>()-&gt;<a href='../Y/1802.html' title='Multiple used in 21 places.'>GetViewControls</a>();
+<a id='L100' name='L100'></a> 100         <a href='../Y/7080.html' title='Multiple used in 124 places.'>controls</a>-&gt;<a href='../Y/3428.html' title='Multiple used in 7 places.'>SetCursorPosition</a>( <a href='../Y/7080.html' title='Multiple used in 124 places.'>controls</a>-&gt;<a href='../Y/1556.html' title='Multiple used in 15 places.'>GetMousePosition</a>() );
+<a id='L101' name='L101'></a> 101         <a href='../D/4159.html' title='Multiple defined in 14 places.'>m_frame</a>-&gt;<a href='../Y/1769.html' title='Multiple used in 41 places.'>GetToolManager</a>()-&gt;<a href='../Y/3195.html' title='Multiple used in 158 places.'>RunAction</a>( <a href='../Y/2808.html' title='Multiple used in 1029 places.'>PCB_ACTIONS</a>::<a href='../Y/12717.html' title='Multiple used in 65 places.'>move</a>, <strong class='reserved'>true</strong> );
+<a id='L102' name='L102'></a> 102     <em class='brace'>}</em>
+<a id='L103' name='L103'></a> 103 <em class='brace'>}</em>
+<a id='L104' name='L104'></a> 104 
+<a id='L105' name='L105'></a> 105 
+<a id='L106' name='L106'></a> 106 <strong class='reserved'>void</strong> <a href='../S/315.html#L85' title='Defined at 85 in dialogs/dialog_update_pcb.cpp.'>DIALOG_UPDATE_PCB</a>::<a href='../R/2517.html' title='Multiple referred from 4 places.'>PerformUpdate</a>( <strong class='reserved'>bool</strong> <a href='../Y/5228.html' title='Multiple used in 24 places.'>aDryRun</a> )
+<a id='L107' name='L107'></a> 107 <em class='brace'>{</em>
+<a id='L108' name='L108'></a> 108     <a href='../Y/11320.html' title='Multiple used in 17 places.'>m_messagePanel</a>-&gt;<a href='../D/434.html' title='Multiple defined in 11 places.'>Clear</a>();
+<a id='L109' name='L109'></a> 109 
+<a id='L110' name='L110'></a> 110     <a href='../Y/3094.html' title='Multiple used in 30 places.'>REPORTER</a>&amp; <a href='../Y/14000.html' title='Multiple used in 27 places.'>reporter</a> = <a href='../Y/11320.html' title='Multiple used in 17 places.'>m_messagePanel</a>-&gt;<a href='../Y/3178.html' title='Multiple used in 9 places.'>Reporter</a>();
+<a id='L111' name='L111'></a> 111 
+<a id='L112' name='L112'></a> 112     <a href='../S/235.html#L71' title='Defined at 71 in dialogs/dialog_netlist.cpp.'>m_runDragCommand</a> = <strong class='reserved'>false</strong>;
+<a id='L113' name='L113'></a> 113 
+<a id='L114' name='L114'></a> 114     <a href='../Y/11416.html' title='Multiple used in 22 places.'>m_netlist</a>-&gt;<a href='../Y/3451.html' title='Multiple used in 3 places.'>SetDeleteExtraFootprints</a>( <a href='../Y/10415.html' title='Multiple used in 19 places.'>m_cbDeleteExtraFootprints</a>-&gt;<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>() );
+<a id='L115' name='L115'></a> 115     <a href='../Y/11416.html' title='Multiple used in 22 places.'>m_netlist</a>-&gt;<a href='../Y/3520.html' title='Multiple used in 3 places.'>SetFindByTimeStamp</a>( !<a href='../Y/10432.html' title='Multiple used in 10 places.'>m_cbRelinkFootprints</a>-&gt;<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>() );
+<a id='L116' name='L116'></a> 116     <a href='../Y/11416.html' title='Multiple used in 22 places.'>m_netlist</a>-&gt;<a href='../Y/3797.html' title='Multiple used in 8 places.'>SetReplaceFootprints</a>( <a href='../Y/10449.html' title='Multiple used in 20 places.'>m_cbUpdateFootprints</a>-&gt;<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>() );
+<a id='L117' name='L117'></a> 117 
+<a id='L118' name='L118'></a> 118     <a href='../S/514.html#L73' title='Defined at 73 in netlist_reader/board_netlist_updater.cpp.'>BOARD_NETLIST_UPDATER</a> <a href='../Y/15226.html' title='Multiple used in 35 places.'>updater</a>( <a href='../D/4159.html' title='Multiple defined in 14 places.'>m_frame</a>, <a href='../D/4159.html' title='Multiple defined in 14 places.'>m_frame</a>-&gt;<a href='../D/1112.html' title='Multiple defined in 2 places.'>GetBoard</a>() );
+<a id='L119' name='L119'></a> 119     <a href='../Y/15226.html' title='Multiple used in 35 places.'>updater</a>.<a href='../Y/3798.html' title='Multiple used in 4 places.'>SetReporter</a> ( &amp;<a href='../Y/14000.html' title='Multiple used in 27 places.'>reporter</a> );
+<a id='L120' name='L120'></a> 120     <a href='../Y/15226.html' title='Multiple used in 35 places.'>updater</a>.<a href='../Y/3606.html' title='Multiple used in 3 places.'>SetIsDryRun</a>( <a href='../Y/5228.html' title='Multiple used in 24 places.'>aDryRun</a> );
+<a id='L121' name='L121'></a> 121     <a href='../Y/15226.html' title='Multiple used in 35 places.'>updater</a>.<a href='../Y/3667.html' title='Multiple used in 5 places.'>SetLookupByTimestamp</a>( !<a href='../Y/10432.html' title='Multiple used in 10 places.'>m_cbRelinkFootprints</a>-&gt;<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>() );
+<a id='L122' name='L122'></a> 122     <a href='../Y/15226.html' title='Multiple used in 35 places.'>updater</a>.<a href='../Y/3453.html' title='Multiple used in 5 places.'>SetDeleteUnusedComponents</a> ( <a href='../Y/10415.html' title='Multiple used in 19 places.'>m_cbDeleteExtraFootprints</a>-&gt;<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>() );
+<a id='L123' name='L123'></a> 123     <a href='../Y/15226.html' title='Multiple used in 35 places.'>updater</a>.<a href='../Y/3797.html' title='Multiple used in 8 places.'>SetReplaceFootprints</a>( <a href='../Y/10449.html' title='Multiple used in 20 places.'>m_cbUpdateFootprints</a>-&gt;<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>() );
+<a id='L124' name='L124'></a> 124     <a href='../Y/15226.html' title='Multiple used in 35 places.'>updater</a>.<a href='../Y/3452.html' title='Multiple used in 5 places.'>SetDeleteSinglePadNets</a>( <a href='../Y/10417.html' title='Multiple used in 17 places.'>m_cbDeleteSinglePadNets</a>-&gt;<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>() );
+<a id='L125' name='L125'></a> 125     <a href='../Y/15226.html' title='Multiple used in 35 places.'>updater</a>.<a href='../Y/3954.html' title='Multiple used in 5 places.'>SetWarnPadNoNetInNetlist</a>( <a href='../Y/12381.html' title='Multiple used in 15 places.'>m_warnForNoNetPads</a> );
+<a id='L126' name='L126'></a> 126     <a href='../Y/15226.html' title='Multiple used in 35 places.'>updater</a>.<a href='../S/514.html#L739' title='Defined at 739 in netlist_reader/board_netlist_updater.cpp.'>UpdateNetlist</a>( *<a href='../Y/11416.html' title='Multiple used in 22 places.'>m_netlist</a> );
+<a id='L127' name='L127'></a> 127 
+<a id='L128' name='L128'></a> 128     <a href='../Y/11320.html' title='Multiple used in 17 places.'>m_messagePanel</a>-&gt;<a href='../Y/1079.html' title='Multiple used in 6 places.'>Flush</a>( <strong class='reserved'>true</strong> );
+<a id='L129' name='L129'></a> 129 
+<a id='L130' name='L130'></a> 130     <strong class='reserved'>if</strong>( <a href='../Y/5228.html' title='Multiple used in 24 places.'>aDryRun</a> )
+<a id='L131' name='L131'></a> 131         <strong class='reserved'>return</strong>;
+<a id='L132' name='L132'></a> 132 
+<a id='L133' name='L133'></a> 133     <a href='../D/4159.html' title='Multiple defined in 14 places.'>m_frame</a>-&gt;<a href='../S/518.html#L94' title='Defined at 94 in netlist_reader/netlist.cpp.'>OnNetlistChanged</a>( <a href='../Y/15226.html' title='Multiple used in 35 places.'>updater</a>, &amp;<a href='../S/235.html#L71' title='Defined at 71 in dialogs/dialog_netlist.cpp.'>m_runDragCommand</a> );
+<a id='L134' name='L134'></a> 134 <em class='brace'>}</em>
+<a id='L135' name='L135'></a> 135 
+<a id='L136' name='L136'></a> 136 
+<a id='L137' name='L137'></a> 137 <strong class='reserved'>void</strong> <a href='../S/315.html#L85' title='Defined at 85 in dialogs/dialog_update_pcb.cpp.'>DIALOG_UPDATE_PCB</a>::<a href='../R/2209.html' title='Multiple referred from 24 places.'>OnOptionChanged</a>( <a href='../Y/15577.html' title='Multiple used in 712 places.'>wxCommandEvent</a>&amp; <a href='../Y/7792.html' title='Multiple used in 867 places.'>event</a> )
+<a id='L138' name='L138'></a> 138 <em class='brace'>{</em>
+<a id='L139' name='L139'></a> 139     <strong class='reserved'>if</strong>( <a href='../S/315.html#L52' title='Defined at 52 in dialogs/dialog_update_pcb.cpp.'>m_initialized</a> )
+<a id='L140' name='L140'></a> 140         <a href='../S/315.html#L106' title='Defined at 106 in dialogs/dialog_update_pcb.cpp.'>PerformUpdate</a>( <strong class='reserved'>true</strong> );
+<a id='L141' name='L141'></a> 141 <em class='brace'>}</em>
+<a id='L142' name='L142'></a> 142 
+<a id='L143' name='L143'></a> 143 
+<a id='L144' name='L144'></a> 144 <strong class='reserved'>void</strong> <a href='../S/315.html#L85' title='Defined at 85 in dialogs/dialog_update_pcb.cpp.'>DIALOG_UPDATE_PCB</a>::<a href='../R/2264.html' title='Multiple referred from 4 places.'>OnUpdateClick</a>( <a href='../Y/15577.html' title='Multiple used in 712 places.'>wxCommandEvent</a>&amp; <a href='../Y/7792.html' title='Multiple used in 867 places.'>event</a> )
+<a id='L145' name='L145'></a> 145 <em class='brace'>{</em>
+<a id='L146' name='L146'></a> 146     <a href='../Y/11320.html' title='Multiple used in 17 places.'>m_messagePanel</a>-&gt;<a href='../Y/3630.html' title='Multiple used in 102 places.'>SetLabel</a>( <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Changes Applied To PCB" ) );
+<a id='L147' name='L147'></a> 147     <a href='../S/315.html#L106' title='Defined at 106 in dialogs/dialog_update_pcb.cpp.'>PerformUpdate</a>( <strong class='reserved'>false</strong> );
+<a id='L148' name='L148'></a> 148     <a href='../Y/11826.html' title='Multiple used in 46 places.'>m_sdbSizer1Cancel</a>-&gt;<a href='../Y/3441.html' title='Multiple used in 47 places.'>SetDefault</a>();
+<a id='L149' name='L149'></a> 149 <em class='brace'>}</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L52'>[^]</a><a href='#L144'>[v]</a><a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

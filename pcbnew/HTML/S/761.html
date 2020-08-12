@@ -1,0 +1,225 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>toolbars_footprint_viewer.cpp</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/toolbars_footprint_viewer.cpp</h2>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L36'>[^]</a><a href='#L156'>[v]</a>[top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L36' title='Defined at 36.'>ReCreateHToolbar</a></li>
+<li><a href='#L99' title='Defined at 99.'>ReCreateOptToolbar</a></li>
+<li><a href='#L127' title='Defined at 127.'>ReCreateVToolbar</a></li>
+<li><a href='#L133' title='Defined at 133.'>SyncToolbars</a></li>
+<li><a href='#L156' title='Defined at 156.'>ReCreateMenuBar</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * This program source code file is part of KiCad, a free EDA CAD application.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 2014 Jean-Pierre Charras, jp.charras at wanadoo.fr</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> * Copyright (C) 2012 SoftPLC Corporation, Dick Hollenbeck &lt;dick@softplc.com&gt;</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> * Copyright (C) 2012 Wayne Stambaugh &lt;stambaughw@gmail.com&gt;</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> * Copyright (C) 1992-2019 KiCad Developers, see AUTHORS.txt for contributors.</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> *</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * This program is free software: you can redistribute it and/or modify it</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> * under the terms of the GNU General Public License as published by the</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> * Free Software Foundation, either version 3 of the License, or (at your</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> * option) any later version.</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> *</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * This program is distributed in the hope that it will be useful, but</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> * WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> * General Public License for more details.</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> *</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> * You should have received a copy of the GNU General Public License along</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> * with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'> */</em>
+<a id='L22' name='L22'></a>  22 
+<a id='L23' name='L23'></a>  23 
+<a id='L24' name='L24'></a>  24 <em class='sharp'>#include</em> &lt;macros.h&gt;
+<a id='L25' name='L25'></a>  25 <em class='sharp'>#include</em> &lt;bitmaps.h&gt;
+<a id='L26' name='L26'></a>  26 <em class='sharp'>#include</em> &lt;tool/action_toolbar.h&gt;
+<a id='L27' name='L27'></a>  27 <em class='sharp'>#include</em> &lt;tool/conditional_menu.h&gt;
+<a id='L28' name='L28'></a>  28 <em class='sharp'>#include</em> &lt;tool/tool_manager.h&gt;
+<a id='L29' name='L29'></a>  29 <em class='sharp'>#include</em> &lt;<a href='802.html'>tools/selection_tool.h</a>&gt;
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#include</em> &lt;<a href='782.html'>tools/pcb_actions.h</a>&gt;
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#include</em> "<a href='445.html'>footprint_viewer_frame.h</a>"
+<a id='L32' name='L32'></a>  32 <em class='sharp'>#include</em> "<a href='572.html'>pcbnew_id.h</a>"
+<a id='L33' name='L33'></a>  33 <em class='sharp'>#include</em> &lt;widgets/wx_menubar.h&gt;
+<a id='L34' name='L34'></a>  34 
+<a id='L35' name='L35'></a>  35 
+<a id='L36' name='L36'></a>  36 <strong class='reserved'>void</strong> <a href='../S/444.html#L275' title='Defined at 275 in footprint_viewer_frame.cpp.'>FOOTPRINT_VIEWER_FRAME</a>::<a href='../R/2634.html' title='Multiple referred from 15 places.'>ReCreateHToolbar</a>()
+<a id='L37' name='L37'></a>  37 <em class='brace'>{</em>
+<a id='L38' name='L38'></a>  38     <em class='comment'>// Note:</em>
+<a id='L39' name='L39'></a>  39     <em class='comment'>// To rebuild the aui toolbar, the more easy way is to clear ( calling m_mainToolBar.Clear() )</em>
+<a id='L40' name='L40'></a>  40     <em class='comment'>// all wxAuiToolBarItems.</em>
+<a id='L41' name='L41'></a>  41     <em class='comment'>// However the wxAuiToolBarItems are not the owners of controls managed by</em>
+<a id='L42' name='L42'></a>  42     <em class='comment'>// them ( m_zoomSelectBox and m_gridSelectBox ), and therefore do not delete them</em>
+<a id='L43' name='L43'></a>  43     <em class='comment'>// So we do not recreate them after clearing the tools.</em>
+<a id='L44' name='L44'></a>  44 
+<a id='L45' name='L45'></a>  45     <strong class='reserved'>if</strong>( <a href='../Y/11262.html' title='Multiple used in 145 places.'>m_mainToolBar</a> )
+<a id='L46' name='L46'></a>  46         <a href='../Y/11262.html' title='Multiple used in 145 places.'>m_mainToolBar</a>-&gt;<a href='../Y/504.html' title='Multiple used in 10 places.'>ClearToolbar</a>();
+<a id='L47' name='L47'></a>  47     <strong class='reserved'>else</strong>
+<a id='L48' name='L48'></a>  48         <a href='../Y/11262.html' title='Multiple used in 145 places.'>m_mainToolBar</a> = <strong class='reserved'>new</strong> <a href='../Y/7.html' title='Multiple used in 91 places.'>ACTION_TOOLBAR</a>( <strong class='reserved'>this</strong>, <a href='../Y/15781.html' title='Multiple used in 1517 places.'>wxID_ANY</a>, <a href='../Y/15609.html' title='Multiple used in 1643 places.'>wxDefaultPosition</a>, <a href='../Y/15610.html' title='Multiple used in 1594 places.'>wxDefaultSize</a>,
+<a id='L49' name='L49'></a>  49                                             <a href='../Y/2236.html' title='Multiple used in 11 places.'>KICAD_AUI_TB_STYLE</a> | <a href='../Y/15504.html' title='Multiple used in 5 places.'>wxAUI_TB_HORZ_LAYOUT</a>  );
+<a id='L50' name='L50'></a>  50 
+<a id='L51' name='L51'></a>  51     <em class='comment'>// Set up toolbar</em>
+<a id='L52' name='L52'></a>  52     <a href='../Y/11262.html' title='Multiple used in 145 places.'>m_mainToolBar</a>-&gt;<a href='../Y/144.html' title='Multiple used in 13 places.'>AddTool</a>( <a href='../S/572.html#L114' title='Defined at 114 in pcbnew_id.h.'>ID_MODVIEW_PREVIOUS</a>, <a href='../Y/15676.html' title='Multiple used in 516 places.'>wxEmptyString</a>,
+<a id='L53' name='L53'></a>  53                             <a href='../Y/2279.html' title='Multiple used in 10 places.'>KiScaledBitmap</a>( <a href='../Y/9027.html' title='Multiple used in 2 places.'>lib_previous_xpm</a>, <strong class='reserved'>this</strong> ),
+<a id='L54' name='L54'></a>  54                             <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Display previous footprint" ) );
+<a id='L55' name='L55'></a>  55     <a href='../Y/11262.html' title='Multiple used in 145 places.'>m_mainToolBar</a>-&gt;<a href='../Y/144.html' title='Multiple used in 13 places.'>AddTool</a>( <a href='../S/572.html#L115' title='Defined at 115 in pcbnew_id.h.'>ID_MODVIEW_NEXT</a>, <a href='../Y/15676.html' title='Multiple used in 516 places.'>wxEmptyString</a>,
+<a id='L56' name='L56'></a>  56                             <a href='../Y/2279.html' title='Multiple used in 10 places.'>KiScaledBitmap</a>( <a href='../Y/9026.html' title='Multiple used in 2 places.'>lib_next_xpm</a>, <strong class='reserved'>this</strong> ),
+<a id='L57' name='L57'></a>  57                             <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Display next footprint" ) );
+<a id='L58' name='L58'></a>  58 
+<a id='L59' name='L59'></a>  59     <a href='../Y/11262.html' title='Multiple used in 145 places.'>m_mainToolBar</a>-&gt;<a href='../Y/136.html' title='Multiple used in 46 places.'>AddScaledSeparator</a>( <strong class='reserved'>this</strong> );
+<a id='L60' name='L60'></a>  60     <a href='../Y/11262.html' title='Multiple used in 145 places.'>m_mainToolBar</a>-&gt;<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../Y/4.html' title='Multiple used in 272 places.'>ACTIONS</a>::<a href='../Y/16130.html' title='Multiple used in 7 places.'>zoomRedraw</a> );
+<a id='L61' name='L61'></a>  61     <a href='../Y/11262.html' title='Multiple used in 145 places.'>m_mainToolBar</a>-&gt;<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../Y/4.html' title='Multiple used in 272 places.'>ACTIONS</a>::<a href='../Y/16128.html' title='Multiple used in 7 places.'>zoomInCenter</a> );
+<a id='L62' name='L62'></a>  62     <a href='../Y/11262.html' title='Multiple used in 145 places.'>m_mainToolBar</a>-&gt;<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../Y/4.html' title='Multiple used in 272 places.'>ACTIONS</a>::<a href='../Y/16129.html' title='Multiple used in 7 places.'>zoomOutCenter</a> );
+<a id='L63' name='L63'></a>  63     <a href='../Y/11262.html' title='Multiple used in 145 places.'>m_mainToolBar</a>-&gt;<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../Y/4.html' title='Multiple used in 272 places.'>ACTIONS</a>::<a href='../Y/16126.html' title='Multiple used in 14 places.'>zoomFitScreen</a> );
+<a id='L64' name='L64'></a>  64     <a href='../Y/11262.html' title='Multiple used in 145 places.'>m_mainToolBar</a>-&gt;<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../Y/4.html' title='Multiple used in 272 places.'>ACTIONS</a>::<a href='../Y/16131.html' title='Multiple used in 8 places.'>zoomTool</a>,                       <a href='../Y/7.html' title='Multiple used in 91 places.'>ACTION_TOOLBAR</a>::<a href='../S/786.html#L123' title='Defined at 123 in tools/pcb_editor_control.h.'>TOGGLE</a> );
+<a id='L65' name='L65'></a>  65     <a href='../Y/11262.html' title='Multiple used in 145 places.'>m_mainToolBar</a>-&gt;<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../Y/2808.html' title='Multiple used in 1029 places.'>PCB_ACTIONS</a>::<a href='../Y/16127.html' title='Multiple used in 5 places.'>zoomFootprintAutomatically</a>, <a href='../Y/7.html' title='Multiple used in 91 places.'>ACTION_TOOLBAR</a>::<a href='../S/786.html#L123' title='Defined at 123 in tools/pcb_editor_control.h.'>TOGGLE</a> );
+<a id='L66' name='L66'></a>  66 
+<a id='L67' name='L67'></a>  67     <a href='../Y/11262.html' title='Multiple used in 145 places.'>m_mainToolBar</a>-&gt;<a href='../Y/136.html' title='Multiple used in 46 places.'>AddScaledSeparator</a>( <strong class='reserved'>this</strong> );
+<a id='L68' name='L68'></a>  68     <a href='../Y/11262.html' title='Multiple used in 145 places.'>m_mainToolBar</a>-&gt;<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../Y/4.html' title='Multiple used in 272 places.'>ACTIONS</a>::<a href='../Y/14424.html' title='Multiple used in 6 places.'>show3DViewer</a> );
+<a id='L69' name='L69'></a>  69     <a href='../Y/11262.html' title='Multiple used in 145 places.'>m_mainToolBar</a>-&gt;<a href='../Y/144.html' title='Multiple used in 13 places.'>AddTool</a>( <a href='../S/572.html#L125' title='Defined at 125 in pcbnew_id.h.'>ID_ADD_FOOTPRINT_TO_BOARD</a>, <a href='../Y/15676.html' title='Multiple used in 516 places.'>wxEmptyString</a>,
+<a id='L70' name='L70'></a>  70                             <a href='../Y/2279.html' title='Multiple used in 10 places.'>KiScaledBitmap</a>( <a href='../Y/7826.html' title='Multiple used in 5 places.'>export_xpm</a>, <strong class='reserved'>this</strong> ),
+<a id='L71' name='L71'></a>  71                             <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Insert footprint in board" ) );
+<a id='L72' name='L72'></a>  72 
+<a id='L73' name='L73'></a>  73     <a href='../Y/11262.html' title='Multiple used in 145 places.'>m_mainToolBar</a>-&gt;<a href='../Y/136.html' title='Multiple used in 46 places.'>AddScaledSeparator</a>( <strong class='reserved'>this</strong> );
+<a id='L74' name='L74'></a>  74 
+<a id='L75' name='L75'></a>  75     <em class='comment'>// Grid selection choice box.</em>
+<a id='L76' name='L76'></a>  76     <strong class='reserved'>if</strong>( <a href='../Y/10968.html' title='Multiple used in 9 places.'>m_gridSelectBox</a> == <a href='../Y/13059.html' title='Multiple used in 610 places.'>nullptr</a> )
+<a id='L77' name='L77'></a>  77         <a href='../Y/10968.html' title='Multiple used in 9 places.'>m_gridSelectBox</a> = <strong class='reserved'>new</strong> <a href='../Y/15569.html' title='Multiple used in 214 places.'>wxChoice</a>( <a href='../Y/11262.html' title='Multiple used in 145 places.'>m_mainToolBar</a>, <a href='../Y/1922.html' title='Multiple used in 6 places.'>ID_ON_GRID_SELECT</a>,
+<a id='L78' name='L78'></a>  78                                     <a href='../Y/15609.html' title='Multiple used in 1643 places.'>wxDefaultPosition</a>, <a href='../Y/15610.html' title='Multiple used in 1594 places.'>wxDefaultSize</a>, 0, <a href='../Y/2643.html' title='Multiple used in 1581 places.'>NULL</a> );
+<a id='L79' name='L79'></a>  79 
+<a id='L80' name='L80'></a>  80     <a href='../Y/4768.html' title='Multiple used in 5 places.'>UpdateGridSelectBox</a>();
+<a id='L81' name='L81'></a>  81     <a href='../Y/11262.html' title='Multiple used in 145 places.'>m_mainToolBar</a>-&gt;<a href='../Y/106.html' title='Multiple used in 10 places.'>AddControl</a>( <a href='../Y/10968.html' title='Multiple used in 9 places.'>m_gridSelectBox</a> );
+<a id='L82' name='L82'></a>  82 
+<a id='L83' name='L83'></a>  83     <a href='../Y/11262.html' title='Multiple used in 145 places.'>m_mainToolBar</a>-&gt;<a href='../Y/136.html' title='Multiple used in 46 places.'>AddScaledSeparator</a>( <strong class='reserved'>this</strong> );
+<a id='L84' name='L84'></a>  84 
+<a id='L85' name='L85'></a>  85     <em class='comment'>// Zoom selection choice box.</em>
+<a id='L86' name='L86'></a>  86     <strong class='reserved'>if</strong>( <a href='../Y/12434.html' title='Multiple used in 9 places.'>m_zoomSelectBox</a> == <a href='../Y/13059.html' title='Multiple used in 610 places.'>nullptr</a> )
+<a id='L87' name='L87'></a>  87         <a href='../Y/12434.html' title='Multiple used in 9 places.'>m_zoomSelectBox</a> = <strong class='reserved'>new</strong> <a href='../Y/15569.html' title='Multiple used in 214 places.'>wxChoice</a>( <a href='../Y/11262.html' title='Multiple used in 145 places.'>m_mainToolBar</a>, <a href='../Y/1923.html' title='Multiple used in 6 places.'>ID_ON_ZOOM_SELECT</a>,
+<a id='L88' name='L88'></a>  88                                     <a href='../Y/15609.html' title='Multiple used in 1643 places.'>wxDefaultPosition</a>, <a href='../Y/15610.html' title='Multiple used in 1594 places.'>wxDefaultSize</a>, 0, <a href='../Y/2643.html' title='Multiple used in 1581 places.'>NULL</a> );
+<a id='L89' name='L89'></a>  89 
+<a id='L90' name='L90'></a>  90     <a href='../Y/4771.html' title='Multiple used in 3 places.'>UpdateZoomSelectBox</a>();
+<a id='L91' name='L91'></a>  91     <a href='../Y/11262.html' title='Multiple used in 145 places.'>m_mainToolBar</a>-&gt;<a href='../Y/106.html' title='Multiple used in 10 places.'>AddControl</a>( <a href='../Y/12434.html' title='Multiple used in 9 places.'>m_zoomSelectBox</a> );
+<a id='L92' name='L92'></a>  92 
+<a id='L93' name='L93'></a>  93     <em class='comment'>// after adding the buttons to the toolbar, must call Realize() to</em>
+<a id='L94' name='L94'></a>  94     <em class='comment'>// reflect the changes</em>
+<a id='L95' name='L95'></a>  95     <a href='../Y/11262.html' title='Multiple used in 145 places.'>m_mainToolBar</a>-&gt;<a href='../Y/3138.html' title='Multiple used in 63 places.'>Realize</a>();
+<a id='L96' name='L96'></a>  96 <em class='brace'>}</em>
+<a id='L97' name='L97'></a>  97 
+<a id='L98' name='L98'></a>  98 
+<a id='L99' name='L99'></a>  99 <strong class='reserved'>void</strong> <a href='../S/444.html#L275' title='Defined at 275 in footprint_viewer_frame.cpp.'>FOOTPRINT_VIEWER_FRAME</a>::<a href='../R/2639.html' title='Multiple referred from 6 places.'>ReCreateOptToolbar</a>()
+<a id='L100' name='L100'></a> 100 <em class='brace'>{</em>
+<a id='L101' name='L101'></a> 101     <strong class='reserved'>if</strong>( <a href='../Y/11473.html' title='Multiple used in 99 places.'>m_optionsToolBar</a> )
+<a id='L102' name='L102'></a> 102         <a href='../Y/11473.html' title='Multiple used in 99 places.'>m_optionsToolBar</a>-&gt;<a href='../Y/504.html' title='Multiple used in 10 places.'>ClearToolbar</a>();
+<a id='L103' name='L103'></a> 103     <strong class='reserved'>else</strong>
+<a id='L104' name='L104'></a> 104         <a href='../Y/11473.html' title='Multiple used in 99 places.'>m_optionsToolBar</a> = <strong class='reserved'>new</strong> <a href='../Y/7.html' title='Multiple used in 91 places.'>ACTION_TOOLBAR</a>( <strong class='reserved'>this</strong>, <a href='../Y/1924.html' title='Multiple used in 3 places.'>ID_OPT_TOOLBAR</a>, <a href='../Y/15609.html' title='Multiple used in 1643 places.'>wxDefaultPosition</a>, <a href='../Y/15610.html' title='Multiple used in 1594 places.'>wxDefaultSize</a>,
+<a id='L105' name='L105'></a> 105                                                <a href='../Y/2236.html' title='Multiple used in 11 places.'>KICAD_AUI_TB_STYLE</a> | <a href='../Y/15505.html' title='Multiple used in 6 places.'>wxAUI_TB_VERTICAL</a> );
+<a id='L106' name='L106'></a> 106 
+<a id='L107' name='L107'></a> 107     <a href='../Y/11473.html' title='Multiple used in 99 places.'>m_optionsToolBar</a>-&gt;<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../Y/4.html' title='Multiple used in 272 places.'>ACTIONS</a>::<a href='../Y/14347.html' title='Multiple used in 36 places.'>selectionTool</a>,          <a href='../Y/7.html' title='Multiple used in 91 places.'>ACTION_TOOLBAR</a>::<a href='../S/786.html#L123' title='Defined at 123 in tools/pcb_editor_control.h.'>TOGGLE</a> );
+<a id='L108' name='L108'></a> 108     <a href='../Y/11473.html' title='Multiple used in 99 places.'>m_optionsToolBar</a>-&gt;<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../Y/4.html' title='Multiple used in 272 places.'>ACTIONS</a>::<a href='../Y/12528.html' title='Multiple used in 11 places.'>measureTool</a>,            <a href='../Y/7.html' title='Multiple used in 91 places.'>ACTION_TOOLBAR</a>::<a href='../S/786.html#L123' title='Defined at 123 in tools/pcb_editor_control.h.'>TOGGLE</a> );
+<a id='L109' name='L109'></a> 109 
+<a id='L110' name='L110'></a> 110     <a href='../Y/11473.html' title='Multiple used in 99 places.'>m_optionsToolBar</a>-&gt;<a href='../Y/136.html' title='Multiple used in 46 places.'>AddScaledSeparator</a>( <strong class='reserved'>this</strong> );
+<a id='L111' name='L111'></a> 111     <a href='../Y/11473.html' title='Multiple used in 99 places.'>m_optionsToolBar</a>-&gt;<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../Y/4.html' title='Multiple used in 272 places.'>ACTIONS</a>::<a href='../Y/14988.html' title='Multiple used in 8 places.'>toggleGrid</a>,             <a href='../Y/7.html' title='Multiple used in 91 places.'>ACTION_TOOLBAR</a>::<a href='../S/786.html#L123' title='Defined at 123 in tools/pcb_editor_control.h.'>TOGGLE</a> );
+<a id='L112' name='L112'></a> 112     <a href='../Y/11473.html' title='Multiple used in 99 places.'>m_optionsToolBar</a>-&gt;<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../Y/4.html' title='Multiple used in 272 places.'>ACTIONS</a>::<a href='../Y/14991.html' title='Multiple used in 7 places.'>togglePolarCoords</a>,      <a href='../Y/7.html' title='Multiple used in 91 places.'>ACTION_TOOLBAR</a>::<a href='../S/786.html#L123' title='Defined at 123 in tools/pcb_editor_control.h.'>TOGGLE</a> );
+<a id='L113' name='L113'></a> 113     <a href='../Y/11473.html' title='Multiple used in 99 places.'>m_optionsToolBar</a>-&gt;<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../Y/4.html' title='Multiple used in 272 places.'>ACTIONS</a>::<a href='../Y/8501.html' title='Multiple used in 8 places.'>imperialUnits</a>,          <a href='../Y/7.html' title='Multiple used in 91 places.'>ACTION_TOOLBAR</a>::<a href='../S/786.html#L123' title='Defined at 123 in tools/pcb_editor_control.h.'>TOGGLE</a> );
+<a id='L114' name='L114'></a> 114     <a href='../Y/11473.html' title='Multiple used in 99 places.'>m_optionsToolBar</a>-&gt;<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../Y/4.html' title='Multiple used in 272 places.'>ACTIONS</a>::<a href='../Y/12548.html' title='Multiple used in 8 places.'>metricUnits</a>,            <a href='../Y/7.html' title='Multiple used in 91 places.'>ACTION_TOOLBAR</a>::<a href='../S/786.html#L123' title='Defined at 123 in tools/pcb_editor_control.h.'>TOGGLE</a> );
+<a id='L115' name='L115'></a> 115     <a href='../Y/11473.html' title='Multiple used in 99 places.'>m_optionsToolBar</a>-&gt;<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../Y/4.html' title='Multiple used in 272 places.'>ACTIONS</a>::<a href='../Y/14986.html' title='Multiple used in 6 places.'>toggleCursorStyle</a>,      <a href='../Y/7.html' title='Multiple used in 91 places.'>ACTION_TOOLBAR</a>::<a href='../S/786.html#L123' title='Defined at 123 in tools/pcb_editor_control.h.'>TOGGLE</a> );
+<a id='L116' name='L116'></a> 116 
+<a id='L117' name='L117'></a> 117     <a href='../Y/11473.html' title='Multiple used in 99 places.'>m_optionsToolBar</a>-&gt;<a href='../Y/136.html' title='Multiple used in 46 places.'>AddScaledSeparator</a>( <strong class='reserved'>this</strong> );
+<a id='L118' name='L118'></a> 118     <a href='../Y/11473.html' title='Multiple used in 99 places.'>m_optionsToolBar</a>-&gt;<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../Y/2808.html' title='Multiple used in 1029 places.'>PCB_ACTIONS</a>::<a href='../Y/14434.html' title='Multiple used in 5 places.'>showPadNumbers</a>,     <a href='../Y/7.html' title='Multiple used in 91 places.'>ACTION_TOOLBAR</a>::<a href='../S/786.html#L123' title='Defined at 123 in tools/pcb_editor_control.h.'>TOGGLE</a> );
+<a id='L119' name='L119'></a> 119     <a href='../Y/11473.html' title='Multiple used in 99 places.'>m_optionsToolBar</a>-&gt;<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../Y/2808.html' title='Multiple used in 1029 places.'>PCB_ACTIONS</a>::<a href='../Y/13300.html' title='Multiple used in 11 places.'>padDisplayMode</a>,     <a href='../Y/7.html' title='Multiple used in 91 places.'>ACTION_TOOLBAR</a>::<a href='../S/786.html#L123' title='Defined at 123 in tools/pcb_editor_control.h.'>TOGGLE</a> );
+<a id='L120' name='L120'></a> 120     <a href='../Y/11473.html' title='Multiple used in 99 places.'>m_optionsToolBar</a>-&gt;<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../Y/2808.html' title='Multiple used in 1029 places.'>PCB_ACTIONS</a>::<a href='../Y/14868.html' title='Multiple used in 9 places.'>textOutlines</a>,       <a href='../Y/7.html' title='Multiple used in 91 places.'>ACTION_TOOLBAR</a>::<a href='../S/786.html#L123' title='Defined at 123 in tools/pcb_editor_control.h.'>TOGGLE</a> );
+<a id='L121' name='L121'></a> 121     <a href='../Y/11473.html' title='Multiple used in 99 places.'>m_optionsToolBar</a>-&gt;<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../Y/2808.html' title='Multiple used in 1029 places.'>PCB_ACTIONS</a>::<a href='../Y/8288.html' title='Multiple used in 9 places.'>graphicsOutlines</a>,   <a href='../Y/7.html' title='Multiple used in 91 places.'>ACTION_TOOLBAR</a>::<a href='../S/786.html#L123' title='Defined at 123 in tools/pcb_editor_control.h.'>TOGGLE</a> );
+<a id='L122' name='L122'></a> 122 
+<a id='L123' name='L123'></a> 123     <a href='../Y/11473.html' title='Multiple used in 99 places.'>m_optionsToolBar</a>-&gt;<a href='../Y/3138.html' title='Multiple used in 63 places.'>Realize</a>();
+<a id='L124' name='L124'></a> 124 <em class='brace'>}</em>
+<a id='L125' name='L125'></a> 125 
+<a id='L126' name='L126'></a> 126 
+<a id='L127' name='L127'></a> 127 <strong class='reserved'>void</strong> <a href='../S/444.html#L275' title='Defined at 275 in footprint_viewer_frame.cpp.'>FOOTPRINT_VIEWER_FRAME</a>::<a href='../R/2642.html' title='Multiple referred from 8 places.'>ReCreateVToolbar</a>()
+<a id='L128' name='L128'></a> 128 <em class='brace'>{</em>
+<a id='L129' name='L129'></a> 129     <em class='comment'>// This toolbar is not currently used</em>
+<a id='L130' name='L130'></a> 130 <em class='brace'>}</em>
+<a id='L131' name='L131'></a> 131 
+<a id='L132' name='L132'></a> 132 
+<a id='L133' name='L133'></a> 133 <strong class='reserved'>void</strong> <a href='../S/444.html#L275' title='Defined at 275 in footprint_viewer_frame.cpp.'>FOOTPRINT_VIEWER_FRAME</a>::<a href='../R/3053.html' title='Multiple referred from 6 places.'>SyncToolbars</a>()
+<a id='L134' name='L134'></a> 134 <em class='brace'>{</em>
+<a id='L135' name='L135'></a> 135     <a href='../Y/11262.html' title='Multiple used in 145 places.'>m_mainToolBar</a>-&gt;<a href='../Y/4672.html' title='Multiple used in 59 places.'>Toggle</a>( <a href='../Y/4.html' title='Multiple used in 272 places.'>ACTIONS</a>::<a href='../Y/16131.html' title='Multiple used in 8 places.'>zoomTool</a>, <a href='../Y/2109.html' title='Multiple used in 9 places.'>IsCurrentTool</a>( <a href='../Y/4.html' title='Multiple used in 272 places.'>ACTIONS</a>::<a href='../Y/16131.html' title='Multiple used in 8 places.'>zoomTool</a> ) );
+<a id='L136' name='L136'></a> 136     <a href='../Y/11262.html' title='Multiple used in 145 places.'>m_mainToolBar</a>-&gt;<a href='../Y/4672.html' title='Multiple used in 59 places.'>Toggle</a>( <a href='../Y/2808.html' title='Multiple used in 1029 places.'>PCB_ACTIONS</a>::<a href='../Y/16127.html' title='Multiple used in 5 places.'>zoomFootprintAutomatically</a>, <a href='../S/444.html#L756' title='Defined at 756 in footprint_viewer_frame.cpp.'>GetAutoZoom</a>() );
+<a id='L137' name='L137'></a> 137     <a href='../Y/11262.html' title='Multiple used in 145 places.'>m_mainToolBar</a>-&gt;<a href='../S/738.html#L259' title='Defined at 259 in swig/pcbnew_scripting_helpers.cpp.'>Refresh</a>();
+<a id='L138' name='L138'></a> 138 
+<a id='L139' name='L139'></a> 139     <a href='../Y/11473.html' title='Multiple used in 99 places.'>m_optionsToolBar</a>-&gt;<a href='../Y/4672.html' title='Multiple used in 59 places.'>Toggle</a>( <a href='../Y/4.html' title='Multiple used in 272 places.'>ACTIONS</a>::<a href='../Y/14988.html' title='Multiple used in 8 places.'>toggleGrid</a>,    <a href='../Y/2133.html' title='Multiple used in 6 places.'>IsGridVisible</a>() );
+<a id='L140' name='L140'></a> 140     <a href='../Y/11473.html' title='Multiple used in 99 places.'>m_optionsToolBar</a>-&gt;<a href='../Y/4672.html' title='Multiple used in 59 places.'>Toggle</a>( <a href='../Y/4.html' title='Multiple used in 272 places.'>ACTIONS</a>::<a href='../Y/14347.html' title='Multiple used in 36 places.'>selectionTool</a>, <a href='../Y/2109.html' title='Multiple used in 9 places.'>IsCurrentTool</a>( <a href='../Y/4.html' title='Multiple used in 272 places.'>ACTIONS</a>::<a href='../Y/14347.html' title='Multiple used in 36 places.'>selectionTool</a> ) );
+<a id='L141' name='L141'></a> 141     <a href='../Y/11473.html' title='Multiple used in 99 places.'>m_optionsToolBar</a>-&gt;<a href='../Y/4672.html' title='Multiple used in 59 places.'>Toggle</a>( <a href='../Y/4.html' title='Multiple used in 272 places.'>ACTIONS</a>::<a href='../Y/12528.html' title='Multiple used in 11 places.'>measureTool</a>,   <a href='../Y/2109.html' title='Multiple used in 9 places.'>IsCurrentTool</a>( <a href='../Y/4.html' title='Multiple used in 272 places.'>ACTIONS</a>::<a href='../Y/12528.html' title='Multiple used in 11 places.'>measureTool</a> ) );
+<a id='L142' name='L142'></a> 142     <a href='../Y/11473.html' title='Multiple used in 99 places.'>m_optionsToolBar</a>-&gt;<a href='../Y/4672.html' title='Multiple used in 59 places.'>Toggle</a>( <a href='../Y/4.html' title='Multiple used in 272 places.'>ACTIONS</a>::<a href='../Y/12548.html' title='Multiple used in 8 places.'>metricUnits</a>,   <a href='../S/738.html#L280' title='Defined at 280 in swig/pcbnew_scripting_helpers.cpp.'>GetUserUnits</a>() != <a href='../Y/848.html' title='Multiple used in 169 places.'>EDA_UNITS</a>::<a href='../Y/1946.html' title='Multiple used in 44 places.'>INCHES</a> );
+<a id='L143' name='L143'></a> 143     <a href='../Y/11473.html' title='Multiple used in 99 places.'>m_optionsToolBar</a>-&gt;<a href='../Y/4672.html' title='Multiple used in 59 places.'>Toggle</a>( <a href='../Y/4.html' title='Multiple used in 272 places.'>ACTIONS</a>::<a href='../Y/8501.html' title='Multiple used in 8 places.'>imperialUnits</a>, <a href='../S/738.html#L280' title='Defined at 280 in swig/pcbnew_scripting_helpers.cpp.'>GetUserUnits</a>() == <a href='../Y/848.html' title='Multiple used in 169 places.'>EDA_UNITS</a>::<a href='../Y/1946.html' title='Multiple used in 44 places.'>INCHES</a> );
+<a id='L144' name='L144'></a> 144 
+<a id='L145' name='L145'></a> 145     <strong class='reserved'>const</strong> <a href='../S/582.html#L34' title='Defined at 34 in pcb_display_options.cpp.'>PCB_DISPLAY_OPTIONS</a>&amp; <a href='../Y/13176.html' title='Multiple used in 82 places.'>opts</a> = <a href='../Y/1363.html' title='Multiple used in 32 places.'>GetDisplayOptions</a>();
+<a id='L146' name='L146'></a> 146 
+<a id='L147' name='L147'></a> 147     <a href='../Y/11473.html' title='Multiple used in 99 places.'>m_optionsToolBar</a>-&gt;<a href='../Y/4672.html' title='Multiple used in 59 places.'>Toggle</a>( <a href='../Y/2808.html' title='Multiple used in 1029 places.'>PCB_ACTIONS</a>::<a href='../Y/14434.html' title='Multiple used in 5 places.'>showPadNumbers</a>,     <a href='../Y/13176.html' title='Multiple used in 82 places.'>opts</a>.<a href='../Y/9339.html' title='Multiple used in 8 places.'>m_DisplayPadNum</a> );
+<a id='L148' name='L148'></a> 148     <a href='../Y/11473.html' title='Multiple used in 99 places.'>m_optionsToolBar</a>-&gt;<a href='../Y/4672.html' title='Multiple used in 59 places.'>Toggle</a>( <a href='../Y/2808.html' title='Multiple used in 1029 places.'>PCB_ACTIONS</a>::<a href='../Y/13300.html' title='Multiple used in 11 places.'>padDisplayMode</a>,     !<a href='../Y/13176.html' title='Multiple used in 82 places.'>opts</a>.<a href='../Y/9337.html' title='Multiple used in 10 places.'>m_DisplayPadFill</a> );
+<a id='L149' name='L149'></a> 149     <a href='../Y/11473.html' title='Multiple used in 99 places.'>m_optionsToolBar</a>-&gt;<a href='../Y/4672.html' title='Multiple used in 59 places.'>Toggle</a>( <a href='../Y/2808.html' title='Multiple used in 1029 places.'>PCB_ACTIONS</a>::<a href='../Y/14868.html' title='Multiple used in 9 places.'>textOutlines</a>,       !<a href='../Y/13176.html' title='Multiple used in 82 places.'>opts</a>.<a href='../Y/9342.html' title='Multiple used in 9 places.'>m_DisplayTextFill</a> );
+<a id='L150' name='L150'></a> 150     <a href='../Y/11473.html' title='Multiple used in 99 places.'>m_optionsToolBar</a>-&gt;<a href='../Y/4672.html' title='Multiple used in 59 places.'>Toggle</a>( <a href='../Y/2808.html' title='Multiple used in 1029 places.'>PCB_ACTIONS</a>::<a href='../Y/8288.html' title='Multiple used in 9 places.'>graphicsOutlines</a>,   !<a href='../Y/13176.html' title='Multiple used in 82 places.'>opts</a>.<a href='../Y/9334.html' title='Multiple used in 10 places.'>m_DisplayGraphicsFill</a> );
+<a id='L151' name='L151'></a> 151 
+<a id='L152' name='L152'></a> 152     <a href='../Y/11473.html' title='Multiple used in 99 places.'>m_optionsToolBar</a>-&gt;<a href='../S/738.html#L259' title='Defined at 259 in swig/pcbnew_scripting_helpers.cpp.'>Refresh</a>();
+<a id='L153' name='L153'></a> 153 <em class='brace'>}</em>
+<a id='L154' name='L154'></a> 154 
+<a id='L155' name='L155'></a> 155 
+<a id='L156' name='L156'></a> 156 <strong class='reserved'>void</strong> <a href='../S/444.html#L275' title='Defined at 275 in footprint_viewer_frame.cpp.'>FOOTPRINT_VIEWER_FRAME</a>::<a href='../R/2637.html' title='Multiple referred from 9 places.'>ReCreateMenuBar</a>()
+<a id='L157' name='L157'></a> 157 <em class='brace'>{</em>
+<a id='L158' name='L158'></a> 158     <a href='../S/801.html#L137' title='Defined at 137 in tools/selection_tool.cpp.'>SELECTION_TOOL</a>* <a href='../Y/14311.html' title='Multiple used in 79 places.'>selTool</a> = <a href='../Y/12209.html' title='Multiple used in 129 places.'>m_toolManager</a>-&gt;<a href='../Y/1767.html' title='Multiple used in 91 places.'>GetTool</a>&lt;<a href='../S/801.html#L137' title='Defined at 137 in tools/selection_tool.cpp.'>SELECTION_TOOL</a>&gt;();
+<a id='L159' name='L159'></a> 159     <em class='comment'>// wxWidgets handles the Mac Application menu behind the scenes, but that means</em>
+<a id='L160' name='L160'></a> 160     <em class='comment'>// we always have to start from scratch with a new wxMenuBar.</em>
+<a id='L161' name='L161'></a> 161     <a href='../Y/15833.html' title='Multiple used in 3 places.'>wxMenuBar</a>*  <a href='../Y/13123.html' title='Multiple used in 6 places.'>oldMenuBar</a> = <a href='../Y/1541.html' title='Multiple used in 3 places.'>GetMenuBar</a>();
+<a id='L162' name='L162'></a> 162     <a href='../Y/4884.html' title='Multiple used in 3 places.'>WX_MENUBAR</a>* <a href='../Y/12535.html' title='Multiple used in 26 places.'>menuBar</a>    = <strong class='reserved'>new</strong> <a href='../Y/4884.html' title='Multiple used in 3 places.'>WX_MENUBAR</a>();
+<a id='L163' name='L163'></a> 163 
+<a id='L164' name='L164'></a> 164     <em class='comment'>//----- File menu -----------------------------------------------------------</em>
+<a id='L165' name='L165'></a> 165     <em class='comment'>//</em>
+<a id='L166' name='L166'></a> 166     <a href='../Y/420.html' title='Multiple used in 31 places.'>CONDITIONAL_MENU</a>* <a href='../Y/7931.html' title='Multiple used in 50 places.'>fileMenu</a> = <strong class='reserved'>new</strong> <a href='../Y/420.html' title='Multiple used in 31 places.'>CONDITIONAL_MENU</a>( <strong class='reserved'>false</strong>, <a href='../Y/14311.html' title='Multiple used in 79 places.'>selTool</a> );
+<a id='L167' name='L167'></a> 167 
+<a id='L168' name='L168'></a> 168     <a href='../Y/7931.html' title='Multiple used in 50 places.'>fileMenu</a>-&gt;<a href='../Y/104.html' title='Multiple used in 2 places.'>AddClose</a>( <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Footprint Viewer" ) );
+<a id='L169' name='L169'></a> 169 
+<a id='L170' name='L170'></a> 170     <a href='../Y/7931.html' title='Multiple used in 50 places.'>fileMenu</a>-&gt;<a href='../Y/3183.html' title='Multiple used in 16 places.'>Resolve</a>();
+<a id='L171' name='L171'></a> 171 
+<a id='L172' name='L172'></a> 172     <em class='comment'>//----- View menu -----------------------------------------------------------</em>
+<a id='L173' name='L173'></a> 173     <em class='comment'>//</em>
+<a id='L174' name='L174'></a> 174     <a href='../Y/420.html' title='Multiple used in 31 places.'>CONDITIONAL_MENU</a>* <a href='../Y/15381.html' title='Multiple used in 59 places.'>viewMenu</a> = <strong class='reserved'>new</strong> <a href='../Y/420.html' title='Multiple used in 31 places.'>CONDITIONAL_MENU</a>( <strong class='reserved'>false</strong>, <a href='../Y/14311.html' title='Multiple used in 79 places.'>selTool</a> );
+<a id='L175' name='L175'></a> 175 
+<a id='L176' name='L176'></a> 176     <a href='../Y/15381.html' title='Multiple used in 59 places.'>viewMenu</a>-&gt;<a href='../Y/137.html' title='Multiple used in 68 places.'>AddSeparator</a>();
+<a id='L177' name='L177'></a> 177     <a href='../Y/15381.html' title='Multiple used in 59 places.'>viewMenu</a>-&gt;<a href='../D/113.html' title='Multiple defined in 2 places.'>AddItem</a>( <a href='../Y/4.html' title='Multiple used in 272 places.'>ACTIONS</a>::<a href='../Y/16128.html' title='Multiple used in 7 places.'>zoomInCenter</a>,     <a href='../Y/3214.html' title='Multiple used in 151 places.'>SELECTION_CONDITIONS</a>::<a href='../Y/3986.html' title='Multiple used in 106 places.'>ShowAlways</a> );
+<a id='L178' name='L178'></a> 178     <a href='../Y/15381.html' title='Multiple used in 59 places.'>viewMenu</a>-&gt;<a href='../D/113.html' title='Multiple defined in 2 places.'>AddItem</a>( <a href='../Y/4.html' title='Multiple used in 272 places.'>ACTIONS</a>::<a href='../Y/16129.html' title='Multiple used in 7 places.'>zoomOutCenter</a>,    <a href='../Y/3214.html' title='Multiple used in 151 places.'>SELECTION_CONDITIONS</a>::<a href='../Y/3986.html' title='Multiple used in 106 places.'>ShowAlways</a> );
+<a id='L179' name='L179'></a> 179     <a href='../Y/15381.html' title='Multiple used in 59 places.'>viewMenu</a>-&gt;<a href='../D/113.html' title='Multiple defined in 2 places.'>AddItem</a>( <a href='../Y/4.html' title='Multiple used in 272 places.'>ACTIONS</a>::<a href='../Y/16126.html' title='Multiple used in 14 places.'>zoomFitScreen</a>,    <a href='../Y/3214.html' title='Multiple used in 151 places.'>SELECTION_CONDITIONS</a>::<a href='../Y/3986.html' title='Multiple used in 106 places.'>ShowAlways</a> );
+<a id='L180' name='L180'></a> 180     <a href='../Y/15381.html' title='Multiple used in 59 places.'>viewMenu</a>-&gt;<a href='../D/113.html' title='Multiple defined in 2 places.'>AddItem</a>( <a href='../Y/4.html' title='Multiple used in 272 places.'>ACTIONS</a>::<a href='../Y/16130.html' title='Multiple used in 7 places.'>zoomRedraw</a>,       <a href='../Y/3214.html' title='Multiple used in 151 places.'>SELECTION_CONDITIONS</a>::<a href='../Y/3986.html' title='Multiple used in 106 places.'>ShowAlways</a> );
+<a id='L181' name='L181'></a> 181 
+<a id='L182' name='L182'></a> 182     <a href='../Y/15381.html' title='Multiple used in 59 places.'>viewMenu</a>-&gt;<a href='../Y/137.html' title='Multiple used in 68 places.'>AddSeparator</a>();
+<a id='L183' name='L183'></a> 183     <a href='../Y/15381.html' title='Multiple used in 59 places.'>viewMenu</a>-&gt;<a href='../D/113.html' title='Multiple defined in 2 places.'>AddItem</a>( <a href='../Y/4.html' title='Multiple used in 272 places.'>ACTIONS</a>::<a href='../Y/14424.html' title='Multiple used in 6 places.'>show3DViewer</a>,     <a href='../Y/3214.html' title='Multiple used in 151 places.'>SELECTION_CONDITIONS</a>::<a href='../Y/3986.html' title='Multiple used in 106 places.'>ShowAlways</a> );
+<a id='L184' name='L184'></a> 184 
+<a id='L185' name='L185'></a> 185     <a href='../Y/15381.html' title='Multiple used in 59 places.'>viewMenu</a>-&gt;<a href='../Y/3183.html' title='Multiple used in 16 places.'>Resolve</a>();
+<a id='L186' name='L186'></a> 186 
+<a id='L187' name='L187'></a> 187     <em class='comment'>//----- Menubar -------------------------------------------------------------</em>
+<a id='L188' name='L188'></a> 188     <em class='comment'>//</em>
+<a id='L189' name='L189'></a> 189     <a href='../Y/12535.html' title='Multiple used in 26 places.'>menuBar</a>-&gt;<a href='../Y/179.html' title='Multiple used in 398 places.'>Append</a>( <a href='../Y/7931.html' title='Multiple used in 50 places.'>fileMenu</a>, <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "&amp;File" ) );
+<a id='L190' name='L190'></a> 190     <a href='../Y/12535.html' title='Multiple used in 26 places.'>menuBar</a>-&gt;<a href='../Y/179.html' title='Multiple used in 398 places.'>Append</a>( <a href='../Y/15381.html' title='Multiple used in 59 places.'>viewMenu</a>, <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "&amp;View" ) );
+<a id='L191' name='L191'></a> 191     <a href='../Y/139.html' title='Multiple used in 3 places.'>AddStandardHelpMenu</a>( <a href='../Y/12535.html' title='Multiple used in 26 places.'>menuBar</a> );
+<a id='L192' name='L192'></a> 192 
+<a id='L193' name='L193'></a> 193     <a href='../Y/3681.html' title='Multiple used in 3 places.'>SetMenuBar</a>( <a href='../Y/12535.html' title='Multiple used in 26 places.'>menuBar</a> );
+<a id='L194' name='L194'></a> 194     <strong class='reserved'>delete</strong> <a href='../Y/13123.html' title='Multiple used in 6 places.'>oldMenuBar</a>;
+<a id='L195' name='L195'></a> 195 <em class='brace'>}</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L36'>[^]</a><a href='#L156'>[v]</a><a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

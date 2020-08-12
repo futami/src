@@ -1,0 +1,240 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>dialogs/dialog_board_setup.cpp</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/831.html'>dialogs</a>/dialog_board_setup.cpp</h2>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L45'>[^]</a><a href='#L132'>[v]</a>[top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L45' title='Defined at 45.'>m_frame</a></li>
+<li><a href='#L108' title='Defined at 108.'>OnPageChange</a></li>
+<li><a href='#L132' title='Defined at 132.'>OnAuxiliaryAction</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * This program source code file is part of KiCad, a free EDA CAD application.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 2017-2019 KiCad Developers, see AUTHORS.txt for contributors.</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> *</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> * This program is free software: you can redistribute it and/or modify it</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> * under the terms of the GNU General Public License as published by the</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * Free Software Foundation, either version 3 of the License, or (at your</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * option) any later version.</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> *</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> * This program is distributed in the hope that it will be useful, but</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> * WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * General Public License for more details.</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> *</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> * You should have received a copy of the GNU General Public License along</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> * with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> */</em>
+<a id='L19' name='L19'></a>  19 <em class='sharp'>#include</em> &lt;<a href='586.html'>pcb_edit_frame.h</a>&gt;
+<a id='L20' name='L20'></a>  20 <em class='sharp'>#include</em> &lt;<a href='355.html'>panel_setup_layers.h</a>&gt;
+<a id='L21' name='L21'></a>  21 <em class='sharp'>#include</em> &lt;<a href='370.html'>panel_setup_text_and_graphics.h</a>&gt;
+<a id='L22' name='L22'></a>  22 <em class='sharp'>#include</em> &lt;<a href='350.html'>panel_setup_feature_constraints.h</a>&gt;
+<a id='L23' name='L23'></a>  23 <em class='sharp'>#include</em> &lt;panel_setup_netclasses.h&gt;
+<a id='L24' name='L24'></a>  24 <em class='sharp'>#include</em> &lt;<a href='375.html'>panel_setup_tracks_and_vias.h</a>&gt;
+<a id='L25' name='L25'></a>  25 <em class='sharp'>#include</em> &lt;<a href='360.html'>panel_setup_mask_and_paste.h</a>&gt;
+<a id='L26' name='L26'></a>  26 <em class='sharp'>#include</em> &lt;<a href='50.html'>../board_stackup_manager/panel_board_stackup.h</a>&gt;
+<a id='L27' name='L27'></a>  27 <em class='sharp'>#include</em> &lt;confirm.h&gt;
+<a id='L28' name='L28'></a>  28 <em class='sharp'>#include</em> &lt;kiface_i.h&gt;
+<a id='L29' name='L29'></a>  29 <em class='sharp'>#include</em> &lt;<a href='387.html'>drc/drc.h</a>&gt;
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#include</em> &lt;<a href='394.html'>drc/drc_item.h</a>&gt;
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#include</em> &lt;<a href='219.html'>dialog_import_settings.h</a>&gt;
+<a id='L32' name='L32'></a>  32 <em class='sharp'>#include</em> &lt;<a href='494.html'>io_mgr.h</a>&gt;
+<a id='L33' name='L33'></a>  33 <em class='sharp'>#include</em> &lt;panel_setup_severities.h&gt;
+<a id='L34' name='L34'></a>  34 <em class='sharp'>#include</em> &lt;panel_text_variables.h&gt;
+<a id='L35' name='L35'></a>  35 <em class='sharp'>#include</em> &lt;project.h&gt;
+<a id='L36' name='L36'></a>  36 <em class='sharp'>#include</em> &lt;project/project_file.h&gt;
+<a id='L37' name='L37'></a>  37 <em class='sharp'>#include</em> &lt;settings/settings_manager.h&gt;
+<a id='L38' name='L38'></a>  38 <em class='sharp'>#include</em> &lt;wildcards_and_files_ext.h&gt;
+<a id='L39' name='L39'></a>  39 
+<a id='L40' name='L40'></a>  40 <em class='sharp'>#include</em> "<a href='98.html'>dialog_board_setup.h</a>"
+<a id='L41' name='L41'></a>  41 <em class='sharp'>#include</em> "<a href='365.html'>panel_setup_rules.h</a>"
+<a id='L42' name='L42'></a>  42 
+<a id='L43' name='L43'></a>  43 <a href='../S/97.html#L101' title='Defined at 101 in dialogs/dialog_board_setup.cpp.'>DIALOG_BOARD_SETUP</a>::<a href='../S/97.html#L101' title='Defined at 101 in dialogs/dialog_board_setup.cpp.'>DIALOG_BOARD_SETUP</a>( <a href='../S/585.html#L356' title='Defined at 356 in pcb_edit_frame.cpp.'>PCB_EDIT_FRAME</a>* <a href='../Y/5337.html' title='Multiple used in 222 places.'>aFrame</a> ) :
+<a id='L44' name='L44'></a>  44         <a href='../Y/2777.html' title='Multiple used in 36 places.'>PAGED_DIALOG</a>( <a href='../Y/5337.html' title='Multiple used in 222 places.'>aFrame</a>, <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Board Setup" ), <strong class='reserved'>false</strong>, <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Import Settings from Another Board..." ) ),
+<a id='L45' name='L45'></a>  45         <a href='../R/4007.html' title='Multiple referred from 493 places.'>m_frame</a>( <a href='../Y/5337.html' title='Multiple used in 222 places.'>aFrame</a> )
+<a id='L46' name='L46'></a>  46 <em class='brace'>{</em>
+<a id='L47' name='L47'></a>  47     <a href='../S/57.html#L104' title='Defined at 104 in class_board.cpp.'>BOARD</a>*                 <a href='../Y/6700.html' title='Multiple used in 309 places.'>board</a> = <a href='../Y/5337.html' title='Multiple used in 222 places.'>aFrame</a>-&gt;<a href='../D/1112.html' title='Multiple defined in 2 places.'>GetBoard</a>();
+<a id='L48' name='L48'></a>  48     <a href='../S/35.html#L561' title='Defined at 561 in board_design_settings.cpp.'>BOARD_DESIGN_SETTINGS</a>&amp; <a href='../Y/6660.html' title='Multiple used in 239 places.'>bds</a> = <a href='../Y/6700.html' title='Multiple used in 309 places.'>board</a>-&gt;<a href='../D/1162.html' title='Multiple defined in 2 places.'>GetDesignSettings</a>();
+<a id='L49' name='L49'></a>  49 
+<a id='L50' name='L50'></a>  50     <a href='../Y/11176.html' title='Multiple used in 88 places.'>m_layers</a> = <strong class='reserved'>new</strong> <a href='../Y/2789.html' title='Multiple used in 35 places.'>PANEL_SETUP_LAYERS</a>( <strong class='reserved'>this</strong>, <a href='../Y/5337.html' title='Multiple used in 222 places.'>aFrame</a> );
+<a id='L51' name='L51'></a>  51     <a href='../Y/12171.html' title='Multiple used in 4 places.'>m_textAndGraphics</a> = <strong class='reserved'>new</strong> <a href='../D/2431.html' title='Multiple defined in 2 places.'>PANEL_SETUP_TEXT_AND_GRAPHICS</a>( <strong class='reserved'>this</strong>, <a href='../Y/5337.html' title='Multiple used in 222 places.'>aFrame</a> );
+<a id='L52' name='L52'></a>  52     <a href='../Y/10564.html' title='Multiple used in 10 places.'>m_constraints</a> = <strong class='reserved'>new</strong> <a href='../Y/2788.html' title='Multiple used in 15 places.'>PANEL_SETUP_FEATURE_CONSTRAINTS</a>( <strong class='reserved'>this</strong>, <a href='../Y/5337.html' title='Multiple used in 222 places.'>aFrame</a> );
+<a id='L53' name='L53'></a>  53     <a href='../Y/11804.html' title='Multiple used in 46 places.'>m_rules</a> = <strong class='reserved'>new</strong> <a href='../S/364.html#L55' title='Defined at 55 in dialogs/panel_setup_rules.cpp.'>PANEL_SETUP_RULES</a>( <strong class='reserved'>this</strong>, <a href='../Y/5337.html' title='Multiple used in 222 places.'>aFrame</a> );
+<a id='L54' name='L54'></a>  54     <a href='../Y/12247.html' title='Multiple used in 4 places.'>m_tracksAndVias</a> = <strong class='reserved'>new</strong> <a href='../D/2434.html' title='Multiple defined in 2 places.'>PANEL_SETUP_TRACKS_AND_VIAS</a>( <strong class='reserved'>this</strong>, <a href='../Y/5337.html' title='Multiple used in 222 places.'>aFrame</a>, <a href='../Y/10564.html' title='Multiple used in 10 places.'>m_constraints</a> );
+<a id='L55' name='L55'></a>  55     <a href='../Y/11273.html' title='Multiple used in 4 places.'>m_maskAndPaste</a> = <strong class='reserved'>new</strong> <a href='../Y/2790.html' title='Multiple used in 10 places.'>PANEL_SETUP_MASK_AND_PASTE</a>( <strong class='reserved'>this</strong>, <a href='../Y/5337.html' title='Multiple used in 222 places.'>aFrame</a> );
+<a id='L56' name='L56'></a>  56     <a href='../Y/11582.html' title='Multiple used in 5 places.'>m_physicalStackup</a> = <strong class='reserved'>new</strong> <a href='../S/49.html#L115' title='Defined at 115 in board_stackup_manager/panel_board_stackup.cpp.'>PANEL_SETUP_BOARD_STACKUP</a>( <strong class='reserved'>this</strong>, <a href='../Y/5337.html' title='Multiple used in 222 places.'>aFrame</a>, <a href='../Y/11176.html' title='Multiple used in 88 places.'>m_layers</a> );
+<a id='L57' name='L57'></a>  57 
+<a id='L58' name='L58'></a>  58     <a href='../S/125.html#L56' title='Defined at 56 in dialogs/dialog_drc.cpp.'>m_severities</a> = <strong class='reserved'>new</strong> <a href='../Y/2792.html' title='Multiple used in 3 places.'>PANEL_SETUP_SEVERITIES</a>( <strong class='reserved'>this</strong>, <a href='../Y/720.html' title='Multiple used in 212 places.'>DRC_ITEM</a>::<a href='../Y/1494.html' title='Multiple used in 4 places.'>GetItemsWithSeverities</a>(),
+<a id='L59' name='L59'></a>  59                                                <a href='../Y/6660.html' title='Multiple used in 239 places.'>bds</a>.<a href='../Y/9286.html' title='Multiple used in 23 places.'>m_DRCSeverities</a> );
+<a id='L60' name='L60'></a>  60 
+<a id='L61' name='L61'></a>  61     <a href='../Y/11415.html' title='Multiple used in 4 places.'>m_netclasses</a> = <strong class='reserved'>new</strong> <a href='../Y/2791.html' title='Multiple used in 3 places.'>PANEL_SETUP_NETCLASSES</a>( <strong class='reserved'>this</strong>, &amp;<a href='../Y/6660.html' title='Multiple used in 239 places.'>bds</a>.<a href='../Y/1559.html' title='Multiple used in 25 places.'>GetNetClasses</a>(),
+<a id='L62' name='L62'></a>  62                                                <a href='../Y/6700.html' title='Multiple used in 309 places.'>board</a>-&gt;<a href='../S/57.html#L1240' title='Defined at 1240 in class_board.cpp.'>GetNetClassAssignmentCandidates</a>(), <strong class='reserved'>false</strong> );
+<a id='L63' name='L63'></a>  63 
+<a id='L64' name='L64'></a>  64     <a href='../Y/12182.html' title='Multiple used in 3 places.'>m_textVars</a> = <strong class='reserved'>new</strong> <a href='../Y/2793.html' title='Multiple used in 3 places.'>PANEL_TEXT_VARIABLES</a>( <a href='../Y/12260.html' title='Multiple used in 20 places.'>m_treebook</a>, &amp;<a href='../Y/2983.html' title='Multiple used in 131 places.'>Prj</a>() );
+<a id='L65' name='L65'></a>  65 
+<a id='L66' name='L66'></a>  66     <em class='comment'>/*</em>
+<a id='L67' name='L67'></a>  67 <em class='comment'>     * WARNING: If you change page names you MUST update calls to ShowBoardSetupDialog().</em>
+<a id='L68' name='L68'></a>  68 <em class='comment'>     */</em>
+<a id='L69' name='L69'></a>  69 
+<a id='L70' name='L70'></a>  70     <a href='../Y/12260.html' title='Multiple used in 20 places.'>m_treebook</a>-&gt;<a href='../Y/112.html' title='Multiple used in 6 places.'>AddGroupEntry</a>( <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Board Stackup" ) );
+<a id='L71' name='L71'></a>  71     <a href='../Y/12260.html' title='Multiple used in 20 places.'>m_treebook</a>-&gt;<a href='../Y/142.html' title='Multiple used in 18 places.'>AddSubPage</a>( <a href='../Y/11176.html' title='Multiple used in 88 places.'>m_layers</a>,  <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Board Editor Layers" ) );
+<a id='L72' name='L72'></a>  72     <a href='../Y/12260.html' title='Multiple used in 20 places.'>m_treebook</a>-&gt;<a href='../Y/142.html' title='Multiple used in 18 places.'>AddSubPage</a>( <a href='../Y/11582.html' title='Multiple used in 5 places.'>m_physicalStackup</a>,  <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Physical Stackup" ) );
+<a id='L73' name='L73'></a>  73     <em class='comment'>// Change this value if m_physicalStackup is not the page 2 of m_treebook</em>
+<a id='L74' name='L74'></a>  74     <a href='../Y/11583.html' title='Multiple used in 3 places.'>m_physicalStackupPage</a> = 2;  <em class='comment'>// The page number (from 0) to select the m_physicalStackup panel</em>
+<a id='L75' name='L75'></a>  75 
+<a id='L76' name='L76'></a>  76     <a href='../Y/12260.html' title='Multiple used in 20 places.'>m_treebook</a>-&gt;<a href='../Y/112.html' title='Multiple used in 6 places.'>AddGroupEntry</a>( <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Defaults" ) );
+<a id='L77' name='L77'></a>  77     <a href='../Y/12260.html' title='Multiple used in 20 places.'>m_treebook</a>-&gt;<a href='../Y/142.html' title='Multiple used in 18 places.'>AddSubPage</a>( <a href='../Y/12171.html' title='Multiple used in 4 places.'>m_textAndGraphics</a>,  <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Text &amp; Graphics" ) );
+<a id='L78' name='L78'></a>  78     <a href='../Y/12260.html' title='Multiple used in 20 places.'>m_treebook</a>-&gt;<a href='../Y/142.html' title='Multiple used in 18 places.'>AddSubPage</a>( <a href='../Y/12247.html' title='Multiple used in 4 places.'>m_tracksAndVias</a>, <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Tracks &amp; Vias" ) );
+<a id='L79' name='L79'></a>  79     <a href='../Y/12260.html' title='Multiple used in 20 places.'>m_treebook</a>-&gt;<a href='../Y/142.html' title='Multiple used in 18 places.'>AddSubPage</a>( <a href='../Y/11273.html' title='Multiple used in 4 places.'>m_maskAndPaste</a>,  <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Solder Mask/Paste" ) );
+<a id='L80' name='L80'></a>  80 
+<a id='L81' name='L81'></a>  81     <a href='../Y/12260.html' title='Multiple used in 20 places.'>m_treebook</a>-&gt;<a href='../Y/112.html' title='Multiple used in 6 places.'>AddGroupEntry</a>( <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Design Rules" ) );
+<a id='L82' name='L82'></a>  82     <a href='../Y/12260.html' title='Multiple used in 20 places.'>m_treebook</a>-&gt;<a href='../Y/142.html' title='Multiple used in 18 places.'>AddSubPage</a>( <a href='../Y/10564.html' title='Multiple used in 10 places.'>m_constraints</a>,  <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Constraints" ) );
+<a id='L83' name='L83'></a>  83     <a href='../Y/12260.html' title='Multiple used in 20 places.'>m_treebook</a>-&gt;<a href='../Y/142.html' title='Multiple used in 18 places.'>AddSubPage</a>( <a href='../Y/11804.html' title='Multiple used in 46 places.'>m_rules</a>, <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Rules" ) );
+<a id='L84' name='L84'></a>  84     <a href='../Y/12260.html' title='Multiple used in 20 places.'>m_treebook</a>-&gt;<a href='../Y/142.html' title='Multiple used in 18 places.'>AddSubPage</a>( <a href='../S/125.html#L56' title='Defined at 56 in dialogs/dialog_drc.cpp.'>m_severities</a>, <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Violation Severity" ) );
+<a id='L85' name='L85'></a>  85 
+<a id='L86' name='L86'></a>  86     <a href='../Y/12260.html' title='Multiple used in 20 places.'>m_treebook</a>-&gt;<a href='../Y/112.html' title='Multiple used in 6 places.'>AddGroupEntry</a>( <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Project" ) );
+<a id='L87' name='L87'></a>  87     <a href='../Y/12260.html' title='Multiple used in 20 places.'>m_treebook</a>-&gt;<a href='../Y/142.html' title='Multiple used in 18 places.'>AddSubPage</a>( <a href='../Y/11415.html' title='Multiple used in 4 places.'>m_netclasses</a>,  <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Net Classes" ) );
+<a id='L88' name='L88'></a>  88     <a href='../Y/12260.html' title='Multiple used in 20 places.'>m_treebook</a>-&gt;<a href='../Y/142.html' title='Multiple used in 18 places.'>AddSubPage</a>( <a href='../Y/12182.html' title='Multiple used in 3 places.'>m_textVars</a>, <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Text Variables" ) );
+<a id='L89' name='L89'></a>  89 
+<a id='L90' name='L90'></a>  90     <strong class='reserved'>for</strong>( <a href='../Y/14482.html' title='Multiple used in 167 places.'>size_t</a> <a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a> = 0; <a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a> &lt; <a href='../Y/12260.html' title='Multiple used in 20 places.'>m_treebook</a>-&gt;<a href='../Y/1600.html' title='Multiple used in 4 places.'>GetPageCount</a>(); ++<a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a> )
+<a id='L91' name='L91'></a>  91         <a href='../Y/11249.html' title='Multiple used in 8 places.'>m_macHack</a>.<a href='../S/330.html#L228' title='Defined at 228 in dialogs/panel_fp_lib_table.cpp.'>push_back</a>( <strong class='reserved'>true</strong> );
+<a id='L92' name='L92'></a>  92 
+<a id='L93' name='L93'></a>  93   <em class='comment'>// Connect Events</em>
+<a id='L94' name='L94'></a>  94   <a href='../Y/12260.html' title='Multiple used in 20 places.'>m_treebook</a>-&gt;<a href='../Y/532.html' title='Multiple used in 483 places.'>Connect</a>( <a href='../Y/15668.html' title='Multiple used in 2 places.'>wxEVT_TREEBOOK_PAGE_CHANGED</a>,
+<a id='L95' name='L95'></a>  95                          <a href='../Y/15538.html' title='Multiple used in 2 places.'>wxBookCtrlEventHandler</a>( <a href='../S/97.html#L101' title='Defined at 101 in dialogs/dialog_board_setup.cpp.'>DIALOG_BOARD_SETUP</a>::<a href='../D/2318.html' title='Multiple defined in 2 places.'>OnPageChange</a> ), <a href='../Y/2643.html' title='Multiple used in 1581 places.'>NULL</a>, <strong class='reserved'>this</strong> );
+<a id='L96' name='L96'></a>  96 
+<a id='L97' name='L97'></a>  97   <a href='../Y/1064.html' title='Multiple used in 33 places.'>FinishDialogSettings</a>();
+<a id='L98' name='L98'></a>  98 <em class='brace'>}</em>
+<a id='L99' name='L99'></a>  99 
+<a id='L100' name='L100'></a> 100 
+<a id='L101' name='L101'></a> 101 <a href='../S/97.html#L101' title='Defined at 101 in dialogs/dialog_board_setup.cpp.'>DIALOG_BOARD_SETUP</a>::~<a href='../R/520.html' title='Multiple referred from 10 places.'>DIALOG_BOARD_SETUP</a>()
+<a id='L102' name='L102'></a> 102 <em class='brace'>{</em>
+<a id='L103' name='L103'></a> 103   <a href='../Y/12260.html' title='Multiple used in 20 places.'>m_treebook</a>-&gt;<a href='../Y/781.html' title='Multiple used in 457 places.'>Disconnect</a>( <a href='../Y/15668.html' title='Multiple used in 2 places.'>wxEVT_TREEBOOK_PAGE_CHANGED</a>,
+<a id='L104' name='L104'></a> 104                          <a href='../Y/15538.html' title='Multiple used in 2 places.'>wxBookCtrlEventHandler</a>( <a href='../S/97.html#L101' title='Defined at 101 in dialogs/dialog_board_setup.cpp.'>DIALOG_BOARD_SETUP</a>::<a href='../D/2318.html' title='Multiple defined in 2 places.'>OnPageChange</a> ), <a href='../Y/2643.html' title='Multiple used in 1581 places.'>NULL</a>, <strong class='reserved'>this</strong> );
+<a id='L105' name='L105'></a> 105 <em class='brace'>}</em>
+<a id='L106' name='L106'></a> 106 
+<a id='L107' name='L107'></a> 107 
+<a id='L108' name='L108'></a> 108 <strong class='reserved'>void</strong> <a href='../S/97.html#L101' title='Defined at 101 in dialogs/dialog_board_setup.cpp.'>DIALOG_BOARD_SETUP</a>::<a href='../R/2214.html' title='Multiple referred from 7 places.'>OnPageChange</a>( <a href='../Y/15537.html' title='Multiple used in 2 places.'>wxBookCtrlEvent</a>&amp; <a href='../Y/7792.html' title='Multiple used in 867 places.'>event</a> )
+<a id='L109' name='L109'></a> 109 <em class='brace'>{</em>
+<a id='L110' name='L110'></a> 110     <strong class='reserved'>if</strong>( <a href='../Y/7792.html' title='Multiple used in 867 places.'>event</a>.<a href='../S/801.html#L332' title='Defined at 332 in tools/selection_tool.cpp.'>GetSelection</a>() == <a href='../Y/11583.html' title='Multiple used in 3 places.'>m_physicalStackupPage</a> )
+<a id='L111' name='L111'></a> 111         <a href='../Y/11582.html' title='Multiple used in 5 places.'>m_physicalStackup</a>-&gt;<a href='../S/49.html#L1114' title='Defined at 1114 in board_stackup_manager/panel_board_stackup.cpp.'>OnLayersOptionsChanged</a>( <a href='../Y/11176.html' title='Multiple used in 88 places.'>m_layers</a>-&gt;<a href='../S/354.html#L337' title='Defined at 337 in dialogs/panel_setup_layers.cpp.'>GetUILayerMask</a>() );
+<a id='L112' name='L112'></a> 112 
+<a id='L113' name='L113'></a> 113 <em class='sharp'>#ifdef</em> <a href='../Y/4951.html' title='Multiple used in 12 places.'>__WXMAC__</a>
+<a id='L114' name='L114'></a> 114     <em class='comment'>// Work around an OSX bug where the wxGrid children don't get placed correctly until</em>
+<a id='L115' name='L115'></a> 115     <em class='comment'>// the first resize event</em>
+<a id='L116' name='L116'></a> 116     <strong class='reserved'>int</strong> <a href='../Y/13381.html' title='Multiple used in 30 places.'>page</a> = <a href='../Y/7792.html' title='Multiple used in 867 places.'>event</a>.<a href='../S/801.html#L332' title='Defined at 332 in tools/selection_tool.cpp.'>GetSelection</a>();
+<a id='L117' name='L117'></a> 117 
+<a id='L118' name='L118'></a> 118     <strong class='reserved'>if</strong>( <a href='../Y/11249.html' title='Multiple used in 8 places.'>m_macHack</a>[ <a href='../Y/13381.html' title='Multiple used in 30 places.'>page</a> ] )
+<a id='L119' name='L119'></a> 119     <em class='brace'>{</em>
+<a id='L120' name='L120'></a> 120         <a href='../Y/15943.html' title='Multiple used in 474 places.'>wxSize</a> <a href='../Y/13386.html' title='Multiple used in 14 places.'>pageSize</a> = <a href='../Y/12260.html' title='Multiple used in 20 places.'>m_treebook</a>-&gt;<a href='../Y/1599.html' title='Multiple used in 8 places.'>GetPage</a>( <a href='../Y/13381.html' title='Multiple used in 30 places.'>page</a> )-&gt;<a href='../Y/1710.html' title='Multiple used in 166 places.'>GetSize</a>();
+<a id='L121' name='L121'></a> 121         <a href='../Y/13386.html' title='Multiple used in 14 places.'>pageSize</a>.<a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a> -= 1;
+<a id='L122' name='L122'></a> 122         <a href='../Y/13386.html' title='Multiple used in 14 places.'>pageSize</a>.<a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a> += 2;
+<a id='L123' name='L123'></a> 123 
+<a id='L124' name='L124'></a> 124         <a href='../Y/12260.html' title='Multiple used in 20 places.'>m_treebook</a>-&gt;<a href='../Y/1599.html' title='Multiple used in 8 places.'>GetPage</a>( <a href='../Y/13381.html' title='Multiple used in 30 places.'>page</a> )-&gt;<a href='../S/469.html#L113' title='Defined at 113 in grid_layer_box_helpers.cpp.'>SetSize</a>( <a href='../Y/13386.html' title='Multiple used in 14 places.'>pageSize</a> );
+<a id='L125' name='L125'></a> 125         <a href='../Y/11249.html' title='Multiple used in 8 places.'>m_macHack</a>[ <a href='../Y/13381.html' title='Multiple used in 30 places.'>page</a> ] = <strong class='reserved'>false</strong>;
+<a id='L126' name='L126'></a> 126     <em class='brace'>}</em>
+<a id='L127' name='L127'></a> 127 <em class='sharp'>#endif</em>
+<a id='L128' name='L128'></a> 128 <em class='brace'>}</em>
+<a id='L129' name='L129'></a> 129 
+<a id='L130' name='L130'></a> 130 
+<a id='L131' name='L131'></a> 131 <em class='comment'>// Run Import Settings... action</em>
+<a id='L132' name='L132'></a> 132 <strong class='reserved'>void</strong> <a href='../S/97.html#L101' title='Defined at 101 in dialogs/dialog_board_setup.cpp.'>DIALOG_BOARD_SETUP</a>::<a href='../S/98.html#L46' title='Referred from 46 in dialogs/dialog_board_setup.h.'>OnAuxiliaryAction</a>( <a href='../Y/15577.html' title='Multiple used in 712 places.'>wxCommandEvent</a>&amp; <a href='../Y/7792.html' title='Multiple used in 867 places.'>event</a> )
+<a id='L133' name='L133'></a> 133 <em class='brace'>{</em>
+<a id='L134' name='L134'></a> 134     <a href='../Y/638.html' title='Multiple used in 9 places.'>DIALOG_IMPORT_SETTINGS</a> <a href='../Y/8504.html' title='Multiple used in 11 places.'>importDlg</a>( <strong class='reserved'>this</strong>, <a href='../D/4159.html' title='Multiple defined in 14 places.'>m_frame</a> );
+<a id='L135' name='L135'></a> 135 
+<a id='L136' name='L136'></a> 136     <strong class='reserved'>if</strong>( <a href='../Y/8504.html' title='Multiple used in 11 places.'>importDlg</a>.<a href='../S/444.html#L846' title='Defined at 846 in footprint_viewer_frame.cpp.'>ShowModal</a>() == <a href='../Y/15783.html' title='Multiple used in 92 places.'>wxID_CANCEL</a> )
+<a id='L137' name='L137'></a> 137         <strong class='reserved'>return</strong>;
+<a id='L138' name='L138'></a> 138 
+<a id='L139' name='L139'></a> 139     <a href='../Y/15715.html' title='Multiple used in 165 places.'>wxFileName</a> <a href='../Y/6706.html' title='Multiple used in 4 places.'>boardFn</a>( <a href='../Y/8504.html' title='Multiple used in 11 places.'>importDlg</a>.<a href='../Y/1409.html' title='Multiple used in 2 places.'>GetFilePath</a>() );
+<a id='L140' name='L140'></a> 140     <a href='../Y/15715.html' title='Multiple used in 165 places.'>wxFileName</a> <a href='../Y/13744.html' title='Multiple used in 5 places.'>projectFn</a>( <a href='../Y/6706.html' title='Multiple used in 4 places.'>boardFn</a> );
+<a id='L141' name='L141'></a> 141 
+<a id='L142' name='L142'></a> 142     <a href='../Y/13744.html' title='Multiple used in 5 places.'>projectFn</a>.<a href='../Y/3504.html' title='Multiple used in 42 places.'>SetExt</a>( <a href='../Y/2989.html' title='Multiple used in 6 places.'>ProjectFileExtension</a> );
+<a id='L143' name='L143'></a> 143 
+<a id='L144' name='L144'></a> 144     <strong class='reserved'>if</strong>( !<a href='../D/4159.html' title='Multiple defined in 14 places.'>m_frame</a>-&gt;<a href='../S/738.html#L80' title='Defined at 80 in swig/pcbnew_scripting_helpers.cpp.'>GetSettingsManager</a>()-&gt;<a href='../Y/2423.html' title='Multiple used in 6 places.'>LoadProject</a>( <a href='../Y/13744.html' title='Multiple used in 5 places.'>projectFn</a>.<a href='../Y/1439.html' title='Multiple used in 150 places.'>GetFullPath</a>(), <strong class='reserved'>false</strong> ) )
+<a id='L145' name='L145'></a> 145     <em class='brace'>{</em>
+<a id='L146' name='L146'></a> 146         <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../Y/12733.html' title='Multiple used in 994 places.'>msg</a> = <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>::<a href='../D/1022.html' title='Multiple defined in 7 places.'>Format</a>( <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Error importing settings from board:\n"
+<a id='L147' name='L147'></a> 147                                             "Associated project file %s could not be loaded" ),
+<a id='L148' name='L148'></a> 148                                          <a href='../Y/13744.html' title='Multiple used in 5 places.'>projectFn</a>.<a href='../Y/1439.html' title='Multiple used in 150 places.'>GetFullPath</a>() );
+<a id='L149' name='L149'></a> 149         <a href='../Y/786.html' title='Multiple used in 23 places.'>DisplayErrorMessage</a>( <strong class='reserved'>this</strong>, <a href='../Y/12733.html' title='Multiple used in 994 places.'>msg</a> );
+<a id='L150' name='L150'></a> 150 
+<a id='L151' name='L151'></a> 151         <strong class='reserved'>return</strong>;
+<a id='L152' name='L152'></a> 152     <em class='brace'>}</em>
+<a id='L153' name='L153'></a> 153 
+<a id='L154' name='L154'></a> 154     <a href='../Y/2909.html' title='Multiple used in 33 places.'>PROJECT</a>* <a href='../Y/13209.html' title='Multiple used in 4 places.'>otherPrj</a> = <a href='../D/4159.html' title='Multiple defined in 14 places.'>m_frame</a>-&gt;<a href='../S/738.html#L80' title='Defined at 80 in swig/pcbnew_scripting_helpers.cpp.'>GetSettingsManager</a>()-&gt;<a href='../Y/1649.html' title='Multiple used in 11 places.'>GetProject</a>( <a href='../Y/13744.html' title='Multiple used in 5 places.'>projectFn</a>.<a href='../Y/1439.html' title='Multiple used in 150 places.'>GetFullPath</a>() );
+<a id='L155' name='L155'></a> 155 
+<a id='L156' name='L156'></a> 156     <a href='../Y/2883.html' title='Multiple used in 67 places.'>PLUGIN</a>::<a href='../Y/3089.html' title='Multiple used in 18 places.'>RELEASER</a> <a href='../Y/13488.html' title='Multiple used in 31 places.'>pi</a>( <a href='../Y/1985.html' title='Multiple used in 104 places.'>IO_MGR</a>::<a href='../S/493.html#L61' title='Defined at 61 in io_mgr.cpp.'>PluginFind</a>( <a href='../Y/1985.html' title='Multiple used in 104 places.'>IO_MGR</a>::<a href='../S/494.html#L57' title='Defined at 57 in io_mgr.h.'>KICAD_SEXP</a> ) );
+<a id='L157' name='L157'></a> 157 
+<a id='L158' name='L158'></a> 158     <a href='../S/57.html#L104' title='Defined at 104 in class_board.cpp.'>BOARD</a>* <a href='../Y/13207.html' title='Multiple used in 13 places.'>otherBoard</a> = <strong class='reserved'>new</strong> <a href='../S/57.html#L104' title='Defined at 104 in class_board.cpp.'>BOARD</a>();
+<a id='L159' name='L159'></a> 159 
+<a id='L160' name='L160'></a> 160     <strong class='reserved'>try</strong>
+<a id='L161' name='L161'></a> 161     <em class='brace'>{</em>
+<a id='L162' name='L162'></a> 162         <a href='../Y/13207.html' title='Multiple used in 13 places.'>otherBoard</a> = <a href='../Y/13488.html' title='Multiple used in 31 places.'>pi</a>-&gt;<a href='../D/1996.html' title='Multiple defined in 18 places.'>Load</a>( <a href='../Y/6706.html' title='Multiple used in 4 places.'>boardFn</a>.<a href='../Y/1439.html' title='Multiple used in 150 places.'>GetFullPath</a>(), <a href='../Y/13059.html' title='Multiple used in 610 places.'>nullptr</a>, <a href='../Y/13059.html' title='Multiple used in 610 places.'>nullptr</a> );
+<a id='L163' name='L163'></a> 163     <em class='brace'>}</em>
+<a id='L164' name='L164'></a> 164     <strong class='reserved'>catch</strong>( <strong class='reserved'>const</strong> <a href='../Y/1984.html' title='Multiple used in 59 places.'>IO_ERROR</a>&amp; <a href='../Y/8610.html' title='Multiple used in 94 places.'>ioe</a> )
+<a id='L165' name='L165'></a> 165     <em class='brace'>{</em>
+<a id='L166' name='L166'></a> 166         <strong class='reserved'>if</strong>( <a href='../Y/8610.html' title='Multiple used in 94 places.'>ioe</a>.<a href='../Y/2984.html' title='Multiple used in 3 places.'>Problem</a>() != <a href='../Y/15966.html' title='Multiple used in 1011 places.'>wxT</a>( "CANCEL" ) )
+<a id='L167' name='L167'></a> 167         <em class='brace'>{</em>
+<a id='L168' name='L168'></a> 168             <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../Y/12733.html' title='Multiple used in 994 places.'>msg</a> =
+<a id='L169' name='L169'></a> 169                     <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>::<a href='../D/1022.html' title='Multiple defined in 7 places.'>Format</a>( <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Error loading board file:\n%s" ), <a href='../Y/6706.html' title='Multiple used in 4 places.'>boardFn</a>.<a href='../Y/1439.html' title='Multiple used in 150 places.'>GetFullPath</a>() );
+<a id='L170' name='L170'></a> 170             <a href='../Y/786.html' title='Multiple used in 23 places.'>DisplayErrorMessage</a>( <strong class='reserved'>this</strong>, <a href='../Y/12733.html' title='Multiple used in 994 places.'>msg</a>, <a href='../Y/8610.html' title='Multiple used in 94 places.'>ioe</a>.<a href='../Y/4895.html' title='Multiple used in 44 places.'>What</a>() );
+<a id='L171' name='L171'></a> 171         <em class='brace'>}</em>
+<a id='L172' name='L172'></a> 172 
+<a id='L173' name='L173'></a> 173         <a href='../D/4159.html' title='Multiple defined in 14 places.'>m_frame</a>-&gt;<a href='../S/738.html#L80' title='Defined at 80 in swig/pcbnew_scripting_helpers.cpp.'>GetSettingsManager</a>()-&gt;<a href='../Y/4757.html' title='Multiple used in 5 places.'>UnloadProject</a>( <a href='../Y/13209.html' title='Multiple used in 4 places.'>otherPrj</a>, <strong class='reserved'>false</strong> );
+<a id='L174' name='L174'></a> 174 
+<a id='L175' name='L175'></a> 175         <strong class='reserved'>return</strong>;
+<a id='L176' name='L176'></a> 176     <em class='brace'>}</em>
+<a id='L177' name='L177'></a> 177 
+<a id='L178' name='L178'></a> 178     <a href='../Y/13207.html' title='Multiple used in 13 places.'>otherBoard</a>-&gt;<a href='../S/57.html#L145' title='Defined at 145 in class_board.cpp.'>SetProject</a>( <a href='../Y/13209.html' title='Multiple used in 4 places.'>otherPrj</a> );
+<a id='L179' name='L179'></a> 179 
+<a id='L180' name='L180'></a> 180     <strong class='reserved'>if</strong>( <a href='../Y/8504.html' title='Multiple used in 11 places.'>importDlg</a>.<a href='../Y/9715.html' title='Multiple used in 6 places.'>m_LayersOpt</a>-&gt;<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>() )
+<a id='L181' name='L181'></a> 181         <a href='../Y/11176.html' title='Multiple used in 88 places.'>m_layers</a>-&gt;<a href='../D/1796.html' title='Multiple defined in 7 places.'>ImportSettingsFrom</a>( <a href='../Y/13207.html' title='Multiple used in 13 places.'>otherBoard</a> );
+<a id='L182' name='L182'></a> 182     <strong class='reserved'>if</strong>( <a href='../Y/8504.html' title='Multiple used in 11 places.'>importDlg</a>.<a href='../Y/10075.html' title='Multiple used in 5 places.'>m_TextAndGraphicsOpt</a>-&gt;<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>() )
+<a id='L183' name='L183'></a> 183         <a href='../Y/12171.html' title='Multiple used in 4 places.'>m_textAndGraphics</a>-&gt;<a href='../D/1796.html' title='Multiple defined in 7 places.'>ImportSettingsFrom</a>( <a href='../Y/13207.html' title='Multiple used in 13 places.'>otherBoard</a> );
+<a id='L184' name='L184'></a> 184     <strong class='reserved'>if</strong>( <a href='../Y/8504.html' title='Multiple used in 11 places.'>importDlg</a>.<a href='../Y/9261.html' title='Multiple used in 5 places.'>m_ConstraintsOpt</a>-&gt;<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>() )
+<a id='L185' name='L185'></a> 185         <a href='../Y/10564.html' title='Multiple used in 10 places.'>m_constraints</a>-&gt;<a href='../D/1796.html' title='Multiple defined in 7 places.'>ImportSettingsFrom</a>( <a href='../Y/13207.html' title='Multiple used in 13 places.'>otherBoard</a> );
+<a id='L186' name='L186'></a> 186     <strong class='reserved'>if</strong>( <a href='../Y/8504.html' title='Multiple used in 11 places.'>importDlg</a>.<a href='../Y/9819.html' title='Multiple used in 5 places.'>m_NetclassesOpt</a>-&gt;<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>() )
+<a id='L187' name='L187'></a> 187         <a href='../Y/11415.html' title='Multiple used in 4 places.'>m_netclasses</a>-&gt;<a href='../D/1796.html' title='Multiple defined in 7 places.'>ImportSettingsFrom</a>( &amp;<a href='../Y/13207.html' title='Multiple used in 13 places.'>otherBoard</a>-&gt;<a href='../D/1162.html' title='Multiple defined in 2 places.'>GetDesignSettings</a>().<a href='../Y/1559.html' title='Multiple used in 25 places.'>GetNetClasses</a>() );
+<a id='L188' name='L188'></a> 188     <strong class='reserved'>if</strong>( <a href='../Y/8504.html' title='Multiple used in 11 places.'>importDlg</a>.<a href='../Y/10124.html' title='Multiple used in 5 places.'>m_TracksAndViasOpt</a>-&gt;<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>() )
+<a id='L189' name='L189'></a> 189         <a href='../Y/12247.html' title='Multiple used in 4 places.'>m_tracksAndVias</a>-&gt;<a href='../D/1796.html' title='Multiple defined in 7 places.'>ImportSettingsFrom</a>( <a href='../Y/13207.html' title='Multiple used in 13 places.'>otherBoard</a> );
+<a id='L190' name='L190'></a> 190     <strong class='reserved'>if</strong>( <a href='../Y/8504.html' title='Multiple used in 11 places.'>importDlg</a>.<a href='../Y/9750.html' title='Multiple used in 5 places.'>m_MaskAndPasteOpt</a>-&gt;<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>() )
+<a id='L191' name='L191'></a> 191         <a href='../Y/11273.html' title='Multiple used in 4 places.'>m_maskAndPaste</a>-&gt;<a href='../D/1796.html' title='Multiple defined in 7 places.'>ImportSettingsFrom</a>( <a href='../Y/13207.html' title='Multiple used in 13 places.'>otherBoard</a> );
+<a id='L192' name='L192'></a> 192 
+<a id='L193' name='L193'></a> 193     <em class='comment'>// If layers options are imported, import also the stackup</em>
+<a id='L194' name='L194'></a> 194     <em class='comment'>// layers options and stackup are linked, so they cannot be imported</em>
+<a id='L195' name='L195'></a> 195     <em class='comment'>// separately, and stackup can be imported only after layers options</em>
+<a id='L196' name='L196'></a> 196     <em class='comment'>//</em>
+<a id='L197' name='L197'></a> 197     <em class='comment'>// Note also currently only the list of enabled layers can be imported, because</em>
+<a id='L198' name='L198'></a> 198     <em class='comment'>// we import settings from a .pro project file, not the settings inside</em>
+<a id='L199' name='L199'></a> 199     <em class='comment'>// a board, and info only living in the board is not imported.</em>
+<a id='L200' name='L200'></a> 200     <em class='comment'>// TODO: Add import of physical settings now that we are actually loading the board here</em>
+<a id='L201' name='L201'></a> 201     <strong class='reserved'>if</strong>( <a href='../Y/8504.html' title='Multiple used in 11 places.'>importDlg</a>.<a href='../Y/9715.html' title='Multiple used in 6 places.'>m_LayersOpt</a>-&gt;<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>() )
+<a id='L202' name='L202'></a> 202         <a href='../Y/11582.html' title='Multiple used in 5 places.'>m_physicalStackup</a>-&gt;<a href='../D/1796.html' title='Multiple defined in 7 places.'>ImportSettingsFrom</a>( <a href='../Y/13207.html' title='Multiple used in 13 places.'>otherBoard</a> );
+<a id='L203' name='L203'></a> 203 
+<a id='L204' name='L204'></a> 204     <strong class='reserved'>if</strong>( <a href='../Y/8504.html' title='Multiple used in 11 places.'>importDlg</a>.<a href='../Y/9986.html' title='Multiple used in 5 places.'>m_SeveritiesOpt</a>-&gt;<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>() )
+<a id='L205' name='L205'></a> 205         <a href='../S/125.html#L56' title='Defined at 56 in dialogs/dialog_drc.cpp.'>m_severities</a>-&gt;<a href='../D/1796.html' title='Multiple defined in 7 places.'>ImportSettingsFrom</a>( <a href='../Y/13207.html' title='Multiple used in 13 places.'>otherBoard</a>-&gt;<a href='../D/1162.html' title='Multiple defined in 2 places.'>GetDesignSettings</a>().<a href='../Y/9286.html' title='Multiple used in 23 places.'>m_DRCSeverities</a> );
+<a id='L206' name='L206'></a> 206 
+<a id='L207' name='L207'></a> 207     <a href='../Y/13207.html' title='Multiple used in 13 places.'>otherBoard</a>-&gt;<a href='../S/57.html#L171' title='Defined at 171 in class_board.cpp.'>ClearProject</a>();
+<a id='L208' name='L208'></a> 208 
+<a id='L209' name='L209'></a> 209     <a href='../D/4159.html' title='Multiple defined in 14 places.'>m_frame</a>-&gt;<a href='../S/738.html#L80' title='Defined at 80 in swig/pcbnew_scripting_helpers.cpp.'>GetSettingsManager</a>()-&gt;<a href='../Y/4757.html' title='Multiple used in 5 places.'>UnloadProject</a>( <a href='../Y/13209.html' title='Multiple used in 4 places.'>otherPrj</a>, <strong class='reserved'>false</strong> );
+<a id='L210' name='L210'></a> 210 
+<a id='L211' name='L211'></a> 211     <strong class='reserved'>delete</strong> <a href='../Y/13207.html' title='Multiple used in 13 places.'>otherBoard</a>;
+<a id='L212' name='L212'></a> 212 <em class='brace'>}</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L45'>[^]</a><a href='#L132'>[v]</a><a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>dialogs/panel_display_options.cpp</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/831.html'>dialogs</a>/panel_display_options.cpp</h2>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L47'>[^]</a><a href='#L90'>[v]</a>[top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L47' title='Defined at 47.'>m_frame</a></li>
+<li><a href='#L58' title='Defined at 58.'>TransferDataToWindow</a></li>
+<li><a href='#L90' title='Defined at 90.'>TransferDataFromWindow</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * This program source code file is part of KiCad, a free EDA CAD application.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 2015 Jean-Pierre Charras, jean-pierre.charras at wanadoo.fr</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> * Copyright (C) 1992-2020 KiCad Developers, see AUTHORS.txt for contributors.</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> *</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> * This program is free software: you can redistribute it and/or modify it</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * under the terms of the GNU General Public License as published by the</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * Free Software Foundation, either version 3 of the License, or (at your</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> * option) any later version.</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> *</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> * This program is distributed in the hope that it will be useful, but</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> * General Public License for more details.</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> *</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> * You should have received a copy of the GNU General Public License along</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> */</em>
+<a id='L20' name='L20'></a>  20 
+<a id='L21' name='L21'></a>  21 <em class='sharp'>#include</em> &lt;fctsys.h&gt;
+<a id='L22' name='L22'></a>  22 <em class='sharp'>#include</em> &lt;<a href='568.html'>pcbnew.h</a>&gt;
+<a id='L23' name='L23'></a>  23 <em class='sharp'>#include</em> &lt;<a href='586.html'>pcb_edit_frame.h</a>&gt;
+<a id='L24' name='L24'></a>  24 <em class='sharp'>#include</em> &lt;pcb_display_options.h&gt;
+<a id='L25' name='L25'></a>  25 <em class='sharp'>#include</em> &lt;<a href='576.html'>pcbnew_settings.h</a>&gt;
+<a id='L26' name='L26'></a>  26 <em class='sharp'>#include</em> &lt;config_map.h&gt;
+<a id='L27' name='L27'></a>  27 <em class='sharp'>#include</em> &lt;<a href='321.html'>panel_display_options.h</a>&gt;
+<a id='L28' name='L28'></a>  28 <em class='sharp'>#include</em> &lt;<a href='602.html'>pcb_view.h</a>&gt;
+<a id='L29' name='L29'></a>  29 <em class='sharp'>#include</em> &lt;<a href='594.html'>pcb_painter.h</a>&gt;
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#include</em> &lt;widgets/paged_dialog.h&gt;
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#include</em> &lt;widgets/gal_options_panel.h&gt;
+<a id='L32' name='L32'></a>  32 
+<a id='L33' name='L33'></a>  33 
+<a id='L34' name='L34'></a>  34 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <a href='../Y/4746.html' title='Multiple used in 6 places.'>UTIL</a>::CFG_MAP&lt;<a href='../S/582.html#L34' title='Defined at 34 in pcb_display_options.cpp.'>PCB_DISPLAY_OPTIONS</a>::TRACE_CLEARANCE_DISPLAY_MODE_T&gt; <a href='../Y/15066.html' title='Multiple used in 3 places.'>traceClearanceSelectMap</a> =
+<a id='L35' name='L35'></a>  35 <em class='brace'>{</em>
+<a id='L36' name='L36'></a>  36     <em class='brace'>{</em> <a href='../S/582.html#L34' title='Defined at 34 in pcb_display_options.cpp.'>PCB_DISPLAY_OPTIONS</a>::<a href='../Y/3242.html' title='Multiple used in 5 places.'>SHOW_CLEARANCE_NEW_TRACKS_AND_VIA_AREAS</a>,            2 <em class='brace'>}</em>,     <em class='comment'>// Default</em>
+<a id='L37' name='L37'></a>  37     <em class='brace'>{</em> <a href='../S/582.html#L34' title='Defined at 34 in pcb_display_options.cpp.'>PCB_DISPLAY_OPTIONS</a>::<a href='../Y/710.html' title='Multiple used in 3 places.'>DO_NOT_SHOW_CLEARANCE</a>,                              0 <em class='brace'>}</em>,
+<a id='L38' name='L38'></a>  38     <em class='brace'>{</em> <a href='../S/582.html#L34' title='Defined at 34 in pcb_display_options.cpp.'>PCB_DISPLAY_OPTIONS</a>::<a href='../Y/3241.html' title='Multiple used in 3 places.'>SHOW_CLEARANCE_NEW_TRACKS</a>,                          1 <em class='brace'>}</em>,
+<a id='L39' name='L39'></a>  39     <em class='brace'>{</em> <a href='../S/582.html#L34' title='Defined at 34 in pcb_display_options.cpp.'>PCB_DISPLAY_OPTIONS</a>::<a href='../Y/3240.html' title='Multiple used in 3 places.'>SHOW_CLEARANCE_NEW_AND_EDITED_TRACKS_AND_VIA_AREAS</a>, 3 <em class='brace'>}</em>,
+<a id='L40' name='L40'></a>  40     <em class='brace'>{</em> <a href='../S/582.html#L34' title='Defined at 34 in pcb_display_options.cpp.'>PCB_DISPLAY_OPTIONS</a>::<a href='../Y/3239.html' title='Multiple used in 3 places.'>SHOW_CLEARANCE_ALWAYS</a>,                              4 <em class='brace'>}</em>,
+<a id='L41' name='L41'></a>  41 <em class='brace'>}</em>;
+<a id='L42' name='L42'></a>  42 
+<a id='L43' name='L43'></a>  43 
+<a id='L44' name='L44'></a>  44 <a href='../Y/2783.html' title='Multiple used in 7 places.'>PANEL_DISPLAY_OPTIONS</a>::<a href='../Y/2783.html' title='Multiple used in 7 places.'>PANEL_DISPLAY_OPTIONS</a>( <a href='../S/581.html#L68' title='Defined at 68 in pcb_base_frame.cpp.'>PCB_BASE_FRAME</a>* <a href='../Y/5337.html' title='Multiple used in 222 places.'>aFrame</a>,
+<a id='L45' name='L45'></a>  45                                               <a href='../Y/2777.html' title='Multiple used in 36 places.'>PAGED_DIALOG</a>* <a href='../Y/5754.html' title='Multiple used in 610 places.'>aParent</a> ) :
+<a id='L46' name='L46'></a>  46     <a href='../D/2404.html' title='Multiple defined in 2 places.'>PANEL_DISPLAY_OPTIONS_BASE</a>( <a href='../Y/5754.html' title='Multiple used in 610 places.'>aParent</a>-&gt;<a href='../Y/1779.html' title='Multiple used in 13 places.'>GetTreebook</a>() ),
+<a id='L47' name='L47'></a>  47     <a href='../R/4007.html' title='Multiple referred from 493 places.'>m_frame</a>( <a href='../Y/5337.html' title='Multiple used in 222 places.'>aFrame</a> )
+<a id='L48' name='L48'></a>  48 <em class='brace'>{</em>
+<a id='L49' name='L49'></a>  49     <a href='../D/1894.html' title='Multiple defined in 2 places.'>KIGFX</a>::<a href='../Y/1117.html' title='Multiple used in 9 places.'>GAL_DISPLAY_OPTIONS</a>&amp; <a href='../Y/8214.html' title='Multiple used in 2 places.'>galOptions</a> = <a href='../D/4159.html' title='Multiple defined in 14 places.'>m_frame</a>-&gt;<a href='../Y/1442.html' title='Multiple used in 13 places.'>GetGalDisplayOptions</a>();
+<a id='L50' name='L50'></a>  50     <a href='../Y/10923.html' title='Multiple used in 5 places.'>m_galOptsPanel</a> = <strong class='reserved'>new</strong> <a href='../Y/1124.html' title='Multiple used in 3 places.'>GAL_OPTIONS_PANEL</a>( <strong class='reserved'>this</strong>, <a href='../Y/8214.html' title='Multiple used in 2 places.'>galOptions</a> );
+<a id='L51' name='L51'></a>  51 
+<a id='L52' name='L52'></a>  52     <a href='../Y/10922.html' title='Multiple used in 4 places.'>m_galOptionsSizer</a>-&gt;<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../Y/10923.html' title='Multiple used in 5 places.'>m_galOptsPanel</a>, 1, <a href='../Y/15675.html' title='Multiple used in 1040 places.'>wxEXPAND</a>, 0 );
+<a id='L53' name='L53'></a>  53 
+<a id='L54' name='L54'></a>  54     <a href='../Y/11471.html' title='Multiple used in 16 places.'>m_optionsBook</a>-&gt;<a href='../Y/3831.html' title='Multiple used in 332 places.'>SetSelection</a>( <strong class='reserved'>dynamic_cast</strong>&lt;<a href='../S/585.html#L356' title='Defined at 356 in pcb_edit_frame.cpp.'>PCB_EDIT_FRAME</a>*&gt;( <a href='../D/4159.html' title='Multiple defined in 14 places.'>m_frame</a> ) ? 1 : 0 );
+<a id='L55' name='L55'></a>  55 <em class='brace'>}</em>
+<a id='L56' name='L56'></a>  56 
+<a id='L57' name='L57'></a>  57 
+<a id='L58' name='L58'></a>  58 <strong class='reserved'>bool</strong> <a href='../Y/2783.html' title='Multiple used in 7 places.'>PANEL_DISPLAY_OPTIONS</a>::<a href='../R/3145.html' title='Multiple referred from 65 places.'>TransferDataToWindow</a>()
+<a id='L59' name='L59'></a>  59 <em class='brace'>{</em>
+<a id='L60' name='L60'></a>  60     <a href='../S/585.html#L356' title='Defined at 356 in pcb_edit_frame.cpp.'>PCB_EDIT_FRAME</a>* <a href='../Y/13453.html' title='Multiple used in 13 places.'>pcbEdit</a> = <strong class='reserved'>dynamic_cast</strong>&lt;<a href='../S/585.html#L356' title='Defined at 356 in pcb_edit_frame.cpp.'>PCB_EDIT_FRAME</a>*&gt;( <a href='../D/4159.html' title='Multiple defined in 14 places.'>m_frame</a> );
+<a id='L61' name='L61'></a>  61 
+<a id='L62' name='L62'></a>  62     <strong class='reserved'>if</strong>( <a href='../Y/13453.html' title='Multiple used in 13 places.'>pcbEdit</a> )
+<a id='L63' name='L63'></a>  63     <em class='brace'>{</em>
+<a id='L64' name='L64'></a>  64         <strong class='reserved'>const</strong> <a href='../S/582.html#L34' title='Defined at 34 in pcb_display_options.cpp.'>PCB_DISPLAY_OPTIONS</a>&amp; <a href='../Y/7463.html' title='Multiple used in 32 places.'>displ_opts</a> = <a href='../Y/13453.html' title='Multiple used in 13 places.'>pcbEdit</a>-&gt;<a href='../Y/1363.html' title='Multiple used in 32 places.'>GetDisplayOptions</a>();
+<a id='L65' name='L65'></a>  65 
+<a id='L66' name='L66'></a>  66         <a href='../Y/9840.html' title='Multiple used in 7 places.'>m_OptDisplayTracksClearance</a>-&gt;<a href='../Y/3831.html' title='Multiple used in 332 places.'>SetSelection</a>( <a href='../Y/4746.html' title='Multiple used in 6 places.'>UTIL</a>::GetConfigForVal(
+<a id='L67' name='L67'></a>  67                 <a href='../Y/15066.html' title='Multiple used in 3 places.'>traceClearanceSelectMap</a>, <a href='../Y/7463.html' title='Multiple used in 32 places.'>displ_opts</a>.<a href='../Y/9998.html' title='Multiple used in 6 places.'>m_ShowTrackClearanceMode</a> ) );
+<a id='L68' name='L68'></a>  68 
+<a id='L69' name='L69'></a>  69         <a href='../Y/9837.html' title='Multiple used in 5 places.'>m_OptDisplayPadClearence</a>-&gt;<a href='../D/3095.html' title='Multiple defined in 3 places.'>SetValue</a>( <a href='../Y/7463.html' title='Multiple used in 32 places.'>displ_opts</a>.<a href='../Y/9338.html' title='Multiple used in 6 places.'>m_DisplayPadIsol</a> );
+<a id='L70' name='L70'></a>  70         <a href='../Y/9839.html' title='Multiple used in 6 places.'>m_OptDisplayPadNumber</a>-&gt;<a href='../D/3095.html' title='Multiple defined in 3 places.'>SetValue</a>( <a href='../Y/7463.html' title='Multiple used in 32 places.'>displ_opts</a>.<a href='../Y/9339.html' title='Multiple used in 8 places.'>m_DisplayPadNum</a> );
+<a id='L71' name='L71'></a>  71         <a href='../Y/9838.html' title='Multiple used in 6 places.'>m_OptDisplayPadNoConn</a>-&gt;<a href='../D/3095.html' title='Multiple defined in 3 places.'>SetValue</a>( <a href='../Y/13453.html' title='Multiple used in 13 places.'>pcbEdit</a>-&gt;<a href='../D/1840.html' title='Multiple defined in 3 places.'>IsElementVisible</a>( <a href='../Y/2320.html' title='Multiple used in 7 places.'>LAYER_NO_CONNECTS</a> ) );
+<a id='L72' name='L72'></a>  72         <a href='../Y/9993.html' title='Multiple used in 7 places.'>m_ShowNetNamesOption</a>-&gt;<a href='../Y/3831.html' title='Multiple used in 332 places.'>SetSelection</a>( <a href='../Y/7463.html' title='Multiple used in 32 places.'>displ_opts</a>.<a href='../Y/9335.html' title='Multiple used in 5 places.'>m_DisplayNetNamesMode</a> );
+<a id='L73' name='L73'></a>  73 
+<a id='L74' name='L74'></a>  74         <a href='../Y/442.html' title='Multiple used in 3 places.'>CROSS_PROBING_SETTINGS</a>&amp; <a href='../Y/7169.html' title='Multiple used in 8 places.'>crossProbing</a> = <a href='../Y/13453.html' title='Multiple used in 13 places.'>pcbEdit</a>-&gt;<a href='../S/581.html#L670' title='Defined at 670 in pcb_base_frame.cpp.'>GetPcbNewSettings</a>()-&gt;<a href='../Y/9272.html' title='Multiple used in 3 places.'>m_CrossProbing</a>;
+<a id='L75' name='L75'></a>  75 
+<a id='L76' name='L76'></a>  76         <a href='../Y/10471.html' title='Multiple used in 6 places.'>m_checkCrossProbeCenter</a>-&gt;<a href='../D/3095.html' title='Multiple defined in 3 places.'>SetValue</a>( <a href='../Y/7169.html' title='Multiple used in 8 places.'>crossProbing</a>.<a href='../Y/6839.html' title='Multiple used in 4 places.'>center_on_items</a> );
+<a id='L77' name='L77'></a>  77         <a href='../Y/10472.html' title='Multiple used in 6 places.'>m_checkCrossProbeZoom</a>-&gt;<a href='../D/3095.html' title='Multiple defined in 3 places.'>SetValue</a>( <a href='../Y/7169.html' title='Multiple used in 8 places.'>crossProbing</a>.<a href='../Y/16134.html' title='Multiple used in 3 places.'>zoom_to_fit</a> );
+<a id='L78' name='L78'></a>  78         <a href='../Y/10470.html' title='Multiple used in 7 places.'>m_checkCrossProbeAutoHighlight</a>-&gt;<a href='../D/3095.html' title='Multiple defined in 3 places.'>SetValue</a>( <a href='../Y/7169.html' title='Multiple used in 8 places.'>crossProbing</a>.<a href='../Y/6489.html' title='Multiple used in 4 places.'>auto_highlight</a> );
+<a id='L79' name='L79'></a>  79     <em class='brace'>}</em>
+<a id='L80' name='L80'></a>  80 
+<a id='L81' name='L81'></a>  81     <a href='../Y/10923.html' title='Multiple used in 5 places.'>m_galOptsPanel</a>-&gt;<a href='../D/3273.html' title='Multiple defined in 36 places.'>TransferDataToWindow</a>();
+<a id='L82' name='L82'></a>  82 
+<a id='L83' name='L83'></a>  83     <strong class='reserved'>return</strong> <strong class='reserved'>true</strong>;
+<a id='L84' name='L84'></a>  84 <em class='brace'>}</em>
+<a id='L85' name='L85'></a>  85 
+<a id='L86' name='L86'></a>  86 
+<a id='L87' name='L87'></a>  87 <em class='comment'>/*</em>
+<a id='L88' name='L88'></a>  88 <em class='comment'> * Update variables with new options</em>
+<a id='L89' name='L89'></a>  89 <em class='comment'> */</em>
+<a id='L90' name='L90'></a>  90 <strong class='reserved'>bool</strong> <a href='../Y/2783.html' title='Multiple used in 7 places.'>PANEL_DISPLAY_OPTIONS</a>::<a href='../R/3144.html' title='Multiple referred from 63 places.'>TransferDataFromWindow</a>()
+<a id='L91' name='L91'></a>  91 <em class='brace'>{</em>
+<a id='L92' name='L92'></a>  92     <a href='../Y/10923.html' title='Multiple used in 5 places.'>m_galOptsPanel</a>-&gt;<a href='../D/3272.html' title='Multiple defined in 44 places.'>TransferDataFromWindow</a>();
+<a id='L93' name='L93'></a>  93 
+<a id='L94' name='L94'></a>  94     <em class='comment'>// Apply changes to the GAL</em>
+<a id='L95' name='L95'></a>  95     <a href='../D/1894.html' title='Multiple defined in 2 places.'>KIGFX</a>::<a href='../Y/4798.html' title='Multiple used in 92 places.'>VIEW</a>* <a href='../Y/15378.html' title='Multiple used in 182 places.'>view</a> = <a href='../D/4159.html' title='Multiple defined in 14 places.'>m_frame</a>-&gt;<a href='../S/581.html#L712' title='Defined at 712 in pcb_base_frame.cpp.'>GetCanvas</a>()-&gt;<a href='../S/583.html#L517' title='Defined at 517 in pcb_draw_panel_gal.cpp.'>GetView</a>();
+<a id='L96' name='L96'></a>  96     <a href='../D/1894.html' title='Multiple defined in 2 places.'>KIGFX</a>::<a href='../S/593.html#L336' title='Defined at 336 in pcb_painter.cpp.'>PCB_PAINTER</a>* <a href='../Y/13394.html' title='Multiple used in 22 places.'>painter</a> = <strong class='reserved'>static_cast</strong>&lt;<a href='../D/1894.html' title='Multiple defined in 2 places.'>KIGFX</a>::<a href='../S/593.html#L336' title='Defined at 336 in pcb_painter.cpp.'>PCB_PAINTER</a>*&gt;( <a href='../Y/15378.html' title='Multiple used in 182 places.'>view</a>-&gt;<a href='../Y/1603.html' title='Multiple used in 32 places.'>GetPainter</a>() );
+<a id='L97' name='L97'></a>  97     <a href='../D/1894.html' title='Multiple defined in 2 places.'>KIGFX</a>::<a href='../S/593.html#L52' title='Defined at 52 in pcb_painter.cpp.'>PCB_RENDER_SETTINGS</a>* <a href='../S/275.html#L48' title='Defined at 48 in dialogs/dialog_print_pcbnew.cpp.'>settings</a> = <a href='../Y/13394.html' title='Multiple used in 22 places.'>painter</a>-&gt;<a href='../S/435.html#L417' title='Defined at 417 in footprint_edit_frame.cpp.'>GetSettings</a>();
+<a id='L98' name='L98'></a>  98 
+<a id='L99' name='L99'></a>  99     <a href='../S/585.html#L356' title='Defined at 356 in pcb_edit_frame.cpp.'>PCB_EDIT_FRAME</a>* <a href='../Y/13453.html' title='Multiple used in 13 places.'>pcbEdit</a> = <strong class='reserved'>dynamic_cast</strong>&lt;<a href='../S/585.html#L356' title='Defined at 356 in pcb_edit_frame.cpp.'>PCB_EDIT_FRAME</a>*&gt;( <a href='../D/4159.html' title='Multiple defined in 14 places.'>m_frame</a> );
+<a id='L100' name='L100'></a> 100 
+<a id='L101' name='L101'></a> 101     <strong class='reserved'>if</strong>( <a href='../Y/13453.html' title='Multiple used in 13 places.'>pcbEdit</a> )
+<a id='L102' name='L102'></a> 102     <em class='brace'>{</em>
+<a id='L103' name='L103'></a> 103         <a href='../S/582.html#L34' title='Defined at 34 in pcb_display_options.cpp.'>PCB_DISPLAY_OPTIONS</a> <a href='../Y/7463.html' title='Multiple used in 32 places.'>displ_opts</a> = <a href='../Y/13453.html' title='Multiple used in 13 places.'>pcbEdit</a>-&gt;<a href='../Y/1363.html' title='Multiple used in 32 places.'>GetDisplayOptions</a>();
+<a id='L104' name='L104'></a> 104 
+<a id='L105' name='L105'></a> 105         <a href='../Y/7463.html' title='Multiple used in 32 places.'>displ_opts</a>.<a href='../Y/9998.html' title='Multiple used in 6 places.'>m_ShowTrackClearanceMode</a> = <a href='../Y/4746.html' title='Multiple used in 6 places.'>UTIL</a>::GetValFromConfig(
+<a id='L106' name='L106'></a> 106                 <a href='../Y/15066.html' title='Multiple used in 3 places.'>traceClearanceSelectMap</a>, <a href='../Y/9840.html' title='Multiple used in 7 places.'>m_OptDisplayTracksClearance</a>-&gt;<a href='../S/801.html#L332' title='Defined at 332 in tools/selection_tool.cpp.'>GetSelection</a>() );
+<a id='L107' name='L107'></a> 107 
+<a id='L108' name='L108'></a> 108         <a href='../Y/7463.html' title='Multiple used in 32 places.'>displ_opts</a>.<a href='../Y/9338.html' title='Multiple used in 6 places.'>m_DisplayPadIsol</a> = <a href='../Y/9837.html' title='Multiple used in 5 places.'>m_OptDisplayPadClearence</a>-&gt;<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>();
+<a id='L109' name='L109'></a> 109         <a href='../Y/7463.html' title='Multiple used in 32 places.'>displ_opts</a>.<a href='../Y/9339.html' title='Multiple used in 8 places.'>m_DisplayPadNum</a> = <a href='../Y/9839.html' title='Multiple used in 6 places.'>m_OptDisplayPadNumber</a>-&gt;<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>();
+<a id='L110' name='L110'></a> 110 
+<a id='L111' name='L111'></a> 111         <a href='../Y/13453.html' title='Multiple used in 13 places.'>pcbEdit</a>-&gt;<a href='../D/3010.html' title='Multiple defined in 3 places.'>SetElementVisibility</a>( <a href='../Y/2320.html' title='Multiple used in 7 places.'>LAYER_NO_CONNECTS</a>, <a href='../Y/9838.html' title='Multiple used in 6 places.'>m_OptDisplayPadNoConn</a>-&gt;<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>() );
+<a id='L112' name='L112'></a> 112 
+<a id='L113' name='L113'></a> 113         <a href='../Y/7463.html' title='Multiple used in 32 places.'>displ_opts</a>.<a href='../Y/9335.html' title='Multiple used in 5 places.'>m_DisplayNetNamesMode</a> = <a href='../Y/9993.html' title='Multiple used in 7 places.'>m_ShowNetNamesOption</a>-&gt;<a href='../S/801.html#L332' title='Defined at 332 in tools/selection_tool.cpp.'>GetSelection</a>();
+<a id='L114' name='L114'></a> 114 
+<a id='L115' name='L115'></a> 115         <a href='../Y/13453.html' title='Multiple used in 13 places.'>pcbEdit</a>-&gt;<a href='../D/3005.html' title='Multiple defined in 2 places.'>SetDisplayOptions</a>( <a href='../Y/7463.html' title='Multiple used in 32 places.'>displ_opts</a> );
+<a id='L116' name='L116'></a> 116         <a href='../S/275.html#L48' title='Defined at 48 in dialogs/dialog_print_pcbnew.cpp.'>settings</a>-&gt;<a href='../S/593.html#L130' title='Defined at 130 in pcb_painter.cpp.'>LoadDisplayOptions</a>( <a href='../Y/7463.html' title='Multiple used in 32 places.'>displ_opts</a>, <a href='../Y/13453.html' title='Multiple used in 13 places.'>pcbEdit</a>-&gt;<a href='../Y/3998.html' title='Multiple used in 5 places.'>ShowPageLimits</a>() );
+<a id='L117' name='L117'></a> 117         <a href='../Y/13453.html' title='Multiple used in 13 places.'>pcbEdit</a>-&gt;<a href='../D/3010.html' title='Multiple defined in 3 places.'>SetElementVisibility</a>( <a href='../Y/2331.html' title='Multiple used in 18 places.'>LAYER_RATSNEST</a>, <a href='../Y/7463.html' title='Multiple used in 32 places.'>displ_opts</a>.<a href='../Y/9990.html' title='Multiple used in 16 places.'>m_ShowGlobalRatsnest</a> );
+<a id='L118' name='L118'></a> 118 
+<a id='L119' name='L119'></a> 119         <a href='../Y/442.html' title='Multiple used in 3 places.'>CROSS_PROBING_SETTINGS</a>&amp; <a href='../Y/7169.html' title='Multiple used in 8 places.'>crossProbing</a> = <a href='../Y/13453.html' title='Multiple used in 13 places.'>pcbEdit</a>-&gt;<a href='../S/581.html#L670' title='Defined at 670 in pcb_base_frame.cpp.'>GetPcbNewSettings</a>()-&gt;<a href='../Y/9272.html' title='Multiple used in 3 places.'>m_CrossProbing</a>;
+<a id='L120' name='L120'></a> 120 
+<a id='L121' name='L121'></a> 121         <a href='../Y/7169.html' title='Multiple used in 8 places.'>crossProbing</a>.<a href='../Y/6839.html' title='Multiple used in 4 places.'>center_on_items</a> = <a href='../Y/10471.html' title='Multiple used in 6 places.'>m_checkCrossProbeCenter</a>-&gt;<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>();
+<a id='L122' name='L122'></a> 122         <a href='../Y/7169.html' title='Multiple used in 8 places.'>crossProbing</a>.<a href='../Y/16134.html' title='Multiple used in 3 places.'>zoom_to_fit</a>     = <a href='../Y/10472.html' title='Multiple used in 6 places.'>m_checkCrossProbeZoom</a>-&gt;<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>();
+<a id='L123' name='L123'></a> 123         <a href='../Y/7169.html' title='Multiple used in 8 places.'>crossProbing</a>.<a href='../Y/6489.html' title='Multiple used in 4 places.'>auto_highlight</a>  = <a href='../Y/10470.html' title='Multiple used in 7 places.'>m_checkCrossProbeAutoHighlight</a>-&gt;<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>();
+<a id='L124' name='L124'></a> 124     <em class='brace'>}</em>
+<a id='L125' name='L125'></a> 125 
+<a id='L126' name='L126'></a> 126     <a href='../Y/15378.html' title='Multiple used in 182 places.'>view</a>-&gt;<a href='../Y/3139.html' title='Multiple used in 5 places.'>RecacheAllItems</a>();
+<a id='L127' name='L127'></a> 127     <a href='../Y/15378.html' title='Multiple used in 182 places.'>view</a>-&gt;<a href='../Y/2552.html' title='Multiple used in 7 places.'>MarkTargetDirty</a>( <a href='../D/1894.html' title='Multiple defined in 2 places.'>KIGFX</a>::<a href='../Y/4063.html' title='Multiple used in 7 places.'>TARGET_NONCACHED</a> );
+<a id='L128' name='L128'></a> 128 
+<a id='L129' name='L129'></a> 129     <strong class='reserved'>return</strong> <strong class='reserved'>true</strong>;
+<a id='L130' name='L130'></a> 130 <em class='brace'>}</em>
+<a id='L131' name='L131'></a> 131 
+<a id='L132' name='L132'></a> 132 
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L47'>[^]</a><a href='#L90'>[v]</a><a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

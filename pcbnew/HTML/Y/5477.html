@@ -1,0 +1,599 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>aLayer</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/14.html#L94'>aLayer</a>             94 altium2kicadpcb_plugin/altium_pcb.cpp bool IsAltiumLayerCopper( ALTIUM_LAYER aLayer )</span>
+<span class='curline'><a href='../S/14.html#L96'>aLayer</a>             96 altium2kicadpcb_plugin/altium_pcb.cpp     return aLayer &gt;= ALTIUM_LAYER::TOP_LAYER &amp;&amp; aLayer &lt;= ALTIUM_LAYER::BOTTOM_LAYER;</span>
+<span class='curline'><a href='../S/14.html#L100'>aLayer</a>            100 altium2kicadpcb_plugin/altium_pcb.cpp bool IsAltiumLayerAPlane( ALTIUM_LAYER aLayer )</span>
+<span class='curline'><a href='../S/14.html#L102'>aLayer</a>            102 altium2kicadpcb_plugin/altium_pcb.cpp     return aLayer &gt;= ALTIUM_LAYER::INTERNAL_PLANE_1 &amp;&amp; aLayer &lt;= ALTIUM_LAYER::INTERNAL_PLANE_16;</span>
+<span class='curline'><a href='../S/35.html#L930'>aLayer</a>            930 board_design_settings.cpp int BOARD_DESIGN_SETTINGS::GetLayerClass( PCB_LAYER_ID aLayer ) const</span>
+<span class='curline'><a href='../S/35.html#L932'>aLayer</a>            932 board_design_settings.cpp     if( aLayer == F_SilkS || aLayer == B_SilkS )</span>
+<span class='curline'><a href='../S/35.html#L934'>aLayer</a>            934 board_design_settings.cpp     else if( IsCopperLayer( aLayer ) )</span>
+<span class='curline'><a href='../S/35.html#L936'>aLayer</a>            936 board_design_settings.cpp     else if( aLayer == Edge_Cuts )</span>
+<span class='curline'><a href='../S/35.html#L938'>aLayer</a>            938 board_design_settings.cpp     else if( aLayer == F_CrtYd || aLayer == B_CrtYd )</span>
+<span class='curline'><a href='../S/35.html#L940'>aLayer</a>            940 board_design_settings.cpp     else if( aLayer == F_Fab || aLayer == B_Fab )</span>
+<span class='curline'><a href='../S/35.html#L947'>aLayer</a>            947 board_design_settings.cpp int BOARD_DESIGN_SETTINGS::GetLineThickness( PCB_LAYER_ID aLayer ) const</span>
+<span class='curline'><a href='../S/35.html#L949'>aLayer</a>            949 board_design_settings.cpp     return m_LineThickness[ GetLayerClass( aLayer ) ];</span>
+<span class='curline'><a href='../S/35.html#L953'>aLayer</a>            953 board_design_settings.cpp wxSize BOARD_DESIGN_SETTINGS::GetTextSize( PCB_LAYER_ID aLayer ) const</span>
+<span class='curline'><a href='../S/35.html#L955'>aLayer</a>            955 board_design_settings.cpp     return m_TextSize[ GetLayerClass( aLayer ) ];</span>
+<span class='curline'><a href='../S/35.html#L959'>aLayer</a>            959 board_design_settings.cpp int BOARD_DESIGN_SETTINGS::GetTextThickness( PCB_LAYER_ID aLayer ) const</span>
+<span class='curline'><a href='../S/35.html#L961'>aLayer</a>            961 board_design_settings.cpp     return m_TextThickness[ GetLayerClass( aLayer ) ];</span>
+<span class='curline'><a href='../S/35.html#L965'>aLayer</a>            965 board_design_settings.cpp bool BOARD_DESIGN_SETTINGS::GetTextItalic( PCB_LAYER_ID aLayer ) const</span>
+<span class='curline'><a href='../S/35.html#L967'>aLayer</a>            967 board_design_settings.cpp     return m_TextItalic[ GetLayerClass( aLayer ) ];</span>
+<span class='curline'><a href='../S/35.html#L971'>aLayer</a>            971 board_design_settings.cpp bool BOARD_DESIGN_SETTINGS::GetTextUpright( PCB_LAYER_ID aLayer ) const</span>
+<span class='curline'><a href='../S/35.html#L973'>aLayer</a>            973 board_design_settings.cpp     return m_TextUpright[ GetLayerClass( aLayer ) ];</span>
+<span class='curline'><a href='../S/36.html#L68'>aLayer</a>             68 board_items_to_polygon_shape_transform.cpp void BOARD::ConvertBrdLayerToPolygonalContours( PCB_LAYER_ID aLayer, SHAPE_POLY_SET&amp; aOutlines )</span>
+<span class='curline'><a href='../S/36.html#L73'>aLayer</a>             73 board_items_to_polygon_shape_transform.cpp         if( !track-&gt;IsOnLayer( aLayer ) )</span>
+<span class='curline'><a href='../S/36.html#L82'>aLayer</a>             82 board_items_to_polygon_shape_transform.cpp         module-&gt;TransformPadsShapesWithClearanceToPolygon( aLayer, aOutlines, 0 );</span>
+<span class='curline'><a href='../S/36.html#L85'>aLayer</a>             85 board_items_to_polygon_shape_transform.cpp         module-&gt;TransformGraphicShapesWithClearanceToPolygonSet( aLayer, aOutlines, 0 );</span>
+<span class='curline'><a href='../S/36.html#L93'>aLayer</a>             93 board_items_to_polygon_shape_transform.cpp         if( zone-&gt;GetLayerSet().test( aLayer ) )</span>
+<span class='curline'><a href='../S/36.html#L94'>aLayer</a>             94 board_items_to_polygon_shape_transform.cpp             zone-&gt;TransformSolidAreasShapesToPolygonSet( aLayer, aOutlines );</span>
+<span class='curline'><a href='../S/36.html#L100'>aLayer</a>            100 board_items_to_polygon_shape_transform.cpp         if( !item-&gt;IsOnLayer( aLayer ) )</span>
+<span class='curline'><a href='../S/36.html#L120'>aLayer</a>            120 board_items_to_polygon_shape_transform.cpp void MODULE::TransformPadsShapesWithClearanceToPolygon( PCB_LAYER_ID aLayer,</span>
+<span class='curline'><a href='../S/36.html#L126'>aLayer</a>            126 board_items_to_polygon_shape_transform.cpp         if( aLayer != UNDEFINED_LAYER &amp;&amp; !pad-&gt;IsOnLayer(aLayer) )</span>
+<span class='curline'><a href='../S/36.html#L156'>aLayer</a>            156 board_items_to_polygon_shape_transform.cpp         switch( aLayer )</span>
+<span class='curline'><a href='../S/36.html#L185'>aLayer</a>            185 board_items_to_polygon_shape_transform.cpp void MODULE::TransformGraphicShapesWithClearanceToPolygonSet( PCB_LAYER_ID aLayer,</span>
+<span class='curline'><a href='../S/36.html#L200'>aLayer</a>            200 board_items_to_polygon_shape_transform.cpp             if( aLayer != UNDEFINED_LAYER &amp;&amp; text-&gt;GetLayer() == aLayer &amp;&amp; text-&gt;IsVisible() )</span>
+<span class='curline'><a href='../S/36.html#L208'>aLayer</a>            208 board_items_to_polygon_shape_transform.cpp             if( aLayer != UNDEFINED_LAYER &amp;&amp; outline-&gt;GetLayer() == aLayer )</span>
+<span class='curline'><a href='../S/36.html#L215'>aLayer</a>            215 board_items_to_polygon_shape_transform.cpp         if( Reference().GetLayer() == aLayer &amp;&amp; Reference().IsVisible() )</span>
+<span class='curline'><a href='../S/36.html#L218'>aLayer</a>            218 board_items_to_polygon_shape_transform.cpp         if( Value().GetLayer() == aLayer &amp;&amp; Value().IsVisible() )</span>
+<span class='curline'><a href='../S/36.html#L244'>aLayer</a>            244 board_items_to_polygon_shape_transform.cpp void ZONE_CONTAINER::TransformSolidAreasShapesToPolygonSet( PCB_LAYER_ID aLayer,</span>
+<span class='curline'><a href='../S/36.html#L248'>aLayer</a>            248 board_items_to_polygon_shape_transform.cpp     if( !m_FilledPolysList.count( aLayer ) || m_FilledPolysList.at( aLayer ).IsEmpty() )</span>
+<span class='curline'><a href='../S/36.html#L251'>aLayer</a>            251 board_items_to_polygon_shape_transform.cpp     const SHAPE_POLY_SET&amp; polys = m_FilledPolysList.at( aLayer );</span>
+<span class='curline'><a href='../S/36.html#L673'>aLayer</a>            673 board_items_to_polygon_shape_transform.cpp     if( !m_FilledPolysList.count( aLayer ) )</span>
+<span class='curline'><a href='../S/36.html#L676'>aLayer</a>            676 board_items_to_polygon_shape_transform.cpp     aCornerBuffer = m_FilledPolysList.at( aLayer );</span>
+<span class='curline'><a href='../S/57.html#L257'>aLayer</a>            257 class_board.cpp bool BOARD::SetLayerDescr( PCB_LAYER_ID aIndex, const LAYER&amp; aLayer )</span>
+<span class='curline'><a href='../S/57.html#L261'>aLayer</a>            261 class_board.cpp         m_Layer[ aIndex ] = aLayer;</span>
+<span class='curline'><a href='../S/57.html#L293'>aLayer</a>            293 class_board.cpp const wxString BOARD::GetLayerName( PCB_LAYER_ID aLayer ) const</span>
+<span class='curline'><a href='../S/57.html#L296'>aLayer</a>            296 class_board.cpp     if( IsLayerEnabled( aLayer ) )</span>
+<span class='curline'><a href='../S/57.html#L302'>aLayer</a>            302 class_board.cpp         if( IsCopperLayer( aLayer ) )</span>
+<span class='curline'><a href='../S/57.html#L303'>aLayer</a>            303 class_board.cpp             return m_Layer[aLayer].m_name;</span>
+<span class='curline'><a href='../S/57.html#L306'>aLayer</a>            306 class_board.cpp     return GetStandardLayerName( aLayer );</span>
+<span class='curline'><a href='../S/57.html#L309'>aLayer</a>            309 class_board.cpp bool BOARD::SetLayerName( PCB_LAYER_ID aLayer, const wxString&amp; aLayerName )</span>
+<span class='curline'><a href='../S/57.html#L311'>aLayer</a>            311 class_board.cpp     if( !IsCopperLayer( aLayer ) )</span>
+<span class='curline'><a href='../S/57.html#L326'>aLayer</a>            326 class_board.cpp     if( IsLayerEnabled( aLayer ) )</span>
+<span class='curline'><a href='../S/57.html#L328'>aLayer</a>            328 class_board.cpp         m_Layer[aLayer].m_name = nameTemp;</span>
+<span class='curline'><a href='../S/57.html#L336'>aLayer</a>            336 class_board.cpp LAYER_T BOARD::GetLayerType( PCB_LAYER_ID aLayer ) const</span>
+<span class='curline'><a href='../S/57.html#L338'>aLayer</a>            338 class_board.cpp     if( !IsCopperLayer( aLayer ) )</span>
+<span class='curline'><a href='../S/57.html#L343'>aLayer</a>            343 class_board.cpp     if( IsLayerEnabled( aLayer ) )</span>
+<span class='curline'><a href='../S/57.html#L344'>aLayer</a>            344 class_board.cpp         return m_Layer[aLayer].m_type;</span>
+<span class='curline'><a href='../S/57.html#L350'>aLayer</a>            350 class_board.cpp bool BOARD::SetLayerType( PCB_LAYER_ID aLayer, LAYER_T aLayerType )</span>
+<span class='curline'><a href='../S/57.html#L352'>aLayer</a>            352 class_board.cpp     if( !IsCopperLayer( aLayer ) )</span>
+<span class='curline'><a href='../S/57.html#L357'>aLayer</a>            357 class_board.cpp     if( IsLayerEnabled( aLayer ) )</span>
+<span class='curline'><a href='../S/57.html#L359'>aLayer</a>            359 class_board.cpp         m_Layer[aLayer].m_type = aLayerType;</span>
+<span class='curline'><a href='../S/57.html#L428'>aLayer</a>            428 class_board.cpp bool BOARD::IsLayerVisible( PCB_LAYER_ID aLayer ) const</span>
+<span class='curline'><a href='../S/57.html#L431'>aLayer</a>            431 class_board.cpp     return GetDesignSettings().IsLayerEnabled( aLayer )</span>
+<span class='curline'><a href='../S/57.html#L432'>aLayer</a>            432 class_board.cpp            &amp;&amp; ( !m_project || m_project-&gt;GetLocalSettings().m_VisibleLayers[aLayer] );</span>
+<span class='curline'><a href='../S/57.html#L482'>aLayer</a>            482 class_board.cpp bool BOARD::IsElementVisible( GAL_LAYER_ID aLayer ) const</span>
+<span class='curline'><a href='../S/57.html#L484'>aLayer</a>            484 class_board.cpp     return !m_project || m_project-&gt;GetLocalSettings().m_VisibleItems[aLayer - GAL_LAYER_ID_START];</span>
+<span class='curline'><a href='../S/57.html#L488'>aLayer</a>            488 class_board.cpp void BOARD::SetElementVisibility( GAL_LAYER_ID aLayer, bool isEnabled )</span>
+<span class='curline'><a href='../S/57.html#L491'>aLayer</a>            491 class_board.cpp         m_project-&gt;GetLocalSettings().m_VisibleItems.set( aLayer - GAL_LAYER_ID_START, isEnabled );</span>
+<span class='curline'><a href='../S/57.html#L493'>aLayer</a>            493 class_board.cpp     switch( aLayer )</span>
+<span class='curline'><a href='../S/57.html#L524'>aLayer</a>            524 class_board.cpp bool BOARD::IsModuleLayerVisible( PCB_LAYER_ID aLayer )</span>
+<span class='curline'><a href='../S/57.html#L526'>aLayer</a>            526 class_board.cpp     switch( aLayer )</span>
+<span class='curline'><a href='../S/57.html#L1650'>aLayer</a>           1650 class_board.cpp ZONE_CONTAINER* BOARD::AddArea( PICKED_ITEMS_LIST* aNewZonesList, int aNetcode, PCB_LAYER_ID aLayer,</span>
+<span class='curline'><a href='../S/57.html#L1655'>aLayer</a>           1655 class_board.cpp                                            aLayer, aStartPointPosition.x,</span>
+<span class='curline'><a href='../S/57.html#L1686'>aLayer</a>           1686 class_board.cpp ZONE_CONTAINER* BOARD::InsertArea( int aNetcode, int aAreaIdx, PCB_LAYER_ID aLayer, int aCornerX,</span>
+<span class='curline'><a href='../S/57.html#L1692'>aLayer</a>           1692 class_board.cpp     new_area-&gt;SetLayer( aLayer );</span>
+<span class='curline'><a href='../S/58.html#L463'>aLayer</a>            463 class_board.h      bool IsLayerEnabled( PCB_LAYER_ID aLayer ) const</span>
+<span class='curline'><a href='../S/58.html#L465'>aLayer</a>            465 class_board.h          return GetDesignSettings().IsLayerEnabled( aLayer );</span>
+<span class='curline'><a href='../S/58.html#L475'>aLayer</a>            475 class_board.h      bool IsLayerVisible( PCB_LAYER_ID aLayer ) const;</span>
+<span class='curline'><a href='../S/58.html#L527'>aLayer</a>            527 class_board.h      bool IsElementVisible( GAL_LAYER_ID aLayer ) const;</span>
+<span class='curline'><a href='../S/58.html#L536'>aLayer</a>            536 class_board.h      void SetElementVisibility( GAL_LAYER_ID aLayer, bool aNewState );</span>
+<span class='curline'><a href='../S/58.html#L545'>aLayer</a>            545 class_board.h      bool IsModuleLayerVisible( PCB_LAYER_ID aLayer );</span>
+<span class='curline'><a href='../S/58.html#L612'>aLayer</a>            612 class_board.h      void ConvertBrdLayerToPolygonalContours( PCB_LAYER_ID aLayer, SHAPE_POLY_SET&amp; aOutlines );</span>
+<span class='curline'><a href='../S/58.html#L624'>aLayer</a>            624 class_board.h      const wxString GetLayerName( PCB_LAYER_ID aLayer ) const;</span>
+<span class='curline'><a href='../S/58.html#L635'>aLayer</a>            635 class_board.h      bool SetLayerName( PCB_LAYER_ID aLayer, const wxString&amp; aLayerName );</span>
+<span class='curline'><a href='../S/58.html#L662'>aLayer</a>            662 class_board.h      bool SetLayerDescr( PCB_LAYER_ID aIndex, const LAYER&amp; aLayer );</span>
+<span class='curline'><a href='../S/58.html#L672'>aLayer</a>            672 class_board.h      LAYER_T GetLayerType( PCB_LAYER_ID aLayer ) const;</span>
+<span class='curline'><a href='../S/58.html#L682'>aLayer</a>            682 class_board.h      bool SetLayerType( PCB_LAYER_ID aLayer, LAYER_T aLayerType );</span>
+<span class='curline'><a href='../S/58.html#L950'>aLayer</a>            950 class_board.h      ZONE_CONTAINER* AddArea( PICKED_ITEMS_LIST* aNewZonesList, int aNetcode, PCB_LAYER_ID aLayer,</span>
+<span class='curline'><a href='../S/58.html#L963'>aLayer</a>            963 class_board.h      ZONE_CONTAINER* InsertArea( int aNetcode, int aAreaIdx, PCB_LAYER_ID aLayer, int aCornerX,</span>
+<span class='curline'><a href='../S/60.html#L82'>aLayer</a>             82 class_dimension.cpp void DIMENSION::SetLayer( PCB_LAYER_ID aLayer )</span>
+<span class='curline'><a href='../S/60.html#L84'>aLayer</a>             84 class_dimension.cpp     m_Layer = aLayer;</span>
+<span class='curline'><a href='../S/60.html#L85'>aLayer</a>             85 class_dimension.cpp     m_Text.SetLayer( aLayer );</span>
+<span class='curline'><a href='../S/61.html#L118'>aLayer</a>            118 class_dimension.h     void SetLayer( PCB_LAYER_ID aLayer ) override;</span>
+<span class='curline'><a href='../S/64.html#L295'>aLayer</a>            295 class_edge_mod.cpp unsigned int EDGE_MODULE::ViewGetLOD( int aLayer, KIGFX::VIEW* aView ) const</span>
+<span class='curline'><a href='../S/65.html#L146'>aLayer</a>            146 class_edge_mod.h     virtual unsigned int ViewGetLOD( int aLayer, KIGFX::VIEW* aView ) const override;</span>
+<span class='curline'><a href='../S/66.html#L97'>aLayer</a>             97 class_marker_pcb.cpp bool MARKER_PCB::IsOnLayer( PCB_LAYER_ID aLayer ) const</span>
+<span class='curline'><a href='../S/66.html#L99'>aLayer</a>             99 class_marker_pcb.cpp     return IsCopperLayer( aLayer );</span>
+<span class='curline'><a href='../S/67.html#L81'>aLayer</a>             81 class_marker_pcb.h     bool IsOnLayer( PCB_LAYER_ID aLayer ) const override;</span>
+<span class='curline'><a href='../S/68.html#L1066'>aLayer</a>           1066 class_module.cpp unsigned int MODULE::ViewGetLOD( int aLayer, KIGFX::VIEW* aView ) const</span>
+<span class='curline'><a href='../S/69.html#L377'>aLayer</a>            377 class_module.h     void TransformPadsShapesWithClearanceToPolygon( PCB_LAYER_ID aLayer,</span>
+<span class='curline'><a href='../S/69.html#L395'>aLayer</a>            395 class_module.h     void TransformGraphicShapesWithClearanceToPolygonSet( PCB_LAYER_ID aLayer,</span>
+<span class='curline'><a href='../S/69.html#L404'>aLayer</a>            404 class_module.h     void TransformGraphicTextWithClearanceToPolygonSet( PCB_LAYER_ID aLayer,</span>
+<span class='curline'><a href='../S/69.html#L407'>aLayer</a>            407 class_module.h         TransformGraphicShapesWithClearanceToPolygonSet( aLayer, aCornerBuffer, aInflateValue,</span>
+<span class='curline'><a href='../S/69.html#L614'>aLayer</a>            614 class_module.h     virtual unsigned int ViewGetLOD( int aLayer, KIGFX::VIEW* aView ) const override;</span>
+<span class='curline'><a href='../S/70.html#L1107'>aLayer</a>           1107 class_pad.cpp  unsigned int D_PAD::ViewGetLOD( int aLayer, KIGFX::VIEW* aView ) const</span>
+<span class='curline'><a href='../S/70.html#L1126'>aLayer</a>           1126 class_pad.cpp      if( IsFrontLayer( ( PCB_LAYER_ID )aLayer ) &amp;&amp; !aView-&gt;IsLayerVisible( LAYER_PAD_FR ) )</span>
+<span class='curline'><a href='../S/70.html#L1129'>aLayer</a>           1129 class_pad.cpp      if( IsBackLayer( ( PCB_LAYER_ID )aLayer ) &amp;&amp; !aView-&gt;IsLayerVisible( LAYER_PAD_BK ) )</span>
+<span class='curline'><a href='../S/70.html#L1137'>aLayer</a>           1137 class_pad.cpp      if( IsNetnameLayer( aLayer ) )</span>
+<span class='curline'><a href='../S/71.html#L513'>aLayer</a>            513 class_pad.h        bool IsOnLayer( PCB_LAYER_ID aLayer ) const override</span>
+<span class='curline'><a href='../S/71.html#L515'>aLayer</a>            515 class_pad.h            return m_layerMask[aLayer];</span>
+<span class='curline'><a href='../S/71.html#L600'>aLayer</a>            600 class_pad.h        virtual unsigned int ViewGetLOD( int aLayer, KIGFX::VIEW* aView ) const override;</span>
+<span class='curline'><a href='../S/72.html#L52'>aLayer</a>             52 class_pcb_target.cpp PCB_TARGET::PCB_TARGET( BOARD_ITEM* aParent, int aShape, PCB_LAYER_ID aLayer,</span>
+<span class='curline'><a href='../S/72.html#L57'>aLayer</a>             57 class_pcb_target.cpp     m_Layer = aLayer;</span>
+<span class='curline'><a href='../S/73.html#L52'>aLayer</a>             52 class_pcb_target.h     PCB_TARGET( BOARD_ITEM* aParent, int aShape, PCB_LAYER_ID aLayer,</span>
+<span class='curline'><a href='../S/76.html#L389'>aLayer</a>            389 class_text_mod.cpp unsigned int TEXTE_MODULE::ViewGetLOD( int aLayer, KIGFX::VIEW* aView ) const</span>
+<span class='curline'><a href='../S/77.html#L228'>aLayer</a>            228 class_text_mod.h     virtual unsigned int ViewGetLOD( int aLayer, KIGFX::VIEW* aView ) const override;</span>
+<span class='curline'><a href='../S/78.html#L407'>aLayer</a>            407 class_track.cpp void VIA::SetTopLayer( PCB_LAYER_ID aLayer )</span>
+<span class='curline'><a href='../S/78.html#L409'>aLayer</a>            409 class_track.cpp     m_Layer = aLayer;</span>
+<span class='curline'><a href='../S/78.html#L413'>aLayer</a>            413 class_track.cpp void VIA::SetBottomLayer( PCB_LAYER_ID aLayer )</span>
+<span class='curline'><a href='../S/78.html#L415'>aLayer</a>            415 class_track.cpp     m_BottomLayer = aLayer;</span>
+<span class='curline'><a href='../S/78.html#L475'>aLayer</a>            475 class_track.cpp unsigned int TRACK::ViewGetLOD( int aLayer, KIGFX::VIEW* aView ) const</span>
+<span class='curline'><a href='../S/78.html#L483'>aLayer</a>            483 class_track.cpp     if( IsNetnameLayer( aLayer ) )</span>
+<span class='curline'><a href='../S/78.html#L536'>aLayer</a>            536 class_track.cpp unsigned int VIA::ViewGetLOD( int aLayer, KIGFX::VIEW* aView ) const</span>
+<span class='curline'><a href='../S/78.html#L541'>aLayer</a>            541 class_track.cpp     if( IsNetnameLayer( aLayer ) )</span>
+<span class='curline'><a href='../S/79.html#L226'>aLayer</a>            226 class_track.h      virtual unsigned int ViewGetLOD( int aLayer, KIGFX::VIEW* aView ) const override;</span>
+<span class='curline'><a href='../S/79.html#L381'>aLayer</a>            381 class_track.h      bool IsOnLayer( PCB_LAYER_ID aLayer ) const override;</span>
+<span class='curline'><a href='../S/79.html#L394'>aLayer</a>            394 class_track.h      void SetBottomLayer( PCB_LAYER_ID aLayer );</span>
+<span class='curline'><a href='../S/79.html#L395'>aLayer</a>            395 class_track.h      void SetTopLayer( PCB_LAYER_ID aLayer );</span>
+<span class='curline'><a href='../S/79.html#L437'>aLayer</a>            437 class_track.h      unsigned int ViewGetLOD( int aLayer, KIGFX::VIEW* aView ) const override;</span>
+<span class='curline'><a href='../S/80.html#L228'>aLayer</a>            228 class_zone.cpp void ZONE_CONTAINER::SetLayer( PCB_LAYER_ID aLayer )</span>
+<span class='curline'><a href='../S/80.html#L230'>aLayer</a>            230 class_zone.cpp     SetLayerSet( LSET( aLayer ) );</span>
+<span class='curline'><a href='../S/80.html#L232'>aLayer</a>            232 class_zone.cpp     m_Layer = aLayer;</span>
+<span class='curline'><a href='../S/80.html#L301'>aLayer</a>            301 class_zone.cpp bool ZONE_CONTAINER::IsOnLayer( PCB_LAYER_ID aLayer ) const</span>
+<span class='curline'><a href='../S/80.html#L303'>aLayer</a>            303 class_zone.cpp     return m_layerSet.test( aLayer );</span>
+<span class='curline'><a href='../S/80.html#L531'>aLayer</a>            531 class_zone.cpp bool ZONE_CONTAINER::HitTestFilledArea( PCB_LAYER_ID aLayer, const wxPoint&amp; aRefPos ) const</span>
+<span class='curline'><a href='../S/80.html#L538'>aLayer</a>            538 class_zone.cpp     if( !m_FilledPolysList.count( aLayer ) )</span>
+<span class='curline'><a href='../S/80.html#L541'>aLayer</a>            541 class_zone.cpp     return m_FilledPolysList.at( aLayer ).Contains( VECTOR2I( aRefPos.x, aRefPos.y ) );</span>
+<span class='curline'><a href='../S/80.html#L1143'>aLayer</a>           1143 class_zone.cpp bool ZONE_CONTAINER::IsIsland( PCB_LAYER_ID aLayer, int aPolyIdx )</span>
+<span class='curline'><a href='../S/80.html#L1148'>aLayer</a>           1148 class_zone.cpp     if( !m_insulatedIslands.count( aLayer ) )</span>
+<span class='curline'><a href='../S/80.html#L1151'>aLayer</a>           1151 class_zone.cpp     return m_insulatedIslands.at( aLayer ).count( aPolyIdx );</span>
+<span class='curline'><a href='../S/80.html#L1330'>aLayer</a>           1330 class_zone.cpp unsigned int MODULE_ZONE_CONTAINER::ViewGetLOD( int aLayer, KIGFX::VIEW* aView ) const</span>
+<span class='curline'><a href='../S/81.html#L139'>aLayer</a>            139 class_zone.h       virtual void SetLayer( PCB_LAYER_ID aLayer ) override;</span>
+<span class='curline'><a href='../S/81.html#L259'>aLayer</a>            259 class_zone.h       ZONE_SEGMENT_FILL&amp; FillSegments( PCB_LAYER_ID aLayer )</span>
+<span class='curline'><a href='../S/81.html#L261'>aLayer</a>            261 class_zone.h           wxASSERT( m_FillSegmList.count( aLayer ) );</span>
+<span class='curline'><a href='../S/81.html#L262'>aLayer</a>            262 class_zone.h           return m_FillSegmList.at( aLayer );</span>
+<span class='curline'><a href='../S/81.html#L265'>aLayer</a>            265 class_zone.h       const ZONE_SEGMENT_FILL&amp; FillSegments( PCB_LAYER_ID aLayer ) const</span>
+<span class='curline'><a href='../S/81.html#L267'>aLayer</a>            267 class_zone.h           wxASSERT( m_FillSegmList.count( aLayer ) );</span>
+<span class='curline'><a href='../S/81.html#L268'>aLayer</a>            268 class_zone.h           return m_FillSegmList.at( aLayer );</span>
+<span class='curline'><a href='../S/81.html#L291'>aLayer</a>            291 class_zone.h       bool HitTestFilledArea( PCB_LAYER_ID aLayer, const wxPoint&amp; aRefPos ) const;</span>
+<span class='curline'><a href='../S/81.html#L328'>aLayer</a>            328 class_zone.h       void TransformSolidAreasShapesToPolygonSet( PCB_LAYER_ID aLayer,</span>
+<span class='curline'><a href='../S/81.html#L597'>aLayer</a>            597 class_zone.h       bool HasFilledPolysForLayer( PCB_LAYER_ID aLayer ) const</span>
+<span class='curline'><a href='../S/81.html#L599'>aLayer</a>            599 class_zone.h           return m_FilledPolysList.count( aLayer ) &gt; 0;</span>
+<span class='curline'><a href='../S/81.html#L607'>aLayer</a>            607 class_zone.h       const SHAPE_POLY_SET&amp; GetFilledPolysList( PCB_LAYER_ID aLayer ) const</span>
+<span class='curline'><a href='../S/81.html#L609'>aLayer</a>            609 class_zone.h           wxASSERT( m_FilledPolysList.count( aLayer ) );</span>
+<span class='curline'><a href='../S/81.html#L610'>aLayer</a>            610 class_zone.h           return m_FilledPolysList.at( aLayer );</span>
+<span class='curline'><a href='../S/81.html#L622'>aLayer</a>            622 class_zone.h       void SetFilledPolysList( PCB_LAYER_ID aLayer, SHAPE_POLY_SET&amp; aPolysList )</span>
+<span class='curline'><a href='../S/81.html#L624'>aLayer</a>            624 class_zone.h           m_FilledPolysList[aLayer] = aPolysList;</span>
+<span class='curline'><a href='../S/81.html#L631'>aLayer</a>            631 class_zone.h       void SetRawPolysList( PCB_LAYER_ID aLayer, SHAPE_POLY_SET&amp; aPolysList )</span>
+<span class='curline'><a href='../S/81.html#L633'>aLayer</a>            633 class_zone.h           m_RawPolysList[aLayer] = aPolysList;</span>
+<span class='curline'><a href='../S/81.html#L642'>aLayer</a>            642 class_zone.h       bool IsIsland( PCB_LAYER_ID aLayer, int aPolyIdx );</span>
+<span class='curline'><a href='../S/81.html#L644'>aLayer</a>            644 class_zone.h       void SetIsIsland( PCB_LAYER_ID aLayer, int aPolyIdx )</span>
+<span class='curline'><a href='../S/81.html#L646'>aLayer</a>            646 class_zone.h           m_insulatedIslands[aLayer].insert( aPolyIdx );</span>
+<span class='curline'><a href='../S/81.html#L687'>aLayer</a>            687 class_zone.h       void SetFillSegments( PCB_LAYER_ID aLayer, const ZONE_SEGMENT_FILL&amp; aSegments )</span>
+<span class='curline'><a href='../S/81.html#L689'>aLayer</a>            689 class_zone.h           m_FillSegmList[aLayer] = aSegments;</span>
+<span class='curline'><a href='../S/81.html#L692'>aLayer</a>            692 class_zone.h       SHAPE_POLY_SET&amp; RawPolysList( PCB_LAYER_ID aLayer )</span>
+<span class='curline'><a href='../S/81.html#L694'>aLayer</a>            694 class_zone.h           wxASSERT( m_RawPolysList.count( aLayer ) );</span>
+<span class='curline'><a href='../S/81.html#L695'>aLayer</a>            695 class_zone.h           return m_RawPolysList.at( aLayer );</span>
+<span class='curline'><a href='../S/81.html#L792'>aLayer</a>            792 class_zone.h       MD5_HASH GetHashValue( PCB_LAYER_ID aLayer )</span>
+<span class='curline'><a href='../S/81.html#L794'>aLayer</a>            794 class_zone.h           if( !m_filledPolysHash.count( aLayer ) )</span>
+<span class='curline'><a href='../S/81.html#L797'>aLayer</a>            797 class_zone.h           return m_filledPolysHash.at( aLayer );</span>
+<span class='curline'><a href='../S/81.html#L804'>aLayer</a>            804 class_zone.h       void BuildHashValue( PCB_LAYER_ID aLayer )</span>
+<span class='curline'><a href='../S/81.html#L806'>aLayer</a>            806 class_zone.h           if( !m_FilledPolysList.count( aLayer ) )</span>
+<span class='curline'><a href='../S/81.html#L809'>aLayer</a>            809 class_zone.h           m_filledPolysHash[aLayer] = m_FilledPolysList.at( aLayer ).GetHash();</span>
+<span class='curline'><a href='../S/81.html#L966'>aLayer</a>            966 class_zone.h       unsigned int ViewGetLOD( int aLayer, KIGFX::VIEW* aView ) const override;</span>
+<span class='curline'><a href='../S/86.html#L513'>aLayer</a>            513 collectors.h       void SetPreferredLayer( PCB_LAYER_ID aLayer )      { m_PreferredLayer = aLayer; }</span>
+<span class='curline'><a href='../S/88.html#L523'>aLayer</a>            523 connectivity/connectivity_algo.cpp                                                       PCB_LAYER_ID aLayer,</span>
+<span class='curline'><a href='../S/88.html#L526'>aLayer</a>            526 connectivity/connectivity_algo.cpp     if( aZone-&gt;GetFilledPolysList( aLayer ).IsEmpty() )</span>
+<span class='curline'><a href='../S/88.html#L542'>aLayer</a>            542 connectivity/connectivity_algo.cpp                 if( z-&gt;Parent() == aZone &amp;&amp; z-&gt;Layer() == aLayer )</span>
+<span class='curline'><a href='../S/89.html#L246'>aLayer</a>            246 connectivity/connectivity_algo.h     void    FindIsolatedCopperIslands( ZONE_CONTAINER* aZone, PCB_LAYER_ID aLayer,</span>
+<span class='curline'><a href='../S/92.html#L272'>aLayer</a>            272 connectivity/connectivity_items.cpp  const std::vector&lt;CN_ITEM*&gt; CN_LIST::Add( ZONE_CONTAINER* zone, PCB_LAYER_ID aLayer )</span>
+<span class='curline'><a href='../S/92.html#L274'>aLayer</a>            274 connectivity/connectivity_items.cpp      const auto&amp; polys = zone-&gt;GetFilledPolysList( aLayer );</span>
+<span class='curline'><a href='../S/92.html#L280'>aLayer</a>            280 connectivity/connectivity_items.cpp          CN_ZONE* zitem = new CN_ZONE( zone, aLayer, false, j );</span>
+<span class='curline'><a href='../S/92.html#L281'>aLayer</a>            281 connectivity/connectivity_items.cpp          const auto&amp; outline = zone-&gt;GetFilledPolysList( aLayer ).COutline( j );</span>
+<span class='curline'><a href='../S/92.html#L287'>aLayer</a>            287 connectivity/connectivity_items.cpp          zitem-&gt;SetLayer( aLayer );</span>
+<span class='curline'><a href='../S/93.html#L262'>aLayer</a>            262 connectivity/connectivity_items.h     void SetLayer( int aLayer )</span>
+<span class='curline'><a href='../S/93.html#L264'>aLayer</a>            264 connectivity/connectivity_items.h         m_layers = LAYER_RANGE( aLayer, aLayer );</span>
+<span class='curline'><a href='../S/93.html#L355'>aLayer</a>            355 connectivity/connectivity_items.h     CN_ZONE( ZONE_CONTAINER* aParent, PCB_LAYER_ID aLayer, bool aCanChangeNet, int aSubpolyIndex ) :</span>
+<span class='curline'><a href='../S/93.html#L358'>aLayer</a>            358 connectivity/connectivity_items.h         m_layer( aLayer )</span>
+<span class='curline'><a href='../S/93.html#L360'>aLayer</a>            360 connectivity/connectivity_items.h         SHAPE_LINE_CHAIN outline = aParent-&gt;GetFilledPolysList( aLayer ).COutline( aSubpolyIndex );</span>
+<span class='curline'><a href='../S/93.html#L505'>aLayer</a>            505 connectivity/connectivity_items.h     const std::vector&lt;CN_ITEM*&gt; Add( ZONE_CONTAINER* zone, PCB_LAYER_ID aLayer );</span>
+<span class='curline'><a href='../S/199.html#L72'>aLayer</a>             72 dialogs/dialog_global_deletion.cpp void DIALOG_GLOBAL_DELETION::SetCurrentLayer( LAYER_NUM aLayer )</span>
+<span class='curline'><a href='../S/199.html#L74'>aLayer</a>             74 dialogs/dialog_global_deletion.cpp     m_currentLayer = aLayer;</span>
+<span class='curline'><a href='../S/199.html#L75'>aLayer</a>             75 dialogs/dialog_global_deletion.cpp     m_textCtrlCurrLayer-&gt;SetValue( m_Parent-&gt;GetBoard()-&gt;GetLayerName( ToLAYER_ID( aLayer ) ) );</span>
+<span class='curline'><a href='../S/200.html#L33'>aLayer</a>             33 dialogs/dialog_global_deletion.h     void SetCurrentLayer( LAYER_NUM aLayer );</span>
+<span class='curline'><a href='../S/275.html#L69'>aLayer</a>             69 dialogs/dialog_print_pcbnew.cpp     bool isLayerEnabled( unsigned int aLayer ) const;</span>
+<span class='curline'><a href='../S/275.html#L72'>aLayer</a>             72 dialogs/dialog_print_pcbnew.cpp     void enableLayer( unsigned int aLayer, bool aValue );</span>
+<span class='curline'><a href='../S/275.html#L348'>aLayer</a>            348 dialogs/dialog_print_pcbnew.cpp bool DIALOG_PRINT_PCBNEW::isLayerEnabled( unsigned int aLayer ) const</span>
+<span class='curline'><a href='../S/275.html#L350'>aLayer</a>            350 dialogs/dialog_print_pcbnew.cpp     wxCHECK( aLayer &lt; arrayDim( m_layers ), false );</span>
+<span class='curline'><a href='../S/275.html#L351'>aLayer</a>            351 dialogs/dialog_print_pcbnew.cpp     const auto&amp; layerInfo = m_layers[aLayer];</span>
+<span class='curline'><a href='../S/275.html#L360'>aLayer</a>            360 dialogs/dialog_print_pcbnew.cpp void DIALOG_PRINT_PCBNEW::enableLayer( unsigned int aLayer, bool aValue )</span>
+<span class='curline'><a href='../S/275.html#L362'>aLayer</a>            362 dialogs/dialog_print_pcbnew.cpp     wxCHECK( aLayer &lt; arrayDim( m_layers ), /* void */ );</span>
+<span class='curline'><a href='../S/275.html#L363'>aLayer</a>            363 dialogs/dialog_print_pcbnew.cpp     const auto&amp; layerInfo = m_layers[aLayer];</span>
+<span class='curline'><a href='../S/354.html#L211'>aLayer</a>            211 dialogs/panel_setup_layers.cpp wxControl* PANEL_SETUP_LAYERS::getName( LAYER_NUM aLayer )</span>
+<span class='curline'><a href='../S/354.html#L213'>aLayer</a>            213 dialogs/panel_setup_layers.cpp     return getCTLs( aLayer ).name;</span>
+<span class='curline'><a href='../S/354.html#L217'>aLayer</a>            217 dialogs/panel_setup_layers.cpp wxCheckBox* PANEL_SETUP_LAYERS::getCheckBox( LAYER_NUM aLayer )</span>
+<span class='curline'><a href='../S/354.html#L219'>aLayer</a>            219 dialogs/panel_setup_layers.cpp     return getCTLs( aLayer ).checkbox;</span>
+<span class='curline'><a href='../S/354.html#L223'>aLayer</a>            223 dialogs/panel_setup_layers.cpp wxChoice* PANEL_SETUP_LAYERS::getChoice( LAYER_NUM aLayer )</span>
+<span class='curline'><a href='../S/354.html#L225'>aLayer</a>            225 dialogs/panel_setup_layers.cpp     return (wxChoice*) getCTLs( aLayer ).choice;</span>
+<span class='curline'><a href='../S/354.html#L354'>aLayer</a>            354 dialogs/panel_setup_layers.cpp void PANEL_SETUP_LAYERS::setLayerCheckBox( LAYER_NUM aLayer, bool isChecked )</span>
+<span class='curline'><a href='../S/354.html#L356'>aLayer</a>            356 dialogs/panel_setup_layers.cpp     PANEL_SETUP_LAYERS_CTLs ctl = getCTLs( aLayer );</span>
+<span class='curline'><a href='../S/354.html#L578'>aLayer</a>            578 dialogs/panel_setup_layers.cpp int PANEL_SETUP_LAYERS::getLayerTypeIndex( LAYER_NUM aLayer )</span>
+<span class='curline'><a href='../S/354.html#L580'>aLayer</a>            580 dialogs/panel_setup_layers.cpp     wxChoice*  ctl =  getChoice( aLayer );</span>
+<span class='curline'><a href='../S/354.html#L586'>aLayer</a>            586 dialogs/panel_setup_layers.cpp wxString PANEL_SETUP_LAYERS::GetLayerName( LAYER_NUM aLayer )</span>
+<span class='curline'><a href='../S/354.html#L588'>aLayer</a>            588 dialogs/panel_setup_layers.cpp     wxControl* control = getName( aLayer );</span>
+<span class='curline'><a href='../S/355.html#L106'>aLayer</a>            106 dialogs/panel_setup_layers.h     wxControl*  getName( LAYER_NUM aLayer );</span>
+<span class='curline'><a href='../S/355.html#L107'>aLayer</a>            107 dialogs/panel_setup_layers.h     wxCheckBox* getCheckBox( LAYER_NUM aLayer );</span>
+<span class='curline'><a href='../S/355.html#L108'>aLayer</a>            108 dialogs/panel_setup_layers.h     wxChoice*   getChoice( LAYER_NUM aLayer );</span>
+<span class='curline'><a href='../S/406.html#L118'>aLayer</a>            118 eagle_plugin.cpp static void setKeepoutSettingsToZone( ZONE_CONTAINER* aZone, LAYER_NUM aLayer )</span>
+<span class='curline'><a href='../S/406.html#L120'>aLayer</a>            120 eagle_plugin.cpp     if( aLayer == EAGLE_LAYER::TRESTRICT || aLayer == EAGLE_LAYER::BRESTRICT )</span>
+<span class='curline'><a href='../S/406.html#L129'>aLayer</a>            129 eagle_plugin.cpp         if( aLayer == EAGLE_LAYER::TRESTRICT ) // front layer keepout</span>
+<span class='curline'><a href='../S/406.html#L134'>aLayer</a>            134 eagle_plugin.cpp     else if( aLayer == EAGLE_LAYER::VRESTRICT )</span>
+<span class='curline'><a href='../S/406.html#L2488'>aLayer</a>           2488 eagle_plugin.cpp const wxString&amp; EAGLE_PLUGIN::eagle_layer_name( int aLayer ) const</span>
+<span class='curline'><a href='../S/406.html#L2491'>aLayer</a>           2491 eagle_plugin.cpp     auto it = m_eagleLayers.find( aLayer );</span>
+<span class='curline'><a href='../S/407.html#L211'>aLayer</a>            211 eagle_plugin.h     PCB_LAYER_ID kicad_layer( int aLayer ) const;</span>
+<span class='curline'><a href='../S/407.html#L214'>aLayer</a>            214 eagle_plugin.h     const wxString&amp; eagle_layer_name( int aLayer ) const;</span>
+<span class='curline'><a href='../S/419.html#L256'>aLayer</a>            256 exporters/export_vrml.cpp     double GetLayerZ( LAYER_NUM aLayer )</span>
+<span class='curline'><a href='../S/419.html#L258'>aLayer</a>            258 exporters/export_vrml.cpp         if( unsigned( aLayer ) &gt;= arrayDim( m_layer_z ) )</span>
+<span class='curline'><a href='../S/419.html#L261'>aLayer</a>            261 exporters/export_vrml.cpp         return m_layer_z[ aLayer ];</span>
+<span class='curline'><a href='../S/419.html#L264'>aLayer</a>            264 exporters/export_vrml.cpp     void SetLayerZ( LAYER_NUM aLayer, double aValue )</span>
+<span class='curline'><a href='../S/419.html#L266'>aLayer</a>            266 exporters/export_vrml.cpp         m_layer_z[aLayer] = aValue;</span>
+<span class='curline'><a href='../S/419.html#L324'>aLayer</a>            324 exporters/export_vrml.cpp                                 VRML_LAYER* aLayer, bool aPlane, bool aTop,</span>
+<span class='curline'><a href='../S/419.html#L396'>aLayer</a>            396 exporters/export_vrml.cpp                     aLayer-&gt;WriteVertices( aTop_z, aOut_file, PRECISION );</span>
+<span class='curline'><a href='../S/419.html#L398'>aLayer</a>            398 exporters/export_vrml.cpp                     aLayer-&gt;Write3DVertices( aTop_z, aBottom_z, aOut_file, PRECISION );</span>
+<span class='curline'><a href='../S/419.html#L406'>aLayer</a>            406 exporters/export_vrml.cpp                     aLayer-&gt;WriteIndices( aTop, aOut_file );</span>
+<span class='curline'><a href='../S/419.html#L408'>aLayer</a>            408 exporters/export_vrml.cpp                     aLayer-&gt;Write3DIndices( aOut_file );</span>
+<span class='curline'><a href='../S/422.html#L239'>aLayer</a>            239 exporters/gendrill_file_writer_base.cpp const std::string GENDRILL_WRITER_BASE::layerName( PCB_LAYER_ID aLayer ) const</span>
+<span class='curline'><a href='../S/422.html#L242'>aLayer</a>            242 exporters/gendrill_file_writer_base.cpp     switch( aLayer )</span>
+<span class='curline'><a href='../S/422.html#L249'>aLayer</a>            249 exporters/gendrill_file_writer_base.cpp         return StrPrintf( "in%d", aLayer );</span>
+<span class='curline'><a href='../S/423.html#L333'>aLayer</a>            333 exporters/gendrill_file_writer_base.h     const std::string layerName( PCB_LAYER_ID aLayer ) const;</span>
+<span class='curline'><a href='../S/429.html#L87'>aLayer</a>             87 exporters/gerber_jobfile_writer.h     void AddGbrFile( PCB_LAYER_ID aLayer, wxString&amp; aFilename )</span>
+<span class='curline'><a href='../S/429.html#L90'>aLayer</a>             90 exporters/gerber_jobfile_writer.h         m_params.m_LayerId.push_back( aLayer );</span>
+<span class='curline'><a href='../S/430.html#L58'>aLayer</a>             58 exporters/gerber_placefile_writer.cpp int PLACEFILE_GERBER_WRITER::CreatePlaceFile( wxString&amp; aFullFilename, PCB_LAYER_ID aLayer,</span>
+<span class='curline'><a href='../S/430.html#L61'>aLayer</a>             61 exporters/gerber_placefile_writer.cpp     m_layer = aLayer;</span>
+<span class='curline'><a href='../S/430.html#L76'>aLayer</a>             76 exporters/gerber_placefile_writer.cpp         if( footprint-&gt;GetLayer() == aLayer )</span>
+<span class='curline'><a href='../S/430.html#L99'>aLayer</a>             99 exporters/gerber_placefile_writer.cpp                  aLayer == B_Cu ? m_pcb-&gt;GetCopperLayerCount() : 1,</span>
+<span class='curline'><a href='../S/430.html#L100'>aLayer</a>            100 exporters/gerber_placefile_writer.cpp                  aLayer == B_Cu ? "Bot" : "Top" );</span>
+<span class='curline'><a href='../S/430.html#L123'>aLayer</a>            123 exporters/gerber_placefile_writer.cpp     brd_plotter.SetLayerSet( LSET( aLayer ) );</span>
+<span class='curline'><a href='../S/430.html#L189'>aLayer</a>            189 exporters/gerber_placefile_writer.cpp             SHAPE_POLY_SET&amp; courtyard = aLayer == B_Cu ?</span>
+<span class='curline'><a href='../S/430.html#L214'>aLayer</a>            214 exporters/gerber_placefile_writer.cpp             int y_sign = aLayer == B_Cu ? -1 : 1;</span>
+<span class='curline'><a href='../S/430.html#L277'>aLayer</a>            277 exporters/gerber_placefile_writer.cpp                 if( !pad-&gt;IsOnLayer( aLayer ) )</span>
+<span class='curline'><a href='../S/430.html#L348'>aLayer</a>            348 exporters/gerber_placefile_writer.cpp                                                           PCB_LAYER_ID aLayer ) const</span>
+<span class='curline'><a href='../S/430.html#L355'>aLayer</a>            355 exporters/gerber_placefile_writer.cpp     post_id += aLayer == B_Cu ? "bottom" : "top";</span>
+<span class='curline'><a href='../S/431.html#L66'>aLayer</a>             66 exporters/gerber_placefile_writer.h     int  CreatePlaceFile( wxString&amp; aFullFilename, PCB_LAYER_ID aLayer,</span>
+<span class='curline'><a href='../S/431.html#L76'>aLayer</a>             76 exporters/gerber_placefile_writer.h                                      PCB_LAYER_ID aLayer ) const;</span>
+<span class='curline'><a href='../S/436.html#L284'>aLayer</a>            284 footprint_edit_frame.h     void SetActiveLayer( PCB_LAYER_ID aLayer ) override;</span>
+<span class='curline'><a href='../S/434.html#L427'>aLayer</a>            427 footprint_editor_utils.cpp void FOOTPRINT_EDIT_FRAME::SetActiveLayer( PCB_LAYER_ID aLayer )</span>
+<span class='curline'><a href='../S/434.html#L429'>aLayer</a>            429 footprint_editor_utils.cpp     PCB_BASE_FRAME::SetActiveLayer( aLayer );</span>
+<span class='curline'><a href='../S/434.html#L431'>aLayer</a>            431 footprint_editor_utils.cpp     m_Layers-&gt;SelectLayer( aLayer );</span>
+<span class='curline'><a href='../S/434.html#L436'>aLayer</a>            436 footprint_editor_utils.cpp     GetCanvas()-&gt;SetHighContrastLayer( aLayer );</span>
+<span class='curline'><a href='../S/485.html#L48'>aLayer</a>             48 import_gfx/graphics_importer_pcbnew.h     void SetLayer( PCB_LAYER_ID aLayer )</span>
+<span class='curline'><a href='../S/485.html#L50'>aLayer</a>             50 import_gfx/graphics_importer_pcbnew.h         m_layer = aLayer;</span>
+<span class='curline'><a href='../S/499.html#L268'>aLayer</a>            268 layer_widget.cpp int LAYER_WIDGET::findLayerRow( LAYER_NUM aLayer ) const</span>
+<span class='curline'><a href='../S/499.html#L278'>aLayer</a>            278 layer_widget.cpp         if( aLayer == getDecodedId( w-&gt;GetId() ))</span>
+<span class='curline'><a href='../S/499.html#L699'>aLayer</a>            699 layer_widget.cpp void LAYER_WIDGET::SelectLayer( LAYER_NUM aLayer )</span>
+<span class='curline'><a href='../S/499.html#L701'>aLayer</a>            701 layer_widget.cpp     int row = findLayerRow( aLayer );</span>
+<span class='curline'><a href='../S/499.html#L716'>aLayer</a>            716 layer_widget.cpp void LAYER_WIDGET::SetLayerVisible( LAYER_NUM aLayer, bool isVisible )</span>
+<span class='curline'><a href='../S/499.html#L718'>aLayer</a>            718 layer_widget.cpp     setLayerCheckbox( aLayer, isVisible );</span>
+<span class='curline'><a href='../S/499.html#L719'>aLayer</a>            719 layer_widget.cpp     OnLayerVisible( aLayer, isVisible );</span>
+<span class='curline'><a href='../S/499.html#L723'>aLayer</a>            723 layer_widget.cpp void LAYER_WIDGET::setLayerCheckbox( LAYER_NUM aLayer, bool isVisible )</span>
+<span class='curline'><a href='../S/499.html#L725'>aLayer</a>            725 layer_widget.cpp     int row = findLayerRow( aLayer );</span>
+<span class='curline'><a href='../S/499.html#L735'>aLayer</a>            735 layer_widget.cpp bool LAYER_WIDGET::IsLayerVisible( LAYER_NUM aLayer )</span>
+<span class='curline'><a href='../S/499.html#L737'>aLayer</a>            737 layer_widget.cpp     int row = findLayerRow( aLayer );</span>
+<span class='curline'><a href='../S/499.html#L748'>aLayer</a>            748 layer_widget.cpp void LAYER_WIDGET::SetLayerColor( LAYER_NUM aLayer, COLOR4D aColor )</span>
+<span class='curline'><a href='../S/499.html#L750'>aLayer</a>            750 layer_widget.cpp     int row = findLayerRow( aLayer );</span>
+<span class='curline'><a href='../S/499.html#L762'>aLayer</a>            762 layer_widget.cpp COLOR4D LAYER_WIDGET::GetLayerColor( LAYER_NUM aLayer ) const</span>
+<span class='curline'><a href='../S/499.html#L764'>aLayer</a>            764 layer_widget.cpp     int row = findLayerRow( aLayer );</span>
+<span class='curline'><a href='../S/499.html#L869'>aLayer</a>            869 layer_widget.cpp         void OnLayerColorChange( int aLayer, COLOR4D aColor )</span>
+<span class='curline'><a href='../S/499.html#L871'>aLayer</a>            871 layer_widget.cpp             printf( "OnLayerColorChange( aLayer:%d, aColor:%d )\n", aLayer, aColor );</span>
+<span class='curline'><a href='../S/499.html#L882'>aLayer</a>            882 layer_widget.cpp         bool OnLayerSelect( LAYER_NUM aLayer )</span>
+<span class='curline'><a href='../S/499.html#L884'>aLayer</a>            884 layer_widget.cpp             printf( "OnLayerSelect( aLayer:%d )\n", aLayer );</span>
+<span class='curline'><a href='../S/499.html#L888'>aLayer</a>            888 layer_widget.cpp         void OnLayerVisible( LAYER_NUM aLayer, bool isVisible, bool isFinal )</span>
+<span class='curline'><a href='../S/499.html#L890'>aLayer</a>            890 layer_widget.cpp             printf( "OnLayerVisible( aLayer:%d, isVisible:%d isFinal:%d)\n", aLayer, isVisible, isFinal );</span>
+<span class='curline'><a href='../S/500.html#L228'>aLayer</a>            228 layer_widget.h     int findLayerRow( LAYER_NUM aLayer ) const;</span>
+<span class='curline'><a href='../S/500.html#L239'>aLayer</a>            239 layer_widget.h     void setLayerCheckbox( LAYER_NUM aLayer, bool isVisible );</span>
+<span class='curline'><a href='../S/500.html#L356'>aLayer</a>            356 layer_widget.h     void SelectLayer( LAYER_NUM aLayer );</span>
+<span class='curline'><a href='../S/500.html#L368'>aLayer</a>            368 layer_widget.h     void SetLayerVisible( LAYER_NUM aLayer, bool isVisible );</span>
+<span class='curline'><a href='../S/500.html#L374'>aLayer</a>            374 layer_widget.h     bool IsLayerVisible( LAYER_NUM aLayer );</span>
+<span class='curline'><a href='../S/500.html#L380'>aLayer</a>            380 layer_widget.h     void SetLayerColor( LAYER_NUM aLayer, COLOR4D aColor );</span>
+<span class='curline'><a href='../S/500.html#L386'>aLayer</a>            386 layer_widget.h     COLOR4D GetLayerColor( LAYER_NUM aLayer ) const;</span>
+<span class='curline'><a href='../S/500.html#L441'>aLayer</a>            441 layer_widget.h     virtual void OnLayerColorChange( int aLayer, COLOR4D aColor ) = 0;</span>
+<span class='curline'><a href='../S/500.html#L450'>aLayer</a>            450 layer_widget.h     virtual bool OnLayerSelect( int aLayer ) = 0;</span>
+<span class='curline'><a href='../S/500.html#L462'>aLayer</a>            462 layer_widget.h     virtual void OnLayerVisible( LAYER_NUM aLayer, bool isVisible, bool isFinal = true ) = 0;</span>
+<span class='curline'><a href='../S/534.html#L56'>aLayer</a>             56 pcad2kicadpcb_plugin/pcb_arc.cpp                      int             aLayer,</span>
+<span class='curline'><a href='../S/534.html#L66'>aLayer</a>             66 pcad2kicadpcb_plugin/pcb_arc.cpp     m_PCadLayer     = aLayer;</span>
+<span class='curline'><a href='../S/535.html#L51'>aLayer</a>             51 pcad2kicadpcb_plugin/pcb_arc.h                            int aLayer,</span>
+<span class='curline'><a href='../S/545.html#L54'>aLayer</a>             54 pcad2kicadpcb_plugin/pcb_line.cpp                       int             aLayer,</span>
+<span class='curline'><a href='../S/545.html#L61'>aLayer</a>             61 pcad2kicadpcb_plugin/pcb_line.cpp     m_PCadLayer     = aLayer;</span>
+<span class='curline'><a href='../S/546.html#L51'>aLayer</a>             51 pcad2kicadpcb_plugin/pcb_line.h                            int             aLayer,</span>
+<span class='curline'><a href='../S/559.html#L51'>aLayer</a>             51 pcad2kicadpcb_plugin/pcb_text.cpp                       int             aLayer,</span>
+<span class='curline'><a href='../S/559.html#L58'>aLayer</a>             58 pcad2kicadpcb_plugin/pcb_text.cpp     m_PCadLayer     = aLayer;</span>
+<span class='curline'><a href='../S/560.html#L48'>aLayer</a>             48 pcad2kicadpcb_plugin/pcb_text.h                            int             aLayer,</span>
+<span class='curline'><a href='../S/583.html#L239'>aLayer</a>            239 pcb_draw_panel_gal.cpp void PCB_DRAW_PANEL_GAL::SetHighContrastLayer( PCB_LAYER_ID aLayer )</span>
+<span class='curline'><a href='../S/583.html#L244'>aLayer</a>            244 pcb_draw_panel_gal.cpp     SetTopLayer( aLayer );</span>
+<span class='curline'><a href='../S/583.html#L247'>aLayer</a>            247 pcb_draw_panel_gal.cpp     rSettings-&gt;SetActiveLayer( aLayer );</span>
+<span class='curline'><a href='../S/583.html#L249'>aLayer</a>            249 pcb_draw_panel_gal.cpp     if( IsCopperLayer( aLayer ) )</span>
+<span class='curline'><a href='../S/583.html#L255'>aLayer</a>            255 pcb_draw_panel_gal.cpp                 GetNetnameLayer( aLayer ),</span>
+<span class='curline'><a href='../S/583.html#L266'>aLayer</a>            266 pcb_draw_panel_gal.cpp         if( aLayer == B_Cu )</span>
+<span class='curline'><a href='../S/583.html#L272'>aLayer</a>            272 pcb_draw_panel_gal.cpp         else if( aLayer == F_Cu )</span>
+<span class='curline'><a href='../S/583.html#L284'>aLayer</a>            284 pcb_draw_panel_gal.cpp void PCB_DRAW_PANEL_GAL::SetTopLayer( PCB_LAYER_ID aLayer )</span>
+<span class='curline'><a href='../S/583.html#L288'>aLayer</a>            288 pcb_draw_panel_gal.cpp     m_view-&gt;SetTopLayer( aLayer );</span>
+<span class='curline'><a href='../S/583.html#L315'>aLayer</a>            315 pcb_draw_panel_gal.cpp     if( IsFrontLayer( aLayer ) )</span>
+<span class='curline'><a href='../S/583.html#L317'>aLayer</a>            317 pcb_draw_panel_gal.cpp     else if( IsBackLayer( aLayer ) )</span>
+<span class='curline'><a href='../S/583.html#L326'>aLayer</a>            326 pcb_draw_panel_gal.cpp         if( !IsCopperLayer( aLayer ) )</span>
+<span class='curline'><a href='../S/583.html#L327'>aLayer</a>            327 pcb_draw_panel_gal.cpp             m_view-&gt;SetLayerOrder( aLayer, m_view-&gt;GetLayerOrder( GAL_LAYER_ORDER[0] ) );</span>
+<span class='curline'><a href='../S/583.html#L329'>aLayer</a>            329 pcb_draw_panel_gal.cpp     else if( IsCopperLayer( aLayer ) )</span>
+<span class='curline'><a href='../S/583.html#L332'>aLayer</a>            332 pcb_draw_panel_gal.cpp         m_view-&gt;SetTopLayer( GetNetnameLayer( aLayer ) );</span>
+<span class='curline'><a href='../S/584.html#L72'>aLayer</a>             72 pcb_draw_panel_gal.h     virtual void SetHighContrastLayer( int aLayer ) override</span>
+<span class='curline'><a href='../S/584.html#L74'>aLayer</a>             74 pcb_draw_panel_gal.h         SetHighContrastLayer( static_cast&lt; PCB_LAYER_ID &gt;( aLayer ) );</span>
+<span class='curline'><a href='../S/584.html#L78'>aLayer</a>             78 pcb_draw_panel_gal.h     void SetHighContrastLayer( PCB_LAYER_ID aLayer );</span>
+<span class='curline'><a href='../S/584.html#L81'>aLayer</a>             81 pcb_draw_panel_gal.h     virtual void SetTopLayer( int aLayer ) override</span>
+<span class='curline'><a href='../S/584.html#L83'>aLayer</a>             83 pcb_draw_panel_gal.h         SetTopLayer( static_cast&lt; PCB_LAYER_ID &gt;( aLayer ) );</span>
+<span class='curline'><a href='../S/584.html#L87'>aLayer</a>             87 pcb_draw_panel_gal.h     void SetTopLayer( PCB_LAYER_ID aLayer );</span>
+<span class='curline'><a href='../S/585.html#L738'>aLayer</a>            738 pcb_edit_frame.cpp void PCB_EDIT_FRAME::SetActiveLayer( PCB_LAYER_ID aLayer )</span>
+<span class='curline'><a href='../S/585.html#L740'>aLayer</a>            740 pcb_edit_frame.cpp     PCB_BASE_FRAME::SetActiveLayer( aLayer );</span>
+<span class='curline'><a href='../S/585.html#L746'>aLayer</a>            746 pcb_edit_frame.cpp     GetCanvas()-&gt;SetHighContrastLayer( aLayer );</span>
+<span class='curline'><a href='../S/586.html#L456'>aLayer</a>            456 pcb_edit_frame.h     void SetActiveLayer( PCB_LAYER_ID aLayer ) override;</span>
+<span class='curline'><a href='../S/589.html#L40'>aLayer</a>             40 pcb_layer_box_selector.cpp static TOOL_ACTION* layer2action( PCB_LAYER_ID aLayer )</span>
+<span class='curline'><a href='../S/589.html#L42'>aLayer</a>             42 pcb_layer_box_selector.cpp     switch( aLayer )</span>
+<span class='curline'><a href='../S/589.html#L146'>aLayer</a>            146 pcb_layer_box_selector.cpp bool PCB_LAYER_BOX_SELECTOR::isLayerEnabled( LAYER_NUM aLayer ) const</span>
+<span class='curline'><a href='../S/589.html#L150'>aLayer</a>            150 pcb_layer_box_selector.cpp     return board-&gt;IsLayerEnabled( ToLAYER_ID( aLayer ) );</span>
+<span class='curline'><a href='../S/589.html#L163'>aLayer</a>            163 pcb_layer_box_selector.cpp COLOR4D PCB_LAYER_BOX_SELECTOR::getLayerColor( LAYER_NUM aLayer ) const</span>
+<span class='curline'><a href='../S/589.html#L167'>aLayer</a>            167 pcb_layer_box_selector.cpp     return m_boardFrame-&gt;GetColorSettings()-&gt;GetColor( aLayer );</span>
+<span class='curline'><a href='../S/589.html#L172'>aLayer</a>            172 pcb_layer_box_selector.cpp wxString PCB_LAYER_BOX_SELECTOR::getLayerName( LAYER_NUM aLayer ) const</span>
+<span class='curline'><a href='../S/589.html#L176'>aLayer</a>            176 pcb_layer_box_selector.cpp     return board-&gt;GetLayerName( ToLAYER_ID( aLayer ) );</span>
+<span class='curline'><a href='../S/590.html#L82'>aLayer</a>             82 pcb_layer_box_selector.h     COLOR4D getLayerColor( LAYER_NUM aLayer ) const override;</span>
+<span class='curline'><a href='../S/590.html#L85'>aLayer</a>             85 pcb_layer_box_selector.h     bool isLayerEnabled( LAYER_NUM aLayer ) const override;</span>
+<span class='curline'><a href='../S/590.html#L88'>aLayer</a>             88 pcb_layer_box_selector.h     wxString getLayerName( LAYER_NUM aLayer ) const override;</span>
+<span class='curline'><a href='../S/591.html#L140'>aLayer</a>            140 pcb_layer_widget.cpp bool PCB_LAYER_WIDGET::isLayerAllowedInFpMode( PCB_LAYER_ID aLayer )</span>
+<span class='curline'><a href='../S/591.html#L144'>aLayer</a>            144 pcb_layer_widget.cpp     return allowed.test( aLayer );</span>
+<span class='curline'><a href='../S/591.html#L565'>aLayer</a>            565 pcb_layer_widget.cpp void PCB_LAYER_WIDGET::OnLayerColorChange( int aLayer, COLOR4D aColor )</span>
+<span class='curline'><a href='../S/591.html#L568'>aLayer</a>            568 pcb_layer_widget.cpp     cs-&gt;SetColor( aLayer, aColor );</span>
+<span class='curline'><a href='../S/591.html#L573'>aLayer</a>            573 pcb_layer_widget.cpp     view-&gt;UpdateLayerColor( aLayer );</span>
+<span class='curline'><a href='../S/591.html#L574'>aLayer</a>            574 pcb_layer_widget.cpp     view-&gt;UpdateLayerColor( GetNetnameLayer( aLayer ) );</span>
+<span class='curline'><a href='../S/591.html#L580'>aLayer</a>            580 pcb_layer_widget.cpp     if( aLayer == LAYER_PCB_BACKGROUND )</span>
+<span class='curline'><a href='../S/591.html#L585'>aLayer</a>            585 pcb_layer_widget.cpp bool PCB_LAYER_WIDGET::OnLayerSelect( int aLayer )</span>
+<span class='curline'><a href='../S/591.html#L589'>aLayer</a>            589 pcb_layer_widget.cpp     PCB_LAYER_ID layer = ToLAYER_ID( aLayer );</span>
+<span class='curline'><a href='../S/591.html#L623'>aLayer</a>            623 pcb_layer_widget.cpp void PCB_LAYER_WIDGET::OnLayerVisible( int aLayer, bool isVisible, bool isFinal )</span>
+<span class='curline'><a href='../S/591.html#L633'>aLayer</a>            633 pcb_layer_widget.cpp         if( visibleLayers.test( aLayer ) != isVisible )</span>
+<span class='curline'><a href='../S/591.html#L635'>aLayer</a>            635 pcb_layer_widget.cpp             visibleLayers.set( aLayer, isVisible );</span>
+<span class='curline'><a href='../S/591.html#L639'>aLayer</a>            639 pcb_layer_widget.cpp                 myframe-&gt;GetCanvas()-&gt;GetView()-&gt;SetLayerVisible( aLayer, isVisible );</span>
+<span class='curline'><a href='../S/591.html#L644'>aLayer</a>            644 pcb_layer_widget.cpp             myframe-&gt;GetCanvas()-&gt;GetView()-&gt;SetLayerVisible( aLayer, isVisible );</span>
+<span class='curline'><a href='../S/592.html#L92'>aLayer</a>             92 pcb_layer_widget.h     void OnLayerColorChange( int aLayer, COLOR4D aColor ) override;</span>
+<span class='curline'><a href='../S/592.html#L93'>aLayer</a>             93 pcb_layer_widget.h     bool OnLayerSelect( int aLayer ) override;</span>
+<span class='curline'><a href='../S/592.html#L94'>aLayer</a>             94 pcb_layer_widget.h     void OnLayerVisible( int aLayer, bool isVisible, bool isFinal ) override;</span>
+<span class='curline'><a href='../S/592.html#L167'>aLayer</a>            167 pcb_layer_widget.h     bool isLayerAllowedInFpMode( PCB_LAYER_ID aLayer );</span>
+<span class='curline'><a href='../S/593.html#L248'>aLayer</a>            248 pcb_painter.cpp const COLOR4D&amp; PCB_RENDER_SETTINGS::GetColor( const VIEW_ITEM* aItem, int aLayer ) const</span>
+<span class='curline'><a href='../S/593.html#L255'>aLayer</a>            255 pcb_painter.cpp     if( m_contrastModeDisplay == HIGH_CONTRAST_MODE::HIDDEN &amp;&amp; m_activeLayers.count( aLayer ) == 0 )</span>
+<span class='curline'><a href='../S/593.html#L259'>aLayer</a>            259 pcb_painter.cpp     if( m_contrastModeDisplay != HIGH_CONTRAST_MODE::NORMAL &amp;&amp; IsNetnameLayer( aLayer )</span>
+<span class='curline'><a href='../S/593.html#L260'>aLayer</a>            260 pcb_painter.cpp         &amp;&amp; m_activeLayers.count( aLayer ) == 0 )</span>
+<span class='curline'><a href='../S/593.html#L273'>aLayer</a>            273 pcb_painter.cpp             aLayer = LAYER_MOD_TEXT_INVISIBLE;</span>
+<span class='curline'><a href='../S/593.html#L276'>aLayer</a>            276 pcb_painter.cpp             return m_layerColorsSel[aLayer];</span>
+<span class='curline'><a href='../S/593.html#L279'>aLayer</a>            279 pcb_painter.cpp             return m_layerColors[aLayer];</span>
+<span class='curline'><a href='../S/593.html#L283'>aLayer</a>            283 pcb_painter.cpp                 ( aLayer == LAYER_VIAS_HOLES   ||</span>
+<span class='curline'><a href='../S/593.html#L284'>aLayer</a>            284 pcb_painter.cpp                   aLayer == LAYER_VIA_THROUGH  ||</span>
+<span class='curline'><a href='../S/593.html#L285'>aLayer</a>            285 pcb_painter.cpp                   aLayer == LAYER_VIA_MICROVIA ||</span>
+<span class='curline'><a href='../S/593.html#L286'>aLayer</a>            286 pcb_painter.cpp                   aLayer == LAYER_VIA_BBLIND ) )</span>
+<span class='curline'><a href='../S/593.html#L299'>aLayer</a>            299 pcb_painter.cpp                 return m_layerColors[aLayer];</span>
+<span class='curline'><a href='../S/593.html#L301'>aLayer</a>            301 pcb_painter.cpp                 return m_hiContrastColor[aLayer];</span>
+<span class='curline'><a href='../S/593.html#L311'>aLayer</a>            311 pcb_painter.cpp         return m_layerColorsHi[aLayer];</span>
+<span class='curline'><a href='../S/593.html#L314'>aLayer</a>            314 pcb_painter.cpp     if( m_contrastModeDisplay == HIGH_CONTRAST_MODE::DIMMED &amp;&amp; m_activeLayers.count( aLayer ) == 0 )</span>
+<span class='curline'><a href='../S/593.html#L315'>aLayer</a>            315 pcb_painter.cpp         return m_hiContrastColor[aLayer];</span>
+<span class='curline'><a href='../S/593.html#L320'>aLayer</a>            320 pcb_painter.cpp         return m_layerColorsDark[aLayer];</span>
+<span class='curline'><a href='../S/593.html#L332'>aLayer</a>            332 pcb_painter.cpp     return m_layerColors[aLayer];</span>
+<span class='curline'><a href='../S/593.html#L372'>aLayer</a>            372 pcb_painter.cpp bool PCB_PAINTER::Draw( const VIEW_ITEM* aItem, int aLayer )</span>
+<span class='curline'><a href='../S/593.html#L383'>aLayer</a>            383 pcb_painter.cpp         draw( static_cast&lt;const TRACK*&gt;( item ), aLayer );</span>
+<span class='curline'><a href='../S/593.html#L387'>aLayer</a>            387 pcb_painter.cpp         draw( static_cast&lt;const ARC*&gt;( item ), aLayer );</span>
+<span class='curline'><a href='../S/593.html#L391'>aLayer</a>            391 pcb_painter.cpp         draw( static_cast&lt;const VIA*&gt;( item ), aLayer );</span>
+<span class='curline'><a href='../S/593.html#L395'>aLayer</a>            395 pcb_painter.cpp         draw( static_cast&lt;const D_PAD*&gt;( item ), aLayer );</span>
+<span class='curline'><a href='../S/593.html#L400'>aLayer</a>            400 pcb_painter.cpp         draw( static_cast&lt;const DRAWSEGMENT*&gt;( item ), aLayer );</span>
+<span class='curline'><a href='../S/593.html#L404'>aLayer</a>            404 pcb_painter.cpp         draw( static_cast&lt;const TEXTE_PCB*&gt;( item ), aLayer );</span>
+<span class='curline'><a href='../S/593.html#L408'>aLayer</a>            408 pcb_painter.cpp         draw( static_cast&lt;const TEXTE_MODULE*&gt;( item ), aLayer );</span>
+<span class='curline'><a href='../S/593.html#L412'>aLayer</a>            412 pcb_painter.cpp         draw( static_cast&lt;const MODULE*&gt;( item ), aLayer );</span>
+<span class='curline'><a href='../S/593.html#L416'>aLayer</a>            416 pcb_painter.cpp         draw( static_cast&lt;const ZONE_CONTAINER*&gt;( item ), aLayer );</span>
+<span class='curline'><a href='../S/593.html#L420'>aLayer</a>            420 pcb_painter.cpp         draw( static_cast&lt;const ZONE_CONTAINER*&gt;( item ), aLayer );</span>
+<span class='curline'><a href='../S/593.html#L424'>aLayer</a>            424 pcb_painter.cpp         draw( static_cast&lt;const DIMENSION*&gt;( item ), aLayer );</span>
+<span class='curline'><a href='../S/593.html#L444'>aLayer</a>            444 pcb_painter.cpp void PCB_PAINTER::draw( const TRACK* aTrack, int aLayer )</span>
+<span class='curline'><a href='../S/593.html#L450'>aLayer</a>            450 pcb_painter.cpp     if( m_pcbSettings.m_netNamesOnTracks &amp;&amp; IsNetnameLayer( aLayer ) )</span>
+<span class='curline'><a href='../S/593.html#L478'>aLayer</a>            478 pcb_painter.cpp             m_gal-&gt;SetStrokeColor( m_pcbSettings.GetColor( NULL, aLayer ) );</span>
+<span class='curline'><a href='../S/593.html#L489'>aLayer</a>            489 pcb_painter.cpp     else if( IsCopperLayer( aLayer ) )</span>
+<span class='curline'><a href='../S/593.html#L492'>aLayer</a>            492 pcb_painter.cpp         const COLOR4D&amp; color = m_pcbSettings.GetColor( aTrack, aLayer );</span>
+<span class='curline'><a href='../S/593.html#L517'>aLayer</a>            517 pcb_painter.cpp void PCB_PAINTER::draw( const ARC* aArc, int aLayer )</span>
+<span class='curline'><a href='../S/593.html#L522'>aLayer</a>            522 pcb_painter.cpp     if( IsCopperLayer( aLayer ) )</span>
+<span class='curline'><a href='../S/593.html#L525'>aLayer</a>            525 pcb_painter.cpp         const COLOR4D&amp; color = m_pcbSettings.GetColor( aArc, aLayer );</span>
+<span class='curline'><a href='../S/593.html#L556'>aLayer</a>            556 pcb_painter.cpp void PCB_PAINTER::draw( const VIA* aVia, int aLayer )</span>
+<span class='curline'><a href='../S/593.html#L562'>aLayer</a>            562 pcb_painter.cpp     if( IsNetnameLayer( aLayer ) )</span>
+<span class='curline'><a href='../S/593.html#L582'>aLayer</a>            582 pcb_painter.cpp             m_gal-&gt;SetStrokeColor( m_pcbSettings.GetColor( NULL, aLayer ) );</span>
+<span class='curline'><a href='../S/593.html#L609'>aLayer</a>            609 pcb_painter.cpp     if( aLayer == LAYER_VIAS_HOLES )</span>
+<span class='curline'><a href='../S/593.html#L615'>aLayer</a>            615 pcb_painter.cpp     const COLOR4D&amp; color  = m_pcbSettings.GetColor( aVia, aLayer );</span>
+<span class='curline'><a href='../S/593.html#L652'>aLayer</a>            652 pcb_painter.cpp             &amp;&amp; aLayer != LAYER_VIAS_HOLES</span>
+<span class='curline'><a href='../S/593.html#L663'>aLayer</a>            663 pcb_painter.cpp         if( aLayer == layerTop )</span>
+<span class='curline'><a href='../S/593.html#L666'>aLayer</a>            666 pcb_painter.cpp         else if( aLayer == layerBottom )</span>
+<span class='curline'><a href='../S/593.html#L669'>aLayer</a>            669 pcb_painter.cpp         else if( aLayer == LAYER_VIA_BBLIND || aLayer == LAYER_VIA_MICROVIA )</span>
+<span class='curline'><a href='../S/593.html#L685'>aLayer</a>            685 pcb_painter.cpp             &amp;&amp; aLayer != LAYER_VIAS_HOLES )</span>
+<span class='curline'><a href='../S/593.html#L696'>aLayer</a>            696 pcb_painter.cpp void PCB_PAINTER::draw( const D_PAD* aPad, int aLayer )</span>
+<span class='curline'><a href='../S/593.html#L699'>aLayer</a>            699 pcb_painter.cpp     if( IsNetnameLayer( aLayer ) )</span>
+<span class='curline'><a href='../S/593.html#L732'>aLayer</a>            732 pcb_painter.cpp             m_gal-&gt;SetStrokeColor( m_pcbSettings.GetColor( NULL, aLayer ) );</span>
+<span class='curline'><a href='../S/593.html#L790'>aLayer</a>            790 pcb_painter.cpp     if( ( aLayer == LAYER_PADS_PLATEDHOLES ) &amp;&amp; !aPad-&gt;PadShouldBeNPTH() )</span>
+<span class='curline'><a href='../S/593.html#L793'>aLayer</a>            793 pcb_painter.cpp         color = m_pcbSettings.GetColor( aPad, aLayer );</span>
+<span class='curline'><a href='../S/593.html#L812'>aLayer</a>            812 pcb_painter.cpp     if( aLayer == LAYER_PADS_PLATEDHOLES || aLayer == LAYER_NON_PLATEDHOLES )</span>
+<span class='curline'><a href='../S/593.html#L822'>aLayer</a>            822 pcb_painter.cpp         switch( aLayer )</span>
+<span class='curline'><a href='../S/593.html#L872'>aLayer</a>            872 pcb_painter.cpp             &amp;&amp; ( aLayer == LAYER_PAD_FR</span>
+<span class='curline'><a href='../S/593.html#L873'>aLayer</a>            873 pcb_painter.cpp                 || aLayer == LAYER_PAD_BK</span>
+<span class='curline'><a href='../S/593.html#L874'>aLayer</a>            874 pcb_painter.cpp                 || aLayer == LAYER_PADS_TH ) )</span>
+<span class='curline'><a href='../S/593.html#L904'>aLayer</a>            904 pcb_painter.cpp void PCB_PAINTER::draw( const DRAWSEGMENT* aSegment, int aLayer )</span>
+<span class='curline'><a href='../S/593.html#L1027'>aLayer</a>           1027 pcb_painter.cpp void PCB_PAINTER::draw( const TEXTE_PCB* aText, int aLayer )</span>
+<span class='curline'><a href='../S/593.html#L1037'>aLayer</a>           1037 pcb_painter.cpp     if( m_pcbSettings.m_sketchText || m_pcbSettings.m_sketchMode[aLayer] )</span>
+<span class='curline'><a href='../S/593.html#L1056'>aLayer</a>           1056 pcb_painter.cpp void PCB_PAINTER::draw( const TEXTE_MODULE* aText, int aLayer )</span>
+<span class='curline'><a href='../S/593.html#L1063'>aLayer</a>           1063 pcb_painter.cpp     const COLOR4D&amp; color = m_pcbSettings.GetColor( aText, aLayer );</span>
+<span class='curline'><a href='../S/593.html#L1093'>aLayer</a>           1093 pcb_painter.cpp void PCB_PAINTER::draw( const MODULE* aModule, int aLayer )</span>
+<span class='curline'><a href='../S/593.html#L1095'>aLayer</a>           1095 pcb_painter.cpp     if( aLayer == LAYER_ANCHOR )</span>
+<span class='curline'><a href='../S/593.html#L1113'>aLayer</a>           1113 pcb_painter.cpp void PCB_PAINTER::draw( const ZONE_CONTAINER* aZone, int aLayer )</span>
+<span class='curline'><a href='../S/593.html#L1115'>aLayer</a>           1115 pcb_painter.cpp     PCB_LAYER_ID layer = static_cast&lt;PCB_LAYER_ID&gt;( aLayer );</span>
+<span class='curline'><a href='../S/593.html#L1120'>aLayer</a>           1120 pcb_painter.cpp     const COLOR4D&amp; color = m_pcbSettings.GetColor( aZone, aLayer );</span>
+<span class='curline'><a href='../S/593.html#L1186'>aLayer</a>           1186 pcb_painter.cpp void PCB_PAINTER::draw( const DIMENSION* aDimension, int aLayer )</span>
+<span class='curline'><a href='../S/593.html#L1188'>aLayer</a>           1188 pcb_painter.cpp     const COLOR4D&amp; strokeColor = m_pcbSettings.GetColor( aDimension, aLayer );</span>
+<span class='curline'><a href='../S/594.html#L122'>aLayer</a>            122 pcb_painter.h      virtual const COLOR4D&amp; GetColor( const VIEW_ITEM* aItem, int aLayer ) const override;</span>
+<span class='curline'><a href='../S/594.html#L292'>aLayer</a>            292 pcb_painter.h      virtual bool Draw( const VIEW_ITEM* aItem, int aLayer ) override;</span>
+<span class='curline'><a href='../S/594.html#L298'>aLayer</a>            298 pcb_painter.h      void draw( const TRACK* aTrack, int aLayer );</span>
+<span class='curline'><a href='../S/594.html#L299'>aLayer</a>            299 pcb_painter.h      void draw( const ARC* aArc, int aLayer );</span>
+<span class='curline'><a href='../S/594.html#L300'>aLayer</a>            300 pcb_painter.h      void draw( const VIA* aVia, int aLayer );</span>
+<span class='curline'><a href='../S/594.html#L301'>aLayer</a>            301 pcb_painter.h      void draw( const D_PAD* aPad, int aLayer );</span>
+<span class='curline'><a href='../S/594.html#L302'>aLayer</a>            302 pcb_painter.h      void draw( const DRAWSEGMENT* aSegment, int aLayer );</span>
+<span class='curline'><a href='../S/594.html#L303'>aLayer</a>            303 pcb_painter.h      void draw( const TEXTE_PCB* aText, int aLayer );</span>
+<span class='curline'><a href='../S/594.html#L304'>aLayer</a>            304 pcb_painter.h      void draw( const TEXTE_MODULE* aText, int aLayer );</span>
+<span class='curline'><a href='../S/594.html#L305'>aLayer</a>            305 pcb_painter.h      void draw( const MODULE* aModule, int aLayer );</span>
+<span class='curline'><a href='../S/594.html#L306'>aLayer</a>            306 pcb_painter.h      void draw( const ZONE_CONTAINER* aZone, int aLayer );</span>
+<span class='curline'><a href='../S/594.html#L307'>aLayer</a>            307 pcb_painter.h      void draw( const DIMENSION* aDimension, int aLayer );</span>
+<span class='curline'><a href='../S/595.html#L960'>aLayer</a>            960 pcb_parser.cpp void PCB_PARSER::parseLayer( LAYER* aLayer )</span>
+<span class='curline'><a href='../S/595.html#L968'>aLayer</a>            968 pcb_parser.cpp     aLayer-&gt;clear();</span>
+<span class='curline'><a href='../S/595.html#L994'>aLayer</a>            994 pcb_parser.cpp     aLayer-&gt;m_name    = FROM_UTF8( name.c_str() );</span>
+<span class='curline'><a href='../S/595.html#L995'>aLayer</a>            995 pcb_parser.cpp     aLayer-&gt;m_type    = LAYER::ParseType( type.c_str() );</span>
+<span class='curline'><a href='../S/595.html#L996'>aLayer</a>            996 pcb_parser.cpp     aLayer-&gt;m_number  = layer_num;</span>
+<span class='curline'><a href='../S/595.html#L997'>aLayer</a>            997 pcb_parser.cpp     aLayer-&gt;m_visible = isVisible;</span>
+<span class='curline'><a href='../S/595.html#L1850'>aLayer</a>           1850 pcb_parser.cpp void PCB_PARSER::parseDefaultTextDims( BOARD_DESIGN_SETTINGS&amp; aSettings, int aLayer )</span>
+<span class='curline'><a href='../S/595.html#L1862'>aLayer</a>           1862 pcb_parser.cpp             aSettings.m_TextSize[ aLayer ].x = parseBoardUnits( "default text size X" );</span>
+<span class='curline'><a href='../S/595.html#L1863'>aLayer</a>           1863 pcb_parser.cpp             aSettings.m_TextSize[ aLayer ].y = parseBoardUnits( "default text size Y" );</span>
+<span class='curline'><a href='../S/595.html#L1868'>aLayer</a>           1868 pcb_parser.cpp             aSettings.m_TextThickness[ aLayer ] = parseBoardUnits( "default text width" );</span>
+<span class='curline'><a href='../S/595.html#L1873'>aLayer</a>           1873 pcb_parser.cpp             aSettings.m_TextItalic[ aLayer ] = true;</span>
+<span class='curline'><a href='../S/595.html#L1877'>aLayer</a>           1877 pcb_parser.cpp             aSettings.m_TextUpright[ aLayer ] = true;</span>
+<span class='curline'><a href='../S/596.html#L132'>aLayer</a>            132 pcb_parser.h       void parseLayer( LAYER* aLayer );</span>
+<span class='curline'><a href='../S/596.html#L138'>aLayer</a>            138 pcb_parser.h       void parseDefaultTextDims( BOARD_DESIGN_SETTINGS&amp; aSettings, int aLayer );</span>
+<span class='curline'><a href='../S/577.html#L48'>aLayer</a>             48 pcbplot.cpp    const wxString GetGerberProtelExtension( LAYER_NUM aLayer )</span>
+<span class='curline'><a href='../S/577.html#L50'>aLayer</a>             50 pcbplot.cpp        if( IsCopperLayer( aLayer ) )</span>
+<span class='curline'><a href='../S/577.html#L52'>aLayer</a>             52 pcbplot.cpp            if( aLayer == F_Cu )</span>
+<span class='curline'><a href='../S/577.html#L54'>aLayer</a>             54 pcbplot.cpp            else if( aLayer == B_Cu )</span>
+<span class='curline'><a href='../S/577.html#L58'>aLayer</a>             58 pcbplot.cpp                return wxString::Format( wxT( "g%d" ), aLayer+1 );</span>
+<span class='curline'><a href='../S/577.html#L63'>aLayer</a>             63 pcbplot.cpp            switch( aLayer )</span>
+<span class='curline'><a href='../S/577.html#L89'>aLayer</a>             89 pcbplot.cpp    const wxString GetGerberFileFunctionAttribute( const BOARD *aBoard, LAYER_NUM aLayer )</span>
+<span class='curline'><a href='../S/577.html#L93'>aLayer</a>             93 pcbplot.cpp        switch( aLayer )</span>
+<span class='curline'><a href='../S/577.html#L169'>aLayer</a>            169 pcbplot.cpp            if( IsCopperLayer( aLayer ) )</span>
+<span class='curline'><a href='../S/577.html#L170'>aLayer</a>            170 pcbplot.cpp                attrib.Printf( wxT( "Copper,L%d,Inr" ), aLayer+1 );</span>
+<span class='curline'><a href='../S/577.html#L172'>aLayer</a>            172 pcbplot.cpp                attrib.Printf( wxT( "Other,User" ), aLayer+1 );</span>
+<span class='curline'><a href='../S/577.html#L183'>aLayer</a>            183 pcbplot.cpp        if( IsCopperLayer( aLayer ) )</span>
+<span class='curline'><a href='../S/577.html#L185'>aLayer</a>            185 pcbplot.cpp            LAYER_T type = aBoard-&gt;GetLayerType( ToLAYER_ID( aLayer ) );</span>
+<span class='curline'><a href='../S/577.html#L211'>aLayer</a>            211 pcbplot.cpp    static const wxString GetGerberFilePolarityAttribute( LAYER_NUM aLayer )</span>
+<span class='curline'><a href='../S/577.html#L233'>aLayer</a>            233 pcbplot.cpp        switch( aLayer )</span>
+<span class='curline'><a href='../S/577.html#L250'>aLayer</a>            250 pcbplot.cpp            if( IsCopperLayer( aLayer ) )</span>
+<span class='curline'><a href='../S/577.html#L355'>aLayer</a>            355 pcbplot.cpp                const BOARD *aBoard, LAYER_NUM aLayer, bool aUseX1CompatibilityMode )</span>
+<span class='curline'><a href='../S/577.html#L362'>aLayer</a>            362 pcbplot.cpp        text = GetGerberFileFunctionAttribute( aBoard, aLayer );</span>
+<span class='curline'><a href='../S/577.html#L366'>aLayer</a>            366 pcbplot.cpp        text = GetGerberFilePolarityAttribute( aLayer );</span>
+<span class='curline'><a href='../S/578.html#L139'>aLayer</a>            139 pcbplot.h          COLOR4D getColor( LAYER_NUM aLayer );</span>
+<span class='curline'><a href='../S/578.html#L154'>aLayer</a>            154 pcbplot.h                               int aLayer,</span>
+<span class='curline'><a href='../S/578.html#L168'>aLayer</a>            168 pcbplot.h      void PlotOneBoardLayer( BOARD *aBoard, PLOTTER* aPlotter, PCB_LAYER_ID aLayer,</span>
+<span class='curline'><a href='../S/578.html#L230'>aLayer</a>            230 pcbplot.h      const wxString GetGerberProtelExtension( LAYER_NUM aLayer );</span>
+<span class='curline'><a href='../S/578.html#L241'>aLayer</a>            241 pcbplot.h      const wxString GetGerberFileFunctionAttribute( const BOARD *aBoard, LAYER_NUM aLayer );</span>
+<span class='curline'><a href='../S/578.html#L277'>aLayer</a>            277 pcbplot.h                                 LAYER_NUM aLayer, bool aUseX1CompatibilityMode );</span>
+<span class='curline'><a href='../S/604.html#L64'>aLayer</a>             64 plot_board_layers.cpp void PlotOneBoardLayer( BOARD *aBoard, PLOTTER* aPlotter, PCB_LAYER_ID aLayer,</span>
+<span class='curline'><a href='../S/604.html#L76'>aLayer</a>             76 plot_board_layers.cpp     LSET    layer_mask( aLayer );</span>
+<span class='curline'><a href='../S/604.html#L81'>aLayer</a>             81 plot_board_layers.cpp     if( IsCopperLayer( aLayer ) )</span>
+<span class='curline'><a href='../S/604.html#L98'>aLayer</a>             98 plot_board_layers.cpp         switch( aLayer )</span>
+<span class='curline'><a href='../S/604.html#L147'>aLayer</a>            147 plot_board_layers.cpp                 if( aLayer == F_SilkS )</span>
+<span class='curline'><a href='../S/604.html#L1081'>aLayer</a>           1081 plot_board_layers.cpp PLOTTER* StartPlotBoard( BOARD *aBoard, PCB_PLOT_PARAMS *aPlotOpts, int aLayer,</span>
+<span class='curline'><a href='../S/604.html#L1160'>aLayer</a>           1160 plot_board_layers.cpp             AddGerberX2Attribute( plotter, aBoard, aLayer, not useX2mode );</span>
+<span class='curline'><a href='../S/605.html#L73'>aLayer</a>             73 plot_brditems_plotter.cpp COLOR4D BRDITEMS_PLOTTER::getColor( LAYER_NUM aLayer )</span>
+<span class='curline'><a href='../S/605.html#L75'>aLayer</a>             75 plot_brditems_plotter.cpp     COLOR4D color = ColorSettings()-&gt;GetColor( aLayer );</span>
+<span class='curline'><a href='../S/603.html#L60'>aLayer</a>             60 plotcontroller.h     void SetLayer( LAYER_NUM aLayer ) { m_plotLayer = aLayer; }</span>
+<span class='curline'><a href='../S/630.html#L64'>aLayer</a>             64 ratsnest/ratsnest_viewitem.cpp void RATSNEST_VIEWITEM::ViewDraw( int aLayer, KIGFX::VIEW* aView ) const</span>
+<span class='curline'><a href='../S/631.html#L51'>aLayer</a>             51 ratsnest/ratsnest_viewitem.h     void ViewDraw( int aLayer, KIGFX::VIEW* aView ) const override;</span>
+<span class='curline'><a href='../S/644.html#L381'>aLayer</a>            381 router/pns_diff_pair_placer.cpp bool DIFF_PAIR_PLACER::SetLayer( int aLayer )</span>
+<span class='curline'><a href='../S/644.html#L385'>aLayer</a>            385 router/pns_diff_pair_placer.cpp         m_currentLayer = aLayer;</span>
+<span class='curline'><a href='../S/644.html#L393'>aLayer</a>            393 router/pns_diff_pair_placer.cpp                 m_prevPair-&gt;PrimP()-&gt;Layers().Overlaps( aLayer ) ) )</span>
+<span class='curline'><a href='../S/644.html#L395'>aLayer</a>            395 router/pns_diff_pair_placer.cpp         m_currentLayer = aLayer;</span>
+<span class='curline'><a href='../S/645.html#L110'>aLayer</a>            110 router/pns_diff_pair_placer.h     bool SetLayer( int aLayer ) override;</span>
+<span class='curline'><a href='../S/654.html#L154'>aLayer</a>            154 router/pns_item.h     void SetLayer( int aLayer ) { m_layers = LAYER_RANGE( aLayer, aLayer ); }</span>
+<span class='curline'><a href='../S/658.html#L777'>aLayer</a>            777 router/pns_kicad_iface.cpp bool PNS_KICAD_IFACE_BASE::syncTextItem( PNS::NODE* aWorld, EDA_TEXT* aText, PCB_LAYER_ID aLayer )</span>
+<span class='curline'><a href='../S/658.html#L779'>aLayer</a>            779 router/pns_kicad_iface.cpp     if( !IsCopperLayer( aLayer ) )</span>
+<span class='curline'><a href='../S/658.html#L796'>aLayer</a>            796 router/pns_kicad_iface.cpp         solid-&gt;SetLayer( aLayer );</span>
+<span class='curline'><a href='../S/658.html#L866'>aLayer</a>            866 router/pns_kicad_iface.cpp bool PNS_KICAD_IFACE::IsAnyLayerVisible( const LAYER_RANGE&amp; aLayer )</span>
+<span class='curline'><a href='../S/658.html#L871'>aLayer</a>            871 router/pns_kicad_iface.cpp     for( int i = aLayer.Start(); i &lt;= aLayer.End(); i++ )</span>
+<span class='curline'><a href='../S/659.html#L55'>aLayer</a>             55 router/pns_kicad_iface.h     bool IsAnyLayerVisible( const LAYER_RANGE&amp; aLayer ) override { return true; };</span>
+<span class='curline'><a href='../S/659.html#L88'>aLayer</a>             88 router/pns_kicad_iface.h     bool syncTextItem( PNS::NODE* aWorld, EDA_TEXT* aText, PCB_LAYER_ID aLayer );</span>
+<span class='curline'><a href='../S/659.html#L106'>aLayer</a>            106 router/pns_kicad_iface.h     bool IsAnyLayerVisible( const LAYER_RANGE&amp; aLayer ) override;</span>
+<span class='curline'><a href='../S/660.html#L49'>aLayer</a>             49 router/pns_layerset.h     LAYER_RANGE( int aLayer )</span>
+<span class='curline'><a href='../S/660.html#L51'>aLayer</a>             51 router/pns_layerset.h         m_start = m_end = aLayer;</span>
+<span class='curline'><a href='../S/660.html#L73'>aLayer</a>             73 router/pns_layerset.h     bool Overlaps( const int aLayer ) const</span>
+<span class='curline'><a href='../S/660.html#L75'>aLayer</a>             75 router/pns_layerset.h         return aLayer &gt;= m_start &amp;&amp; aLayer &lt;= m_end;</span>
+<span class='curline'><a href='../S/663.html#L940'>aLayer</a>            940 router/pns_line_placer.cpp bool LINE_PLACER::SetLayer( int aLayer )</span>
+<span class='curline'><a href='../S/663.html#L944'>aLayer</a>            944 router/pns_line_placer.cpp         m_currentLayer = aLayer;</span>
+<span class='curline'><a href='../S/663.html#L951'>aLayer</a>            951 router/pns_line_placer.cpp     else if( !m_startItem || ( m_startItem-&gt;OfKind( ITEM::VIA_T ) &amp;&amp; m_startItem-&gt;Layers().Overlaps( aLayer ) ) )</span>
+<span class='curline'><a href='../S/663.html#L953'>aLayer</a>            953 router/pns_line_placer.cpp         m_currentLayer = aLayer;</span>
+<span class='curline'><a href='../S/663.html#L1479'>aLayer</a>           1479 router/pns_line_placer.cpp void FIXED_TAIL::AddStage( VECTOR2I aStart, int aLayer, bool placingVias, DIRECTION_45 direction, NODE *aNode )</span>
+<span class='curline'><a href='../S/663.html#L1485'>aLayer</a>           1485 router/pns_line_placer.cpp     pt.layer = aLayer;</span>
+<span class='curline'><a href='../S/664.html#L64'>aLayer</a>             64 router/pns_line_placer.h     void AddStage( VECTOR2I aStart, int aLayer, bool placingVias, DIRECTION_45 direction, NODE *aNode );</span>
+<span class='curline'><a href='../S/664.html#L164'>aLayer</a>            164 router/pns_line_placer.h     bool SetLayer( int aLayer ) override;</span>
+<span class='curline'><a href='../S/677.html#L1027'>aLayer</a>           1027 router/pns_node.cpp JOINT* NODE::FindJoint( const VECTOR2I&amp; aPos, int aLayer, int aNet )</span>
+<span class='curline'><a href='../S/677.html#L1047'>aLayer</a>           1047 router/pns_node.cpp         if( f-&gt;second.Layers().Overlaps( aLayer ) )</span>
+<span class='curline'><a href='../S/678.html#L379'>aLayer</a>            379 router/pns_node.h     JOINT* FindJoint( const VECTOR2I&amp; aPos, int aLayer, int aNet );</span>
+<span class='curline'><a href='../S/679.html#L279'>aLayer</a>            279 router/pns_optimizer.cpp         JOINT_CACHE( NODE *aWorld, int aLayer, int aMaxJoints );</span>
+<span class='curline'><a href='../S/679.html#L851'>aLayer</a>            851 router/pns_optimizer.cpp ITEM* OPTIMIZER::findPadOrVia( int aLayer, int aNet, const VECTOR2I&amp; aP ) const</span>
+<span class='curline'><a href='../S/679.html#L853'>aLayer</a>            853 router/pns_optimizer.cpp     JOINT* jt = m_world-&gt;FindJoint( aP, aLayer, aNet );</span>
+<span class='curline'><a href='../S/680.html#L186'>aLayer</a>            186 router/pns_optimizer.h     ITEM* findPadOrVia( int aLayer, int aNet, const VECTOR2I&amp; aP ) const;</span>
+<span class='curline'><a href='../S/681.html#L114'>aLayer</a>            114 router/pns_placement_algo.h     virtual bool SetLayer( int aLayer )</span>
+<span class='curline'><a href='../S/682.html#L177'>aLayer</a>            177 router/pns_router.cpp bool ROUTER::isStartingPointRoutable( const VECTOR2I&amp; aWhere, int aLayer )</span>
+<span class='curline'><a href='../S/682.html#L186'>aLayer</a>            186 router/pns_router.cpp         if( ! item-&gt;IsRoutable() &amp;&amp; item-&gt;Layers().Overlaps( aLayer ) )</span>
+<span class='curline'><a href='../S/682.html#L195'>aLayer</a>            195 router/pns_router.cpp bool ROUTER::StartRouting( const VECTOR2I&amp; aP, ITEM* aStartItem, int aLayer )</span>
+<span class='curline'><a href='../S/682.html#L198'>aLayer</a>            198 router/pns_router.cpp     if( ! isStartingPointRoutable( aP, aLayer ) )</span>
+<span class='curline'><a href='../S/682.html#L229'>aLayer</a>            229 router/pns_router.cpp     m_placer-&gt;SetLayer( aLayer );</span>
+<span class='curline'><a href='../S/682.html#L489'>aLayer</a>            489 router/pns_router.cpp void ROUTER::SwitchLayer( int aLayer )</span>
+<span class='curline'><a href='../S/682.html#L494'>aLayer</a>            494 router/pns_router.cpp         m_placer-&gt;SetLayer( aLayer );</span>
+<span class='curline'><a href='../S/683.html#L101'>aLayer</a>            101 router/pns_router.h         virtual bool IsAnyLayerVisible( const LAYER_RANGE&amp; aLayer ) = 0;</span>
+<span class='curline'><a href='../S/683.html#L143'>aLayer</a>            143 router/pns_router.h     bool StartRouting( const VECTOR2I&amp; aP, ITEM* aItem, int aLayer );</span>
+<span class='curline'><a href='../S/683.html#L263'>aLayer</a>            263 router/pns_router.h     bool isStartingPointRoutable( const VECTOR2I&amp; aWhere, int aLayer );</span>
+<span class='curline'><a href='../S/693.html#L122'>aLayer</a>            122 router/pns_tool_base.cpp ITEM* TOOL_BASE::pickSingleItem( const VECTOR2I&amp; aWhere, int aNet, int aLayer, bool aIgnorePads,</span>
+<span class='curline'><a href='../S/693.html#L127'>aLayer</a>            127 router/pns_tool_base.cpp     if( aLayer &gt; 0 )</span>
+<span class='curline'><a href='../S/693.html#L128'>aLayer</a>            128 router/pns_tool_base.cpp         tl = aLayer;</span>
+<span class='curline'><a href='../S/693.html#L211'>aLayer</a>            211 router/pns_tool_base.cpp         if( item &amp;&amp; ( aLayer &lt; 0 || item-&gt;Layers().Overlaps( aLayer ) ) )</span>
+<span class='curline'><a href='../S/694.html#L57'>aLayer</a>             57 router/pns_tool_base.h     virtual ITEM* pickSingleItem( const VECTOR2I&amp; aWhere, int aNet = -1, int aLayer = -1,</span>
+<span class='curline'><a href='../S/695.html#L361'>aLayer</a>            361 router/pns_topology.cpp const std::set&lt;ITEM*&gt; TOPOLOGY::AssembleCluster( ITEM* aStart, int aLayer )</span>
+<span class='curline'><a href='../S/695.html#L381'>aLayer</a>            381 router/pns_topology.cpp             if( visited.find( obs.m_item ) == visited.end() &amp;&amp; obs.m_item-&gt;Layers().Overlaps( aLayer ) &amp;&amp; !( obs.m_item-&gt;Marker() &amp; MK_HEAD ) )</span>
+<span class='curline'><a href='../S/696.html#L66'>aLayer</a>             66 router/pns_topology.h     const std::set&lt;ITEM*&gt; AssembleCluster( ITEM* aStart, int aLayer );</span>
+<span class='curline'><a href='../S/707.html#L177'>aLayer</a>            177 router/router_preview_item.cpp void ROUTER_PREVIEW_ITEM::ViewDraw( int aLayer, KIGFX::VIEW* aView ) const</span>
+<span class='curline'><a href='../S/707.html#L360'>aLayer</a>            360 router/router_preview_item.cpp const COLOR4D ROUTER_PREVIEW_ITEM::getLayerColor( int aLayer ) const</span>
+<span class='curline'><a href='../S/707.html#L364'>aLayer</a>            364 router/router_preview_item.cpp     return settings-&gt;GetLayerColor( aLayer );</span>
+<span class='curline'><a href='../S/708.html#L104'>aLayer</a>            104 router/router_preview_item.h     virtual void ViewDraw( int aLayer, KIGFX::VIEW* aView ) const override;</span>
+<span class='curline'><a href='../S/708.html#L116'>aLayer</a>            116 router/router_preview_item.h     const KIGFX::COLOR4D getLayerColor( int aLayer ) const;</span>
+<span class='curline'><a href='../S/713.html#L58'>aLayer</a>             58 sel_layer.cpp      bool isLayerEnabled( LAYER_NUM aLayer ) const override</span>
+<span class='curline'><a href='../S/713.html#L60'>aLayer</a>             60 sel_layer.cpp          return m_frame-&gt;GetBoard()-&gt;IsLayerEnabled( PCB_LAYER_ID( aLayer ) );</span>
+<span class='curline'><a href='../S/713.html#L65'>aLayer</a>             65 sel_layer.cpp      COLOR4D getLayerColor( LAYER_NUM aLayer ) const override</span>
+<span class='curline'><a href='../S/713.html#L67'>aLayer</a>             67 sel_layer.cpp          return m_frame-&gt;GetColorSettings()-&gt;GetColor( aLayer );</span>
+<span class='curline'><a href='../S/713.html#L71'>aLayer</a>             71 sel_layer.cpp      wxString getLayerName( LAYER_NUM aLayer ) const override</span>
+<span class='curline'><a href='../S/713.html#L73'>aLayer</a>             73 sel_layer.cpp          return m_frame-&gt;GetBoard()-&gt;GetLayerName( ToLAYER_ID( aLayer ) );</span>
+<span class='curline'><a href='../S/719.html#L101'>aLayer</a>            101 specctra_import_export/specctra_test.cpp wxString BOARD::GetLayerName( LAYER_NUM aLayer ) const</span>
+<span class='curline'><a href='../S/763.html#L1987'>aLayer</a>           1987 tools/drawing_tool.cpp int DRAWING_TOOL::getSegmentWidth( PCB_LAYER_ID aLayer ) const</span>
+<span class='curline'><a href='../S/763.html#L1990'>aLayer</a>           1990 tools/drawing_tool.cpp     return m_board-&gt;GetDesignSettings().GetLineThickness( aLayer );</span>
+<span class='curline'><a href='../S/764.html#L225'>aLayer</a>            225 tools/drawing_tool.h     int getSegmentWidth( PCB_LAYER_ID aLayer ) const;</span>
+<span class='curline'><a href='../S/773.html#L607'>aLayer</a>            607 tools/pad_tool.cpp     auto findNext = [&amp;]( PCB_LAYER_ID aLayer ) -&gt; EDGE_MODULE*</span>
+<span class='curline'><a href='../S/773.html#L619'>aLayer</a>            619 tools/pad_tool.cpp                             if( draw-&gt;GetLayer() != aLayer )</span>
+<span class='curline'><a href='../S/783.html#L40'>aLayer</a>             40 tools/pcb_bright_box.cpp void PCB_BRIGHT_BOX::ViewDraw( int aLayer, KIGFX::VIEW* aView ) const</span>
+<span class='curline'><a href='../S/783.html#L60'>aLayer</a>             60 tools/pcb_bright_box.cpp         BRIGHT_BOX::ViewDraw( aLayer, aView );</span>
+<span class='curline'><a href='../S/784.html#L40'>aLayer</a>             40 tools/pcb_bright_box.h     void ViewDraw( int aLayer, KIGFX::VIEW* aView ) const override;</span>
+<span class='curline'><a href='../S/822.html#L511'>aLayer</a>            511 zone_filler.cpp void ZONE_FILLER::knockoutThermalReliefs( const ZONE_CONTAINER* aZone, PCB_LAYER_ID aLayer,</span>
+<span class='curline'><a href='../S/822.html#L532'>aLayer</a>            532 zone_filler.cpp             if( !pad-&gt;IsOnLayer( aLayer ) )</span>
+<span class='curline'><a href='../S/822.html#L554'>aLayer</a>            554 zone_filler.cpp void ZONE_FILLER::buildCopperItemClearances( const ZONE_CONTAINER* aZone, PCB_LAYER_ID aLayer,</span>
+<span class='curline'><a href='../S/822.html#L588'>aLayer</a>            588 zone_filler.cpp             if( !pad-&gt;IsOnLayer( aLayer ) )</span>
+<span class='curline'><a href='../S/822.html#L621'>aLayer</a>            621 zone_filler.cpp         if( !track-&gt;IsOnLayer( aLayer ) )</span>
+<span class='curline'><a href='../S/822.html#L642'>aLayer</a>            642 zone_filler.cpp                 if( !aItem-&gt;IsOnLayer( aLayer ) &amp;&amp; !aItem-&gt;IsOnLayer( Edge_Cuts ) )</span>
+<span class='curline'><a href='../S/822.html#L672'>aLayer</a>            672 zone_filler.cpp         if( !zone-&gt;GetLayerSet().test( aLayer ) )</span>
+<span class='curline'><a href='../S/822.html#L713'>aLayer</a>            713 zone_filler.cpp void ZONE_FILLER::computeRawFilledArea( const ZONE_CONTAINER* aZone, PCB_LAYER_ID aLayer,</span>
+<span class='curline'><a href='../S/822.html#L754'>aLayer</a>            754 zone_filler.cpp     knockoutThermalReliefs( aZone, aLayer, aRawPolys );</span>
+<span class='curline'><a href='../S/822.html#L759'>aLayer</a>            759 zone_filler.cpp     buildCopperItemClearances( aZone, aLayer, clearanceHoles );</span>
+<span class='curline'><a href='../S/822.html#L764'>aLayer</a>            764 zone_filler.cpp     buildThermalSpokes( aZone, aLayer, thermalSpokes );</span>
+<span class='curline'><a href='../S/822.html#L823'>aLayer</a>            823 zone_filler.cpp         addHatchFillTypeOnZone( aZone, aLayer, aRawPolys );</span>
+<span class='curline'><a href='../S/822.html#L862'>aLayer</a>            862 zone_filler.cpp bool ZONE_FILLER::fillSingleZone( ZONE_CONTAINER* aZone, PCB_LAYER_ID aLayer,</span>
+<span class='curline'><a href='../S/822.html#L880'>aLayer</a>            880 zone_filler.cpp                 aZone, aLayer, smoothedPoly, &amp;colinearCorners, aRawPolys, aFinalPolys );</span>
+<span class='curline'><a href='../S/822.html#L898'>aLayer</a>            898 zone_filler.cpp             addHatchFillTypeOnZone( aZone, aLayer, smoothedPoly );</span>
+<span class='curline'><a href='../S/822.html#L923'>aLayer</a>            923 zone_filler.cpp void ZONE_FILLER::buildThermalSpokes( const ZONE_CONTAINER* aZone, PCB_LAYER_ID aLayer,</span>
+<span class='curline'><a href='../S/822.html#L944'>aLayer</a>            944 zone_filler.cpp             if( !pad-&gt;IsOnLayer( aLayer ) )</span>
+<span class='curline'><a href='../S/822.html#L1039'>aLayer</a>           1039 zone_filler.cpp void ZONE_FILLER::addHatchFillTypeOnZone( const ZONE_CONTAINER* aZone, PCB_LAYER_ID aLayer,</span>
+<span class='curline'><a href='../S/823.html#L54'>aLayer</a>             54 zone_filler.h      void knockoutThermalReliefs( const ZONE_CONTAINER* aZone, PCB_LAYER_ID aLayer,</span>
+<span class='curline'><a href='../S/823.html#L57'>aLayer</a>             57 zone_filler.h      void buildCopperItemClearances( const ZONE_CONTAINER* aZone, PCB_LAYER_ID aLayer,</span>
+<span class='curline'><a href='../S/823.html#L71'>aLayer</a>             71 zone_filler.h      void computeRawFilledArea( const ZONE_CONTAINER* aZone, PCB_LAYER_ID aLayer,</span>
+<span class='curline'><a href='../S/823.html#L80'>aLayer</a>             80 zone_filler.h      void buildThermalSpokes( const ZONE_CONTAINER* aZone, PCB_LAYER_ID aLayer,</span>
+<span class='curline'><a href='../S/823.html#L97'>aLayer</a>             97 zone_filler.h      bool fillSingleZone( ZONE_CONTAINER* aZone, PCB_LAYER_ID aLayer, SHAPE_POLY_SET&amp; aRawPolys,</span>
+<span class='curline'><a href='../S/823.html#L107'>aLayer</a>            107 zone_filler.h      void addHatchFillTypeOnZone( const ZONE_CONTAINER* aZone, PCB_LAYER_ID aLayer,</span>
+<span class='curline'><a href='../S/819.html#L147'>aLayer</a>            147 zones_functions_for_undo_redo.cpp int SaveCopyOfZones( PICKED_ITEMS_LIST&amp; aPickList, BOARD* aPcb, int aNetCode, LAYER_NUM aLayer )</span>
+<span class='curline'><a href='../S/819.html#L161'>aLayer</a>            161 zones_functions_for_undo_redo.cpp         if( aLayer &gt;= 0 &amp;&amp; !zone-&gt;GetLayerSet().test( aLayer ) )</span>
+<span class='curline'><a href='../S/820.html#L58'>aLayer</a>             58 zones_functions_for_undo_redo.h int SaveCopyOfZones(PICKED_ITEMS_LIST &amp; aPickList, BOARD* aPcb, int aNetCode, LAYER_NUM aLayer );</span>
+</pre>
+</body>
+</html>

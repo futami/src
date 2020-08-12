@@ -1,0 +1,155 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>initpcb.cpp</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/initpcb.cpp</h2>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L42'>[^]</a><a href='#L94'>[v]</a>[top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L42' title='Defined at 42.'>Clear_Pcb</a></li>
+<li><a href='#L94' title='Defined at 94.'>Clear_Pcb</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * This program source code file is part of KiCad, a free EDA CAD application.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 2007-2014 Jean-Pierre Charras, jp.charras at wanadoo.fr</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> * Copyright (C) 1992-2012 KiCad Developers, see AUTHORS.txt for contributors.</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> *</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> * This program is free software; you can redistribute it and/or</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * modify it under the terms of the GNU General Public License</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * as published by the Free Software Foundation; either version 2</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> * of the License, or (at your option) any later version.</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> *</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> * This program is distributed in the hope that it will be useful,</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> * GNU General Public License for more details.</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> *</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> * You should have received a copy of the GNU General Public License</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * along with this program; if not, you may find one here:</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> * or you may search the http://www.gnu.org website for the version 2 license,</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'> * or you may write to the Free Software Foundation, Inc.,</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'> * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'> */</em>
+<a id='L24' name='L24'></a>  24 
+<a id='L25' name='L25'></a>  25 <em class='comment'>/**</em>
+<a id='L26' name='L26'></a>  26 <em class='comment'> * @file pcbnew/initpcb.cpp</em>
+<a id='L27' name='L27'></a>  27 <em class='comment'> */</em>
+<a id='L28' name='L28'></a>  28 
+<a id='L29' name='L29'></a>  29 <em class='sharp'>#include</em> &lt;fctsys.h&gt;
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#include</em> &lt;confirm.h&gt;
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#include</em> &lt;<a href='586.html'>pcb_edit_frame.h</a>&gt;
+<a id='L32' name='L32'></a>  32 <em class='sharp'>#include</em> &lt;project.h&gt;
+<a id='L33' name='L33'></a>  33 <em class='sharp'>#include</em> &lt;project/net_settings.h&gt;
+<a id='L34' name='L34'></a>  34 <em class='sharp'>#include</em> &lt;project/project_file.h&gt;
+<a id='L35' name='L35'></a>  35 
+<a id='L36' name='L36'></a>  36 <em class='sharp'>#include</em> &lt;<a href='58.html'>class_board.h</a>&gt;
+<a id='L37' name='L37'></a>  37 
+<a id='L38' name='L38'></a>  38 <em class='sharp'>#include</em> &lt;<a href='568.html'>pcbnew.h</a>&gt;
+<a id='L39' name='L39'></a>  39 <em class='sharp'>#include</em> &lt;<a href='436.html'>footprint_edit_frame.h</a>&gt;
+<a id='L40' name='L40'></a>  40 
+<a id='L41' name='L41'></a>  41 
+<a id='L42' name='L42'></a>  42 <strong class='reserved'>bool</strong> <a href='../S/585.html#L356' title='Defined at 356 in pcb_edit_frame.cpp.'>PCB_EDIT_FRAME</a>::<a href='../R/426.html' title='Multiple referred from 15 places.'>Clear_Pcb</a>( <strong class='reserved'>bool</strong> <a href='../Y/5849.html' title='Multiple used in 6 places.'>aQuery</a>, <strong class='reserved'>bool</strong> <a href='../Y/5302.html' title='Multiple used in 3 places.'>aFinal</a> )
+<a id='L43' name='L43'></a>  43 <em class='brace'>{</em>
+<a id='L44' name='L44'></a>  44     <strong class='reserved'>if</strong>( <a href='../D/1112.html' title='Multiple defined in 2 places.'>GetBoard</a>() == <a href='../Y/2643.html' title='Multiple used in 1581 places.'>NULL</a> )
+<a id='L45' name='L45'></a>  45         <strong class='reserved'>return</strong> <strong class='reserved'>false</strong>;
+<a id='L46' name='L46'></a>  46 
+<a id='L47' name='L47'></a>  47     <strong class='reserved'>if</strong>( <a href='../Y/5849.html' title='Multiple used in 6 places.'>aQuery</a> &amp;&amp; !<a href='../D/1112.html' title='Multiple defined in 2 places.'>GetBoard</a>()-&gt;<a href='../Y/2119.html' title='Multiple used in 204 places.'>IsEmpty</a>() )
+<a id='L48' name='L48'></a>  48     <em class='brace'>{</em>
+<a id='L49' name='L49'></a>  49         <strong class='reserved'>if</strong>( !<a href='../Y/2170.html' title='Multiple used in 13 places.'>IsOK</a>( <strong class='reserved'>this</strong>,
+<a id='L50' name='L50'></a>  50                    <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Current Board will be lost and this operation cannot be undone. Continue?" ) ) )
+<a id='L51' name='L51'></a>  51             <strong class='reserved'>return</strong> <strong class='reserved'>false</strong>;
+<a id='L52' name='L52'></a>  52     <em class='brace'>}</em>
+<a id='L53' name='L53'></a>  53 
+<a id='L54' name='L54'></a>  54     <em class='comment'>// Release the lock file, if exists</em>
+<a id='L55' name='L55'></a>  55     <a href='../Y/3151.html' title='Multiple used in 2 places.'>ReleaseFile</a>();
+<a id='L56' name='L56'></a>  56 
+<a id='L57' name='L57'></a>  57     <em class='comment'>// Clear undo and redo lists because we want a full deletion</em>
+<a id='L58' name='L58'></a>  58     <a href='../Y/506.html' title='Multiple used in 6 places.'>ClearUndoRedoList</a>();
+<a id='L59' name='L59'></a>  59     <a href='../Y/1688.html' title='Multiple used in 57 places.'>GetScreen</a>()-&gt;<a href='../Y/513.html' title='Multiple used in 14 places.'>ClrModify</a>();
+<a id='L60' name='L60'></a>  60 
+<a id='L61' name='L61'></a>  61     <strong class='reserved'>if</strong>( !<a href='../Y/5302.html' title='Multiple used in 3 places.'>aFinal</a> )
+<a id='L62' name='L62'></a>  62     <em class='brace'>{</em>
+<a id='L63' name='L63'></a>  63         <em class='comment'>// delete the old BOARD and create a new BOARD so that the default</em>
+<a id='L64' name='L64'></a>  64         <em class='comment'>// layer names are put into the BOARD.</em>
+<a id='L65' name='L65'></a>  65         <a href='../D/2988.html' title='Multiple defined in 5 places.'>SetBoard</a>( <strong class='reserved'>new</strong> <a href='../S/57.html#L104' title='Defined at 104 in class_board.cpp.'>BOARD</a>() );
+<a id='L66' name='L66'></a>  66 
+<a id='L67' name='L67'></a>  67         <em class='comment'>// clear filename, to avoid overwriting an old file</em>
+<a id='L68' name='L68'></a>  68         <a href='../D/1112.html' title='Multiple defined in 2 places.'>GetBoard</a>()-&gt;<a href='../Y/3511.html' title='Multiple used in 20 places.'>SetFileName</a>( <a href='../Y/15676.html' title='Multiple used in 516 places.'>wxEmptyString</a> );
+<a id='L69' name='L69'></a>  69 
+<a id='L70' name='L70'></a>  70         <a href='../Y/1688.html' title='Multiple used in 57 places.'>GetScreen</a>()-&gt;<a href='../Y/2062.html' title='Multiple used in 3 places.'>InitDataPoints</a>( <a href='../S/581.html#L233' title='Defined at 233 in pcb_base_frame.cpp.'>GetPageSizeIU</a>() );
+<a id='L71' name='L71'></a>  71 
+<a id='L72' name='L72'></a>  72         <a href='../D/1112.html' title='Multiple defined in 2 places.'>GetBoard</a>()-&gt;<a href='../S/57.html#L1911' title='Defined at 1911 in class_board.cpp.'>ResetNetHighLight</a>();
+<a id='L73' name='L73'></a>  73 
+<a id='L74' name='L74'></a>  74         <em class='comment'>// Enable all layers (SetCopperLayerCount() will adjust the copper layers enabled)</em>
+<a id='L75' name='L75'></a>  75         <a href='../D/1112.html' title='Multiple defined in 2 places.'>GetBoard</a>()-&gt;<a href='../D/3011.html' title='Multiple defined in 2 places.'>SetEnabledLayers</a>( <a href='../Y/2380.html' title='Multiple used in 386 places.'>LSET</a>().<a href='../Y/14361.html' title='Multiple used in 188 places.'>set</a>() );
+<a id='L76' name='L76'></a>  76 
+<a id='L77' name='L77'></a>  77         <em class='comment'>// Default copper layers count set to 2: double layer board</em>
+<a id='L78' name='L78'></a>  78         <a href='../D/1112.html' title='Multiple defined in 2 places.'>GetBoard</a>()-&gt;<a href='../D/2997.html' title='Multiple defined in 2 places.'>SetCopperLayerCount</a>( 2 );
+<a id='L79' name='L79'></a>  79 
+<a id='L80' name='L80'></a>  80         <em class='comment'>// Update display (some options depend on the board setup)</em>
+<a id='L81' name='L81'></a>  81         <a href='../D/1112.html' title='Multiple defined in 2 places.'>GetBoard</a>()-&gt;<a href='../S/57.html#L448' title='Defined at 448 in class_board.cpp.'>SetVisibleLayers</a>( <a href='../Y/2380.html' title='Multiple used in 386 places.'>LSET</a>().<a href='../Y/14361.html' title='Multiple used in 188 places.'>set</a>() );
+<a id='L82' name='L82'></a>  82         <a href='../D/2752.html' title='Multiple defined in 2 places.'>ReCreateLayerBox</a>();
+<a id='L83' name='L83'></a>  83         <a href='../S/762.html#L454' title='Defined at 454 in toolbars_pcb_editor.cpp.'>ReCreateAuxiliaryToolbar</a>();
+<a id='L84' name='L84'></a>  84         <a href='../D/2761.html' title='Multiple defined in 2 places.'>ReFillLayerWidget</a>();
+<a id='L85' name='L85'></a>  85         <a href='../D/3338.html' title='Multiple defined in 2 places.'>UpdateTitle</a>();
+<a id='L86' name='L86'></a>  86 
+<a id='L87' name='L87'></a>  87         <a href='../Y/4926.html' title='Multiple used in 10 places.'>Zoom_Automatique</a>( <strong class='reserved'>false</strong> );
+<a id='L88' name='L88'></a>  88     <em class='brace'>}</em>
+<a id='L89' name='L89'></a>  89 
+<a id='L90' name='L90'></a>  90     <strong class='reserved'>return</strong> <strong class='reserved'>true</strong>;
+<a id='L91' name='L91'></a>  91 <em class='brace'>}</em>
+<a id='L92' name='L92'></a>  92 
+<a id='L93' name='L93'></a>  93 
+<a id='L94' name='L94'></a>  94 <strong class='reserved'>bool</strong> <a href='../S/435.html#L243' title='Defined at 243 in footprint_edit_frame.cpp.'>FOOTPRINT_EDIT_FRAME</a>::<a href='../R/426.html' title='Multiple referred from 15 places.'>Clear_Pcb</a>( <strong class='reserved'>bool</strong> <a href='../Y/5849.html' title='Multiple used in 6 places.'>aQuery</a> )
+<a id='L95' name='L95'></a>  95 <em class='brace'>{</em>
+<a id='L96' name='L96'></a>  96     <strong class='reserved'>if</strong>( <a href='../D/1112.html' title='Multiple defined in 2 places.'>GetBoard</a>() == <a href='../Y/2643.html' title='Multiple used in 1581 places.'>NULL</a> )
+<a id='L97' name='L97'></a>  97         <strong class='reserved'>return</strong> <strong class='reserved'>false</strong>;
+<a id='L98' name='L98'></a>  98 
+<a id='L99' name='L99'></a>  99     <strong class='reserved'>if</strong>( <a href='../Y/5849.html' title='Multiple used in 6 places.'>aQuery</a> &amp;&amp; <a href='../D/1836.html' title='Multiple defined in 2 places.'>IsContentModified</a>() )
+<a id='L100' name='L100'></a> 100     <em class='brace'>{</em>
+<a id='L101' name='L101'></a> 101         <a href='../Y/15935.html' title='Multiple used in 13 places.'>wxSafeYield</a>( <strong class='reserved'>this</strong>, <strong class='reserved'>true</strong> );      <em class='comment'>// Allow frame to come to front before showing warning.</em>
+<a id='L102' name='L102'></a> 102 
+<a id='L103' name='L103'></a> 103         <strong class='reserved'>if</strong>( !<a href='../Y/1856.html' title='Multiple used in 6 places.'>HandleUnsavedChanges</a>( <strong class='reserved'>this</strong>, <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "The current footprint has been modified.  "
+<a id='L104' name='L104'></a> 104                                             "Save changes?" ),
+<a id='L105' name='L105'></a> 105                     [&amp;]() -&gt; <strong class='reserved'>bool</strong> <em class='brace'>{</em> <strong class='reserved'>return</strong> <a href='../S/439.html#L676' title='Defined at 676 in footprint_libraries_utils.cpp.'>SaveFootprint</a>( <a href='../D/1112.html' title='Multiple defined in 2 places.'>GetBoard</a>()-&gt;<a href='../Y/2588.html' title='Multiple used in 121 places.'>Modules</a>().<a href='../Y/8139.html' title='Multiple used in 34 places.'>front</a>() ); <em class='brace'>}</em> ) )
+<a id='L106' name='L106'></a> 106         <em class='brace'>{</em>
+<a id='L107' name='L107'></a> 107             <strong class='reserved'>return</strong> <strong class='reserved'>false</strong>;
+<a id='L108' name='L108'></a> 108         <em class='brace'>}</em>
+<a id='L109' name='L109'></a> 109     <em class='brace'>}</em>
+<a id='L110' name='L110'></a> 110 
+<a id='L111' name='L111'></a> 111     <em class='comment'>// Clear undo and redo lists because we want a full deletion</em>
+<a id='L112' name='L112'></a> 112     <a href='../Y/506.html' title='Multiple used in 6 places.'>ClearUndoRedoList</a>();
+<a id='L113' name='L113'></a> 113     <a href='../Y/1688.html' title='Multiple used in 57 places.'>GetScreen</a>()-&gt;<a href='../Y/513.html' title='Multiple used in 14 places.'>ClrModify</a>();
+<a id='L114' name='L114'></a> 114 
+<a id='L115' name='L115'></a> 115     <a href='../S/57.html#L104' title='Defined at 104 in class_board.cpp.'>BOARD</a>* <a href='../Y/6700.html' title='Multiple used in 309 places.'>board</a> = <strong class='reserved'>new</strong> <a href='../S/57.html#L104' title='Defined at 104 in class_board.cpp.'>BOARD</a>;
+<a id='L116' name='L116'></a> 116 
+<a id='L117' name='L117'></a> 117     <a href='../Y/6700.html' title='Multiple used in 309 places.'>board</a>-&gt;<a href='../S/57.html#L1254' title='Defined at 1254 in class_board.cpp.'>SynchronizeNetsAndNetClasses</a>();
+<a id='L118' name='L118'></a> 118     <a href='../D/2988.html' title='Multiple defined in 5 places.'>SetBoard</a>( <a href='../Y/6700.html' title='Multiple used in 309 places.'>board</a> );
+<a id='L119' name='L119'></a> 119 
+<a id='L120' name='L120'></a> 120     <em class='comment'>// clear filename, to avoid overwriting an old file</em>
+<a id='L121' name='L121'></a> 121     <a href='../D/1112.html' title='Multiple defined in 2 places.'>GetBoard</a>()-&gt;<a href='../Y/3511.html' title='Multiple used in 20 places.'>SetFileName</a>( <a href='../Y/15676.html' title='Multiple used in 516 places.'>wxEmptyString</a> );
+<a id='L122' name='L122'></a> 122 
+<a id='L123' name='L123'></a> 123     <a href='../Y/1688.html' title='Multiple used in 57 places.'>GetScreen</a>()-&gt;<a href='../Y/2062.html' title='Multiple used in 3 places.'>InitDataPoints</a>( <a href='../S/581.html#L233' title='Defined at 233 in pcb_base_frame.cpp.'>GetPageSizeIU</a>() );
+<a id='L124' name='L124'></a> 124 
+<a id='L125' name='L125'></a> 125     <a href='../Y/4926.html' title='Multiple used in 10 places.'>Zoom_Automatique</a>( <strong class='reserved'>false</strong> );
+<a id='L126' name='L126'></a> 126 
+<a id='L127' name='L127'></a> 127     <strong class='reserved'>return</strong> <strong class='reserved'>true</strong>;
+<a id='L128' name='L128'></a> 128 <em class='brace'>}</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L42'>[^]</a><a href='#L94'>[v]</a><a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

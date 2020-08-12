@@ -1,0 +1,179 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>dialogs/dialog_gencad_export_options.cpp</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/831.html'>dialogs</a>/dialog_gencad_export_options.cpp</h2>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L79'>[^]</a><a href='#L131'>[v]</a>[top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L79' title='Defined at 79.'>GetOption</a></li>
+<li><a href='#L93' title='Defined at 93.'>GetAllOptions</a></li>
+<li><a href='#L104' title='Defined at 104.'>GetFileName</a></li>
+<li><a href='#L110' title='Defined at 110.'>TransferDataFromWindow</a></li>
+<li><a href='#L131' title='Defined at 131.'>createOptCheckboxes</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * This program source code file is part of KiCad, a free EDA CAD application.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 2017 CERN</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> * Copyright (C) 2018-2019 KiCad Developers, see change_log.txt for contributors.</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> *</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> * @author Maciej Suminski &lt;maciej.suminski@cern.ch&gt;</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> *</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * This program is free software; you can redistribute it and/or</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> * modify it under the terms of the GNU General Public License</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> * as published by the Free Software Foundation; either version 2</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> * of the License, or (at your option) any later version.</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> *</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * This program is distributed in the hope that it will be useful,</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> * but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> * GNU General Public License for more details.</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> *</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> * You should have received a copy of the GNU General Public License</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> * along with this program; if not, you may find one here:</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'> * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'> * or you may search the http://www.gnu.org website for the version 2 license,</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'> * or you may write to the Free Software Foundation, Inc.,</em>
+<a id='L24' name='L24'></a>  24 <em class='comment'> * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA</em>
+<a id='L25' name='L25'></a>  25 <em class='comment'> */</em>
+<a id='L26' name='L26'></a>  26 
+<a id='L27' name='L27'></a>  27 <em class='sharp'>#include</em> "<a href='186.html'>dialog_gencad_export_options.h</a>"
+<a id='L28' name='L28'></a>  28 
+<a id='L29' name='L29'></a>  29 <em class='sharp'>#include</em> &lt;<a href='586.html'>pcb_edit_frame.h</a>&gt;
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#include</em> &lt;<a href='58.html'>class_board.h</a>&gt;
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#include</em> &lt;project.h&gt;
+<a id='L32' name='L32'></a>  32 <em class='sharp'>#include</em> &lt;confirm.h&gt;
+<a id='L33' name='L33'></a>  33 <em class='sharp'>#include</em> &lt;wildcards_and_files_ext.h&gt;
+<a id='L34' name='L34'></a>  34 <em class='sharp'>#include</em> &lt;wx/filepicker.h&gt;
+<a id='L35' name='L35'></a>  35 <em class='sharp'>#include</em> &lt;wx/statline.h&gt;
+<a id='L36' name='L36'></a>  36 
+<a id='L37' name='L37'></a>  37 
+<a id='L38' name='L38'></a>  38 <a href='../D/600.html' title='Multiple defined in 2 places.'>DIALOG_GENCAD_EXPORT_OPTIONS</a>::<a href='../R/575.html' title='Multiple referred from 11 places.'>DIALOG_GENCAD_EXPORT_OPTIONS</a>( <a href='../S/585.html#L356' title='Defined at 356 in pcb_edit_frame.cpp.'>PCB_EDIT_FRAME</a>* <a href='../Y/5754.html' title='Multiple used in 610 places.'>aParent</a>,
+<a id='L39' name='L39'></a>  39                                                             <strong class='reserved'>const</strong> <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>&amp; <a href='../Y/5766.html' title='Multiple used in 74 places.'>aPath</a> )
+<a id='L40' name='L40'></a>  40     : <a href='../Y/651.html' title='Multiple used in 115 places.'>DIALOG_SHIM</a>( <a href='../Y/5754.html' title='Multiple used in 610 places.'>aParent</a>, <a href='../Y/15781.html' title='Multiple used in 1517 places.'>wxID_ANY</a>, <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Export to GenCAD settings" ), <a href='../Y/15609.html' title='Multiple used in 1643 places.'>wxDefaultPosition</a>,
+<a id='L41' name='L41'></a>  41                    <a href='../Y/15610.html' title='Multiple used in 1594 places.'>wxDefaultSize</a>, <a href='../Y/15591.html' title='Multiple used in 56 places.'>wxDEFAULT_DIALOG_STYLE</a> | <a href='../Y/15884.html' title='Multiple used in 54 places.'>wxRESIZE_BORDER</a> )
+<a id='L42' name='L42'></a>  42 <em class='brace'>{</em>
+<a id='L43' name='L43'></a>  43     <a href='../Y/15539.html' title='Multiple used in 630 places.'>wxBoxSizer</a>* <a href='../Y/11261.html' title='Multiple used in 15 places.'>m_mainSizer</a>= <strong class='reserved'>new</strong> <a href='../Y/15539.html' title='Multiple used in 630 places.'>wxBoxSizer</a>( <a href='../Y/15989.html' title='Multiple used in 255 places.'>wxVERTICAL</a> );
+<a id='L44' name='L44'></a>  44 
+<a id='L45' name='L45'></a>  45     <em class='comment'>// Ctreate the file picker. The path will be set later, when the widget size</em>
+<a id='L46' name='L46'></a>  46     <em class='comment'>// is set to.</em>
+<a id='L47' name='L47'></a>  47     <a href='../Y/10841.html' title='Multiple used in 11 places.'>m_filePicker</a> = <strong class='reserved'>new</strong> <a href='../Y/15717.html' title='Multiple used in 11 places.'>wxFilePickerCtrl</a>( <strong class='reserved'>this</strong>, <a href='../Y/15781.html' title='Multiple used in 1517 places.'>wxID_ANY</a>, "",
+<a id='L48' name='L48'></a>  48                                          <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>("Select a GenCAD export filename"),
+<a id='L49' name='L49'></a>  49                                          GencadFileWildcard(),
+<a id='L50' name='L50'></a>  50                                          <a href='../Y/15609.html' title='Multiple used in 1643 places.'>wxDefaultPosition</a>, <a href='../Y/15943.html' title='Multiple used in 474 places.'>wxSize</a>( -1,-1 ),
+<a id='L51' name='L51'></a>  51                                          <a href='../Y/15698.html' title='Multiple used in 4 places.'>wxFLP_SAVE</a>|<a href='../Y/15699.html' title='Multiple used in 4 places.'>wxFLP_USE_TEXTCTRL</a> );
+<a id='L52' name='L52'></a>  52     <a href='../Y/11261.html' title='Multiple used in 15 places.'>m_mainSizer</a>-&gt;<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../Y/10841.html' title='Multiple used in 11 places.'>m_filePicker</a>, 0, <a href='../Y/15675.html' title='Multiple used in 1040 places.'>wxEXPAND</a> | <a href='../Y/15886.html' title='Multiple used in 906 places.'>wxRIGHT</a>, 5 );
+<a id='L53' name='L53'></a>  53 
+<a id='L54' name='L54'></a>  54     <a href='../Y/11475.html' title='Multiple used in 4 places.'>m_optsSizer</a> = <strong class='reserved'>new</strong> <a href='../Y/15762.html' title='Multiple used in 10 places.'>wxGridSizer</a>( 0, 1, 3, 3 );
+<a id='L55' name='L55'></a>  55     <a href='../S/185.html#L131' title='Defined at 131 in dialogs/dialog_gencad_export_options.cpp.'>createOptCheckboxes</a>();
+<a id='L56' name='L56'></a>  56     <a href='../Y/11261.html' title='Multiple used in 15 places.'>m_mainSizer</a>-&gt;<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../Y/11475.html' title='Multiple used in 4 places.'>m_optsSizer</a>, 1, <a href='../Y/15675.html' title='Multiple used in 1040 places.'>wxEXPAND</a> | <a href='../Y/15812.html' title='Multiple used in 849 places.'>wxLEFT</a> | <a href='../Y/15886.html' title='Multiple used in 906 places.'>wxRIGHT</a> | <a href='../Y/15528.html' title='Multiple used in 393 places.'>wxBOTTOM</a>, 5 );
+<a id='L57' name='L57'></a>  57 
+<a id='L58' name='L58'></a>  58     <a href='../Y/15946.html' title='Multiple used in 13 places.'>wxSizer</a>* <a href='../Y/14679.html' title='Multiple used in 2 places.'>stdButtons</a> = CreateSeparatedButtonSizer( <a href='../Y/15855.html' title='Multiple used in 27 places.'>wxOK</a> | <a href='../Y/15544.html' title='Multiple used in 11 places.'>wxCANCEL</a> );
+<a id='L59' name='L59'></a>  59     <a href='../Y/11261.html' title='Multiple used in 15 places.'>m_mainSizer</a>-&gt;<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../Y/14679.html' title='Multiple used in 2 places.'>stdButtons</a>, 0, <a href='../Y/15675.html' title='Multiple used in 1040 places.'>wxEXPAND</a> | <a href='../Y/15812.html' title='Multiple used in 849 places.'>wxLEFT</a> | <a href='../Y/15886.html' title='Multiple used in 906 places.'>wxRIGHT</a> | <a href='../Y/15528.html' title='Multiple used in 393 places.'>wxBOTTOM</a>, 5 );
+<a id='L60' name='L60'></a>  60 
+<a id='L61' name='L61'></a>  61     <a href='../Y/3848.html' title='Multiple used in 118 places.'>SetSizer</a>( <a href='../Y/11261.html' title='Multiple used in 15 places.'>m_mainSizer</a> );
+<a id='L62' name='L62'></a>  62 
+<a id='L63' name='L63'></a>  63     <em class='comment'>// Now all widgets have the size fixed, call FinishDialogSettings</em>
+<a id='L64' name='L64'></a>  64     <a href='../Y/1064.html' title='Multiple used in 33 places.'>FinishDialogSettings</a>();
+<a id='L65' name='L65'></a>  65 
+<a id='L66' name='L66'></a>  66     <em class='comment'>// Set the path in m_filePicker, now the size is set</em>
+<a id='L67' name='L67'></a>  67     <em class='comment'>// (otherwize the text is truncated)</em>
+<a id='L68' name='L68'></a>  68     <a href='../Y/10841.html' title='Multiple used in 11 places.'>m_filePicker</a>-&gt;<a href='../Y/3749.html' title='Multiple used in 35 places.'>SetPath</a>( <a href='../Y/5766.html' title='Multiple used in 74 places.'>aPath</a> );
+<a id='L69' name='L69'></a>  69 
+<a id='L70' name='L70'></a>  70     <a href='../Y/467.html' title='Multiple used in 60 places.'>Centre</a>( <a href='../Y/15527.html' title='Multiple used in 110 places.'>wxBOTH</a> );
+<a id='L71' name='L71'></a>  71 <em class='brace'>}</em>
+<a id='L72' name='L72'></a>  72 
+<a id='L73' name='L73'></a>  73 
+<a id='L74' name='L74'></a>  74 <a href='../D/600.html' title='Multiple defined in 2 places.'>DIALOG_GENCAD_EXPORT_OPTIONS</a>::~<a href='../R/575.html' title='Multiple referred from 11 places.'>DIALOG_GENCAD_EXPORT_OPTIONS</a>()
+<a id='L75' name='L75'></a>  75 <em class='brace'>{</em>
+<a id='L76' name='L76'></a>  76 <em class='brace'>}</em>
+<a id='L77' name='L77'></a>  77 
+<a id='L78' name='L78'></a>  78 
+<a id='L79' name='L79'></a>  79 <strong class='reserved'>bool</strong> <a href='../D/600.html' title='Multiple defined in 2 places.'>DIALOG_GENCAD_EXPORT_OPTIONS</a>::<a href='../R/1227.html' title='Multiple referred from 7 places.'>GetOption</a>( <a href='../S/186.html#L34' title='Defined at 34 in dialogs/dialog_gencad_export_options.h.'>GENCAD_EXPORT_OPT</a> <a href='../Y/5685.html' title='Multiple used in 6 places.'>aOption</a> ) <strong class='reserved'>const</strong>
+<a id='L80' name='L80'></a>  80 <em class='brace'>{</em>
+<a id='L81' name='L81'></a>  81     <strong class='reserved'>auto</strong> <a href='../Y/8702.html' title='Multiple used in 290 places.'>it</a> = <a href='../S/166.html#L30' title='Defined at 30 in dialogs/dialog_filter_selection.cpp.'>m_options</a>.<a href='../D/3905.html' title='Multiple defined in 2 places.'>find</a>( <a href='../Y/5685.html' title='Multiple used in 6 places.'>aOption</a> );
+<a id='L82' name='L82'></a>  82 
+<a id='L83' name='L83'></a>  83     <strong class='reserved'>if</strong>( <a href='../Y/8702.html' title='Multiple used in 290 places.'>it</a> == <a href='../S/166.html#L30' title='Defined at 30 in dialogs/dialog_filter_selection.cpp.'>m_options</a>.<a href='../Y/7716.html' title='Multiple used in 512 places.'>end</a>() )
+<a id='L84' name='L84'></a>  84     <em class='brace'>{</em>
+<a id='L85' name='L85'></a>  85         <a href='../Y/15501.html' title='Multiple used in 32 places.'>wxASSERT_MSG</a>( <strong class='reserved'>false</strong>, "Missing checkbox for an option" );
+<a id='L86' name='L86'></a>  86         <strong class='reserved'>return</strong> <strong class='reserved'>false</strong>;
+<a id='L87' name='L87'></a>  87     <em class='brace'>}</em>
+<a id='L88' name='L88'></a>  88 
+<a id='L89' name='L89'></a>  89     <strong class='reserved'>return</strong> <a href='../Y/8702.html' title='Multiple used in 290 places.'>it</a>-&gt;<a href='../Y/14266.html' title='Multiple used in 220 places.'>second</a>-&gt;<a href='../Y/2098.html' title='Multiple used in 31 places.'>IsChecked</a>();
+<a id='L90' name='L90'></a>  90 <em class='brace'>}</em>
+<a id='L91' name='L91'></a>  91 
+<a id='L92' name='L92'></a>  92 
+<a id='L93' name='L93'></a>  93 <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/12456.html' title='Multiple used in 97 places.'>map</a>&lt;<a href='../S/186.html#L34' title='Defined at 34 in dialogs/dialog_gencad_export_options.h.'>GENCAD_EXPORT_OPT</a>, <strong class='reserved'>bool</strong>&gt; <a href='../D/600.html' title='Multiple defined in 2 places.'>DIALOG_GENCAD_EXPORT_OPTIONS</a>::<a href='../S/186.html#L54' title='Referred from 54 in dialogs/dialog_gencad_export_options.h.'>GetAllOptions</a>() <strong class='reserved'>const</strong>
+<a id='L94' name='L94'></a>  94 <em class='brace'>{</em>
+<a id='L95' name='L95'></a>  95     <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/12456.html' title='Multiple used in 97 places.'>map</a>&lt;<a href='../S/186.html#L34' title='Defined at 34 in dialogs/dialog_gencad_export_options.h.'>GENCAD_EXPORT_OPT</a>, <strong class='reserved'>bool</strong>&gt; <a href='../Y/14023.html' title='Multiple used in 7 places.'>retVal</a>;
+<a id='L96' name='L96'></a>  96 
+<a id='L97' name='L97'></a>  97     <strong class='reserved'>for</strong>( <strong class='reserved'>const</strong> <strong class='reserved'>auto</strong>&amp; <a href='../Y/13169.html' title='Multiple used in 9 places.'>option</a> : <a href='../S/166.html#L30' title='Defined at 30 in dialogs/dialog_filter_selection.cpp.'>m_options</a> )
+<a id='L98' name='L98'></a>  98         <a href='../Y/14023.html' title='Multiple used in 7 places.'>retVal</a>[<a href='../Y/13169.html' title='Multiple used in 9 places.'>option</a>.<a href='../Y/7986.html' title='Multiple used in 99 places.'>first</a>] = <a href='../Y/13169.html' title='Multiple used in 9 places.'>option</a>.<a href='../Y/14266.html' title='Multiple used in 220 places.'>second</a>-&gt;<a href='../Y/2098.html' title='Multiple used in 31 places.'>IsChecked</a>();
+<a id='L99' name='L99'></a>  99 
+<a id='L100' name='L100'></a> 100     <strong class='reserved'>return</strong> <a href='../Y/14023.html' title='Multiple used in 7 places.'>retVal</a>;
+<a id='L101' name='L101'></a> 101 <em class='brace'>}</em>
+<a id='L102' name='L102'></a> 102 
+<a id='L103' name='L103'></a> 103 
+<a id='L104' name='L104'></a> 104 <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../D/600.html' title='Multiple defined in 2 places.'>DIALOG_GENCAD_EXPORT_OPTIONS</a>::<a href='../R/1138.html' title='Multiple referred from 70 places.'>GetFileName</a>() <strong class='reserved'>const</strong>
+<a id='L105' name='L105'></a> 105 <em class='brace'>{</em>
+<a id='L106' name='L106'></a> 106     <strong class='reserved'>return</strong> <a href='../Y/10841.html' title='Multiple used in 11 places.'>m_filePicker</a>-&gt;<a href='../D/1292.html' title='Multiple defined in 2 places.'>GetPath</a>();
+<a id='L107' name='L107'></a> 107 <em class='brace'>}</em>
+<a id='L108' name='L108'></a> 108 
+<a id='L109' name='L109'></a> 109 
+<a id='L110' name='L110'></a> 110 <strong class='reserved'>bool</strong> <a href='../D/600.html' title='Multiple defined in 2 places.'>DIALOG_GENCAD_EXPORT_OPTIONS</a>::<a href='../R/3144.html' title='Multiple referred from 63 places.'>TransferDataFromWindow</a>()
+<a id='L111' name='L111'></a> 111 <em class='brace'>{</em>
+<a id='L112' name='L112'></a> 112     <strong class='reserved'>if</strong>( !<a href='../Y/15611.html' title='Multiple used in 17 places.'>wxDialog</a>::<a href='../D/3272.html' title='Multiple defined in 44 places.'>TransferDataFromWindow</a>() )
+<a id='L113' name='L113'></a> 113         <strong class='reserved'>return</strong> <strong class='reserved'>false</strong>;
+<a id='L114' name='L114'></a> 114 
+<a id='L115' name='L115'></a> 115     <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../Y/8023.html' title='Multiple used in 320 places.'>fn</a> = <a href='../D/1181.html' title='Multiple defined in 3 places.'>GetFileName</a>();
+<a id='L116' name='L116'></a> 116 
+<a id='L117' name='L117'></a> 117     <strong class='reserved'>if</strong>( <a href='../Y/15712.html' title='Multiple used in 2 places.'>wxFile</a>::<a href='../S/497.html#L123' title='Defined at 123 in kicad_plugin.cpp.'>Exists</a>( <a href='../Y/8023.html' title='Multiple used in 320 places.'>fn</a> ) )
+<a id='L118' name='L118'></a> 118     <em class='brace'>{</em>
+<a id='L119' name='L119'></a> 119         <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../Y/12733.html' title='Multiple used in 994 places.'>msg</a> = <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>::<a href='../D/1022.html' title='Multiple defined in 7 places.'>Format</a>( <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "File %s already exists." ), <a href='../Y/8023.html' title='Multiple used in 320 places.'>fn</a> );
+<a id='L120' name='L120'></a> 120         <a href='../Y/2248.html' title='Multiple used in 13 places.'>KIDIALOG</a> <a href='../Y/7493.html' title='Multiple used in 304 places.'>dlg</a>( <strong class='reserved'>this</strong>, <a href='../Y/12733.html' title='Multiple used in 994 places.'>msg</a>, <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Confirmation" ), <a href='../Y/15855.html' title='Multiple used in 27 places.'>wxOK</a> | <a href='../Y/15544.html' title='Multiple used in 11 places.'>wxCANCEL</a> | <a href='../Y/15780.html' title='Multiple used in 14 places.'>wxICON_WARNING</a> );
+<a id='L121' name='L121'></a> 121         <a href='../Y/7493.html' title='Multiple used in 304 places.'>dlg</a>.<a href='../Y/3719.html' title='Multiple used in 9 places.'>SetOKLabel</a>( <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Overwrite" ) );
+<a id='L122' name='L122'></a> 122         <a href='../Y/7493.html' title='Multiple used in 304 places.'>dlg</a>.<a href='../Y/795.html' title='Multiple used in 11 places.'>DoNotShowCheckbox</a>( <a href='../Y/4943.html' title='Multiple used in 17 places.'>__FILE__</a>, <a href='../Y/4945.html' title='Multiple used in 17 places.'>__LINE__</a> );
+<a id='L123' name='L123'></a> 123 
+<a id='L124' name='L124'></a> 124         <strong class='reserved'>return</strong> ( <a href='../Y/7493.html' title='Multiple used in 304 places.'>dlg</a>.<a href='../S/444.html#L846' title='Defined at 846 in footprint_viewer_frame.cpp.'>ShowModal</a>() == <a href='../Y/15789.html' title='Multiple used in 108 places.'>wxID_OK</a> );
+<a id='L125' name='L125'></a> 125     <em class='brace'>}</em>
+<a id='L126' name='L126'></a> 126 
+<a id='L127' name='L127'></a> 127     <strong class='reserved'>return</strong> <strong class='reserved'>true</strong>;
+<a id='L128' name='L128'></a> 128 <em class='brace'>}</em>
+<a id='L129' name='L129'></a> 129 
+<a id='L130' name='L130'></a> 130 
+<a id='L131' name='L131'></a> 131 <strong class='reserved'>void</strong> <a href='../D/600.html' title='Multiple defined in 2 places.'>DIALOG_GENCAD_EXPORT_OPTIONS</a>::<a href='../R/3583.html' title='Multiple referred from 2 places.'>createOptCheckboxes</a>()
+<a id='L132' name='L132'></a> 132 <em class='brace'>{</em>
+<a id='L133' name='L133'></a> 133     <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/12456.html' title='Multiple used in 97 places.'>map</a>&lt;<a href='../S/186.html#L34' title='Defined at 34 in dialogs/dialog_gencad_export_options.h.'>GENCAD_EXPORT_OPT</a>, <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>&gt; <a href='../Y/13176.html' title='Multiple used in 82 places.'>opts</a> =
+<a id='L134' name='L134'></a> 134     <em class='brace'>{</em>
+<a id='L135' name='L135'></a> 135         <em class='brace'>{</em> <a href='../S/186.html#L36' title='Defined at 36 in dialogs/dialog_gencad_export_options.h.'>FLIP_BOTTOM_PADS</a>,    <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Flip bottom footprint padstacks" ) <em class='brace'>}</em>,
+<a id='L136' name='L136'></a> 136         <em class='brace'>{</em> <a href='../S/186.html#L37' title='Defined at 37 in dialogs/dialog_gencad_export_options.h.'>UNIQUE_PIN_NAMES</a>,    <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Generate unique pin names" ) <em class='brace'>}</em>,
+<a id='L137' name='L137'></a> 137         <em class='brace'>{</em> <a href='../S/186.html#L38' title='Defined at 38 in dialogs/dialog_gencad_export_options.h.'>INDIVIDUAL_SHAPES</a>,   <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Generate a new shape for each footprint instance (do not reuse shapes)" ) <em class='brace'>}</em>,
+<a id='L138' name='L138'></a> 138         <em class='brace'>{</em> <a href='../S/186.html#L39' title='Defined at 39 in dialogs/dialog_gencad_export_options.h.'>USE_AUX_ORIGIN</a>,      <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Use auxiliary axis as origin" ) <em class='brace'>}</em>,
+<a id='L139' name='L139'></a> 139         <em class='brace'>{</em> <a href='../S/186.html#L40' title='Defined at 40 in dialogs/dialog_gencad_export_options.h.'>STORE_ORIGIN_COORDS</a>, <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Save the origin coordinates in the file" ) <em class='brace'>}</em>
+<a id='L140' name='L140'></a> 140     <em class='brace'>}</em>;
+<a id='L141' name='L141'></a> 141 
+<a id='L142' name='L142'></a> 142     <strong class='reserved'>for</strong>( <strong class='reserved'>const</strong> <strong class='reserved'>auto</strong>&amp; <a href='../Y/13169.html' title='Multiple used in 9 places.'>option</a> : <a href='../Y/13176.html' title='Multiple used in 82 places.'>opts</a> )
+<a id='L143' name='L143'></a> 143     <em class='brace'>{</em>
+<a id='L144' name='L144'></a> 144         <a href='../Y/15567.html' title='Multiple used in 544 places.'>wxCheckBox</a>* <a href='../Y/6889.html' title='Multiple used in 3 places.'>chkbox</a> = <strong class='reserved'>new</strong> <a href='../Y/15567.html' title='Multiple used in 544 places.'>wxCheckBox</a>( <strong class='reserved'>this</strong>, <a href='../Y/15781.html' title='Multiple used in 1517 places.'>wxID_ANY</a>, <a href='../Y/13169.html' title='Multiple used in 9 places.'>option</a>.<a href='../Y/14266.html' title='Multiple used in 220 places.'>second</a> );
+<a id='L145' name='L145'></a> 145         <a href='../S/166.html#L30' title='Defined at 30 in dialogs/dialog_filter_selection.cpp.'>m_options</a>[<a href='../Y/13169.html' title='Multiple used in 9 places.'>option</a>.<a href='../Y/7986.html' title='Multiple used in 99 places.'>first</a>] = <a href='../Y/6889.html' title='Multiple used in 3 places.'>chkbox</a>;
+<a id='L146' name='L146'></a> 146         <a href='../Y/11475.html' title='Multiple used in 4 places.'>m_optsSizer</a>-&gt;<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../Y/6889.html' title='Multiple used in 3 places.'>chkbox</a> );
+<a id='L147' name='L147'></a> 147     <em class='brace'>}</em>
+<a id='L148' name='L148'></a> 148 <em class='brace'>}</em>
+<a id='L149' name='L149'></a> 149 
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L79'>[^]</a><a href='#L131'>[v]</a><a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

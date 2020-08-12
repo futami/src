@@ -1,0 +1,528 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>dialogs/dialog_create_array.cpp</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/831.html'>dialogs</a>/dialog_create_array.cpp</h2>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L74'>[^]</a><a href='#L488'>[v]</a>[top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L74' title='Defined at 74.'>m_arrayTypeTab</a></li>
+<li><a href='#L153' title='Defined at 153.'>m_cfg_persister</a></li>
+<li><a href='#L227' title='Defined at 227.'>OnParameterChanged</a></li>
+<li><a href='#L243' title='Defined at 243.'>validateLongEntry</a></li>
+<li><a href='#L270' title='Defined at 270.'>validateAxisOptions</a></li>
+<li><a href='#L306' title='Defined at 306.'>TransferDataFromWindow</a></li>
+<li><a href='#L437' title='Defined at 437.'>setControlEnablement</a></li>
+<li><a href='#L488' title='Defined at 488.'>calculateCircularArrayProperties</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * This program source code file is part of KiCad, a free EDA CAD application.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 1992-2019 KiCad Developers, see AUTHORS.txt for contributors.</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> *</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> * This program is free software; you can redistribute it and/or</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> * modify it under the terms of the GNU General Public License</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * as published by the Free Software Foundation; either version 2</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * of the License, or (at your option) any later version.</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> *</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> * This program is distributed in the hope that it will be useful,</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> * but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * GNU General Public License for more details.</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> *</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> * You should have received a copy of the GNU General Public License</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> * along with this program; if not, you may find one here:</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> * or you may search the http://www.gnu.org website for the version 2 license,</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> * or you may write to the Free Software Foundation, Inc.,</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'> * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'> */</em>
+<a id='L23' name='L23'></a>  23 
+<a id='L24' name='L24'></a>  24 <em class='sharp'>#include</em> "<a href='121.html'>dialogs/dialog_create_array.h</a>"
+<a id='L25' name='L25'></a>  25 
+<a id='L26' name='L26'></a>  26 <em class='sharp'>#include</em> &lt;base_units.h&gt;
+<a id='L27' name='L27'></a>  27 
+<a id='L28' name='L28'></a>  28 <em class='sharp'>#include</em> &lt;widgets/text_ctrl_eval.h&gt;
+<a id='L29' name='L29'></a>  29 
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#include</em> &lt;<a href='58.html'>class_board.h</a>&gt;
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#include</em> &lt;<a href='69.html'>class_module.h</a>&gt;
+<a id='L32' name='L32'></a>  32 <em class='sharp'>#include</em> &lt;<a href='586.html'>pcb_edit_frame.h</a>&gt;
+<a id='L33' name='L33'></a>  33 
+<a id='L34' name='L34'></a>  34 <em class='sharp'>#include</em> &lt;boost/algorithm/string/join.hpp&gt;
+<a id='L35' name='L35'></a>  35 
+<a id='L36' name='L36'></a>  36 <em class='comment'>/**</em>
+<a id='L37' name='L37'></a>  37 <em class='comment'> * Struct containing the last-entered values for the dialog.</em>
+<a id='L38' name='L38'></a>  38 <em class='comment'> */</em>
+<a id='L39' name='L39'></a>  39 <strong class='reserved'>struct</strong> <a href='../R/359.html' title='Multiple referred from 2 places.'>CREATE_ARRAY_DIALOG_ENTRIES</a>
+<a id='L40' name='L40'></a>  40 <em class='brace'>{</em>
+<a id='L41' name='L41'></a>  41     <em class='comment'>/**</em>
+<a id='L42' name='L42'></a>  42 <em class='comment'>     * Construct with some sensible defaults.</em>
+<a id='L43' name='L43'></a>  43 <em class='comment'>     * In future, this could be loaded from config?</em>
+<a id='L44' name='L44'></a>  44 <em class='comment'>     */</em>
+<a id='L45' name='L45'></a>  45     <a href='../S/120.html#L39' title='Defined at 39 in dialogs/dialog_create_array.cpp.'>CREATE_ARRAY_DIALOG_ENTRIES</a>()
+<a id='L46' name='L46'></a>  46             : <a href='../Y/11472.html' title='Multiple used in 3 places.'>m_optionsSet</a>( <strong class='reserved'>true</strong> ),
+<a id='L47' name='L47'></a>  47               <a href='../Y/10954.html' title='Multiple used in 3 places.'>m_gridNx</a>( 5 ),
+<a id='L48' name='L48'></a>  48               <a href='../Y/10955.html' title='Multiple used in 3 places.'>m_gridNy</a>( 5 ),
+<a id='L49' name='L49'></a>  49               <a href='../Y/10947.html' title='Multiple used in 3 places.'>m_gridDx</a>( <a href='../Y/2573.html' title='Multiple used in 201 places.'>Millimeter2iu</a>( 2.54 ) ),
+<a id='L50' name='L50'></a>  50               <a href='../Y/10948.html' title='Multiple used in 3 places.'>m_gridDy</a>( <a href='../Y/2573.html' title='Multiple used in 201 places.'>Millimeter2iu</a>( 2.54 ) ),
+<a id='L51' name='L51'></a>  51               <a href='../Y/10956.html' title='Multiple used in 3 places.'>m_gridOffsetX</a>( 0 ),
+<a id='L52' name='L52'></a>  52               <a href='../Y/10957.html' title='Multiple used in 3 places.'>m_gridOffsetY</a>( 0 ),
+<a id='L53' name='L53'></a>  53               <a href='../Y/10971.html' title='Multiple used in 3 places.'>m_gridStagger</a>( 1 ),
+<a id='L54' name='L54'></a>  54               <a href='../Y/10972.html' title='Multiple used in 3 places.'>m_gridStaggerType</a>( 0 ),   <em class='comment'>// rows</em>
+<a id='L55' name='L55'></a>  55               <a href='../Y/10951.html' title='Multiple used in 3 places.'>m_gridNumberingAxis</a>( 0 ), <em class='comment'>// h then v</em>
+<a id='L56' name='L56'></a>  56               <a href='../Y/10952.html' title='Multiple used in 3 places.'>m_gridNumberingReverseAlternate</a>( <strong class='reserved'>false</strong> ),
+<a id='L57' name='L57'></a>  57               <a href='../Y/10953.html' title='Multiple used in 3 places.'>m_gridNumberingStartSet</a>( 1 ),    <em class='comment'>// use specified start</em>
+<a id='L58' name='L58'></a>  58               <a href='../Y/10941.html' title='Multiple used in 3 places.'>m_grid2dArrayNumbering</a>( 0 ),     <em class='comment'>// linear numbering</em>
+<a id='L59' name='L59'></a>  59               <a href='../Y/10962.html' title='Multiple used in 3 places.'>m_gridPriAxisNumScheme</a>( 0 ),     <em class='comment'>// numeric</em>
+<a id='L60' name='L60'></a>  60               <a href='../Y/10965.html' title='Multiple used in 3 places.'>m_gridSecAxisNumScheme</a>( 0 ),     <em class='comment'>// numeric</em>
+<a id='L61' name='L61'></a>  61               <a href='../Y/10964.html' title='Multiple used in 3 places.'>m_gridPriNumberingOffset</a>( "1" ), <em class='comment'>// numeric</em>
+<a id='L62' name='L62'></a>  62               <a href='../Y/10967.html' title='Multiple used in 3 places.'>m_gridSecNumberingOffset</a>( "1" ), <em class='comment'>// numeric</em>
+<a id='L63' name='L63'></a>  63               <a href='../Y/10963.html' title='Multiple used in 3 places.'>m_gridPriAxisStep</a>( 1 ),
+<a id='L64' name='L64'></a>  64               <a href='../Y/10966.html' title='Multiple used in 3 places.'>m_gridSecAxisStep</a>( 1 ),
+<a id='L65' name='L65'></a>  65               <a href='../Y/10505.html' title='Multiple used in 3 places.'>m_circCentreX</a>( 0 ),
+<a id='L66' name='L66'></a>  66               <a href='../Y/10506.html' title='Multiple used in 3 places.'>m_circCentreY</a>( 0 ),
+<a id='L67' name='L67'></a>  67               <a href='../Y/10504.html' title='Multiple used in 6 places.'>m_circAngle</a>( 0.0 ),
+<a id='L68' name='L68'></a>  68               <a href='../Y/10507.html' title='Multiple used in 3 places.'>m_circCount</a>( 4 ),
+<a id='L69' name='L69'></a>  69               <a href='../Y/10509.html' title='Multiple used in 3 places.'>m_circNumberingStartSet</a>( 1 ), <em class='comment'>// use specified start</em>
+<a id='L70' name='L70'></a>  70               <a href='../Y/10943.html' title='Multiple used in 3 places.'>m_gridCircNumScheme</a>( 0 ),
+<a id='L71' name='L71'></a>  71               <a href='../Y/10508.html' title='Multiple used in 3 places.'>m_circNumberingOffset</a>( "1" ),
+<a id='L72' name='L72'></a>  72               <a href='../Y/10510.html' title='Multiple used in 3 places.'>m_circNumberingStep</a>( 1 ),
+<a id='L73' name='L73'></a>  73               <a href='../Y/10513.html' title='Multiple used in 3 places.'>m_circRotate</a>( <strong class='reserved'>false</strong> ),
+<a id='L74' name='L74'></a>  74               <a href='../R/3991.html' title='Multiple referred from 2 places.'>m_arrayTypeTab</a>( 0 ) <em class='comment'>// start on grid view</em>
+<a id='L75' name='L75'></a>  75     <em class='brace'>{</em>
+<a id='L76' name='L76'></a>  76     <em class='brace'>}</em>
+<a id='L77' name='L77'></a>  77 
+<a id='L78' name='L78'></a>  78     <strong class='reserved'>bool</strong> <a href='../Y/11472.html' title='Multiple used in 3 places.'>m_optionsSet</a>;
+<a id='L79' name='L79'></a>  79 
+<a id='L80' name='L80'></a>  80     <strong class='reserved'>long</strong> <a href='../Y/10954.html' title='Multiple used in 3 places.'>m_gridNx</a>, <a href='../Y/10955.html' title='Multiple used in 3 places.'>m_gridNy</a>;
+<a id='L81' name='L81'></a>  81     <strong class='reserved'>long</strong> <a href='../Y/10947.html' title='Multiple used in 3 places.'>m_gridDx</a>, <a href='../Y/10948.html' title='Multiple used in 3 places.'>m_gridDy</a>;
+<a id='L82' name='L82'></a>  82     <strong class='reserved'>long</strong> <a href='../Y/10956.html' title='Multiple used in 3 places.'>m_gridOffsetX</a>, <a href='../Y/10957.html' title='Multiple used in 3 places.'>m_gridOffsetY</a>;
+<a id='L83' name='L83'></a>  83     <strong class='reserved'>long</strong> <a href='../Y/10971.html' title='Multiple used in 3 places.'>m_gridStagger</a>;
+<a id='L84' name='L84'></a>  84 
+<a id='L85' name='L85'></a>  85     <strong class='reserved'>long</strong>     <a href='../Y/10972.html' title='Multiple used in 3 places.'>m_gridStaggerType</a>, <a href='../Y/10951.html' title='Multiple used in 3 places.'>m_gridNumberingAxis</a>;
+<a id='L86' name='L86'></a>  86     <strong class='reserved'>bool</strong>     <a href='../Y/10952.html' title='Multiple used in 3 places.'>m_gridNumberingReverseAlternate</a>;
+<a id='L87' name='L87'></a>  87     <strong class='reserved'>long</strong>     <a href='../Y/10953.html' title='Multiple used in 3 places.'>m_gridNumberingStartSet</a>;
+<a id='L88' name='L88'></a>  88     <strong class='reserved'>long</strong>     <a href='../Y/10941.html' title='Multiple used in 3 places.'>m_grid2dArrayNumbering</a>;
+<a id='L89' name='L89'></a>  89     <strong class='reserved'>long</strong>     <a href='../Y/10962.html' title='Multiple used in 3 places.'>m_gridPriAxisNumScheme</a>, <a href='../Y/10965.html' title='Multiple used in 3 places.'>m_gridSecAxisNumScheme</a>;
+<a id='L90' name='L90'></a>  90     <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../Y/10964.html' title='Multiple used in 3 places.'>m_gridPriNumberingOffset</a>, <a href='../Y/10967.html' title='Multiple used in 3 places.'>m_gridSecNumberingOffset</a>;
+<a id='L91' name='L91'></a>  91     <strong class='reserved'>long</strong>     <a href='../Y/10963.html' title='Multiple used in 3 places.'>m_gridPriAxisStep</a>, <a href='../Y/10966.html' title='Multiple used in 3 places.'>m_gridSecAxisStep</a>;
+<a id='L92' name='L92'></a>  92 
+<a id='L93' name='L93'></a>  93     <strong class='reserved'>long</strong>     <a href='../Y/10505.html' title='Multiple used in 3 places.'>m_circCentreX</a>, <a href='../Y/10506.html' title='Multiple used in 3 places.'>m_circCentreY</a>;
+<a id='L94' name='L94'></a>  94     <strong class='reserved'>long</strong>     <a href='../Y/10504.html' title='Multiple used in 6 places.'>m_circAngle</a>;
+<a id='L95' name='L95'></a>  95     <strong class='reserved'>long</strong>     <a href='../Y/10507.html' title='Multiple used in 3 places.'>m_circCount</a>;
+<a id='L96' name='L96'></a>  96     <strong class='reserved'>long</strong>     <a href='../Y/10509.html' title='Multiple used in 3 places.'>m_circNumberingStartSet</a>;
+<a id='L97' name='L97'></a>  97     <strong class='reserved'>long</strong>     <a href='../Y/10943.html' title='Multiple used in 3 places.'>m_gridCircNumScheme</a>;
+<a id='L98' name='L98'></a>  98     <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../Y/10508.html' title='Multiple used in 3 places.'>m_circNumberingOffset</a>;
+<a id='L99' name='L99'></a>  99     <strong class='reserved'>long</strong>     <a href='../Y/10510.html' title='Multiple used in 3 places.'>m_circNumberingStep</a>;
+<a id='L100' name='L100'></a> 100     <strong class='reserved'>bool</strong>     <a href='../Y/10513.html' title='Multiple used in 3 places.'>m_circRotate</a>;
+<a id='L101' name='L101'></a> 101     <strong class='reserved'>long</strong>     <a href='../S/120.html#L74' title='Defined at 74 in dialogs/dialog_create_array.cpp.'>m_arrayTypeTab</a>;
+<a id='L102' name='L102'></a> 102 <em class='brace'>}</em>;
+<a id='L103' name='L103'></a> 103 
+<a id='L104' name='L104'></a> 104 <em class='comment'>// Persistent options settings</em>
+<a id='L105' name='L105'></a> 105 <strong class='reserved'>static</strong> <a href='../S/120.html#L39' title='Defined at 39 in dialogs/dialog_create_array.cpp.'>CREATE_ARRAY_DIALOG_ENTRIES</a> <a href='../Y/14195.html' title='Multiple used in 30 places.'>saved_array_options</a>;
+<a id='L106' name='L106'></a> 106 
+<a id='L107' name='L107'></a> 107 <em class='comment'>/**</em>
+<a id='L108' name='L108'></a> 108 <em class='comment'> * Local mapping for list-box &lt;-&gt; numbering type</em>
+<a id='L109' name='L109'></a> 109 <em class='comment'> */</em>
+<a id='L110' name='L110'></a> 110 <strong class='reserved'>struct</strong> <a href='../R/2053.html' title='Multiple referred from 2 places.'>NUMBERING_LIST_DATA</a>
+<a id='L111' name='L111'></a> 111 <em class='brace'>{</em>
+<a id='L112' name='L112'></a> 112     <a href='../Y/81.html' title='Multiple used in 8 places.'>ARRAY_AXIS</a>::<a href='../Y/2650.html' title='Multiple used in 7 places.'>NUMBERING_TYPE</a> <a href='../Y/11443.html' title='Multiple used in 2 places.'>m_numbering_type</a>;
+<a id='L113' name='L113'></a> 113     <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>                   <a href='../Y/11117.html' title='Multiple used in 6 places.'>m_label</a>;
+<a id='L114' name='L114'></a> 114 <em class='brace'>}</em>;
+<a id='L115' name='L115'></a> 115 
+<a id='L116' name='L116'></a> 116 <em class='comment'>/**</em>
+<a id='L117' name='L117'></a> 117 <em class='comment'> * List of type &lt;--&gt; name mappings (in order) for the numbering type</em>
+<a id='L118' name='L118'></a> 118 <em class='comment'> * list boxes</em>
+<a id='L119' name='L119'></a> 119 <em class='comment'> */</em>
+<a id='L120' name='L120'></a> 120 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/15301.html' title='Multiple used in 606 places.'>vector</a>&lt;<a href='../S/120.html#L110' title='Defined at 110 in dialogs/dialog_create_array.cpp.'>NUMBERING_LIST_DATA</a>&gt; <a href='../Y/13073.html' title='Multiple used in 2 places.'>numberingTypeData</a> <em class='brace'>{</em>
+<a id='L121' name='L121'></a> 121     <em class='brace'>{</em>
+<a id='L122' name='L122'></a> 122         <a href='../Y/81.html' title='Multiple used in 8 places.'>ARRAY_AXIS</a>::<a href='../Y/2650.html' title='Multiple used in 7 places.'>NUMBERING_TYPE</a>::<a href='../Y/2649.html' title='Multiple used in 3 places.'>NUMBERING_NUMERIC</a>,
+<a id='L123' name='L123'></a> 123         <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Numerals (0,1,2,...,9,10)" ),
+<a id='L124' name='L124'></a> 124     <em class='brace'>}</em>,
+<a id='L125' name='L125'></a> 125     <em class='brace'>{</em>
+<a id='L126' name='L126'></a> 126         <a href='../Y/81.html' title='Multiple used in 8 places.'>ARRAY_AXIS</a>::<a href='../Y/2650.html' title='Multiple used in 7 places.'>NUMBERING_TYPE</a>::NUMBERING_HEX,
+<a id='L127' name='L127'></a> 127         <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Hexadecimal (0,1,...,F,10,...)" ),
+<a id='L128' name='L128'></a> 128     <em class='brace'>}</em>,
+<a id='L129' name='L129'></a> 129     <em class='brace'>{</em>
+<a id='L130' name='L130'></a> 130         <a href='../Y/81.html' title='Multiple used in 8 places.'>ARRAY_AXIS</a>::<a href='../Y/2650.html' title='Multiple used in 7 places.'>NUMBERING_TYPE</a>::NUMBERING_ALPHA_NO_IOSQXZ,
+<a id='L131' name='L131'></a> 131         <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Alphabet, minus IOSQXZ" ),
+<a id='L132' name='L132'></a> 132     <em class='brace'>}</em>,
+<a id='L133' name='L133'></a> 133     <em class='brace'>{</em>
+<a id='L134' name='L134'></a> 134         <a href='../Y/81.html' title='Multiple used in 8 places.'>ARRAY_AXIS</a>::<a href='../Y/2650.html' title='Multiple used in 7 places.'>NUMBERING_TYPE</a>::NUMBERING_ALPHA_FULL,
+<a id='L135' name='L135'></a> 135         <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Alphabet, full 26 characters" ),
+<a id='L136' name='L136'></a> 136     <em class='brace'>}</em>,
+<a id='L137' name='L137'></a> 137 <em class='brace'>}</em>;
+<a id='L138' name='L138'></a> 138 
+<a id='L139' name='L139'></a> 139 <a href='../Y/633.html' title='Multiple used in 8 places.'>DIALOG_CREATE_ARRAY</a>::<a href='../Y/633.html' title='Multiple used in 8 places.'>DIALOG_CREATE_ARRAY</a>( <a href='../S/581.html#L68' title='Defined at 68 in pcb_base_frame.cpp.'>PCB_BASE_FRAME</a>* <a href='../Y/5754.html' title='Multiple used in 610 places.'>aParent</a>,
+<a id='L140' name='L140'></a> 140         <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/15186.html' title='Multiple used in 184 places.'>unique_ptr</a>&lt;<a href='../Y/85.html' title='Multiple used in 10 places.'>ARRAY_OPTIONS</a>&gt;&amp; <a href='../Y/5944.html' title='Multiple used in 95 places.'>aSettings</a>, <strong class='reserved'>bool</strong> <a href='../Y/7705.html' title='Multiple used in 3 places.'>enableNumbering</a>, <a href='../Y/15871.html' title='Multiple used in 1252 places.'>wxPoint</a> <a href='../Y/5691.html' title='Multiple used in 3 places.'>aOrigPos</a> )
+<a id='L141' name='L141'></a> 141         : <a href='../D/561.html' title='Multiple defined in 2 places.'>DIALOG_CREATE_ARRAY_BASE</a>( <a href='../Y/5754.html' title='Multiple used in 610 places.'>aParent</a> ),
+<a id='L142' name='L142'></a> 142           <a href='../D/4209.html' title='Multiple defined in 2 places.'>m_settings</a>( <a href='../Y/5944.html' title='Multiple used in 95 places.'>aSettings</a> ),
+<a id='L143' name='L143'></a> 143           <a href='../Y/11490.html' title='Multiple used in 3 places.'>m_originalItemPosition</a>( <a href='../Y/5691.html' title='Multiple used in 3 places.'>aOrigPos</a> ),
+<a id='L144' name='L144'></a> 144           <a href='../Y/11442.html' title='Multiple used in 7 places.'>m_numberingEnabled</a>( <a href='../Y/7705.html' title='Multiple used in 3 places.'>enableNumbering</a> ),
+<a id='L145' name='L145'></a> 145           <a href='../Y/10984.html' title='Multiple used in 4 places.'>m_hSpacing</a>( <a href='../Y/5754.html' title='Multiple used in 610 places.'>aParent</a>, <a href='../Y/11127.html' title='Multiple used in 5 places.'>m_labelDx</a>, <a href='../Y/10796.html' title='Multiple used in 6 places.'>m_entryDx</a>, <a href='../Y/12289.html' title='Multiple used in 5 places.'>m_unitLabelDx</a> ),
+<a id='L146' name='L146'></a> 146           <a href='../Y/12330.html' title='Multiple used in 4 places.'>m_vSpacing</a>( <a href='../Y/5754.html' title='Multiple used in 610 places.'>aParent</a>, <a href='../Y/11128.html' title='Multiple used in 5 places.'>m_labelDy</a>, <a href='../Y/10797.html' title='Multiple used in 6 places.'>m_entryDy</a>, <a href='../Y/12290.html' title='Multiple used in 5 places.'>m_unitLabelDy</a> ),
+<a id='L147' name='L147'></a> 147           <a href='../Y/10983.html' title='Multiple used in 4 places.'>m_hOffset</a>( <a href='../Y/5754.html' title='Multiple used in 610 places.'>aParent</a>, <a href='../Y/11133.html' title='Multiple used in 5 places.'>m_labelOffsetX</a>, <a href='../Y/10805.html' title='Multiple used in 6 places.'>m_entryOffsetX</a>, <a href='../Y/12291.html' title='Multiple used in 5 places.'>m_unitLabelOffsetX</a> ),
+<a id='L148' name='L148'></a> 148           <a href='../Y/12327.html' title='Multiple used in 4 places.'>m_vOffset</a>( <a href='../Y/5754.html' title='Multiple used in 610 places.'>aParent</a>, <a href='../Y/11134.html' title='Multiple used in 5 places.'>m_labelOffsetY</a>, <a href='../Y/10806.html' title='Multiple used in 6 places.'>m_entryOffsetY</a>, <a href='../Y/12292.html' title='Multiple used in 5 places.'>m_unitLabelOffsetY</a> ),
+<a id='L149' name='L149'></a> 149           <a href='../Y/10981.html' title='Multiple used in 5 places.'>m_hCentre</a>( <a href='../Y/5754.html' title='Multiple used in 610 places.'>aParent</a>, <a href='../Y/11118.html' title='Multiple used in 5 places.'>m_labelCentreX</a>, <a href='../Y/10789.html' title='Multiple used in 6 places.'>m_entryCentreX</a>, <a href='../Y/12285.html' title='Multiple used in 5 places.'>m_unitLabelCentreX</a> ),
+<a id='L150' name='L150'></a> 150           <a href='../Y/12325.html' title='Multiple used in 5 places.'>m_vCentre</a>( <a href='../Y/5754.html' title='Multiple used in 610 places.'>aParent</a>, <a href='../Y/11119.html' title='Multiple used in 5 places.'>m_labelCentreY</a>, <a href='../Y/10790.html' title='Multiple used in 6 places.'>m_entryCentreY</a>, <a href='../Y/12286.html' title='Multiple used in 5 places.'>m_unitLabelCentreY</a> ),
+<a id='L151' name='L151'></a> 151           <a href='../Y/10512.html' title='Multiple used in 3 places.'>m_circRadius</a>( <a href='../Y/5754.html' title='Multiple used in 610 places.'>aParent</a>, <a href='../Y/11125.html' title='Multiple used in 5 places.'>m_labelCircRadius</a>, <a href='../Y/12333.html' title='Multiple used in 5 places.'>m_valueCircRadius</a>, <a href='../Y/12288.html' title='Multiple used in 5 places.'>m_unitLabelCircRadius</a> ),
+<a id='L152' name='L152'></a> 152           <a href='../Y/10504.html' title='Multiple used in 6 places.'>m_circAngle</a>( <a href='../Y/5754.html' title='Multiple used in 610 places.'>aParent</a>, <a href='../Y/11120.html' title='Multiple used in 5 places.'>m_labelCircAngle</a>, <a href='../Y/10791.html' title='Multiple used in 8 places.'>m_entryCircAngle</a>, <a href='../Y/12287.html' title='Multiple used in 5 places.'>m_unitLabelCircAngle</a> ),
+<a id='L153' name='L153'></a> 153           <a href='../R/3995.html' title='Multiple referred from 31 places.'>m_cfg_persister</a>( <a href='../Y/14195.html' title='Multiple used in 30 places.'>saved_array_options</a>.<a href='../Y/11472.html' title='Multiple used in 3 places.'>m_optionsSet</a> )
+<a id='L154' name='L154'></a> 154 <em class='brace'>{</em>
+<a id='L155' name='L155'></a> 155     <em class='comment'>// Set up numbering scheme drop downs character set strings</em>
+<a id='L156' name='L156'></a> 156     <strong class='reserved'>for</strong>( <strong class='reserved'>const</strong> <strong class='reserved'>auto</strong>&amp; <a href='../Y/13062.html' title='Multiple used in 3 places.'>numData</a> : <a href='../Y/13073.html' title='Multiple used in 2 places.'>numberingTypeData</a> )
+<a id='L157' name='L157'></a> 157     <em class='brace'>{</em>
+<a id='L158' name='L158'></a> 158         <strong class='reserved'>const</strong> <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../Y/8839.html' title='Multiple used in 32 places.'>label</a> = <a href='../Y/15741.html' title='Multiple used in 18 places.'>wxGetTranslation</a>( <a href='../Y/13062.html' title='Multiple used in 3 places.'>numData</a>.<a href='../Y/11117.html' title='Multiple used in 6 places.'>m_label</a> );
+<a id='L159' name='L159'></a> 159         <strong class='reserved'>void</strong>*          <a href='../Y/6934.html' title='Multiple used in 4 places.'>clientData</a> = (<strong class='reserved'>void</strong>*) &amp;<a href='../Y/13062.html' title='Multiple used in 3 places.'>numData</a>;
+<a id='L160' name='L160'></a> 160 
+<a id='L161' name='L161'></a> 161         <a href='../Y/10496.html' title='Multiple used in 10 places.'>m_choicePriAxisNumbering</a>-&gt;<a href='../Y/179.html' title='Multiple used in 398 places.'>Append</a>( <a href='../Y/8839.html' title='Multiple used in 32 places.'>label</a>, <a href='../Y/6934.html' title='Multiple used in 4 places.'>clientData</a> );
+<a id='L162' name='L162'></a> 162         <a href='../Y/10498.html' title='Multiple used in 11 places.'>m_choiceSecAxisNumbering</a>-&gt;<a href='../Y/179.html' title='Multiple used in 398 places.'>Append</a>( <a href='../Y/8839.html' title='Multiple used in 32 places.'>label</a>, <a href='../Y/6934.html' title='Multiple used in 4 places.'>clientData</a> );
+<a id='L163' name='L163'></a> 163         <a href='../Y/10482.html' title='Multiple used in 8 places.'>m_choiceCircNumbering</a>-&gt;<a href='../Y/179.html' title='Multiple used in 398 places.'>Append</a>( <a href='../Y/8839.html' title='Multiple used in 32 places.'>label</a>, <a href='../Y/6934.html' title='Multiple used in 4 places.'>clientData</a> );
+<a id='L164' name='L164'></a> 164     <em class='brace'>}</em>
+<a id='L165' name='L165'></a> 165 
+<a id='L166' name='L166'></a> 166     <a href='../Y/10496.html' title='Multiple used in 10 places.'>m_choicePriAxisNumbering</a>-&gt;<a href='../Y/3831.html' title='Multiple used in 332 places.'>SetSelection</a>( 0 );
+<a id='L167' name='L167'></a> 167     <a href='../Y/10498.html' title='Multiple used in 11 places.'>m_choiceSecAxisNumbering</a>-&gt;<a href='../Y/3831.html' title='Multiple used in 332 places.'>SetSelection</a>( 0 );
+<a id='L168' name='L168'></a> 168     <a href='../Y/10482.html' title='Multiple used in 8 places.'>m_choiceCircNumbering</a>-&gt;<a href='../Y/3831.html' title='Multiple used in 332 places.'>SetSelection</a>( 0 );
+<a id='L169' name='L169'></a> 169 
+<a id='L170' name='L170'></a> 170     <a href='../Y/10504.html' title='Multiple used in 6 places.'>m_circAngle</a>.<a href='../Y/3928.html' title='Multiple used in 25 places.'>SetUnits</a>( <a href='../Y/848.html' title='Multiple used in 169 places.'>EDA_UNITS</a>::<a href='../Y/623.html' title='Multiple used in 17 places.'>DEGREES</a> );
+<a id='L171' name='L171'></a> 171 
+<a id='L172' name='L172'></a> 172     <em class='comment'>// bind grid options to persister</em>
+<a id='L173' name='L173'></a> 173     <a href='../S/120.html#L153' title='Defined at 153 in dialogs/dialog_create_array.cpp.'>m_cfg_persister</a>.<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( *<a href='../Y/10803.html' title='Multiple used in 7 places.'>m_entryNx</a>, <a href='../Y/14195.html' title='Multiple used in 30 places.'>saved_array_options</a>.<a href='../Y/10954.html' title='Multiple used in 3 places.'>m_gridNx</a> );
+<a id='L174' name='L174'></a> 174     <a href='../S/120.html#L153' title='Defined at 153 in dialogs/dialog_create_array.cpp.'>m_cfg_persister</a>.<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( *<a href='../Y/10804.html' title='Multiple used in 7 places.'>m_entryNy</a>, <a href='../Y/14195.html' title='Multiple used in 30 places.'>saved_array_options</a>.<a href='../Y/10955.html' title='Multiple used in 3 places.'>m_gridNy</a> );
+<a id='L175' name='L175'></a> 175     <a href='../S/120.html#L153' title='Defined at 153 in dialogs/dialog_create_array.cpp.'>m_cfg_persister</a>.<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../Y/10984.html' title='Multiple used in 4 places.'>m_hSpacing</a>, <a href='../Y/14195.html' title='Multiple used in 30 places.'>saved_array_options</a>.<a href='../Y/10947.html' title='Multiple used in 3 places.'>m_gridDx</a> );
+<a id='L176' name='L176'></a> 176     <a href='../S/120.html#L153' title='Defined at 153 in dialogs/dialog_create_array.cpp.'>m_cfg_persister</a>.<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../Y/12330.html' title='Multiple used in 4 places.'>m_vSpacing</a>, <a href='../Y/14195.html' title='Multiple used in 30 places.'>saved_array_options</a>.<a href='../Y/10948.html' title='Multiple used in 3 places.'>m_gridDy</a> );
+<a id='L177' name='L177'></a> 177 
+<a id='L178' name='L178'></a> 178     <a href='../S/120.html#L153' title='Defined at 153 in dialogs/dialog_create_array.cpp.'>m_cfg_persister</a>.<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../Y/10983.html' title='Multiple used in 4 places.'>m_hOffset</a>, <a href='../Y/14195.html' title='Multiple used in 30 places.'>saved_array_options</a>.<a href='../Y/10956.html' title='Multiple used in 3 places.'>m_gridOffsetX</a> );
+<a id='L179' name='L179'></a> 179     <a href='../S/120.html#L153' title='Defined at 153 in dialogs/dialog_create_array.cpp.'>m_cfg_persister</a>.<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../Y/12327.html' title='Multiple used in 4 places.'>m_vOffset</a>, <a href='../Y/14195.html' title='Multiple used in 30 places.'>saved_array_options</a>.<a href='../Y/10957.html' title='Multiple used in 3 places.'>m_gridOffsetY</a> );
+<a id='L180' name='L180'></a> 180     <a href='../S/120.html#L153' title='Defined at 153 in dialogs/dialog_create_array.cpp.'>m_cfg_persister</a>.<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( *<a href='../Y/10809.html' title='Multiple used in 7 places.'>m_entryStagger</a>, <a href='../Y/14195.html' title='Multiple used in 30 places.'>saved_array_options</a>.<a href='../Y/10971.html' title='Multiple used in 3 places.'>m_gridStagger</a> );
+<a id='L181' name='L181'></a> 181 
+<a id='L182' name='L182'></a> 182     <a href='../S/120.html#L153' title='Defined at 153 in dialogs/dialog_create_array.cpp.'>m_cfg_persister</a>.<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( *<a href='../Y/11682.html' title='Multiple used in 6 places.'>m_radioBoxGridStaggerType</a>, <a href='../Y/14195.html' title='Multiple used in 30 places.'>saved_array_options</a>.<a href='../Y/10972.html' title='Multiple used in 3 places.'>m_gridStaggerType</a> );
+<a id='L183' name='L183'></a> 183 
+<a id='L184' name='L184'></a> 184     <a href='../S/120.html#L153' title='Defined at 153 in dialogs/dialog_create_array.cpp.'>m_cfg_persister</a>.<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( *<a href='../Y/11676.html' title='Multiple used in 6 places.'>m_radioBoxGridNumberingAxis</a>, <a href='../Y/14195.html' title='Multiple used in 30 places.'>saved_array_options</a>.<a href='../Y/10951.html' title='Multiple used in 3 places.'>m_gridNumberingAxis</a> );
+<a id='L185' name='L185'></a> 185     <a href='../S/120.html#L153' title='Defined at 153 in dialogs/dialog_create_array.cpp.'>m_cfg_persister</a>.<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>(
+<a id='L186' name='L186'></a> 186             *<a href='../Y/10468.html' title='Multiple used in 5 places.'>m_checkBoxGridReverseNumbering</a>, <a href='../Y/14195.html' title='Multiple used in 30 places.'>saved_array_options</a>.<a href='../Y/10952.html' title='Multiple used in 3 places.'>m_gridNumberingReverseAlternate</a> );
+<a id='L187' name='L187'></a> 187 
+<a id='L188' name='L188'></a> 188     <a href='../S/120.html#L153' title='Defined at 153 in dialogs/dialog_create_array.cpp.'>m_cfg_persister</a>.<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( *<a href='../Y/11722.html' title='Multiple used in 10 places.'>m_rbGridStartNumberingOpt</a>, <a href='../Y/14195.html' title='Multiple used in 30 places.'>saved_array_options</a>.<a href='../Y/10953.html' title='Multiple used in 3 places.'>m_gridNumberingStartSet</a> );
+<a id='L189' name='L189'></a> 189     <a href='../S/120.html#L153' title='Defined at 153 in dialogs/dialog_create_array.cpp.'>m_cfg_persister</a>.<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>(
+<a id='L190' name='L190'></a> 190             *<a href='../Y/11679.html' title='Multiple used in 11 places.'>m_radioBoxGridNumberingScheme</a>, <a href='../Y/14195.html' title='Multiple used in 30 places.'>saved_array_options</a>.<a href='../Y/10941.html' title='Multiple used in 3 places.'>m_grid2dArrayNumbering</a> );
+<a id='L191' name='L191'></a> 191     <a href='../S/120.html#L153' title='Defined at 153 in dialogs/dialog_create_array.cpp.'>m_cfg_persister</a>.<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( *<a href='../Y/10496.html' title='Multiple used in 10 places.'>m_choicePriAxisNumbering</a>, <a href='../Y/14195.html' title='Multiple used in 30 places.'>saved_array_options</a>.<a href='../Y/10962.html' title='Multiple used in 3 places.'>m_gridPriAxisNumScheme</a> );
+<a id='L192' name='L192'></a> 192     <a href='../S/120.html#L153' title='Defined at 153 in dialogs/dialog_create_array.cpp.'>m_cfg_persister</a>.<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( *<a href='../Y/10498.html' title='Multiple used in 11 places.'>m_choiceSecAxisNumbering</a>, <a href='../Y/14195.html' title='Multiple used in 30 places.'>saved_array_options</a>.<a href='../Y/10965.html' title='Multiple used in 3 places.'>m_gridSecAxisNumScheme</a> );
+<a id='L193' name='L193'></a> 193 
+<a id='L194' name='L194'></a> 194     <a href='../S/120.html#L153' title='Defined at 153 in dialogs/dialog_create_array.cpp.'>m_cfg_persister</a>.<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>(
+<a id='L195' name='L195'></a> 195             *<a href='../Y/10798.html' title='Multiple used in 8 places.'>m_entryGridPriNumberingOffset</a>, <a href='../Y/14195.html' title='Multiple used in 30 places.'>saved_array_options</a>.<a href='../Y/10964.html' title='Multiple used in 3 places.'>m_gridPriNumberingOffset</a> );
+<a id='L196' name='L196'></a> 196     <a href='../S/120.html#L153' title='Defined at 153 in dialogs/dialog_create_array.cpp.'>m_cfg_persister</a>.<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>(
+<a id='L197' name='L197'></a> 197             *<a href='../Y/10800.html' title='Multiple used in 8 places.'>m_entryGridSecNumberingOffset</a>, <a href='../Y/14195.html' title='Multiple used in 30 places.'>saved_array_options</a>.<a href='../Y/10967.html' title='Multiple used in 3 places.'>m_gridSecNumberingOffset</a> );
+<a id='L198' name='L198'></a> 198     <a href='../S/120.html#L153' title='Defined at 153 in dialogs/dialog_create_array.cpp.'>m_cfg_persister</a>.<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( *<a href='../Y/10799.html' title='Multiple used in 6 places.'>m_entryGridPriNumberingStep</a>, <a href='../Y/14195.html' title='Multiple used in 30 places.'>saved_array_options</a>.<a href='../Y/10963.html' title='Multiple used in 3 places.'>m_gridPriAxisStep</a> );
+<a id='L199' name='L199'></a> 199     <a href='../S/120.html#L153' title='Defined at 153 in dialogs/dialog_create_array.cpp.'>m_cfg_persister</a>.<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( *<a href='../Y/10801.html' title='Multiple used in 6 places.'>m_entryGridSecNumberingStep</a>, <a href='../Y/14195.html' title='Multiple used in 30 places.'>saved_array_options</a>.<a href='../Y/10966.html' title='Multiple used in 3 places.'>m_gridSecAxisStep</a> );
+<a id='L200' name='L200'></a> 200 
+<a id='L201' name='L201'></a> 201     <em class='comment'>// bind circular options to persister</em>
+<a id='L202' name='L202'></a> 202     <a href='../S/120.html#L153' title='Defined at 153 in dialogs/dialog_create_array.cpp.'>m_cfg_persister</a>.<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../Y/10981.html' title='Multiple used in 5 places.'>m_hCentre</a>, <a href='../Y/14195.html' title='Multiple used in 30 places.'>saved_array_options</a>.<a href='../Y/10505.html' title='Multiple used in 3 places.'>m_circCentreX</a> );
+<a id='L203' name='L203'></a> 203     <a href='../S/120.html#L153' title='Defined at 153 in dialogs/dialog_create_array.cpp.'>m_cfg_persister</a>.<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../Y/12325.html' title='Multiple used in 5 places.'>m_vCentre</a>, <a href='../Y/14195.html' title='Multiple used in 30 places.'>saved_array_options</a>.<a href='../Y/10506.html' title='Multiple used in 3 places.'>m_circCentreY</a> );
+<a id='L204' name='L204'></a> 204     <a href='../S/120.html#L153' title='Defined at 153 in dialogs/dialog_create_array.cpp.'>m_cfg_persister</a>.<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../Y/10504.html' title='Multiple used in 6 places.'>m_circAngle</a>, <a href='../Y/14195.html' title='Multiple used in 30 places.'>saved_array_options</a>.<a href='../Y/10504.html' title='Multiple used in 6 places.'>m_circAngle</a> );
+<a id='L205' name='L205'></a> 205     <a href='../S/120.html#L153' title='Defined at 153 in dialogs/dialog_create_array.cpp.'>m_cfg_persister</a>.<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( *<a href='../Y/10792.html' title='Multiple used in 8 places.'>m_entryCircCount</a>, <a href='../Y/14195.html' title='Multiple used in 30 places.'>saved_array_options</a>.<a href='../Y/10507.html' title='Multiple used in 3 places.'>m_circCount</a> );
+<a id='L206' name='L206'></a> 206     <a href='../S/120.html#L153' title='Defined at 153 in dialogs/dialog_create_array.cpp.'>m_cfg_persister</a>.<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( *<a href='../Y/10808.html' title='Multiple used in 7 places.'>m_entryRotateItemsCb</a>, <a href='../Y/14195.html' title='Multiple used in 30 places.'>saved_array_options</a>.<a href='../Y/10513.html' title='Multiple used in 3 places.'>m_circRotate</a> );
+<a id='L207' name='L207'></a> 207 
+<a id='L208' name='L208'></a> 208     <a href='../S/120.html#L153' title='Defined at 153 in dialogs/dialog_create_array.cpp.'>m_cfg_persister</a>.<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( *<a href='../Y/11703.html' title='Multiple used in 10 places.'>m_rbCircStartNumberingOpt</a>, <a href='../Y/14195.html' title='Multiple used in 30 places.'>saved_array_options</a>.<a href='../Y/10509.html' title='Multiple used in 3 places.'>m_circNumberingStartSet</a> );
+<a id='L209' name='L209'></a> 209     <a href='../S/120.html#L153' title='Defined at 153 in dialogs/dialog_create_array.cpp.'>m_cfg_persister</a>.<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( *<a href='../Y/10482.html' title='Multiple used in 8 places.'>m_choiceCircNumbering</a>, <a href='../Y/14195.html' title='Multiple used in 30 places.'>saved_array_options</a>.<a href='../Y/10943.html' title='Multiple used in 3 places.'>m_gridCircNumScheme</a> );
+<a id='L210' name='L210'></a> 210     <a href='../S/120.html#L153' title='Defined at 153 in dialogs/dialog_create_array.cpp.'>m_cfg_persister</a>.<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( *<a href='../Y/10793.html' title='Multiple used in 7 places.'>m_entryCircNumberingStart</a>, <a href='../Y/14195.html' title='Multiple used in 30 places.'>saved_array_options</a>.<a href='../Y/10508.html' title='Multiple used in 3 places.'>m_circNumberingOffset</a> );
+<a id='L211' name='L211'></a> 211     <a href='../S/120.html#L153' title='Defined at 153 in dialogs/dialog_create_array.cpp.'>m_cfg_persister</a>.<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( *<a href='../Y/10794.html' title='Multiple used in 5 places.'>m_entryCircNumberingStep</a>, <a href='../Y/14195.html' title='Multiple used in 30 places.'>saved_array_options</a>.<a href='../Y/10510.html' title='Multiple used in 3 places.'>m_circNumberingStep</a> );
+<a id='L212' name='L212'></a> 212 
+<a id='L213' name='L213'></a> 213     <a href='../S/120.html#L153' title='Defined at 153 in dialogs/dialog_create_array.cpp.'>m_cfg_persister</a>.<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( *<a href='../Y/10977.html' title='Multiple used in 9 places.'>m_gridTypeNotebook</a>, <a href='../Y/14195.html' title='Multiple used in 30 places.'>saved_array_options</a>.<a href='../S/120.html#L74' title='Defined at 74 in dialogs/dialog_create_array.cpp.'>m_arrayTypeTab</a> );
+<a id='L214' name='L214'></a> 214 
+<a id='L215' name='L215'></a> 215     <a href='../S/120.html#L153' title='Defined at 153 in dialogs/dialog_create_array.cpp.'>m_cfg_persister</a>.RestoreConfigToControls();
+<a id='L216' name='L216'></a> 216 
+<a id='L217' name='L217'></a> 217     <em class='comment'>// Run the callbacks once to process the dialog contents</em>
+<a id='L218' name='L218'></a> 218     <a href='../S/120.html#L437' title='Defined at 437 in dialogs/dialog_create_array.cpp.'>setControlEnablement</a>();
+<a id='L219' name='L219'></a> 219     <a href='../S/120.html#L488' title='Defined at 488 in dialogs/dialog_create_array.cpp.'>calculateCircularArrayProperties</a>();
+<a id='L220' name='L220'></a> 220 
+<a id='L221' name='L221'></a> 221     <a href='../Y/12114.html' title='Multiple used in 38 places.'>m_stdButtonsOK</a>-&gt;<a href='../Y/3441.html' title='Multiple used in 47 places.'>SetDefault</a>();
+<a id='L222' name='L222'></a> 222     <a href='../S/669.html#L449' title='Defined at 449 in router/pns_meander.cpp.'>Fit</a>();
+<a id='L223' name='L223'></a> 223     <a href='../Y/3689.html' title='Multiple used in 83 places.'>SetMinSize</a>( <a href='../Y/1710.html' title='Multiple used in 166 places.'>GetSize</a>() );
+<a id='L224' name='L224'></a> 224 <em class='brace'>}</em>
+<a id='L225' name='L225'></a> 225 
+<a id='L226' name='L226'></a> 226 
+<a id='L227' name='L227'></a> 227 <strong class='reserved'>void</strong> <a href='../Y/633.html' title='Multiple used in 8 places.'>DIALOG_CREATE_ARRAY</a>::<a href='../R/2216.html' title='Multiple referred from 30 places.'>OnParameterChanged</a>( <a href='../Y/15577.html' title='Multiple used in 712 places.'>wxCommandEvent</a>&amp; <a href='../Y/7792.html' title='Multiple used in 867 places.'>event</a> )
+<a id='L228' name='L228'></a> 228 <em class='brace'>{</em>
+<a id='L229' name='L229'></a> 229     <a href='../S/120.html#L437' title='Defined at 437 in dialogs/dialog_create_array.cpp.'>setControlEnablement</a>();
+<a id='L230' name='L230'></a> 230     <a href='../S/120.html#L488' title='Defined at 488 in dialogs/dialog_create_array.cpp.'>calculateCircularArrayProperties</a>();
+<a id='L231' name='L231'></a> 231 <em class='brace'>}</em>
+<a id='L232' name='L232'></a> 232 
+<a id='L233' name='L233'></a> 233 
+<a id='L234' name='L234'></a> 234 <em class='comment'>/**</em>
+<a id='L235' name='L235'></a> 235 <em class='comment'> * Validate and save a long integer entry</em>
+<a id='L236' name='L236'></a> 236 <em class='comment'> *</em>
+<a id='L237' name='L237'></a> 237 <em class='comment'> * @param entry the text entry to read from</em>
+<a id='L238' name='L238'></a> 238 <em class='comment'> * @param dest the value destination</em>
+<a id='L239' name='L239'></a> 239 <em class='comment'> * @param description description of the field (used if the value is not OK)</em>
+<a id='L240' name='L240'></a> 240 <em class='comment'> * @param errors a list of errors to add any error to</em>
+<a id='L241' name='L241'></a> 241 <em class='comment'> * @return valid</em>
+<a id='L242' name='L242'></a> 242 <em class='comment'> */</em>
+<a id='L243' name='L243'></a> 243 <strong class='reserved'>static</strong> <strong class='reserved'>bool</strong> <a href='../R/4583.html' title='Multiple referred from 5 places.'>validateLongEntry</a>(
+<a id='L244' name='L244'></a> 244         <strong class='reserved'>const</strong> <a href='../Y/15976.html' title='Multiple used in 4 places.'>wxTextEntry</a>&amp; <a href='../Y/7749.html' title='Multiple used in 62 places.'>entry</a>, <strong class='reserved'>long</strong>&amp; <a href='../Y/7372.html' title='Multiple used in 2 places.'>dest</a>, <strong class='reserved'>const</strong> <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>&amp; <a href='../Y/7365.html' title='Multiple used in 6 places.'>description</a>, <a href='../Y/15511.html' title='Multiple used in 171 places.'>wxArrayString</a>&amp; <a href='../Y/7786.html' title='Multiple used in 15 places.'>errors</a> )
+<a id='L245' name='L245'></a> 245 <em class='brace'>{</em>
+<a id='L246' name='L246'></a> 246     <strong class='reserved'>bool</strong> <a href='../Y/13115.html' title='Multiple used in 72 places.'>ok</a> = <strong class='reserved'>true</strong>;
+<a id='L247' name='L247'></a> 247 
+<a id='L248' name='L248'></a> 248     <strong class='reserved'>if</strong>( !<a href='../Y/7749.html' title='Multiple used in 62 places.'>entry</a>.<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>().<a href='../Y/4661.html' title='Multiple used in 12 places.'>ToLong</a>( &amp;<a href='../Y/7372.html' title='Multiple used in 2 places.'>dest</a> ) )
+<a id='L249' name='L249'></a> 249     <em class='brace'>{</em>
+<a id='L250' name='L250'></a> 250         <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../Y/7767.html' title='Multiple used in 33 places.'>err</a>;
+<a id='L251' name='L251'></a> 251         <a href='../Y/7767.html' title='Multiple used in 33 places.'>err</a>.<a href='../Y/2981.html' title='Multiple used in 353 places.'>Printf</a>( <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Bad numeric value for %s: %s" ), <a href='../Y/7365.html' title='Multiple used in 6 places.'>description</a>, <a href='../Y/7749.html' title='Multiple used in 62 places.'>entry</a>.<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>() );
+<a id='L252' name='L252'></a> 252         <a href='../Y/7786.html' title='Multiple used in 15 places.'>errors</a>.<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../Y/7767.html' title='Multiple used in 33 places.'>err</a> );
+<a id='L253' name='L253'></a> 253         <a href='../Y/13115.html' title='Multiple used in 72 places.'>ok</a> = <strong class='reserved'>false</strong>;
+<a id='L254' name='L254'></a> 254     <em class='brace'>}</em>
+<a id='L255' name='L255'></a> 255 
+<a id='L256' name='L256'></a> 256     <strong class='reserved'>return</strong> <a href='../Y/13115.html' title='Multiple used in 72 places.'>ok</a>;
+<a id='L257' name='L257'></a> 257 <em class='brace'>}</em>
+<a id='L258' name='L258'></a> 258 
+<a id='L259' name='L259'></a> 259 
+<a id='L260' name='L260'></a> 260 <em class='comment'>/**</em>
+<a id='L261' name='L261'></a> 261 <em class='comment'> * Validates and saves (if valid) the type and offset of an array axis numbering</em>
+<a id='L262' name='L262'></a> 262 <em class='comment'> *</em>
+<a id='L263' name='L263'></a> 263 <em class='comment'> * @param offsetEntry the entry of the offset (text)</em>
+<a id='L264' name='L264'></a> 264 <em class='comment'> * @param typeEntry the entry of the axis nmbering scheme (choice)</em>
+<a id='L265' name='L265'></a> 265 <em class='comment'> * @param type the destination of the type if valid</em>
+<a id='L266' name='L266'></a> 266 <em class='comment'> * @param offset the destination of the offset if valid</em>
+<a id='L267' name='L267'></a> 267 <em class='comment'> * @param errors error string accumulator</em>
+<a id='L268' name='L268'></a> 268 <em class='comment'> * @return if all valid</em>
+<a id='L269' name='L269'></a> 269 <em class='comment'> */</em>
+<a id='L270' name='L270'></a> 270 <strong class='reserved'>static</strong> <strong class='reserved'>bool</strong> <a href='../R/4580.html' title='Multiple referred from 3 places.'>validateAxisOptions</a>( <strong class='reserved'>const</strong> <a href='../Y/15974.html' title='Multiple used in 446 places.'>wxTextCtrl</a>&amp; <a href='../Y/13103.html' title='Multiple used in 2 places.'>offsetEntry</a>, <strong class='reserved'>const</strong> <a href='../Y/15569.html' title='Multiple used in 214 places.'>wxChoice</a>&amp; <a href='../Y/15152.html' title='Multiple used in 2 places.'>typeEntry</a>,
+<a id='L271' name='L271'></a> 271         <strong class='reserved'>const</strong> <a href='../Y/15974.html' title='Multiple used in 446 places.'>wxTextCtrl</a>&amp; <a href='../Y/6017.html' title='Multiple used in 2 places.'>aStepEntry</a>, <a href='../Y/81.html' title='Multiple used in 8 places.'>ARRAY_AXIS</a>&amp; <a href='../Y/5023.html' title='Multiple used in 5 places.'>aAxis</a>, <a href='../Y/15511.html' title='Multiple used in 171 places.'>wxArrayString</a>&amp; <a href='../Y/7786.html' title='Multiple used in 15 places.'>errors</a> )
+<a id='L272' name='L272'></a> 272 <em class='brace'>{</em>
+<a id='L273' name='L273'></a> 273     <strong class='reserved'>const</strong> <strong class='reserved'>auto</strong>* <a href='../Y/15151.html' title='Multiple used in 3 places.'>typeData</a> = <strong class='reserved'>static_cast</strong>&lt;<a href='../S/120.html#L110' title='Defined at 110 in dialogs/dialog_create_array.cpp.'>NUMBERING_LIST_DATA</a>*&gt;(
+<a id='L274' name='L274'></a> 274             <a href='../Y/15152.html' title='Multiple used in 2 places.'>typeEntry</a>.<a href='../Y/1288.html' title='Multiple used in 3 places.'>GetClientData</a>( <a href='../Y/15152.html' title='Multiple used in 2 places.'>typeEntry</a>.<a href='../S/801.html#L332' title='Defined at 332 in tools/selection_tool.cpp.'>GetSelection</a>() ) );
+<a id='L275' name='L275'></a> 275 
+<a id='L276' name='L276'></a> 276     <a href='../Y/15552.html' title='Multiple used in 19 places.'>wxCHECK_MSG</a>( <a href='../Y/15151.html' title='Multiple used in 3 places.'>typeData</a>, <strong class='reserved'>false</strong>, "Failed to get client data from list control." );
+<a id='L277' name='L277'></a> 277 
+<a id='L278' name='L278'></a> 278     <a href='../Y/5023.html' title='Multiple used in 5 places.'>aAxis</a>.<a href='../Y/3350.html' title='Multiple used in 3 places.'>SetAxisType</a>( <a href='../Y/15151.html' title='Multiple used in 3 places.'>typeData</a>-&gt;<a href='../Y/11443.html' title='Multiple used in 2 places.'>m_numbering_type</a> );
+<a id='L279' name='L279'></a> 279 
+<a id='L280' name='L280'></a> 280     <strong class='reserved'>const</strong> <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../Y/14850.html' title='Multiple used in 362 places.'>text</a> = <a href='../Y/13103.html' title='Multiple used in 2 places.'>offsetEntry</a>.<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>();
+<a id='L281' name='L281'></a> 281 
+<a id='L282' name='L282'></a> 282     <strong class='reserved'>bool</strong> <a href='../Y/13115.html' title='Multiple used in 72 places.'>ok</a> = <a href='../Y/5023.html' title='Multiple used in 5 places.'>aAxis</a>.<a href='../S/419.html#L240' title='Defined at 240 in exporters/export_vrml.cpp.'>SetOffset</a>( <a href='../Y/14850.html' title='Multiple used in 362 places.'>text</a> );
+<a id='L283' name='L283'></a> 283 
+<a id='L284' name='L284'></a> 284     <strong class='reserved'>if</strong>( !<a href='../Y/13115.html' title='Multiple used in 72 places.'>ok</a> )
+<a id='L285' name='L285'></a> 285     <em class='brace'>{</em>
+<a id='L286' name='L286'></a> 286         <strong class='reserved'>const</strong> <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>&amp; <a href='../Y/6338.html' title='Multiple used in 2 places.'>alphabet</a> = <a href='../Y/5023.html' title='Multiple used in 5 places.'>aAxis</a>.GetAlphabet();
+<a id='L287' name='L287'></a> 287 
+<a id='L288' name='L288'></a> 288         <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../Y/7767.html' title='Multiple used in 33 places.'>err</a>;
+<a id='L289' name='L289'></a> 289         <a href='../Y/7767.html' title='Multiple used in 33 places.'>err</a>.<a href='../Y/2981.html' title='Multiple used in 353 places.'>Printf</a>( <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Could not determine numbering start from \"%s\": "
+<a id='L290' name='L290'></a> 290                        "expected value consistent with alphabet \"%s\"" ),
+<a id='L291' name='L291'></a> 291                     <a href='../Y/14850.html' title='Multiple used in 362 places.'>text</a>, <a href='../Y/6338.html' title='Multiple used in 2 places.'>alphabet</a> );
+<a id='L292' name='L292'></a> 292         <a href='../Y/7786.html' title='Multiple used in 15 places.'>errors</a>.<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>(<a href='../Y/7767.html' title='Multiple used in 33 places.'>err</a>);
+<a id='L293' name='L293'></a> 293         <strong class='reserved'>return</strong> <strong class='reserved'>false</strong>;
+<a id='L294' name='L294'></a> 294     <em class='brace'>}</em>
+<a id='L295' name='L295'></a> 295 
+<a id='L296' name='L296'></a> 296     <strong class='reserved'>long</strong> <a href='../Y/14683.html' title='Multiple used in 70 places.'>step</a>;
+<a id='L297' name='L297'></a> 297     <a href='../Y/13115.html' title='Multiple used in 72 places.'>ok</a> = <a href='../S/120.html#L243' title='Defined at 243 in dialogs/dialog_create_array.cpp.'>validateLongEntry</a>( <a href='../Y/6017.html' title='Multiple used in 2 places.'>aStepEntry</a>, <a href='../Y/14683.html' title='Multiple used in 70 places.'>step</a>, <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "step value" ), <a href='../Y/7786.html' title='Multiple used in 15 places.'>errors</a> );
+<a id='L298' name='L298'></a> 298 
+<a id='L299' name='L299'></a> 299     <strong class='reserved'>if</strong>( <a href='../Y/13115.html' title='Multiple used in 72 places.'>ok</a> )
+<a id='L300' name='L300'></a> 300         <a href='../Y/5023.html' title='Multiple used in 5 places.'>aAxis</a>.SetStep( <a href='../Y/14683.html' title='Multiple used in 70 places.'>step</a> );
+<a id='L301' name='L301'></a> 301 
+<a id='L302' name='L302'></a> 302     <strong class='reserved'>return</strong> <a href='../Y/13115.html' title='Multiple used in 72 places.'>ok</a>;
+<a id='L303' name='L303'></a> 303 <em class='brace'>}</em>
+<a id='L304' name='L304'></a> 304 
+<a id='L305' name='L305'></a> 305 
+<a id='L306' name='L306'></a> 306 <strong class='reserved'>bool</strong> <a href='../Y/633.html' title='Multiple used in 8 places.'>DIALOG_CREATE_ARRAY</a>::<a href='../R/3144.html' title='Multiple referred from 63 places.'>TransferDataFromWindow</a>()
+<a id='L307' name='L307'></a> 307 <em class='brace'>{</em>
+<a id='L308' name='L308'></a> 308     <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/15186.html' title='Multiple used in 184 places.'>unique_ptr</a>&lt;<a href='../Y/85.html' title='Multiple used in 10 places.'>ARRAY_OPTIONS</a>&gt; <a href='../Y/12928.html' title='Multiple used in 5 places.'>newSettings</a>;
+<a id='L309' name='L309'></a> 309 
+<a id='L310' name='L310'></a> 310     <a href='../Y/15511.html' title='Multiple used in 171 places.'>wxArrayString</a>   <a href='../Y/7786.html' title='Multiple used in 15 places.'>errors</a>;
+<a id='L311' name='L311'></a> 311     <strong class='reserved'>const</strong> <a href='../Y/15994.html' title='Multiple used in 253 places.'>wxWindow</a>* <a href='../Y/13381.html' title='Multiple used in 30 places.'>page</a> = <a href='../Y/10977.html' title='Multiple used in 9 places.'>m_gridTypeNotebook</a>-&gt;<a href='../Y/1326.html' title='Multiple used in 3 places.'>GetCurrentPage</a>();
+<a id='L312' name='L312'></a> 312 
+<a id='L313' name='L313'></a> 313     <strong class='reserved'>if</strong>( <a href='../Y/13381.html' title='Multiple used in 30 places.'>page</a> == <a href='../Y/10961.html' title='Multiple used in 40 places.'>m_gridPanel</a> )
+<a id='L314' name='L314'></a> 314     <em class='brace'>{</em>
+<a id='L315' name='L315'></a> 315         <strong class='reserved'>auto</strong> <a href='../Y/12899.html' title='Multiple used in 22 places.'>newGrid</a> = <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/12451.html' title='Multiple used in 49 places.'>make_unique</a>&lt;ARRAY_GRID_OPTIONS&gt;();
+<a id='L316' name='L316'></a> 316         <strong class='reserved'>bool</strong> <a href='../Y/13115.html' title='Multiple used in 72 places.'>ok</a> = <strong class='reserved'>true</strong>;
+<a id='L317' name='L317'></a> 317 
+<a id='L318' name='L318'></a> 318         <em class='comment'>// ints</em>
+<a id='L319' name='L319'></a> 319         <a href='../Y/13115.html' title='Multiple used in 72 places.'>ok</a> = <a href='../Y/13115.html' title='Multiple used in 72 places.'>ok</a> &amp;&amp; <a href='../S/120.html#L243' title='Defined at 243 in dialogs/dialog_create_array.cpp.'>validateLongEntry</a>(*<a href='../Y/10803.html' title='Multiple used in 7 places.'>m_entryNx</a>, <a href='../Y/12899.html' title='Multiple used in 22 places.'>newGrid</a>-&gt;m_nx, <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>("horizontal count"), <a href='../Y/7786.html' title='Multiple used in 15 places.'>errors</a>);
+<a id='L320' name='L320'></a> 320         <a href='../Y/13115.html' title='Multiple used in 72 places.'>ok</a> = <a href='../Y/13115.html' title='Multiple used in 72 places.'>ok</a> &amp;&amp; <a href='../S/120.html#L243' title='Defined at 243 in dialogs/dialog_create_array.cpp.'>validateLongEntry</a>(*<a href='../Y/10804.html' title='Multiple used in 7 places.'>m_entryNy</a>, <a href='../Y/12899.html' title='Multiple used in 22 places.'>newGrid</a>-&gt;m_ny, <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>("vertical count"), <a href='../Y/7786.html' title='Multiple used in 15 places.'>errors</a>);
+<a id='L321' name='L321'></a> 321 
+<a id='L322' name='L322'></a> 322         <a href='../Y/12899.html' title='Multiple used in 22 places.'>newGrid</a>-&gt;<a href='../Y/10680.html' title='Multiple used in 2 places.'>m_delta</a>.<a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a> = <a href='../Y/10984.html' title='Multiple used in 4 places.'>m_hSpacing</a>.<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>();
+<a id='L323' name='L323'></a> 323         <a href='../Y/12899.html' title='Multiple used in 22 places.'>newGrid</a>-&gt;<a href='../Y/10680.html' title='Multiple used in 2 places.'>m_delta</a>.<a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a> = <a href='../Y/12330.html' title='Multiple used in 4 places.'>m_vSpacing</a>.<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>();
+<a id='L324' name='L324'></a> 324 
+<a id='L325' name='L325'></a> 325         <a href='../Y/12899.html' title='Multiple used in 22 places.'>newGrid</a>-&gt;<a href='../Y/11449.html' title='Multiple used in 20 places.'>m_offset</a>.<a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a> = <a href='../Y/10983.html' title='Multiple used in 4 places.'>m_hOffset</a>.<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>();
+<a id='L326' name='L326'></a> 326         <a href='../Y/12899.html' title='Multiple used in 22 places.'>newGrid</a>-&gt;<a href='../Y/11449.html' title='Multiple used in 20 places.'>m_offset</a>.<a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a> = <a href='../Y/12327.html' title='Multiple used in 4 places.'>m_vOffset</a>.<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>();
+<a id='L327' name='L327'></a> 327 
+<a id='L328' name='L328'></a> 328         <a href='../Y/13115.html' title='Multiple used in 72 places.'>ok</a> = <a href='../Y/13115.html' title='Multiple used in 72 places.'>ok</a> &amp;&amp; <a href='../S/120.html#L243' title='Defined at 243 in dialogs/dialog_create_array.cpp.'>validateLongEntry</a>(*<a href='../Y/10809.html' title='Multiple used in 7 places.'>m_entryStagger</a>, <a href='../Y/12899.html' title='Multiple used in 22 places.'>newGrid</a>-&gt;m_stagger, <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>("stagger"), <a href='../Y/7786.html' title='Multiple used in 15 places.'>errors</a>);
+<a id='L329' name='L329'></a> 329 
+<a id='L330' name='L330'></a> 330         <a href='../Y/12899.html' title='Multiple used in 22 places.'>newGrid</a>-&gt;m_stagger_rows = <a href='../Y/11682.html' title='Multiple used in 6 places.'>m_radioBoxGridStaggerType</a>-&gt;<a href='../S/801.html#L332' title='Defined at 332 in tools/selection_tool.cpp.'>GetSelection</a>() == 0;
+<a id='L331' name='L331'></a> 331 
+<a id='L332' name='L332'></a> 332         <a href='../Y/12899.html' title='Multiple used in 22 places.'>newGrid</a>-&gt;m_horizontalThenVertical = <a href='../Y/11676.html' title='Multiple used in 6 places.'>m_radioBoxGridNumberingAxis</a>-&gt;<a href='../S/801.html#L332' title='Defined at 332 in tools/selection_tool.cpp.'>GetSelection</a>() == 0;
+<a id='L333' name='L333'></a> 333         <a href='../Y/12899.html' title='Multiple used in 22 places.'>newGrid</a>-&gt;m_reverseNumberingAlternate = <a href='../Y/10468.html' title='Multiple used in 5 places.'>m_checkBoxGridReverseNumbering</a>-&gt;<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>();
+<a id='L334' name='L334'></a> 334 
+<a id='L335' name='L335'></a> 335         <a href='../Y/12899.html' title='Multiple used in 22 places.'>newGrid</a>-&gt;<a href='../Y/3839.html' title='Multiple used in 2 places.'>SetShouldNumber</a>( <a href='../Y/11442.html' title='Multiple used in 7 places.'>m_numberingEnabled</a> );
+<a id='L336' name='L336'></a> 336 
+<a id='L337' name='L337'></a> 337         <strong class='reserved'>if</strong> ( <a href='../Y/11442.html' title='Multiple used in 7 places.'>m_numberingEnabled</a> )
+<a id='L338' name='L338'></a> 338         <em class='brace'>{</em>
+<a id='L339' name='L339'></a> 339             <a href='../Y/12899.html' title='Multiple used in 22 places.'>newGrid</a>-&gt;<a href='../Y/3717.html' title='Multiple used in 2 places.'>SetNumberingStartIsSpecified</a>( <a href='../Y/11722.html' title='Multiple used in 10 places.'>m_rbGridStartNumberingOpt</a>-&gt;<a href='../S/801.html#L332' title='Defined at 332 in tools/selection_tool.cpp.'>GetSelection</a>() == 1 );
+<a id='L340' name='L340'></a> 340 
+<a id='L341' name='L341'></a> 341             <strong class='reserved'>if</strong>( <a href='../Y/12899.html' title='Multiple used in 22 places.'>newGrid</a>-&gt;<a href='../Y/1580.html' title='Multiple used in 3 places.'>GetNumberingStartIsSpecified</a>() )
+<a id='L342' name='L342'></a> 342             <em class='brace'>{</em>
+<a id='L343' name='L343'></a> 343                 <a href='../Y/12899.html' title='Multiple used in 22 places.'>newGrid</a>-&gt;<a href='../Y/9158.html' title='Multiple used in 3 places.'>m_2dArrayNumbering</a> = <a href='../Y/11679.html' title='Multiple used in 11 places.'>m_radioBoxGridNumberingScheme</a>-&gt;<a href='../S/801.html#L332' title='Defined at 332 in tools/selection_tool.cpp.'>GetSelection</a>() != 0;
+<a id='L344' name='L344'></a> 344 
+<a id='L345' name='L345'></a> 345                 <em class='comment'>// validate from the input fields</em>
+<a id='L346' name='L346'></a> 346                 <strong class='reserved'>bool</strong> <a href='../Y/13066.html' title='Multiple used in 4 places.'>numOk</a> = <a href='../S/120.html#L270' title='Defined at 270 in dialogs/dialog_create_array.cpp.'>validateAxisOptions</a>( *<a href='../Y/10798.html' title='Multiple used in 8 places.'>m_entryGridPriNumberingOffset</a>,
+<a id='L347' name='L347'></a> 347                         *<a href='../Y/10496.html' title='Multiple used in 10 places.'>m_choicePriAxisNumbering</a>, *<a href='../Y/10799.html' title='Multiple used in 6 places.'>m_entryGridPriNumberingStep</a>,
+<a id='L348' name='L348'></a> 348                         <a href='../Y/12899.html' title='Multiple used in 22 places.'>newGrid</a>-&gt;<a href='../Y/11651.html' title='Multiple used in 3 places.'>m_pri_axis</a>, <a href='../Y/7786.html' title='Multiple used in 15 places.'>errors</a> );
+<a id='L349' name='L349'></a> 349 
+<a id='L350' name='L350'></a> 350                 <strong class='reserved'>if</strong>( <a href='../Y/12899.html' title='Multiple used in 22 places.'>newGrid</a>-&gt;<a href='../Y/9158.html' title='Multiple used in 3 places.'>m_2dArrayNumbering</a> )
+<a id='L351' name='L351'></a> 351                 <em class='brace'>{</em>
+<a id='L352' name='L352'></a> 352                     <a href='../Y/13066.html' title='Multiple used in 4 places.'>numOk</a> = <a href='../S/120.html#L270' title='Defined at 270 in dialogs/dialog_create_array.cpp.'>validateAxisOptions</a>( *<a href='../Y/10800.html' title='Multiple used in 8 places.'>m_entryGridSecNumberingOffset</a>,
+<a id='L353' name='L353'></a> 353                                     *<a href='../Y/10498.html' title='Multiple used in 11 places.'>m_choiceSecAxisNumbering</a>, *<a href='../Y/10801.html' title='Multiple used in 6 places.'>m_entryGridSecNumberingStep</a>,
+<a id='L354' name='L354'></a> 354                                     <a href='../Y/12899.html' title='Multiple used in 22 places.'>newGrid</a>-&gt;m_sec_axis, <a href='../Y/7786.html' title='Multiple used in 15 places.'>errors</a> )
+<a id='L355' name='L355'></a> 355                             &amp;&amp; <a href='../Y/13066.html' title='Multiple used in 4 places.'>numOk</a>;
+<a id='L356' name='L356'></a> 356                 <em class='brace'>}</em>
+<a id='L357' name='L357'></a> 357 
+<a id='L358' name='L358'></a> 358                 <a href='../Y/13115.html' title='Multiple used in 72 places.'>ok</a> = <a href='../Y/13115.html' title='Multiple used in 72 places.'>ok</a> &amp;&amp; <a href='../Y/13066.html' title='Multiple used in 4 places.'>numOk</a>;
+<a id='L359' name='L359'></a> 359             <em class='brace'>}</em>
+<a id='L360' name='L360'></a> 360             <strong class='reserved'>else</strong>
+<a id='L361' name='L361'></a> 361             <em class='brace'>{</em>
+<a id='L362' name='L362'></a> 362                 <em class='comment'>// artificial linear numeric scheme from 1</em>
+<a id='L363' name='L363'></a> 363                 <a href='../Y/12899.html' title='Multiple used in 22 places.'>newGrid</a>-&gt;<a href='../Y/9158.html' title='Multiple used in 3 places.'>m_2dArrayNumbering</a> = <strong class='reserved'>false</strong>;
+<a id='L364' name='L364'></a> 364                 <a href='../Y/12899.html' title='Multiple used in 22 places.'>newGrid</a>-&gt;<a href='../Y/11651.html' title='Multiple used in 3 places.'>m_pri_axis</a>.<a href='../Y/3350.html' title='Multiple used in 3 places.'>SetAxisType</a>( <a href='../Y/81.html' title='Multiple used in 8 places.'>ARRAY_AXIS</a>::<a href='../Y/2650.html' title='Multiple used in 7 places.'>NUMBERING_TYPE</a>::<a href='../Y/2649.html' title='Multiple used in 3 places.'>NUMBERING_NUMERIC</a> );
+<a id='L365' name='L365'></a> 365                 <a href='../Y/12899.html' title='Multiple used in 22 places.'>newGrid</a>-&gt;<a href='../Y/11651.html' title='Multiple used in 3 places.'>m_pri_axis</a>.<a href='../S/419.html#L240' title='Defined at 240 in exporters/export_vrml.cpp.'>SetOffset</a>( 1 );
+<a id='L366' name='L366'></a> 366             <em class='brace'>}</em>
+<a id='L367' name='L367'></a> 367         <em class='brace'>}</em>
+<a id='L368' name='L368'></a> 368 
+<a id='L369' name='L369'></a> 369         <em class='comment'>// Only use settings if all values are good</em>
+<a id='L370' name='L370'></a> 370         <strong class='reserved'>if</strong>( <a href='../Y/13115.html' title='Multiple used in 72 places.'>ok</a> )
+<a id='L371' name='L371'></a> 371             <a href='../Y/12928.html' title='Multiple used in 5 places.'>newSettings</a> = <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/12717.html' title='Multiple used in 65 places.'>move</a>( <a href='../Y/12899.html' title='Multiple used in 22 places.'>newGrid</a> );
+<a id='L372' name='L372'></a> 372     <em class='brace'>}</em>
+<a id='L373' name='L373'></a> 373     <strong class='reserved'>else</strong> <strong class='reserved'>if</strong>( <a href='../Y/13381.html' title='Multiple used in 30 places.'>page</a> == <a href='../Y/10514.html' title='Multiple used in 24 places.'>m_circularPanel</a> )
+<a id='L374' name='L374'></a> 374     <em class='brace'>{</em>
+<a id='L375' name='L375'></a> 375         <strong class='reserved'>auto</strong> <a href='../Y/12890.html' title='Multiple used in 13 places.'>newCirc</a> = <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/12451.html' title='Multiple used in 49 places.'>make_unique</a>&lt;ARRAY_CIRCULAR_OPTIONS&gt;();
+<a id='L376' name='L376'></a> 376         <strong class='reserved'>bool</strong> <a href='../Y/13115.html' title='Multiple used in 72 places.'>ok</a> = <strong class='reserved'>true</strong>;
+<a id='L377' name='L377'></a> 377 
+<a id='L378' name='L378'></a> 378         <a href='../Y/12890.html' title='Multiple used in 13 places.'>newCirc</a>-&gt;<a href='../Y/10456.html' title='Multiple used in 2 places.'>m_centre</a>.<a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a> = <a href='../Y/10981.html' title='Multiple used in 5 places.'>m_hCentre</a>.<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>();
+<a id='L379' name='L379'></a> 379         <a href='../Y/12890.html' title='Multiple used in 13 places.'>newCirc</a>-&gt;<a href='../Y/10456.html' title='Multiple used in 2 places.'>m_centre</a>.<a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a> = <a href='../Y/12325.html' title='Multiple used in 5 places.'>m_vCentre</a>.<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>();
+<a id='L380' name='L380'></a> 380         <a href='../Y/12890.html' title='Multiple used in 13 places.'>newCirc</a>-&gt;<a href='../Y/10247.html' title='Multiple used in 26 places.'>m_angle</a> =
+<a id='L381' name='L381'></a> 381                 <a href='../Y/799.html' title='Multiple used in 13 places.'>DoubleValueFromString</a>( <a href='../Y/848.html' title='Multiple used in 169 places.'>EDA_UNITS</a>::<a href='../Y/623.html' title='Multiple used in 17 places.'>DEGREES</a>, <a href='../Y/10791.html' title='Multiple used in 8 places.'>m_entryCircAngle</a>-&gt;<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>() );
+<a id='L382' name='L382'></a> 382 
+<a id='L383' name='L383'></a> 383         <a href='../Y/13115.html' title='Multiple used in 72 places.'>ok</a> = <a href='../Y/13115.html' title='Multiple used in 72 places.'>ok</a> &amp;&amp; <a href='../S/120.html#L243' title='Defined at 243 in dialogs/dialog_create_array.cpp.'>validateLongEntry</a>(*<a href='../Y/10792.html' title='Multiple used in 8 places.'>m_entryCircCount</a>, <a href='../Y/12890.html' title='Multiple used in 13 places.'>newCirc</a>-&gt;m_nPts, <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>("point count"), <a href='../Y/7786.html' title='Multiple used in 15 places.'>errors</a>);
+<a id='L384' name='L384'></a> 384 
+<a id='L385' name='L385'></a> 385         <a href='../Y/12890.html' title='Multiple used in 13 places.'>newCirc</a>-&gt;m_rotateItems = <a href='../Y/10808.html' title='Multiple used in 7 places.'>m_entryRotateItemsCb</a>-&gt;<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>();
+<a id='L386' name='L386'></a> 386         <a href='../Y/12890.html' title='Multiple used in 13 places.'>newCirc</a>-&gt;<a href='../Y/3839.html' title='Multiple used in 2 places.'>SetShouldNumber</a>( <a href='../Y/11442.html' title='Multiple used in 7 places.'>m_numberingEnabled</a> );
+<a id='L387' name='L387'></a> 387 
+<a id='L388' name='L388'></a> 388         <strong class='reserved'>if</strong> ( <a href='../Y/11442.html' title='Multiple used in 7 places.'>m_numberingEnabled</a> )
+<a id='L389' name='L389'></a> 389         <em class='brace'>{</em>
+<a id='L390' name='L390'></a> 390             <a href='../Y/12890.html' title='Multiple used in 13 places.'>newCirc</a>-&gt;<a href='../Y/3717.html' title='Multiple used in 2 places.'>SetNumberingStartIsSpecified</a>( <a href='../Y/11703.html' title='Multiple used in 10 places.'>m_rbCircStartNumberingOpt</a>-&gt;<a href='../S/801.html#L332' title='Defined at 332 in tools/selection_tool.cpp.'>GetSelection</a>() == 1 );
+<a id='L391' name='L391'></a> 391 
+<a id='L392' name='L392'></a> 392             <strong class='reserved'>if</strong>( <a href='../Y/12890.html' title='Multiple used in 13 places.'>newCirc</a>-&gt;<a href='../Y/1580.html' title='Multiple used in 3 places.'>GetNumberingStartIsSpecified</a>() )
+<a id='L393' name='L393'></a> 393             <em class='brace'>{</em>
+<a id='L394' name='L394'></a> 394                 <a href='../Y/13115.html' title='Multiple used in 72 places.'>ok</a> = <a href='../Y/13115.html' title='Multiple used in 72 places.'>ok</a>
+<a id='L395' name='L395'></a> 395                      &amp;&amp; <a href='../S/120.html#L270' title='Defined at 270 in dialogs/dialog_create_array.cpp.'>validateAxisOptions</a>( *<a href='../Y/10793.html' title='Multiple used in 7 places.'>m_entryCircNumberingStart</a>, *<a href='../Y/10482.html' title='Multiple used in 8 places.'>m_choiceCircNumbering</a>,
+<a id='L396' name='L396'></a> 396                              *<a href='../Y/10794.html' title='Multiple used in 5 places.'>m_entryCircNumberingStep</a>, <a href='../Y/12890.html' title='Multiple used in 13 places.'>newCirc</a>-&gt;<a href='../Y/10276.html' title='Multiple used in 3 places.'>m_axis</a>, <a href='../Y/7786.html' title='Multiple used in 15 places.'>errors</a> );
+<a id='L397' name='L397'></a> 397             <em class='brace'>}</em>
+<a id='L398' name='L398'></a> 398             <strong class='reserved'>else</strong>
+<a id='L399' name='L399'></a> 399             <em class='brace'>{</em>
+<a id='L400' name='L400'></a> 400                 <em class='comment'>// artificial linear numeric scheme from 1</em>
+<a id='L401' name='L401'></a> 401                 <a href='../Y/12890.html' title='Multiple used in 13 places.'>newCirc</a>-&gt;<a href='../Y/10276.html' title='Multiple used in 3 places.'>m_axis</a>.<a href='../Y/3350.html' title='Multiple used in 3 places.'>SetAxisType</a>( <a href='../Y/81.html' title='Multiple used in 8 places.'>ARRAY_AXIS</a>::<a href='../Y/2650.html' title='Multiple used in 7 places.'>NUMBERING_TYPE</a>::<a href='../Y/2649.html' title='Multiple used in 3 places.'>NUMBERING_NUMERIC</a> );
+<a id='L402' name='L402'></a> 402                 <a href='../Y/12890.html' title='Multiple used in 13 places.'>newCirc</a>-&gt;<a href='../Y/10276.html' title='Multiple used in 3 places.'>m_axis</a>.<a href='../S/419.html#L240' title='Defined at 240 in exporters/export_vrml.cpp.'>SetOffset</a>( 1 ); <em class='comment'>// Start at "1"</em>
+<a id='L403' name='L403'></a> 403             <em class='brace'>}</em>
+<a id='L404' name='L404'></a> 404         <em class='brace'>}</em>
+<a id='L405' name='L405'></a> 405 
+<a id='L406' name='L406'></a> 406         <em class='comment'>// Only use settings if all values are good</em>
+<a id='L407' name='L407'></a> 407         <strong class='reserved'>if</strong>( <a href='../Y/13115.html' title='Multiple used in 72 places.'>ok</a> )
+<a id='L408' name='L408'></a> 408             <a href='../Y/12928.html' title='Multiple used in 5 places.'>newSettings</a> = <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/12717.html' title='Multiple used in 65 places.'>move</a>( <a href='../Y/12890.html' title='Multiple used in 13 places.'>newCirc</a> );
+<a id='L409' name='L409'></a> 409     <em class='brace'>}</em>
+<a id='L410' name='L410'></a> 410 
+<a id='L411' name='L411'></a> 411     <em class='comment'>// If we got good settings, send them out and finish</em>
+<a id='L412' name='L412'></a> 412     <strong class='reserved'>if</strong>( <a href='../Y/12928.html' title='Multiple used in 5 places.'>newSettings</a> )
+<a id='L413' name='L413'></a> 413     <em class='brace'>{</em>
+<a id='L414' name='L414'></a> 414         <em class='comment'>// assign pointer and ownership here</em>
+<a id='L415' name='L415'></a> 415         <a href='../D/4209.html' title='Multiple defined in 2 places.'>m_settings</a> = <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/12717.html' title='Multiple used in 65 places.'>move</a>( <a href='../Y/12928.html' title='Multiple used in 5 places.'>newSettings</a> );
+<a id='L416' name='L416'></a> 416 
+<a id='L417' name='L417'></a> 417         <em class='comment'>// persist the control state for next time</em>
+<a id='L418' name='L418'></a> 418         <a href='../S/120.html#L153' title='Defined at 153 in dialogs/dialog_create_array.cpp.'>m_cfg_persister</a>.ReadConfigFromControls();
+<a id='L419' name='L419'></a> 419 
+<a id='L420' name='L420'></a> 420         <strong class='reserved'>return</strong> <strong class='reserved'>true</strong>;
+<a id='L421' name='L421'></a> 421     <em class='brace'>}</em>
+<a id='L422' name='L422'></a> 422     <strong class='reserved'>else</strong>
+<a id='L423' name='L423'></a> 423     <em class='brace'>{</em>
+<a id='L424' name='L424'></a> 424         <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../Y/7778.html' title='Multiple used in 4 places.'>errorStr</a>;
+<a id='L425' name='L425'></a> 425 
+<a id='L426' name='L426'></a> 426         <strong class='reserved'>if</strong>( <a href='../Y/7786.html' title='Multiple used in 15 places.'>errors</a>.<a href='../Y/2119.html' title='Multiple used in 204 places.'>IsEmpty</a>() )
+<a id='L427' name='L427'></a> 427             <a href='../Y/7778.html' title='Multiple used in 4 places.'>errorStr</a> = <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>("Bad parameters");
+<a id='L428' name='L428'></a> 428         <strong class='reserved'>else</strong>
+<a id='L429' name='L429'></a> 429             <a href='../Y/7778.html' title='Multiple used in 4 places.'>errorStr</a> = <a href='../Y/6720.html' title='Multiple used in 39 places.'>boost</a>::algorithm::<a href='../Y/8768.html' title='Multiple used in 4 places.'>join</a>( <a href='../Y/7786.html' title='Multiple used in 15 places.'>errors</a>, "\n" );
+<a id='L430' name='L430'></a> 430 
+<a id='L431' name='L431'></a> 431         <a href='../Y/15836.html' title='Multiple used in 67 places.'>wxMessageBox</a>( <a href='../Y/7778.html' title='Multiple used in 4 places.'>errorStr</a> );
+<a id='L432' name='L432'></a> 432         <strong class='reserved'>return</strong> <strong class='reserved'>false</strong>;
+<a id='L433' name='L433'></a> 433     <em class='brace'>}</em>
+<a id='L434' name='L434'></a> 434 <em class='brace'>}</em>
+<a id='L435' name='L435'></a> 435 
+<a id='L436' name='L436'></a> 436 
+<a id='L437' name='L437'></a> 437 <strong class='reserved'>void</strong> <a href='../Y/633.html' title='Multiple used in 8 places.'>DIALOG_CREATE_ARRAY</a>::<a href='../R/4414.html' title='Multiple referred from 3 places.'>setControlEnablement</a>()
+<a id='L438' name='L438'></a> 438 <em class='brace'>{</em>
+<a id='L439' name='L439'></a> 439     <strong class='reserved'>if</strong> ( <a href='../Y/11442.html' title='Multiple used in 7 places.'>m_numberingEnabled</a> )
+<a id='L440' name='L440'></a> 440     <em class='brace'>{</em>
+<a id='L441' name='L441'></a> 441         <em class='comment'>// If we set the start number, we can set the other options,</em>
+<a id='L442' name='L442'></a> 442         <em class='comment'>// otherwise it's a hardcoded linear array</em>
+<a id='L443' name='L443'></a> 443         <strong class='reserved'>const</strong> <strong class='reserved'>bool</strong> <a href='../Y/15251.html' title='Multiple used in 9 places.'>use_set_start_grid</a> = <a href='../Y/11722.html' title='Multiple used in 10 places.'>m_rbGridStartNumberingOpt</a>-&gt;<a href='../S/801.html#L332' title='Defined at 332 in tools/selection_tool.cpp.'>GetSelection</a>() == 1;
+<a id='L444' name='L444'></a> 444 
+<a id='L445' name='L445'></a> 445         <a href='../Y/11679.html' title='Multiple used in 11 places.'>m_radioBoxGridNumberingScheme</a>-&gt;<a href='../Y/918.html' title='Multiple used in 251 places.'>Enable</a>( <a href='../Y/15251.html' title='Multiple used in 9 places.'>use_set_start_grid</a> );
+<a id='L446' name='L446'></a> 446         <a href='../Y/11135.html' title='Multiple used in 6 places.'>m_labelPriAxisNumbering</a>-&gt;<a href='../Y/918.html' title='Multiple used in 251 places.'>Enable</a>( <a href='../Y/15251.html' title='Multiple used in 9 places.'>use_set_start_grid</a> );
+<a id='L447' name='L447'></a> 447         <a href='../Y/10496.html' title='Multiple used in 10 places.'>m_choicePriAxisNumbering</a>-&gt;<a href='../Y/918.html' title='Multiple used in 251 places.'>Enable</a>( <a href='../Y/15251.html' title='Multiple used in 9 places.'>use_set_start_grid</a> );
+<a id='L448' name='L448'></a> 448 
+<a id='L449' name='L449'></a> 449         <em class='comment'>// Disable the secondary axis numbering option if the</em>
+<a id='L450' name='L450'></a> 450         <em class='comment'>// numbering scheme doesn't have two axes</em>
+<a id='L451' name='L451'></a> 451         <strong class='reserved'>const</strong> <strong class='reserved'>bool</strong> <a href='../Y/13061.html' title='Multiple used in 4 places.'>num2d</a> = <a href='../Y/11679.html' title='Multiple used in 11 places.'>m_radioBoxGridNumberingScheme</a>-&gt;<a href='../S/801.html#L332' title='Defined at 332 in tools/selection_tool.cpp.'>GetSelection</a>() != 0;
+<a id='L452' name='L452'></a> 452 
+<a id='L453' name='L453'></a> 453         <a href='../Y/11136.html' title='Multiple used in 7 places.'>m_labelSecAxisNumbering</a>-&gt;<a href='../Y/918.html' title='Multiple used in 251 places.'>Enable</a>( <a href='../Y/15251.html' title='Multiple used in 9 places.'>use_set_start_grid</a> &amp;&amp; <a href='../Y/13061.html' title='Multiple used in 4 places.'>num2d</a> );
+<a id='L454' name='L454'></a> 454         <a href='../Y/10498.html' title='Multiple used in 11 places.'>m_choiceSecAxisNumbering</a>-&gt;<a href='../Y/918.html' title='Multiple used in 251 places.'>Enable</a>( <a href='../Y/15251.html' title='Multiple used in 9 places.'>use_set_start_grid</a> &amp;&amp; <a href='../Y/13061.html' title='Multiple used in 4 places.'>num2d</a> );
+<a id='L455' name='L455'></a> 455 
+<a id='L456' name='L456'></a> 456         <em class='comment'>// We can only set an offset if we're setting the start number</em>
+<a id='L457' name='L457'></a> 457         <a href='../Y/11129.html' title='Multiple used in 6 places.'>m_labelGridNumberingOffset</a>-&gt;<a href='../Y/918.html' title='Multiple used in 251 places.'>Enable</a>( <a href='../Y/15251.html' title='Multiple used in 9 places.'>use_set_start_grid</a> );
+<a id='L458' name='L458'></a> 458         <a href='../Y/10798.html' title='Multiple used in 8 places.'>m_entryGridPriNumberingOffset</a>-&gt;<a href='../Y/918.html' title='Multiple used in 251 places.'>Enable</a>( <a href='../Y/15251.html' title='Multiple used in 9 places.'>use_set_start_grid</a> );
+<a id='L459' name='L459'></a> 459         <a href='../Y/10800.html' title='Multiple used in 8 places.'>m_entryGridSecNumberingOffset</a>-&gt;<a href='../Y/918.html' title='Multiple used in 251 places.'>Enable</a>( <a href='../Y/15251.html' title='Multiple used in 9 places.'>use_set_start_grid</a> &amp;&amp; <a href='../Y/13061.html' title='Multiple used in 4 places.'>num2d</a> );
+<a id='L460' name='L460'></a> 460 
+<a id='L461' name='L461'></a> 461         <em class='comment'>// disable the circular number offset in the same way</em>
+<a id='L462' name='L462'></a> 462         <strong class='reserved'>const</strong> <strong class='reserved'>bool</strong> <a href='../Y/15250.html' title='Multiple used in 2 places.'>use_set_start_circ</a> = <a href='../Y/11703.html' title='Multiple used in 10 places.'>m_rbCircStartNumberingOpt</a>-&gt;<a href='../S/801.html#L332' title='Defined at 332 in tools/selection_tool.cpp.'>GetSelection</a>() == 1;
+<a id='L463' name='L463'></a> 463         <a href='../Y/10793.html' title='Multiple used in 7 places.'>m_entryCircNumberingStart</a>-&gt;<a href='../Y/918.html' title='Multiple used in 251 places.'>Enable</a>( <a href='../Y/15250.html' title='Multiple used in 2 places.'>use_set_start_circ</a> );
+<a id='L464' name='L464'></a> 464     <em class='brace'>}</em>
+<a id='L465' name='L465'></a> 465     <strong class='reserved'>else</strong>
+<a id='L466' name='L466'></a> 466     <em class='brace'>{</em>
+<a id='L467' name='L467'></a> 467         <em class='comment'>// grid</em>
+<a id='L468' name='L468'></a> 468         <a href='../Y/11722.html' title='Multiple used in 10 places.'>m_rbGridStartNumberingOpt</a>-&gt;<a href='../Y/918.html' title='Multiple used in 251 places.'>Enable</a>( <strong class='reserved'>false</strong> );
+<a id='L469' name='L469'></a> 469         <a href='../Y/11679.html' title='Multiple used in 11 places.'>m_radioBoxGridNumberingScheme</a>-&gt;<a href='../Y/918.html' title='Multiple used in 251 places.'>Enable</a>( <strong class='reserved'>false</strong> );
+<a id='L470' name='L470'></a> 470 
+<a id='L471' name='L471'></a> 471         <a href='../Y/11135.html' title='Multiple used in 6 places.'>m_labelPriAxisNumbering</a>-&gt;<a href='../Y/918.html' title='Multiple used in 251 places.'>Enable</a>( <strong class='reserved'>false</strong> );
+<a id='L472' name='L472'></a> 472         <a href='../Y/11136.html' title='Multiple used in 7 places.'>m_labelSecAxisNumbering</a>-&gt;<a href='../Y/918.html' title='Multiple used in 251 places.'>Enable</a>( <strong class='reserved'>false</strong> );
+<a id='L473' name='L473'></a> 473 
+<a id='L474' name='L474'></a> 474         <a href='../Y/10498.html' title='Multiple used in 11 places.'>m_choiceSecAxisNumbering</a>-&gt;<a href='../Y/918.html' title='Multiple used in 251 places.'>Enable</a>( <strong class='reserved'>false</strong> );
+<a id='L475' name='L475'></a> 475         <a href='../Y/10496.html' title='Multiple used in 10 places.'>m_choicePriAxisNumbering</a>-&gt;<a href='../Y/918.html' title='Multiple used in 251 places.'>Enable</a>( <strong class='reserved'>false</strong> );
+<a id='L476' name='L476'></a> 476 
+<a id='L477' name='L477'></a> 477         <a href='../Y/11129.html' title='Multiple used in 6 places.'>m_labelGridNumberingOffset</a>-&gt;<a href='../Y/918.html' title='Multiple used in 251 places.'>Enable</a>( <strong class='reserved'>false</strong> );
+<a id='L478' name='L478'></a> 478         <a href='../Y/10798.html' title='Multiple used in 8 places.'>m_entryGridPriNumberingOffset</a>-&gt;<a href='../Y/918.html' title='Multiple used in 251 places.'>Enable</a>( <strong class='reserved'>false</strong> );
+<a id='L479' name='L479'></a> 479         <a href='../Y/10800.html' title='Multiple used in 8 places.'>m_entryGridSecNumberingOffset</a>-&gt;<a href='../Y/918.html' title='Multiple used in 251 places.'>Enable</a>( <strong class='reserved'>false</strong> );
+<a id='L480' name='L480'></a> 480 
+<a id='L481' name='L481'></a> 481         <em class='comment'>// circular</em>
+<a id='L482' name='L482'></a> 482         <a href='../Y/11703.html' title='Multiple used in 10 places.'>m_rbCircStartNumberingOpt</a>-&gt;<a href='../Y/918.html' title='Multiple used in 251 places.'>Enable</a>( <strong class='reserved'>false</strong> );
+<a id='L483' name='L483'></a> 483         <a href='../Y/10793.html' title='Multiple used in 7 places.'>m_entryCircNumberingStart</a>-&gt;<a href='../Y/918.html' title='Multiple used in 251 places.'>Enable</a>( <strong class='reserved'>false</strong> );
+<a id='L484' name='L484'></a> 484     <em class='brace'>}</em>
+<a id='L485' name='L485'></a> 485 <em class='brace'>}</em>
+<a id='L486' name='L486'></a> 486 
+<a id='L487' name='L487'></a> 487 
+<a id='L488' name='L488'></a> 488 <strong class='reserved'>void</strong> <a href='../Y/633.html' title='Multiple used in 8 places.'>DIALOG_CREATE_ARRAY</a>::<a href='../R/3500.html' title='Multiple referred from 3 places.'>calculateCircularArrayProperties</a>()
+<a id='L489' name='L489'></a> 489 <em class='brace'>{</em>
+<a id='L490' name='L490'></a> 490     <a href='../Y/4788.html' title='Multiple used in 795 places.'>VECTOR2I</a> <a href='../Y/6842.html' title='Multiple used in 21 places.'>centre</a>( <a href='../Y/10981.html' title='Multiple used in 5 places.'>m_hCentre</a>.<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>(), <a href='../Y/12325.html' title='Multiple used in 5 places.'>m_vCentre</a>.<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>() );
+<a id='L491' name='L491'></a> 491 
+<a id='L492' name='L492'></a> 492     <em class='comment'>// Find the radius, etc of the circle</em>
+<a id='L493' name='L493'></a> 493     <a href='../Y/6842.html' title='Multiple used in 21 places.'>centre</a> -= <a href='../Y/11490.html' title='Multiple used in 3 places.'>m_originalItemPosition</a>;
+<a id='L494' name='L494'></a> 494 
+<a id='L495' name='L495'></a> 495     <a href='../Y/10512.html' title='Multiple used in 3 places.'>m_circRadius</a>.<a href='../D/3095.html' title='Multiple defined in 3 places.'>SetValue</a>( <strong class='reserved'>int</strong>( <a href='../Y/6842.html' title='Multiple used in 21 places.'>centre</a>.<a href='../Y/949.html' title='Multiple used in 58 places.'>EuclideanNorm</a>() ) );
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L74'>[^]</a><a href='#L488'>[v]</a><a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

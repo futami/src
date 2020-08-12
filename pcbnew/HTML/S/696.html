@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>router/pns_topology.h</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/840.html'>router</a>/pns_topology.h</h2>
+<em class='comment'>/* [&lt;][&gt;][^][v][top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'><a href='../J/600.html' title='Multiple included from 11 places.'>INCLUDED FROM</a></h2>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * KiRouter - a push-and-(sometimes-)shove PCB router</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 2013-2015 CERN</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> * Copyright (C) 2016 KiCad Developers, see AUTHORS.txt for contributors.</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> * Author: Tomasz Wlostowski &lt;tomasz.wlostowski@cern.ch&gt;</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> *</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * This program is free software: you can redistribute it and/or modify it</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * under the terms of the GNU General Public License as published by the</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> * Free Software Foundation, either version 3 of the License, or (at your</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> * option) any later version.</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> *</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * This program is distributed in the hope that it will be useful, but</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> * General Public License for more details.</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> *</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * You should have received a copy of the GNU General Public License along</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> * with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> */</em>
+<a id='L21' name='L21'></a>  21 
+<a id='L22' name='L22'></a>  22 <em class='sharp'>#ifndef</em> <a href='../S/696.html#L23' title='Defined at 23 in router/pns_topology.h.'>__PNS_TOPOLOGY_H</a>
+<a id='L23' name='L23'></a>  23 <em class='sharp'>#define</em> <a href='../S/696.html#L22' title='Referred from 22 in router/pns_topology.h.'>__PNS_TOPOLOGY_H</a>
+<a id='L24' name='L24'></a>  24 
+<a id='L25' name='L25'></a>  25 <em class='sharp'>#include</em> &lt;vector&gt;
+<a id='L26' name='L26'></a>  26 <em class='sharp'>#include</em> &lt;set&gt;
+<a id='L27' name='L27'></a>  27 
+<a id='L28' name='L28'></a>  28 <em class='sharp'>#include</em> "<a href='656.html'>pns_itemset.h</a>"
+<a id='L29' name='L29'></a>  29 
+<a id='L30' name='L30'></a>  30 <a href='../Y/12795.html' title='Multiple used in 89 places.'>namespace</a> <a href='../D/2558.html' title='Multiple defined in 30 places.'>PNS</a> <em class='brace'>{</em>
+<a id='L31' name='L31'></a>  31 
+<a id='L32' name='L32'></a>  32 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../D/2147.html' title='Multiple defined in 2 places.'>NODE</a>;
+<a id='L33' name='L33'></a>  33 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../Y/3208.html' title='Multiple used in 87 places.'>SEGMENT</a>;
+<a id='L34' name='L34'></a>  34 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../S/678.html#L441' title='Defined at 441 in router/pns_node.h.'>JOINT</a>;
+<a id='L35' name='L35'></a>  35 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../D/1783.html' title='Multiple defined in 2 places.'>ITEM</a>;
+<a id='L36' name='L36'></a>  36 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../Y/3265.html' title='Multiple used in 45 places.'>SOLID</a>;
+<a id='L37' name='L37'></a>  37 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../Y/656.html' title='Multiple used in 63 places.'>DIFF_PAIR</a>;
+<a id='L38' name='L38'></a>  38 
+<a id='L39' name='L39'></a>  39 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../Y/4106.html' title='Multiple used in 28 places.'>TOPOLOGY</a>
+<a id='L40' name='L40'></a>  40 <em class='brace'>{</em>
+<a id='L41' name='L41'></a>  41 <a href='../Y/13804.html' title='Multiple used in 833 places.'>public</a>:
+<a id='L42' name='L42'></a>  42     <strong class='reserved'>typedef</strong> <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/14361.html' title='Multiple used in 188 places.'>set</a>&lt;<a href='../S/678.html#L441' title='Defined at 441 in router/pns_node.h.'>JOINT</a>*&gt; <a href='../R/1804.html' title='Multiple referred from 3 places.'>JOINT_SET</a>;
+<a id='L43' name='L43'></a>  43 
+<a id='L44' name='L44'></a>  44     <a href='../Y/4106.html' title='Multiple used in 28 places.'>TOPOLOGY</a>( <a href='../D/2147.html' title='Multiple defined in 2 places.'>NODE</a>* <a href='../Y/5655.html' title='Multiple used in 329 places.'>aNode</a> ):
+<a id='L45' name='L45'></a>  45         <a href='../Y/12405.html' title='Multiple used in 111 places.'>m_world</a>( <a href='../Y/5655.html' title='Multiple used in 329 places.'>aNode</a> ) <em class='brace'>{</em><em class='brace'>}</em>;
+<a id='L46' name='L46'></a>  46 
+<a id='L47' name='L47'></a>  47     ~<a href='../Y/4106.html' title='Multiple used in 28 places.'>TOPOLOGY</a>() <em class='brace'>{</em><em class='brace'>}</em>;
+<a id='L48' name='L48'></a>  48 
+<a id='L49' name='L49'></a>  49     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../S/695.html#L37' title='Defined at 37 in router/pns_topology.cpp.'>SimplifyLine</a>( <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a> *<a href='../Y/5510.html' title='Multiple used in 153 places.'>aLine</a> );
+<a id='L50' name='L50'></a>  50     <a href='../D/1783.html' title='Multiple defined in 2 places.'>ITEM</a>* <a href='../S/695.html#L136' title='Defined at 136 in router/pns_topology.cpp.'>NearestUnconnectedItem</a>( <a href='../S/678.html#L441' title='Defined at 441 in router/pns_node.h.'>JOINT</a>* <a href='../Y/6000.html' title='Multiple used in 114 places.'>aStart</a>, <strong class='reserved'>int</strong>* <a href='../Y/4993.html' title='Multiple used in 12 places.'>aAnchor</a> = <a href='../Y/2643.html' title='Multiple used in 1581 places.'>NULL</a>, <strong class='reserved'>int</strong> <a href='../Y/5466.html' title='Multiple used in 41 places.'>aKindMask</a> = <a href='../D/1783.html' title='Multiple defined in 2 places.'>ITEM</a>::<a href='../S/654.html#L68' title='Defined at 68 in router/pns_item.h.'>ANY_T</a> );
+<a id='L51' name='L51'></a>  51     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../S/695.html#L96' title='Defined at 96 in router/pns_topology.cpp.'>LeadingRatLine</a>( <strong class='reserved'>const</strong> <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>* <a href='../Y/6080.html' title='Multiple used in 58 places.'>aTrack</a>, <a href='../Y/3234.html' title='Multiple used in 316 places.'>SHAPE_LINE_CHAIN</a>&amp; <a href='../Y/5855.html' title='Multiple used in 5 places.'>aRatLine</a> );
+<a id='L52' name='L52'></a>  52 
+<a id='L53' name='L53'></a>  53     <strong class='reserved'>const</strong> <a href='../S/696.html#L42' title='Defined at 42 in router/pns_topology.h.'>JOINT_SET</a> <a href='../S/695.html#L61' title='Defined at 61 in router/pns_topology.cpp.'>ConnectedJoints</a>( <a href='../S/678.html#L441' title='Defined at 441 in router/pns_node.h.'>JOINT</a>* <a href='../Y/6000.html' title='Multiple used in 114 places.'>aStart</a> );
+<a id='L54' name='L54'></a>  54     <strong class='reserved'>const</strong> <a href='../D/1784.html' title='Multiple defined in 2 places.'>ITEM_SET</a> <a href='../D/481.html' title='Multiple defined in 2 places.'>ConnectedItems</a>( <a href='../S/678.html#L441' title='Defined at 441 in router/pns_node.h.'>JOINT</a>* <a href='../Y/6000.html' title='Multiple used in 114 places.'>aStart</a>, <strong class='reserved'>int</strong> <a href='../Y/5466.html' title='Multiple used in 41 places.'>aKindMask</a> = <a href='../D/1783.html' title='Multiple defined in 2 places.'>ITEM</a>::<a href='../S/654.html#L68' title='Defined at 68 in router/pns_item.h.'>ANY_T</a> );
+<a id='L55' name='L55'></a>  55     <strong class='reserved'>const</strong> <a href='../D/1784.html' title='Multiple defined in 2 places.'>ITEM_SET</a> <a href='../D/481.html' title='Multiple defined in 2 places.'>ConnectedItems</a>( <a href='../D/1783.html' title='Multiple defined in 2 places.'>ITEM</a>* <a href='../Y/6000.html' title='Multiple used in 114 places.'>aStart</a>, <strong class='reserved'>int</strong> <a href='../Y/5466.html' title='Multiple used in 41 places.'>aKindMask</a> = <a href='../D/1783.html' title='Multiple defined in 2 places.'>ITEM</a>::<a href='../S/654.html#L68' title='Defined at 68 in router/pns_item.h.'>ANY_T</a> );
+<a id='L56' name='L56'></a>  56     <a href='../Y/8588.html' title='Multiple used in 40 places.'>int64_t</a> ShortestConnectionLength( <a href='../D/1783.html' title='Multiple defined in 2 places.'>ITEM</a>* <a href='../Y/5343.html' title='Multiple used in 7 places.'>aFrom</a>, <a href='../D/1783.html' title='Multiple defined in 2 places.'>ITEM</a>* aTo );
+<a id='L57' name='L57'></a>  57 
+<a id='L58' name='L58'></a>  58     <strong class='reserved'>const</strong> <a href='../D/1784.html' title='Multiple defined in 2 places.'>ITEM_SET</a> <a href='../S/695.html#L239' title='Defined at 239 in router/pns_topology.cpp.'>AssembleTrivialPath</a>( <a href='../D/1783.html' title='Multiple defined in 2 places.'>ITEM</a>* <a href='../Y/6000.html' title='Multiple used in 114 places.'>aStart</a> );
+<a id='L59' name='L59'></a>  59     <strong class='reserved'>const</strong> <a href='../Y/656.html' title='Multiple used in 63 places.'>DIFF_PAIR</a> <a href='../S/695.html#L289' title='Defined at 289 in router/pns_topology.cpp.'>AssembleDiffPair</a>( <a href='../Y/3208.html' title='Multiple used in 87 places.'>SEGMENT</a>* <a href='../Y/6000.html' title='Multiple used in 114 places.'>aStart</a> );
+<a id='L60' name='L60'></a>  60 
+<a id='L61' name='L61'></a>  61     <strong class='reserved'>int</strong> <a href='../S/658.html#L340' title='Defined at 340 in router/pns_kicad_iface.cpp.'>DpCoupledNet</a>( <strong class='reserved'>int</strong> <a href='../Y/5617.html' title='Multiple used in 131 places.'>aNet</a> );
+<a id='L62' name='L62'></a>  62     <strong class='reserved'>int</strong> <a href='../S/658.html#L365' title='Defined at 365 in router/pns_kicad_iface.cpp.'>DpNetPolarity</a>( <strong class='reserved'>int</strong> <a href='../Y/5617.html' title='Multiple used in 131 places.'>aNet</a> );
+<a id='L63' name='L63'></a>  63     <strong class='reserved'>const</strong> <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a> DpCoupledLine( <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>* <a href='../Y/5510.html' title='Multiple used in 153 places.'>aLine</a> );
+<a id='L64' name='L64'></a>  64     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../S/695.html#L289' title='Defined at 289 in router/pns_topology.cpp.'>AssembleDiffPair</a>( <a href='../D/1783.html' title='Multiple defined in 2 places.'>ITEM</a>* <a href='../Y/6000.html' title='Multiple used in 114 places.'>aStart</a>, <a href='../Y/656.html' title='Multiple used in 63 places.'>DIFF_PAIR</a>&amp; <a href='../Y/5748.html' title='Multiple used in 98 places.'>aPair</a> );
+<a id='L65' name='L65'></a>  65 
+<a id='L66' name='L66'></a>  66     <strong class='reserved'>const</strong> <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/14361.html' title='Multiple used in 188 places.'>set</a>&lt;<a href='../D/1783.html' title='Multiple defined in 2 places.'>ITEM</a>*&gt; <a href='../S/695.html#L361' title='Defined at 361 in router/pns_topology.cpp.'>AssembleCluster</a>( <a href='../D/1783.html' title='Multiple defined in 2 places.'>ITEM</a>* <a href='../Y/6000.html' title='Multiple used in 114 places.'>aStart</a>, <strong class='reserved'>int</strong> <a href='../Y/5477.html' title='Multiple used in 585 places.'>aLayer</a> );
+<a id='L67' name='L67'></a>  67 
+<a id='L68' name='L68'></a>  68 <a href='../Y/13721.html' title='Multiple used in 310 places.'>private</a>:
+<a id='L69' name='L69'></a>  69     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../S/695.html#L179' title='Defined at 179 in router/pns_topology.cpp.'>followTrivialPath</a>( <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>* <a href='../Y/5510.html' title='Multiple used in 153 places.'>aLine</a>, <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/5488.html' title='Multiple used in 22 places.'>aLeft</a>, <a href='../D/1784.html' title='Multiple defined in 2 places.'>ITEM_SET</a>&amp; <a href='../Y/5942.html' title='Multiple used in 25 places.'>aSet</a>, <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/14361.html' title='Multiple used in 188 places.'>set</a>&lt;<a href='../D/1783.html' title='Multiple defined in 2 places.'>ITEM</a>*&gt;&amp; <a href='../Y/6163.html' title='Multiple used in 7 places.'>aVisited</a> );
+<a id='L70' name='L70'></a>  70 
+<a id='L71' name='L71'></a>  71     <a href='../D/2147.html' title='Multiple defined in 2 places.'>NODE</a> *<a href='../Y/12405.html' title='Multiple used in 111 places.'>m_world</a>;
+<a id='L72' name='L72'></a>  72 <em class='brace'>}</em>;
+<a id='L73' name='L73'></a>  73 
+<a id='L74' name='L74'></a>  74 <em class='brace'>}</em>
+<a id='L75' name='L75'></a>  75 
+<a id='L76' name='L76'></a>  76 <em class='sharp'>#endif</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;][^][v]<a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

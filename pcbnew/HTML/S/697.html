@@ -1,0 +1,94 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>router/pns_tune_status_popup.cpp</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/840.html'>router</a>/pns_tune_status_popup.cpp</h2>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L27'>[^]</a>[v][top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L27' title='Defined at 27.'>UpdateStatus</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * This program source code file is part of KiCad, a free EDA CAD application.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 2014-2015  CERN</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> * Copyright (C) 2016-2019 KiCad Developers, see AUTHORS.txt for contributors.</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> * Author: Tomasz Wlostowski &lt;tomasz.wlostowski@cern.ch&gt;</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> *</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * This program is free software: you can redistribute it and/or modify it</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * under the terms of the GNU General Public License as published by the</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> * Free Software Foundation, either version 2 of the License, or (at your</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> * option) any later version.</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> *</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * This program is distributed in the hope that it will be useful, but</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> * General Public License for more details.</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> *</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * You should have received a copy of the GNU General Public License along</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> * with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> */</em>
+<a id='L21' name='L21'></a>  21 
+<a id='L22' name='L22'></a>  22 <em class='sharp'>#include</em> "eda_draw_frame.h"
+<a id='L23' name='L23'></a>  23 <em class='sharp'>#include</em> "<a href='698.html'>pns_tune_status_popup.h</a>"
+<a id='L24' name='L24'></a>  24 <em class='sharp'>#include</em> "<a href='683.html'>pns_router.h</a>"
+<a id='L25' name='L25'></a>  25 <em class='sharp'>#include</em> "<a href='672.html'>pns_meander_placer.h</a>"
+<a id='L26' name='L26'></a>  26 
+<a id='L27' name='L27'></a>  27 <strong class='reserved'>void</strong> <a href='../Y/2888.html' title='Multiple used in 9 places.'>PNS_TUNE_STATUS_POPUP</a>::<a href='../R/3204.html' title='Multiple referred from 2 places.'>UpdateStatus</a>( <a href='../D/2558.html' title='Multiple defined in 30 places.'>PNS</a>::<a href='../D/2723.html' title='Multiple defined in 2 places.'>ROUTER</a>* <a href='../Y/5904.html' title='Multiple used in 38 places.'>aRouter</a> )
+<a id='L28' name='L28'></a>  28 <em class='brace'>{</em>
+<a id='L29' name='L29'></a>  29     <a href='../D/2558.html' title='Multiple defined in 30 places.'>PNS</a>::<a href='../D/2032.html' title='Multiple defined in 2 places.'>MEANDER_PLACER_BASE</a>* <a href='../Y/13539.html' title='Multiple used in 22 places.'>placer</a> = <strong class='reserved'>dynamic_cast</strong>&lt;<a href='../D/2558.html' title='Multiple defined in 30 places.'>PNS</a>::<a href='../D/2032.html' title='Multiple defined in 2 places.'>MEANDER_PLACER_BASE</a>*&gt;( <a href='../Y/5904.html' title='Multiple used in 38 places.'>aRouter</a>-&gt;<a href='../Y/2949.html' title='Multiple used in 4 places.'>Placer</a>() );
+<a id='L30' name='L30'></a>  30 
+<a id='L31' name='L31'></a>  31     <strong class='reserved'>if</strong>( !<a href='../Y/13539.html' title='Multiple used in 22 places.'>placer</a> )
+<a id='L32' name='L32'></a>  32         <strong class='reserved'>return</strong>;
+<a id='L33' name='L33'></a>  33 
+<a id='L34' name='L34'></a>  34     <a href='../Y/835.html' title='Multiple used in 54 places.'>EDA_DRAW_FRAME</a>* <a href='../Y/8124.html' title='Multiple used in 280 places.'>frame</a> = <strong class='reserved'>static_cast</strong>&lt;<a href='../Y/835.html' title='Multiple used in 54 places.'>EDA_DRAW_FRAME</a>*&gt;( <a href='../Y/1606.html' title='Multiple used in 150 places.'>GetParent</a>() );
+<a id='L35' name='L35'></a>  35 
+<a id='L36' name='L36'></a>  36     <a href='../S/60.html#L70' title='Defined at 70 in class_dimension.cpp.'>SetText</a>( <a href='../Y/13539.html' title='Multiple used in 22 places.'>placer</a>-&gt;<a href='../D/3287.html' title='Multiple defined in 3 places.'>TuningInfo</a>( <a href='../Y/8124.html' title='Multiple used in 280 places.'>frame</a>-&gt;<a href='../S/738.html#L280' title='Defined at 280 in swig/pcbnew_scripting_helpers.cpp.'>GetUserUnits</a>() ) );
+<a id='L37' name='L37'></a>  37 
+<a id='L38' name='L38'></a>  38     <em class='comment'>// Determine the background color first and choose a contrasting value</em>
+<a id='L39' name='L39'></a>  39     <a href='../Y/391.html' title='Multiple used in 170 places.'>COLOR4D</a> <a href='../Y/6683.html' title='Multiple used in 13 places.'>bg</a>( <a href='../Y/11545.html' title='Multiple used in 8 places.'>m_panel</a>-&gt;GetBackgroundColour() );
+<a id='L40' name='L40'></a>  40     <strong class='reserved'>double</strong> <a href='../Y/8327.html' title='Multiple used in 70 places.'>h</a>, <a href='../Y/14134.html' title='Multiple used in 197 places.'>s</a>, <a href='../Y/8816.html' title='Multiple used in 306 places.'>l</a>;
+<a id='L41' name='L41'></a>  41     <a href='../Y/6683.html' title='Multiple used in 13 places.'>bg</a>.ToHSL( <a href='../Y/8327.html' title='Multiple used in 70 places.'>h</a>, <a href='../Y/14134.html' title='Multiple used in 197 places.'>s</a>, <a href='../Y/8816.html' title='Multiple used in 306 places.'>l</a> );
+<a id='L42' name='L42'></a>  42 
+<a id='L43' name='L43'></a>  43     <strong class='reserved'>switch</strong>( <a href='../Y/13539.html' title='Multiple used in 22 places.'>placer</a>-&gt;<a href='../D/3288.html' title='Multiple defined in 2 places.'>TuningStatus</a>() )
+<a id='L44' name='L44'></a>  44     <em class='brace'>{</em>
+<a id='L45' name='L45'></a>  45     <strong class='reserved'>case</strong> <a href='../D/2558.html' title='Multiple defined in 30 places.'>PNS</a>::<a href='../D/2031.html' title='Multiple defined in 2 places.'>MEANDER_PLACER</a>::<a href='../S/674.html#L55' title='Defined at 55 in router/pns_meander_placer_base.h.'>TUNED</a>:
+<a id='L46' name='L46'></a>  46         <strong class='reserved'>if</strong>( <a href='../Y/8816.html' title='Multiple used in 306 places.'>l</a> &lt; 0.5 )
+<a id='L47' name='L47'></a>  47             <a href='../Y/3897.html' title='Multiple used in 8 places.'>SetTextColor</a>( <a href='../Y/15574.html' title='Multiple used in 29 places.'>wxColor</a>( 0, 255, 0 ) );
+<a id='L48' name='L48'></a>  48         <strong class='reserved'>else</strong>
+<a id='L49' name='L49'></a>  49             <a href='../Y/3897.html' title='Multiple used in 8 places.'>SetTextColor</a>( <a href='../Y/15574.html' title='Multiple used in 29 places.'>wxColor</a>( 0, 128, 0 ) );
+<a id='L50' name='L50'></a>  50 
+<a id='L51' name='L51'></a>  51         <strong class='reserved'>break</strong>;
+<a id='L52' name='L52'></a>  52     <strong class='reserved'>case</strong> <a href='../D/2558.html' title='Multiple defined in 30 places.'>PNS</a>::<a href='../D/2031.html' title='Multiple defined in 2 places.'>MEANDER_PLACER</a>::<a href='../S/674.html#L53' title='Defined at 53 in router/pns_meander_placer_base.h.'>TOO_SHORT</a>:
+<a id='L53' name='L53'></a>  53         <strong class='reserved'>if</strong>( <a href='../Y/8816.html' title='Multiple used in 306 places.'>l</a> &lt; 0.5 )
+<a id='L54' name='L54'></a>  54             <a href='../Y/3897.html' title='Multiple used in 8 places.'>SetTextColor</a>( <a href='../Y/15574.html' title='Multiple used in 29 places.'>wxColor</a>( 255, 128, 128 ) );
+<a id='L55' name='L55'></a>  55         <strong class='reserved'>else</strong>
+<a id='L56' name='L56'></a>  56             <a href='../Y/3897.html' title='Multiple used in 8 places.'>SetTextColor</a>( <a href='../Y/15574.html' title='Multiple used in 29 places.'>wxColor</a>( 128, 64, 64 ) );
+<a id='L57' name='L57'></a>  57 
+<a id='L58' name='L58'></a>  58         <strong class='reserved'>break</strong>;
+<a id='L59' name='L59'></a>  59     <strong class='reserved'>case</strong> <a href='../D/2558.html' title='Multiple defined in 30 places.'>PNS</a>::<a href='../D/2031.html' title='Multiple defined in 2 places.'>MEANDER_PLACER</a>::<a href='../S/674.html#L54' title='Defined at 54 in router/pns_meander_placer_base.h.'>TOO_LONG</a>:
+<a id='L60' name='L60'></a>  60         <strong class='reserved'>if</strong>( <a href='../Y/8816.html' title='Multiple used in 306 places.'>l</a> &lt; 0.5 )
+<a id='L61' name='L61'></a>  61             <a href='../Y/3897.html' title='Multiple used in 8 places.'>SetTextColor</a>( <a href='../Y/15574.html' title='Multiple used in 29 places.'>wxColor</a>( 24, 24, 255 ) );
+<a id='L62' name='L62'></a>  62         <strong class='reserved'>else</strong>
+<a id='L63' name='L63'></a>  63             <a href='../Y/3897.html' title='Multiple used in 8 places.'>SetTextColor</a>( <a href='../Y/15574.html' title='Multiple used in 29 places.'>wxColor</a>( 19, 19, 195 ) );
+<a id='L64' name='L64'></a>  64 
+<a id='L65' name='L65'></a>  65         <strong class='reserved'>break</strong>;
+<a id='L66' name='L66'></a>  66     <em class='brace'>}</em>
+<a id='L67' name='L67'></a>  67 <em class='brace'>}</em>
+<a id='L68' name='L68'></a>  68 
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;][^]<a href='#L27'>[v]</a><a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

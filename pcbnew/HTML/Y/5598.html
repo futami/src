@@ -1,0 +1,433 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>aModule</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/21.html#L97'>aModule</a>            97 autorouter/ar_autoplacer.cpp void AR_AUTOPLACER::placeModule( MODULE* aModule, bool aDoNotRecreateRatsnest, const wxPoint&amp; aPos )</span>
+<span class='curline'><a href='../S/21.html#L99'>aModule</a>            99 autorouter/ar_autoplacer.cpp     if( !aModule )</span>
+<span class='curline'><a href='../S/21.html#L102'>aModule</a>           102 autorouter/ar_autoplacer.cpp     aModule-&gt;SetPosition( aPos );</span>
+<span class='curline'><a href='../S/21.html#L103'>aModule</a>           103 autorouter/ar_autoplacer.cpp     m_connectivity-&gt;Update( aModule );</span>
+<span class='curline'><a href='../S/21.html#L552'>aModule</a>           552 autorouter/ar_autoplacer.cpp int AR_AUTOPLACER::testModuleOnBoard( MODULE* aModule, bool TstOtherSide, const wxPoint&amp; aOffset )</span>
+<span class='curline'><a href='../S/21.html#L557'>aModule</a>           557 autorouter/ar_autoplacer.cpp     if( aModule-&gt;GetLayer() == B_Cu )</span>
+<span class='curline'><a href='../S/21.html#L562'>aModule</a>           562 autorouter/ar_autoplacer.cpp     EDA_RECT    fpBBox = aModule-&gt;GetFootprintRect();</span>
+<span class='curline'><a href='../S/21.html#L565'>aModule</a>           565 autorouter/ar_autoplacer.cpp     buildFpAreas( aModule, 0 );</span>
+<span class='curline'><a href='../S/21.html#L582'>aModule</a>           582 autorouter/ar_autoplacer.cpp     int marge = ( m_matrix.m_GridRouting * aModule-&gt;GetPadCount() ) / AR_GAIN;</span>
+<span class='curline'><a href='../S/21.html#L589'>aModule</a>           589 autorouter/ar_autoplacer.cpp int AR_AUTOPLACER::getOptimalModulePlacement(MODULE* aModule)</span>
+<span class='curline'><a href='../S/21.html#L596'>aModule</a>           596 autorouter/ar_autoplacer.cpp     aModule-&gt;CalculateBoundingBox();</span>
+<span class='curline'><a href='../S/21.html#L600'>aModule</a>           600 autorouter/ar_autoplacer.cpp     wxPoint     mod_pos = aModule-&gt;GetPosition();</span>
+<span class='curline'><a href='../S/21.html#L601'>aModule</a>           601 autorouter/ar_autoplacer.cpp     EDA_RECT    fpBBox  = aModule-&gt;GetFootprintRect();</span>
+<span class='curline'><a href='../S/21.html#L627'>aModule</a>           627 autorouter/ar_autoplacer.cpp         LSET    other( aModule-&gt;GetLayer() == B_Cu  ? F_Cu : B_Cu );</span>
+<span class='curline'><a href='../S/21.html#L629'>aModule</a>           629 autorouter/ar_autoplacer.cpp         for( auto pad : aModule-&gt;Pads() )</span>
+<span class='curline'><a href='../S/21.html#L654'>aModule</a>           654 autorouter/ar_autoplacer.cpp             int keepOutCost = testModuleOnBoard( aModule, TstOtherSide, moduleOffset );</span>
+<span class='curline'><a href='../S/21.html#L660'>aModule</a>           660 autorouter/ar_autoplacer.cpp                 curr_cost   = computePlacementRatsnestCost( aModule, moduleOffset );</span>
+<span class='curline'><a href='../S/21.html#L718'>aModule</a>           718 autorouter/ar_autoplacer.cpp double AR_AUTOPLACER::computePlacementRatsnestCost( MODULE *aModule, const wxPoint&amp; aOffset )</span>
+<span class='curline'><a href='../S/21.html#L727'>aModule</a>           727 autorouter/ar_autoplacer.cpp     for ( auto pad : aModule-&gt;Pads() )</span>
+<span class='curline'><a href='../S/21.html#L729'>aModule</a>           729 autorouter/ar_autoplacer.cpp         auto nearest = nearestPad( aModule, pad, aOffset );</span>
+<span class='curline'><a href='../S/22.html#L77'>aModule</a>            77 autorouter/ar_autoplacer.h     void SetRefreshCallback( std::function&lt;int( MODULE* aModule )&gt; aCallback )</span>
+<span class='curline'><a href='../S/22.html#L100'>aModule</a>           100 autorouter/ar_autoplacer.h     int          testModuleOnBoard( MODULE* aModule, bool TstOtherSide, const wxPoint&amp; aOffset );</span>
+<span class='curline'><a href='../S/22.html#L101'>aModule</a>           101 autorouter/ar_autoplacer.h     int          getOptimalModulePlacement( MODULE* aModule );</span>
+<span class='curline'><a href='../S/22.html#L102'>aModule</a>           102 autorouter/ar_autoplacer.h     double       computePlacementRatsnestCost( MODULE* aModule, const wxPoint&amp; aOffset );</span>
+<span class='curline'><a href='../S/22.html#L111'>aModule</a>           111 autorouter/ar_autoplacer.h     void         placeModule( MODULE* aModule, bool aDoNotRecreateRatsnest, const wxPoint&amp; aPos );</span>
+<span class='curline'><a href='../S/22.html#L139'>aModule</a>           139 autorouter/ar_autoplacer.h     std::function&lt;int( MODULE* aModule )&gt;   m_refreshCallback;</span>
+<span class='curline'><a href='../S/25.html#L64'>aModule</a>            64 autorouter/autoplacer_tool.cpp static int refreshCallback( MODULE* aModule )</span>
+<span class='curline'><a href='../S/25.html#L66'>aModule</a>            66 autorouter/autoplacer_tool.cpp     if( aModule )</span>
+<span class='curline'><a href='../S/25.html#L67'>aModule</a>            67 autorouter/autoplacer_tool.cpp         fparent-&gt;GetCanvas()-&gt;GetView()-&gt;Update( aModule );</span>
+<span class='curline'><a href='../S/25.html#L89'>aModule</a>            89 autorouter/autoplacer_tool.cpp     std::function&lt;int( MODULE* aModule )&gt; callback = refreshCallback;</span>
+<span class='curline'><a href='../S/68.html#L67'>aModule</a>            67 class_module.cpp MODULE::MODULE( const MODULE&amp; aModule ) :</span>
+<span class='curline'><a href='../S/68.html#L68'>aModule</a>            68 class_module.cpp     BOARD_ITEM_CONTAINER( aModule )</span>
+<span class='curline'><a href='../S/68.html#L70'>aModule</a>            70 class_module.cpp     m_Pos = aModule.m_Pos;</span>
+<span class='curline'><a href='../S/68.html#L71'>aModule</a>            71 class_module.cpp     m_fpid = aModule.m_fpid;</span>
+<span class='curline'><a href='../S/68.html#L72'>aModule</a>            72 class_module.cpp     m_Attributs = aModule.m_Attributs;</span>
+<span class='curline'><a href='../S/68.html#L73'>aModule</a>            73 class_module.cpp     m_ModuleStatus = aModule.m_ModuleStatus;</span>
+<span class='curline'><a href='../S/68.html#L74'>aModule</a>            74 class_module.cpp     m_Orient = aModule.m_Orient;</span>
+<span class='curline'><a href='../S/68.html#L75'>aModule</a>            75 class_module.cpp     m_BoundaryBox = aModule.m_BoundaryBox;</span>
+<span class='curline'><a href='../S/68.html#L76'>aModule</a>            76 class_module.cpp     m_CntRot90 = aModule.m_CntRot90;</span>
+<span class='curline'><a href='../S/68.html#L77'>aModule</a>            77 class_module.cpp     m_CntRot180 = aModule.m_CntRot180;</span>
+<span class='curline'><a href='../S/68.html#L78'>aModule</a>            78 class_module.cpp     m_LastEditTime = aModule.m_LastEditTime;</span>
+<span class='curline'><a href='../S/68.html#L79'>aModule</a>            79 class_module.cpp     m_Link = aModule.m_Link;</span>
+<span class='curline'><a href='../S/68.html#L80'>aModule</a>            80 class_module.cpp     m_Path = aModule.m_Path;</span>
+<span class='curline'><a href='../S/68.html#L82'>aModule</a>            82 class_module.cpp     m_LocalClearance = aModule.m_LocalClearance;</span>
+<span class='curline'><a href='../S/68.html#L83'>aModule</a>            83 class_module.cpp     m_LocalSolderMaskMargin = aModule.m_LocalSolderMaskMargin;</span>
+<span class='curline'><a href='../S/68.html#L84'>aModule</a>            84 class_module.cpp     m_LocalSolderPasteMargin = aModule.m_LocalSolderPasteMargin;</span>
+<span class='curline'><a href='../S/68.html#L85'>aModule</a>            85 class_module.cpp     m_LocalSolderPasteMarginRatio = aModule.m_LocalSolderPasteMarginRatio;</span>
+<span class='curline'><a href='../S/68.html#L86'>aModule</a>            86 class_module.cpp     m_ZoneConnection = aModule.m_ZoneConnection;</span>
+<span class='curline'><a href='../S/68.html#L87'>aModule</a>            87 class_module.cpp     m_ThermalWidth = aModule.m_ThermalWidth;</span>
+<span class='curline'><a href='../S/68.html#L88'>aModule</a>            88 class_module.cpp     m_ThermalGap = aModule.m_ThermalGap;</span>
+<span class='curline'><a href='../S/68.html#L91'>aModule</a>            91 class_module.cpp     m_Reference = new TEXTE_MODULE( *aModule.m_Reference );</span>
+<span class='curline'><a href='../S/68.html#L93'>aModule</a>            93 class_module.cpp     m_Value = new TEXTE_MODULE( *aModule.m_Value );</span>
+<span class='curline'><a href='../S/68.html#L97'>aModule</a>            97 class_module.cpp     for( D_PAD* pad : aModule.Pads() )</span>
+<span class='curline'><a href='../S/68.html#L101'>aModule</a>           101 class_module.cpp     for( MODULE_ZONE_CONTAINER* item : aModule.Zones() )</span>
+<span class='curline'><a href='../S/68.html#L113'>aModule</a>           113 class_module.cpp     for( BOARD_ITEM* item : aModule.GraphicalItems() )</span>
+<span class='curline'><a href='../S/68.html#L129'>aModule</a>           129 class_module.cpp     m_3D_Drawings = aModule.m_3D_Drawings;</span>
+<span class='curline'><a href='../S/68.html#L131'>aModule</a>           131 class_module.cpp     m_Doc     = aModule.m_Doc;</span>
+<span class='curline'><a href='../S/68.html#L132'>aModule</a>           132 class_module.cpp     m_KeyWord = aModule.m_KeyWord;</span>
+<span class='curline'><a href='../S/68.html#L139'>aModule</a>           139 class_module.cpp     m_initial_comments = aModule.m_initial_comments ?</span>
+<span class='curline'><a href='../S/68.html#L140'>aModule</a>           140 class_module.cpp                             new wxArrayString( *aModule.m_initial_comments ) : nullptr;</span>
+<span class='curline'><a href='../S/68.html#L144'>aModule</a>           144 class_module.cpp MODULE::MODULE( MODULE&amp;&amp; aModule ) :</span>
+<span class='curline'><a href='../S/68.html#L145'>aModule</a>           145 class_module.cpp     BOARD_ITEM_CONTAINER( aModule )</span>
+<span class='curline'><a href='../S/68.html#L147'>aModule</a>           147 class_module.cpp     *this = std::move( aModule );</span>
+<span class='curline'><a href='../S/69.html#L110'>aModule</a>           110 class_module.h     MODULE( const MODULE&amp; aModule );</span>
+<span class='curline'><a href='../S/69.html#L113'>aModule</a>           113 class_module.h     MODULE( MODULE&amp;&amp; aModule );</span>
+<span class='curline'><a href='../S/130.html#L54'>aModule</a>            54 dialogs/dialog_edit_footprint_for_BoardEditor.cpp                                                               MODULE* aModule ) :</span>
+<span class='curline'><a href='../S/130.html#L66'>aModule</a>            66 dialogs/dialog_edit_footprint_for_BoardEditor.cpp     m_footprint = aModule;</span>
+<span class='curline'><a href='../S/131.html#L84'>aModule</a>            84 dialogs/dialog_edit_footprint_for_BoardEditor.h     DIALOG_FOOTPRINT_BOARD_EDITOR( PCB_EDIT_FRAME* aParent, MODULE* aModule );</span>
+<span class='curline'><a href='../S/135.html#L56'>aModule</a>            56 dialogs/dialog_edit_footprint_for_fp_editor.cpp                                                         MODULE* aModule ) :</span>
+<span class='curline'><a href='../S/135.html#L64'>aModule</a>            64 dialogs/dialog_edit_footprint_for_fp_editor.cpp     m_footprint = aModule;</span>
+<span class='curline'><a href='../S/136.html#L68'>aModule</a>            68 dialogs/dialog_edit_footprint_for_fp_editor.h     DIALOG_FOOTPRINT_FP_EDITOR( FOOTPRINT_EDIT_FRAME* aParent, MODULE* aModule );</span>
+<span class='curline'><a href='../S/145.html#L60'>aModule</a>            60 dialogs/dialog_exchange_footprints.cpp DIALOG_EXCHANGE_FOOTPRINTS::DIALOG_EXCHANGE_FOOTPRINTS( PCB_EDIT_FRAME* aParent, MODULE* aModule,</span>
+<span class='curline'><a href='../S/145.html#L65'>aModule</a>            65 dialogs/dialog_exchange_footprints.cpp     m_currentModule( aModule ),</span>
+<span class='curline'><a href='../S/145.html#L170'>aModule</a>           170 dialogs/dialog_exchange_footprints.cpp bool DIALOG_EXCHANGE_FOOTPRINTS::isMatch( MODULE* aModule )</span>
+<span class='curline'><a href='../S/145.html#L179'>aModule</a>           179 dialogs/dialog_exchange_footprints.cpp         return aModule == m_currentModule;</span>
+<span class='curline'><a href='../S/145.html#L181'>aModule</a>           181 dialogs/dialog_exchange_footprints.cpp         return WildCompareString( m_specifiedRef-&gt;GetValue(), aModule-&gt;GetReference(), false );</span>
+<span class='curline'><a href='../S/145.html#L183'>aModule</a>           183 dialogs/dialog_exchange_footprints.cpp         return WildCompareString( m_specifiedValue-&gt;GetValue(), aModule-&gt;GetValue(), false );</span>
+<span class='curline'><a href='../S/145.html#L186'>aModule</a>           186 dialogs/dialog_exchange_footprints.cpp         return aModule-&gt;GetFPID() == specifiedID;</span>
+<span class='curline'><a href='../S/145.html#L352'>aModule</a>           352 dialogs/dialog_exchange_footprints.cpp bool DIALOG_EXCHANGE_FOOTPRINTS::processModule( MODULE* aModule, const LIB_ID&amp; aNewFPID )</span>
+<span class='curline'><a href='../S/145.html#L354'>aModule</a>           354 dialogs/dialog_exchange_footprints.cpp     LIB_ID    oldFPID = aModule-&gt;GetFPID();</span>
+<span class='curline'><a href='../S/145.html#L360'>aModule</a>           360 dialogs/dialog_exchange_footprints.cpp                 aModule-&gt;GetReference(),</span>
+<span class='curline'><a href='../S/145.html#L373'>aModule</a>           373 dialogs/dialog_exchange_footprints.cpp     m_parent-&gt;Exchange_Module( aModule, newModule, m_commit,</span>
+<span class='curline'><a href='../S/145.html#L379'>aModule</a>           379 dialogs/dialog_exchange_footprints.cpp     if( aModule == m_currentModule )</span>
+<span class='curline'><a href='../S/145.html#L411'>aModule</a>           411 dialogs/dialog_exchange_footprints.cpp TEXTE_MODULE* getMatchingTextItem( TEXTE_MODULE* aRefItem, MODULE* aModule )</span>
+<span class='curline'><a href='../S/145.html#L415'>aModule</a>           415 dialogs/dialog_exchange_footprints.cpp     for( BOARD_ITEM* item : aModule-&gt;GraphicalItems() )</span>
+<span class='curline'><a href='../S/146.html#L46'>aModule</a>            46 dialogs/dialog_exchange_footprints.h     DIALOG_EXCHANGE_FOOTPRINTS( PCB_EDIT_FRAME* aParent, MODULE* aModule, bool updateMode,</span>
+<span class='curline'><a href='../S/146.html#L64'>aModule</a>            64 dialogs/dialog_exchange_footprints.h     bool processModule( MODULE* aModule, const LIB_ID&amp; aNewFPID );</span>
+<span class='curline'><a href='../S/395.html#L212'>aModule</a>           212 drc/drc_keepout_tester.cpp bool DRC_KEEPOUT_TESTER::checkPads( MODULE* aModule )</span>
+<span class='curline'><a href='../S/395.html#L216'>aModule</a>           216 drc/drc_keepout_tester.cpp     for( D_PAD* pad : aModule-&gt;Pads() )</span>
+<span class='curline'><a href='../S/396.html#L46'>aModule</a>            46 drc/drc_keepout_tester.h     bool checkPads( MODULE* aModule );</span>
+<span class='curline'><a href='../S/406.html#L1526'>aModule</a>          1526 eagle_plugin.cpp void EAGLE_PLUGIN::packageWire( MODULE* aModule, wxXmlNode* aTree ) const</span>
+<span class='curline'><a href='../S/406.html#L1537'>aModule</a>          1537 eagle_plugin.cpp         BOARD* board = aModule-&gt;GetBoard();</span>
+<span class='curline'><a href='../S/406.html#L1572'>aModule</a>          1572 eagle_plugin.cpp         dwg = new EDGE_MODULE( aModule, S_SEGMENT );</span>
+<span class='curline'><a href='../S/406.html#L1579'>aModule</a>          1579 eagle_plugin.cpp         dwg = new EDGE_MODULE( aModule, S_ARC );</span>
+<span class='curline'><a href='../S/406.html#L1591'>aModule</a>          1591 eagle_plugin.cpp     aModule-&gt;Add( dwg );</span>
+<span class='curline'><a href='../S/406.html#L1595'>aModule</a>          1595 eagle_plugin.cpp void EAGLE_PLUGIN::packagePad( MODULE* aModule, wxXmlNode* aTree )</span>
+<span class='curline'><a href='../S/406.html#L1602'>aModule</a>          1602 eagle_plugin.cpp     D_PAD* pad = new D_PAD( aModule );</span>
+<span class='curline'><a href='../S/406.html#L1603'>aModule</a>          1603 eagle_plugin.cpp     aModule-&gt;Add( pad );</span>
+<span class='curline'><a href='../S/406.html#L1608'>aModule</a>          1608 eagle_plugin.cpp     else if( aModule-&gt;GetLayer() == F_Cu &amp;&amp;  m_rules-&gt;psTop != EPAD::UNDEF )</span>
+<span class='curline'><a href='../S/406.html#L1610'>aModule</a>          1610 eagle_plugin.cpp     else if( aModule-&gt;GetLayer() == B_Cu &amp;&amp; m_rules-&gt;psBottom != EPAD::UNDEF )</span>
+<span class='curline'><a href='../S/406.html#L1697'>aModule</a>          1697 eagle_plugin.cpp void EAGLE_PLUGIN::packageText( MODULE* aModule, wxXmlNode* aTree ) const</span>
+<span class='curline'><a href='../S/406.html#L1708'>aModule</a>          1708 eagle_plugin.cpp         txt = &amp;aModule-&gt;Reference();</span>
+<span class='curline'><a href='../S/406.html#L1710'>aModule</a>          1710 eagle_plugin.cpp         txt = &amp;aModule-&gt;Value();</span>
+<span class='curline'><a href='../S/406.html#L1714'>aModule</a>          1714 eagle_plugin.cpp         txt = new TEXTE_MODULE( aModule );</span>
+<span class='curline'><a href='../S/406.html#L1715'>aModule</a>          1715 eagle_plugin.cpp         aModule-&gt;Add( txt );</span>
+<span class='curline'><a href='../S/406.html#L1723'>aModule</a>          1723 eagle_plugin.cpp     txt-&gt;SetPos0( pos - aModule-&gt;GetPosition() );</span>
+<span class='curline'><a href='../S/406.html#L1802'>aModule</a>          1802 eagle_plugin.cpp void EAGLE_PLUGIN::packageRectangle( MODULE* aModule, wxXmlNode* aTree ) const</span>
+<span class='curline'><a href='../S/406.html#L1809'>aModule</a>          1809 eagle_plugin.cpp         MODULE_ZONE_CONTAINER* zone = new MODULE_ZONE_CONTAINER( aModule );</span>
+<span class='curline'><a href='../S/406.html#L1810'>aModule</a>          1810 eagle_plugin.cpp         aModule-&gt;Add( zone, ADD_MODE::APPEND );</span>
+<span class='curline'><a href='../S/406.html#L1834'>aModule</a>          1834 eagle_plugin.cpp         EDGE_MODULE* dwg = new EDGE_MODULE( aModule, S_POLYGON );</span>
+<span class='curline'><a href='../S/406.html#L1836'>aModule</a>          1836 eagle_plugin.cpp         aModule-&gt;Add( dwg );</span>
+<span class='curline'><a href='../S/406.html#L1862'>aModule</a>          1862 eagle_plugin.cpp void EAGLE_PLUGIN::packagePolygon( MODULE* aModule, wxXmlNode* aTree ) const</span>
+<span class='curline'><a href='../S/406.html#L1929'>aModule</a>          1929 eagle_plugin.cpp         MODULE_ZONE_CONTAINER* zone = new MODULE_ZONE_CONTAINER( aModule );</span>
+<span class='curline'><a href='../S/406.html#L1930'>aModule</a>          1930 eagle_plugin.cpp         aModule-&gt;Add( zone, ADD_MODE::APPEND );</span>
+<span class='curline'><a href='../S/406.html#L1944'>aModule</a>          1944 eagle_plugin.cpp         EDGE_MODULE* dwg   = new EDGE_MODULE( aModule, S_POLYGON );</span>
+<span class='curline'><a href='../S/406.html#L1946'>aModule</a>          1946 eagle_plugin.cpp         aModule-&gt;Add( dwg );</span>
+<span class='curline'><a href='../S/406.html#L1960'>aModule</a>          1960 eagle_plugin.cpp void EAGLE_PLUGIN::packageCircle( MODULE* aModule, wxXmlNode* aTree ) const</span>
+<span class='curline'><a href='../S/406.html#L1970'>aModule</a>          1970 eagle_plugin.cpp         MODULE_ZONE_CONTAINER* zone = new MODULE_ZONE_CONTAINER( aModule );</span>
+<span class='curline'><a href='../S/406.html#L1971'>aModule</a>          1971 eagle_plugin.cpp         aModule-&gt;Add( zone, ADD_MODE::APPEND );</span>
+<span class='curline'><a href='../S/406.html#L2003'>aModule</a>          2003 eagle_plugin.cpp         EDGE_MODULE* gr    = new EDGE_MODULE( aModule, S_CIRCLE );</span>
+<span class='curline'><a href='../S/406.html#L2012'>aModule</a>          2012 eagle_plugin.cpp         aModule-&gt;Add( gr );</span>
+<span class='curline'><a href='../S/406.html#L2032'>aModule</a>          2032 eagle_plugin.cpp void EAGLE_PLUGIN::packageHole( MODULE* aModule, wxXmlNode* aTree, bool aCenter ) const</span>
+<span class='curline'><a href='../S/406.html#L2037'>aModule</a>          2037 eagle_plugin.cpp     D_PAD* pad = new D_PAD( aModule );</span>
+<span class='curline'><a href='../S/406.html#L2038'>aModule</a>          2038 eagle_plugin.cpp     aModule-&gt;Add( pad );</span>
+<span class='curline'><a href='../S/406.html#L2053'>aModule</a>          2053 eagle_plugin.cpp         aModule-&gt;SetPosition( padpos );</span>
+<span class='curline'><a href='../S/406.html#L2059'>aModule</a>          2059 eagle_plugin.cpp         pad-&gt;SetPosition( padpos + aModule-&gt;GetPosition() );</span>
+<span class='curline'><a href='../S/406.html#L2071'>aModule</a>          2071 eagle_plugin.cpp void EAGLE_PLUGIN::packageSMD( MODULE* aModule, wxXmlNode* aTree ) const</span>
+<span class='curline'><a href='../S/406.html#L2079'>aModule</a>          2079 eagle_plugin.cpp     D_PAD* pad = new D_PAD( aModule );</span>
+<span class='curline'><a href='../S/406.html#L2080'>aModule</a>          2080 eagle_plugin.cpp     aModule-&gt;Add( pad );</span>
+<span class='curline'><a href='../S/407.html#L273'>aModule</a>           273 eagle_plugin.h     void packageWire( MODULE* aModule, wxXmlNode* aTree ) const;</span>
+<span class='curline'><a href='../S/407.html#L274'>aModule</a>           274 eagle_plugin.h     void packagePad( MODULE* aModule, wxXmlNode* aTree );</span>
+<span class='curline'><a href='../S/407.html#L275'>aModule</a>           275 eagle_plugin.h     void packageText( MODULE* aModule, wxXmlNode* aTree ) const;</span>
+<span class='curline'><a href='../S/407.html#L276'>aModule</a>           276 eagle_plugin.h     void packageRectangle( MODULE* aModule, wxXmlNode* aTree ) const;</span>
+<span class='curline'><a href='../S/407.html#L277'>aModule</a>           277 eagle_plugin.h     void packagePolygon( MODULE* aModule, wxXmlNode* aTree ) const;</span>
+<span class='curline'><a href='../S/407.html#L278'>aModule</a>           278 eagle_plugin.h     void packageCircle( MODULE* aModule, wxXmlNode* aTree ) const;</span>
+<span class='curline'><a href='../S/407.html#L287'>aModule</a>           287 eagle_plugin.h     void packageHole( MODULE* aModule, wxXmlNode* aTree, bool aCenter ) const;</span>
+<span class='curline'><a href='../S/407.html#L288'>aModule</a>           288 eagle_plugin.h     void packageSMD( MODULE* aModule, wxXmlNode* aTree ) const;</span>
+<span class='curline'><a href='../S/416.html#L203'>aModule</a>           203 exporters/export_gencad.cpp static const wxString getShapeName( MODULE* aModule )</span>
+<span class='curline'><a href='../S/416.html#L208'>aModule</a>           208 exporters/export_gencad.cpp         return aModule-&gt;GetReference();</span>
+<span class='curline'><a href='../S/416.html#L210'>aModule</a>           210 exporters/export_gencad.cpp     auto itShape = componentShapes.find( aModule );</span>
+<span class='curline'><a href='../S/416.html#L681'>aModule</a>           681 exporters/export_gencad.cpp static size_t hashModule( const MODULE* aModule )</span>
+<span class='curline'><a href='../S/416.html#L688'>aModule</a>           688 exporters/export_gencad.cpp     for( auto i : aModule-&gt;GraphicalItems() )</span>
+<span class='curline'><a href='../S/416.html#L691'>aModule</a>           691 exporters/export_gencad.cpp     for( auto i : aModule-&gt;Pads() )</span>
+<span class='curline'><a href='../S/418.html#L277'>aModule</a>           277 exporters/export_idf.cpp static void idf_export_module( BOARD* aPcb, MODULE* aModule,</span>
+<span class='curline'><a href='../S/418.html#L281'>aModule</a>           281 exporters/export_idf.cpp     std::string crefdes = TO_UTF8( aModule-&gt;GetReference() );</span>
+<span class='curline'><a href='../S/418.html#L285'>aModule</a>           285 exporters/export_idf.cpp         std::string cvalue = TO_UTF8( aModule-&gt;GetValue() );</span>
+<span class='curline'><a href='../S/418.html#L314'>aModule</a>           314 exporters/export_idf.cpp     for( auto pad : aModule-&gt;Pads() )</span>
+<span class='curline'><a href='../S/418.html#L406'>aModule</a>           406 exporters/export_idf.cpp     auto sM = aModule-&gt;Models().begin();</span>
+<span class='curline'><a href='../S/418.html#L407'>aModule</a>           407 exporters/export_idf.cpp     auto eM = aModule-&gt;Models().end();</span>
+<span class='curline'><a href='../S/418.html#L424'>aModule</a>           424 exporters/export_idf.cpp             refdes = TO_UTF8( aModule-&gt;GetReference() );</span>
+<span class='curline'><a href='../S/418.html#L441'>aModule</a>           441 exporters/export_idf.cpp         double rotz = aModule-&gt;GetOrientation()/10.0;</span>
+<span class='curline'><a href='../S/418.html#L447'>aModule</a>           447 exporters/export_idf.cpp         bool top = ( aModule-&gt;GetLayer() == B_Cu ) ? false : true;</span>
+<span class='curline'><a href='../S/418.html#L452'>aModule</a>           452 exporters/export_idf.cpp             RotatePoint( &amp;locx, &amp;locy, aModule-&gt;GetOrientation() );</span>
+<span class='curline'><a href='../S/418.html#L459'>aModule</a>           459 exporters/export_idf.cpp             RotatePoint( &amp;locx, &amp;locy, aModule-&gt;GetOrientation() );</span>
+<span class='curline'><a href='../S/418.html#L484'>aModule</a>           484 exporters/export_idf.cpp                 comp-&gt;SetPosition( aModule-&gt;GetPosition().x * scale + dx,</span>
+<span class='curline'><a href='../S/418.html#L485'>aModule</a>           485 exporters/export_idf.cpp                                    -aModule-&gt;GetPosition().y * scale + dy,</span>
+<span class='curline'><a href='../S/418.html#L488'>aModule</a>           488 exporters/export_idf.cpp                 comp-&gt;SetPosition( aModule-&gt;GetPosition().x * scale + dx,</span>
+<span class='curline'><a href='../S/418.html#L489'>aModule</a>           489 exporters/export_idf.cpp                                    -aModule-&gt;GetPosition().y * scale + dy,</span>
+<span class='curline'><a href='../S/418.html#L505'>aModule</a>           505 exporters/export_idf.cpp                     comp-&gt;SetPosition( aModule-&gt;GetPosition().x * scale + dx,</span>
+<span class='curline'><a href='../S/418.html#L506'>aModule</a>           506 exporters/export_idf.cpp                                        -aModule-&gt;GetPosition().y * scale + dy,</span>
+<span class='curline'><a href='../S/418.html#L509'>aModule</a>           509 exporters/export_idf.cpp                     comp-&gt;SetPosition( aModule-&gt;GetPosition().x * scale + dx,</span>
+<span class='curline'><a href='../S/418.html#L510'>aModule</a>           510 exporters/export_idf.cpp                                        -aModule-&gt;GetPosition().y * scale + dy,</span>
+<span class='curline'><a href='../S/418.html#L519'>aModule</a>           519 exporters/export_idf.cpp                 refX = refX - ( aModule-&gt;GetPosition().x * scale + dx );</span>
+<span class='curline'><a href='../S/418.html#L520'>aModule</a>           520 exporters/export_idf.cpp                 refY = refY - ( -aModule-&gt;GetPosition().y * scale + dy );</span>
+<span class='curline'><a href='../S/418.html#L537'>aModule</a>           537 exporters/export_idf.cpp                     ostr &lt;&lt; "* X loc: " &lt;&lt; (aModule-&gt;GetPosition().x * scale + dx);</span>
+<span class='curline'><a href='../S/418.html#L539'>aModule</a>           539 exporters/export_idf.cpp                     ostr &lt;&lt; "* Y loc: " &lt;&lt; (-aModule-&gt;GetPosition().y * scale + dy);</span>
+<span class='curline'><a href='../S/419.html#L1087'>aModule</a>          1087 exporters/export_vrml.cpp                                      MODULE* aModule )</span>
+<span class='curline'><a href='../S/419.html#L1111'>aModule</a>          1111 exporters/export_vrml.cpp         export_vrml_polygon( aModel, layer, aOutline, aModule-&gt;GetOrientationRadians(),</span>
+<span class='curline'><a href='../S/419.html#L1112'>aModule</a>          1112 exporters/export_vrml.cpp                 aModule-&gt;GetPosition() );</span>
+<span class='curline'><a href='../S/419.html#L1375'>aModule</a>          1375 exporters/export_vrml.cpp     MODULE* aModule, std::ostream* aOutputFile )</span>
+<span class='curline'><a href='../S/419.html#L1380'>aModule</a>          1380 exporters/export_vrml.cpp         if( aModule-&gt;Reference().IsVisible() )</span>
+<span class='curline'><a href='../S/419.html#L1381'>aModule</a>          1381 exporters/export_vrml.cpp             export_vrml_text_module( &amp;aModule-&gt;Reference() );</span>
+<span class='curline'><a href='../S/419.html#L1383'>aModule</a>          1383 exporters/export_vrml.cpp         if( aModule-&gt;Value().IsVisible() )</span>
+<span class='curline'><a href='../S/419.html#L1384'>aModule</a>          1384 exporters/export_vrml.cpp             export_vrml_text_module( &amp;aModule-&gt;Value() );</span>
+<span class='curline'><a href='../S/419.html#L1388'>aModule</a>          1388 exporters/export_vrml.cpp         for( auto item : aModule-&gt;GraphicalItems() )</span>
+<span class='curline'><a href='../S/419.html#L1398'>aModule</a>          1398 exporters/export_vrml.cpp                                              aModule );</span>
+<span class='curline'><a href='../S/419.html#L1408'>aModule</a>          1408 exporters/export_vrml.cpp     for( auto pad : aModule-&gt;Pads() )</span>
+<span class='curline'><a href='../S/419.html#L1411'>aModule</a>          1411 exporters/export_vrml.cpp     bool isFlipped = aModule-&gt;GetLayer() == B_Cu;</span>
+<span class='curline'><a href='../S/419.html#L1414'>aModule</a>          1414 exporters/export_vrml.cpp     auto sM = aModule-&gt;Models().begin();</span>
+<span class='curline'><a href='../S/419.html#L1415'>aModule</a>          1415 exporters/export_vrml.cpp     auto eM = aModule-&gt;Models().end();</span>
+<span class='curline'><a href='../S/419.html#L1455'>aModule</a>          1455 exporters/export_vrml.cpp         build_quat( 0, 0, 1, DECIDEG2RAD( aModule-&gt;GetOrientation() ), q2 );</span>
+<span class='curline'><a href='../S/419.html#L1472'>aModule</a>          1472 exporters/export_vrml.cpp         RotatePoint( &amp;offsetx, &amp;offsety, aModule-&gt;GetOrientation() );</span>
+<span class='curline'><a href='../S/419.html#L1475'>aModule</a>          1475 exporters/export_vrml.cpp         trans.x = ( offsetx + aModule-&gt;GetPosition().x ) * BOARD_SCALE + aModel.m_tx;</span>
+<span class='curline'><a href='../S/419.html#L1476'>aModule</a>          1476 exporters/export_vrml.cpp         trans.y = -(offsety + aModule-&gt;GetPosition().y) * BOARD_SCALE - aModel.m_ty;</span>
+<span class='curline'><a href='../S/419.html#L1477'>aModule</a>          1477 exporters/export_vrml.cpp         trans.z = (offsetz * BOARD_SCALE ) + aModel.GetLayerZ( aModule-&gt;GetLayer() );</span>
+<span class='curline'><a href='../S/436.html#L178'>aModule</a>           178 footprint_edit_frame.h     bool SaveFootprint( MODULE* aModule );</span>
+<span class='curline'><a href='../S/436.html#L179'>aModule</a>           179 footprint_edit_frame.h     bool SaveFootprintAs( MODULE* aModule );</span>
+<span class='curline'><a href='../S/436.html#L181'>aModule</a>           181 footprint_edit_frame.h     bool SaveFootprintInLibrary( MODULE* aModule, const wxString&amp; aLibraryName );</span>
+<span class='curline'><a href='../S/436.html#L224'>aModule</a>           224 footprint_edit_frame.h     void Export_Module( MODULE* aModule );</span>
+<span class='curline'><a href='../S/434.html#L324'>aModule</a>           324 footprint_editor_utils.cpp     BASIC_FOOTPRINT_INFO( MODULE* aModule )</span>
+<span class='curline'><a href='../S/434.html#L326'>aModule</a>           326 footprint_editor_utils.cpp         m_nickname = aModule-&gt;GetFPID().GetLibNickname().wx_str();</span>
+<span class='curline'><a href='../S/434.html#L327'>aModule</a>           327 footprint_editor_utils.cpp         m_fpname = aModule-&gt;GetFPID().GetLibItemName().wx_str();</span>
+<span class='curline'><a href='../S/434.html#L328'>aModule</a>           328 footprint_editor_utils.cpp         m_pad_count = aModule-&gt;GetPadCount( DO_NOT_INCLUDE_NPTH );</span>
+<span class='curline'><a href='../S/434.html#L329'>aModule</a>           329 footprint_editor_utils.cpp         m_unique_pad_count = aModule-&gt;GetUniquePadCount( DO_NOT_INCLUDE_NPTH );</span>
+<span class='curline'><a href='../S/434.html#L330'>aModule</a>           330 footprint_editor_utils.cpp         m_keywords = aModule-&gt;GetKeywords();</span>
+<span class='curline'><a href='../S/434.html#L331'>aModule</a>           331 footprint_editor_utils.cpp         m_doc = aModule-&gt;GetDescription();</span>
+<span class='curline'><a href='../S/434.html#L337'>aModule</a>           337 footprint_editor_utils.cpp void FOOTPRINT_EDIT_FRAME::editFootprintProperties( MODULE* aModule )</span>
+<span class='curline'><a href='../S/434.html#L339'>aModule</a>           339 footprint_editor_utils.cpp     LIB_ID oldFPID = aModule-&gt;GetFPID();</span>
+<span class='curline'><a href='../S/434.html#L341'>aModule</a>           341 footprint_editor_utils.cpp     DIALOG_FOOTPRINT_FP_EDITOR dialog( this, aModule );</span>
+<span class='curline'><a href='../S/434.html#L345'>aModule</a>           345 footprint_editor_utils.cpp     BASIC_FOOTPRINT_INFO footprintInfo( aModule );</span>
+<span class='curline'><a href='../S/439.html#L311'>aModule</a>           311 footprint_libraries_utils.cpp void FOOTPRINT_EDIT_FRAME::Export_Module( MODULE* aModule )</span>
+<span class='curline'><a href='../S/439.html#L316'>aModule</a>           316 footprint_libraries_utils.cpp     if( !aModule )</span>
+<span class='curline'><a href='../S/439.html#L319'>aModule</a>           319 footprint_libraries_utils.cpp     fn.SetName( aModule-&gt;GetFPID().GetLibItemName() );</span>
+<span class='curline'><a href='../S/439.html#L353'>aModule</a>           353 footprint_libraries_utils.cpp         pcb_io.Format( aModule );</span>
+<span class='curline'><a href='../S/439.html#L676'>aModule</a>           676 footprint_libraries_utils.cpp bool FOOTPRINT_EDIT_FRAME::SaveFootprint( MODULE* aModule )</span>
+<span class='curline'><a href='../S/439.html#L678'>aModule</a>           678 footprint_libraries_utils.cpp     if( !aModule )      // Happen if no footprint loaded</span>
+<span class='curline'><a href='../S/439.html#L681'>aModule</a>           681 footprint_libraries_utils.cpp     wxString libraryName = aModule-&gt;GetFPID().GetLibNickname();</span>
+<span class='curline'><a href='../S/439.html#L682'>aModule</a>           682 footprint_libraries_utils.cpp     wxString footprintName = aModule-&gt;GetFPID().GetLibItemName();</span>
+<span class='curline'><a href='../S/439.html#L685'>aModule</a>           685 footprint_libraries_utils.cpp     if( aModule-&gt;GetLink() != niluuid )</span>
+<span class='curline'><a href='../S/439.html#L697'>aModule</a>           697 footprint_libraries_utils.cpp         if( SaveFootprintAs( aModule ) )</span>
+<span class='curline'><a href='../S/439.html#L725'>aModule</a>           725 footprint_libraries_utils.cpp     if( !SaveFootprintInLibrary( aModule, libraryName ) )</span>
+<span class='curline'><a href='../S/439.html#L738'>aModule</a>           738 footprint_libraries_utils.cpp bool FOOTPRINT_EDIT_FRAME::SaveFootprintInLibrary( MODULE* aModule, const wxString&amp; aLibraryName )</span>
+<span class='curline'><a href='../S/439.html#L742'>aModule</a>           742 footprint_libraries_utils.cpp         aModule-&gt;SetFPID( LIB_ID( wxEmptyString, aModule-&gt;GetFPID().GetLibItemName() ) );</span>
+<span class='curline'><a href='../S/439.html#L744'>aModule</a>           744 footprint_libraries_utils.cpp         Prj().PcbFootprintLibs()-&gt;FootprintSave( aLibraryName, aModule );</span>
+<span class='curline'><a href='../S/439.html#L746'>aModule</a>           746 footprint_libraries_utils.cpp         aModule-&gt;SetFPID( LIB_ID( aLibraryName, aModule-&gt;GetFPID().GetLibItemName() ) );</span>
+<span class='curline'><a href='../S/439.html#L753'>aModule</a>           753 footprint_libraries_utils.cpp         aModule-&gt;SetFPID( LIB_ID( aLibraryName, aModule-&gt;GetFPID().GetLibItemName() ) );</span>
+<span class='curline'><a href='../S/439.html#L845'>aModule</a>           845 footprint_libraries_utils.cpp bool FOOTPRINT_EDIT_FRAME::SaveFootprintAs( MODULE* aModule )</span>
+<span class='curline'><a href='../S/439.html#L847'>aModule</a>           847 footprint_libraries_utils.cpp     if( aModule == NULL )</span>
+<span class='curline'><a href='../S/439.html#L852'>aModule</a>           852 footprint_libraries_utils.cpp     SetMsgPanel( aModule );</span>
+<span class='curline'><a href='../S/439.html#L854'>aModule</a>           854 footprint_libraries_utils.cpp     wxString libraryName = aModule-&gt;GetFPID().GetLibNickname();</span>
+<span class='curline'><a href='../S/439.html#L855'>aModule</a>           855 footprint_libraries_utils.cpp     wxString footprintName = aModule-&gt;GetFPID().GetLibItemName();</span>
+<span class='curline'><a href='../S/439.html#L856'>aModule</a>           856 footprint_libraries_utils.cpp     bool updateValue = ( aModule-&gt;GetValue() == footprintName );</span>
+<span class='curline'><a href='../S/439.html#L924'>aModule</a>           924 footprint_libraries_utils.cpp     aModule-&gt;SetFPID( LIB_ID( libraryName, footprintName ) );</span>
+<span class='curline'><a href='../S/439.html#L927'>aModule</a>           927 footprint_libraries_utils.cpp         aModule-&gt;SetValue( footprintName );</span>
+<span class='curline'><a href='../S/439.html#L954'>aModule</a>           954 footprint_libraries_utils.cpp     if( !SaveFootprintInLibrary( aModule, libraryName ) )</span>
+<span class='curline'><a href='../S/439.html#L958'>aModule</a>           958 footprint_libraries_utils.cpp     aModule-&gt;SetLink( niluuid );</span>
+<span class='curline'><a href='../S/440.html#L312'>aModule</a>           312 footprint_preview_panel.cpp void FOOTPRINT_PREVIEW_PANEL::renderFootprint( std::shared_ptr&lt;MODULE&gt; aModule )</span>
+<span class='curline'><a href='../S/440.html#L321'>aModule</a>           321 footprint_preview_panel.cpp     aModule-&gt;SetParent( m_dummyBoard.get() );</span>
+<span class='curline'><a href='../S/440.html#L328'>aModule</a>           328 footprint_preview_panel.cpp     GetView()-&gt;Add( aModule.get() );</span>
+<span class='curline'><a href='../S/440.html#L329'>aModule</a>           329 footprint_preview_panel.cpp     GetView()-&gt;SetVisible( aModule.get(), true );</span>
+<span class='curline'><a href='../S/440.html#L330'>aModule</a>           330 footprint_preview_panel.cpp     GetView()-&gt;Update( aModule.get(), KIGFX::ALL );</span>
+<span class='curline'><a href='../S/440.html#L334'>aModule</a>           334 footprint_preview_panel.cpp     m_currentModule = aModule;</span>
+<span class='curline'><a href='../S/440.html#L336'>aModule</a>           336 footprint_preview_panel.cpp     BOX2I bbox = aModule-&gt;ViewBBox();</span>
+<span class='curline'><a href='../S/440.html#L337'>aModule</a>           337 footprint_preview_panel.cpp     bbox.Merge( aModule-&gt;Value().ViewBBox() );</span>
+<span class='curline'><a href='../S/440.html#L338'>aModule</a>           338 footprint_preview_panel.cpp     bbox.Merge( aModule-&gt;Reference().ViewBBox() );</span>
+<span class='curline'><a href='../S/441.html#L95'>aModule</a>            95 footprint_preview_panel.h     void renderFootprint( std::shared_ptr&lt;MODULE&gt; aModule );</span>
+<span class='curline'><a href='../S/465.html#L116'>aModule</a>           116 gpcb_plugin.cpp     GPCB_FPL_CACHE_ITEM( MODULE* aModule, const WX_FILENAME&amp; aFileName );</span>
+<span class='curline'><a href='../S/465.html#L123'>aModule</a>           123 gpcb_plugin.cpp GPCB_FPL_CACHE_ITEM::GPCB_FPL_CACHE_ITEM( MODULE* aModule, const WX_FILENAME&amp; aFileName ) :</span>
+<span class='curline'><a href='../S/465.html#L125'>aModule</a>           125 gpcb_plugin.cpp     m_module( aModule )</span>
+<span class='curline'><a href='../S/485.html#L122'>aModule</a>           122 import_gfx/graphics_importer_pcbnew.h     GRAPHICS_IMPORTER_MODULE( MODULE* aModule )</span>
+<span class='curline'><a href='../S/485.html#L123'>aModule</a>           123 import_gfx/graphics_importer_pcbnew.h         : m_module( aModule )</span>
+<span class='curline'><a href='../S/497.html#L88'>aModule</a>            88 kicad_plugin.cpp     FP_CACHE_ITEM( MODULE* aModule, const WX_FILENAME&amp; aFileName );</span>
+<span class='curline'><a href='../S/497.html#L95'>aModule</a>            95 kicad_plugin.cpp FP_CACHE_ITEM::FP_CACHE_ITEM( MODULE* aModule, const WX_FILENAME&amp; aFileName ) :</span>
+<span class='curline'><a href='../S/497.html#L97'>aModule</a>            97 kicad_plugin.cpp     m_module( aModule )</span>
+<span class='curline'><a href='../S/497.html#L136'>aModule</a>           136 kicad_plugin.cpp     void Save( MODULE* aModule = NULL );</span>
+<span class='curline'><a href='../S/497.html#L182'>aModule</a>           182 kicad_plugin.cpp void FP_CACHE::Save( MODULE* aModule )</span>
+<span class='curline'><a href='../S/497.html#L200'>aModule</a>           200 kicad_plugin.cpp         if( aModule &amp;&amp; aModule != it-&gt;second-&gt;GetModule() )</span>
+<span class='curline'><a href='../S/497.html#L246'>aModule</a>           246 kicad_plugin.cpp     if( !aModule )</span>
+<span class='curline'><a href='../S/497.html#L892'>aModule</a>           892 kicad_plugin.cpp void PCB_IO::format( MODULE* aModule, int aNestLevel ) const</span>
+<span class='curline'><a href='../S/497.html#L896'>aModule</a>           896 kicad_plugin.cpp         const wxArrayString* initial_comments = aModule-&gt;GetInitialComments();</span>
+<span class='curline'><a href='../S/497.html#L908'>aModule</a>           908 kicad_plugin.cpp                   m_out-&gt;Quotes( aModule-&gt;GetFPID().Format() ).c_str() );</span>
+<span class='curline'><a href='../S/497.html#L910'>aModule</a>           910 kicad_plugin.cpp     if( aModule-&gt;IsLocked() )</span>
+<span class='curline'><a href='../S/497.html#L913'>aModule</a>           913 kicad_plugin.cpp     if( aModule-&gt;IsPlaced() )</span>
+<span class='curline'><a href='../S/497.html#L916'>aModule</a>           916 kicad_plugin.cpp     formatLayer( aModule );</span>
+<span class='curline'><a href='../S/497.html#L918'>aModule</a>           918 kicad_plugin.cpp     m_out-&gt;Print( 0, " (tedit %lX)", (unsigned long)aModule-&gt;GetLastEditTime() );</span>
+<span class='curline'><a href='../S/497.html#L921'>aModule</a>           921 kicad_plugin.cpp         m_out-&gt;Print( 0, " (tstamp %s)", TO_UTF8( aModule-&gt;m_Uuid.AsString() ) );</span>
+<span class='curline'><a href='../S/497.html#L927'>aModule</a>           927 kicad_plugin.cpp         m_out-&gt;Print( aNestLevel+1, "(at %s", FormatInternalUnits( aModule-&gt;GetPosition() ).c_str() );</span>
+<span class='curline'><a href='../S/497.html#L929'>aModule</a>           929 kicad_plugin.cpp         if( aModule-&gt;GetOrientation() != 0.0 )</span>
+<span class='curline'><a href='../S/497.html#L930'>aModule</a>           930 kicad_plugin.cpp             m_out-&gt;Print( 0, " %s", FormatAngle( aModule-&gt;GetOrientation() ).c_str() );</span>
+<span class='curline'><a href='../S/497.html#L935'>aModule</a>           935 kicad_plugin.cpp     if( !aModule-&gt;GetDescription().IsEmpty() )</span>
+<span class='curline'><a href='../S/497.html#L937'>aModule</a>           937 kicad_plugin.cpp                       m_out-&gt;Quotew( aModule-&gt;GetDescription() ).c_str() );</span>
+<span class='curline'><a href='../S/497.html#L939'>aModule</a>           939 kicad_plugin.cpp     if( !aModule-&gt;GetKeywords().IsEmpty() )</span>
+<span class='curline'><a href='../S/497.html#L941'>aModule</a>           941 kicad_plugin.cpp                       m_out-&gt;Quotew( aModule-&gt;GetKeywords() ).c_str() );</span>
+<span class='curline'><a href='../S/497.html#L943'>aModule</a>           943 kicad_plugin.cpp     if( !( m_ctl &amp; CTL_OMIT_PATH ) &amp;&amp; !aModule-&gt;GetPath().empty() )</span>
+<span class='curline'><a href='../S/497.html#L945'>aModule</a>           945 kicad_plugin.cpp                       m_out-&gt;Quotew( aModule-&gt;GetPath().AsString() ).c_str() );</span>
+<span class='curline'><a href='../S/497.html#L947'>aModule</a>           947 kicad_plugin.cpp     if( aModule-&gt;GetPlacementCost90() != 0 )</span>
+<span class='curline'><a href='../S/497.html#L948'>aModule</a>           948 kicad_plugin.cpp         m_out-&gt;Print( aNestLevel+1, "(autoplace_cost90 %d)\n", aModule-&gt;GetPlacementCost90() );</span>
+<span class='curline'><a href='../S/497.html#L950'>aModule</a>           950 kicad_plugin.cpp     if( aModule-&gt;GetPlacementCost180() != 0 )</span>
+<span class='curline'><a href='../S/497.html#L951'>aModule</a>           951 kicad_plugin.cpp         m_out-&gt;Print( aNestLevel+1, "(autoplace_cost180 %d)\n", aModule-&gt;GetPlacementCost180() );</span>
+<span class='curline'><a href='../S/497.html#L953'>aModule</a>           953 kicad_plugin.cpp     if( aModule-&gt;GetLocalSolderMaskMargin() != 0 )</span>
+<span class='curline'><a href='../S/497.html#L955'>aModule</a>           955 kicad_plugin.cpp                       FormatInternalUnits( aModule-&gt;GetLocalSolderMaskMargin() ).c_str() );</span>
+<span class='curline'><a href='../S/497.html#L957'>aModule</a>           957 kicad_plugin.cpp     if( aModule-&gt;GetLocalSolderPasteMargin() != 0 )</span>
+<span class='curline'><a href='../S/497.html#L959'>aModule</a>           959 kicad_plugin.cpp                       FormatInternalUnits( aModule-&gt;GetLocalSolderPasteMargin() ).c_str() );</span>
+<span class='curline'><a href='../S/497.html#L961'>aModule</a>           961 kicad_plugin.cpp     if( aModule-&gt;GetLocalSolderPasteMarginRatio() != 0 )</span>
+<span class='curline'><a href='../S/497.html#L963'>aModule</a>           963 kicad_plugin.cpp                       Double2Str( aModule-&gt;GetLocalSolderPasteMarginRatio() ).c_str() );</span>
+<span class='curline'><a href='../S/497.html#L965'>aModule</a>           965 kicad_plugin.cpp     if( aModule-&gt;GetLocalClearance() != 0 )</span>
+<span class='curline'><a href='../S/497.html#L967'>aModule</a>           967 kicad_plugin.cpp                       FormatInternalUnits( aModule-&gt;GetLocalClearance() ).c_str() );</span>
+<span class='curline'><a href='../S/497.html#L969'>aModule</a>           969 kicad_plugin.cpp     if( aModule-&gt;GetZoneConnection() != ZONE_CONNECTION::INHERITED )</span>
+<span class='curline'><a href='../S/497.html#L971'>aModule</a>           971 kicad_plugin.cpp                                     static_cast&lt;int&gt;( aModule-&gt;GetZoneConnection() ) );</span>
+<span class='curline'><a href='../S/497.html#L973'>aModule</a>           973 kicad_plugin.cpp     if( aModule-&gt;GetThermalWidth() != 0 )</span>
+<span class='curline'><a href='../S/497.html#L975'>aModule</a>           975 kicad_plugin.cpp                       FormatInternalUnits( aModule-&gt;GetThermalWidth() ).c_str() );</span>
+<span class='curline'><a href='../S/497.html#L977'>aModule</a>           977 kicad_plugin.cpp     if( aModule-&gt;GetThermalGap() != 0 )</span>
+<span class='curline'><a href='../S/497.html#L979'>aModule</a>           979 kicad_plugin.cpp                       FormatInternalUnits( aModule-&gt;GetThermalGap() ).c_str() );</span>
+<span class='curline'><a href='../S/497.html#L982'>aModule</a>           982 kicad_plugin.cpp     if( aModule-&gt;GetAttributes() != MOD_DEFAULT )</span>
+<span class='curline'><a href='../S/497.html#L986'>aModule</a>           986 kicad_plugin.cpp         if( aModule-&gt;GetAttributes() &amp; MOD_CMS )</span>
+<span class='curline'><a href='../S/497.html#L989'>aModule</a>           989 kicad_plugin.cpp         if( aModule-&gt;GetAttributes() &amp; MOD_VIRTUAL )</span>
+<span class='curline'><a href='../S/497.html#L995'>aModule</a>           995 kicad_plugin.cpp     Format( (BOARD_ITEM*) &amp;aModule-&gt;Reference(), aNestLevel+1 );</span>
+<span class='curline'><a href='../S/497.html#L996'>aModule</a>           996 kicad_plugin.cpp     Format( (BOARD_ITEM*) &amp;aModule-&gt;Value(), aNestLevel+1 );</span>
+<span class='curline'><a href='../S/497.html#L998'>aModule</a>           998 kicad_plugin.cpp     std::set&lt;D_PAD*, MODULE::cmp_pads&gt; sorted_pads( aModule-&gt;Pads().begin(),</span>
+<span class='curline'><a href='../S/497.html#L999'>aModule</a>           999 kicad_plugin.cpp             aModule-&gt;Pads().end() );</span>
+<span class='curline'><a href='../S/497.html#L1000'>aModule</a>          1000 kicad_plugin.cpp     std::set&lt;BOARD_ITEM*, MODULE::cmp_drawings&gt; sorted_drawings( aModule-&gt;GraphicalItems().begin(),</span>
+<span class='curline'><a href='../S/497.html#L1001'>aModule</a>          1001 kicad_plugin.cpp             aModule-&gt;GraphicalItems().end() );</span>
+<span class='curline'><a href='../S/497.html#L1002'>aModule</a>          1002 kicad_plugin.cpp     std::set&lt;BOARD_ITEM*, BOARD_ITEM::ptr_cmp&gt; sorted_zones( aModule-&gt;Zones().begin(),</span>
+<span class='curline'><a href='../S/497.html#L1003'>aModule</a>          1003 kicad_plugin.cpp             aModule-&gt;Zones().end() );</span>
+<span class='curline'><a href='../S/497.html#L1019'>aModule</a>          1019 kicad_plugin.cpp     auto bs3D = aModule-&gt;Models().begin();</span>
+<span class='curline'><a href='../S/497.html#L1020'>aModule</a>          1020 kicad_plugin.cpp     auto es3D = aModule-&gt;Models().end();</span>
+<span class='curline'><a href='../S/498.html#L244'>aModule</a>           244 kicad_plugin.h     void format( MODULE* aModule, int aNestLevel = 0 ) const;</span>
+<span class='curline'><a href='../S/501.html#L1186'>aModule</a>          1186 legacy_plugin.cpp void LEGACY_PLUGIN::loadMODULE( MODULE* aModule )</span>
+<span class='curline'><a href='../S/501.html#L1198'>aModule</a>          1198 legacy_plugin.cpp             loadMODULE_EDGE( aModule );</span>
+<span class='curline'><a href='../S/501.html#L1203'>aModule</a>          1203 legacy_plugin.cpp             loadPAD( aModule );</span>
+<span class='curline'><a href='../S/501.html#L1217'>aModule</a>          1217 legacy_plugin.cpp                 textm = &amp;aModule-&gt;Reference();</span>
+<span class='curline'><a href='../S/501.html#L1221'>aModule</a>          1221 legacy_plugin.cpp                 textm = &amp;aModule-&gt;Value();</span>
+<span class='curline'><a href='../S/501.html#L1226'>aModule</a>          1226 legacy_plugin.cpp                 textm = new TEXTE_MODULE( aModule );</span>
+<span class='curline'><a href='../S/501.html#L1227'>aModule</a>          1227 legacy_plugin.cpp                 aModule-&gt;Add( textm );</span>
+<span class='curline'><a href='../S/501.html#L1249'>aModule</a>          1249 legacy_plugin.cpp                 aModule-&gt;SetLocked( true );</span>
+<span class='curline'><a href='../S/501.html#L1252'>aModule</a>          1252 legacy_plugin.cpp                 aModule-&gt;SetIsPlaced( true );</span>
+<span class='curline'><a href='../S/501.html#L1254'>aModule</a>          1254 legacy_plugin.cpp             aModule-&gt;SetPosition( wxPoint( pos_x, pos_y ) );</span>
+<span class='curline'><a href='../S/501.html#L1255'>aModule</a>          1255 legacy_plugin.cpp             aModule-&gt;SetLayer( layer_id );</span>
+<span class='curline'><a href='../S/501.html#L1256'>aModule</a>          1256 legacy_plugin.cpp             aModule-&gt;SetOrientation( orient );</span>
+<span class='curline'><a href='../S/501.html#L1257'>aModule</a>          1257 legacy_plugin.cpp             const_cast&lt;KIID&amp;&gt;( aModule-&gt;m_Uuid ) = KIID( uuid );</span>
+<span class='curline'><a href='../S/501.html#L1258'>aModule</a>          1258 legacy_plugin.cpp             aModule-&gt;SetLastEditTime( edittime );</span>
+<span class='curline'><a href='../S/501.html#L1273'>aModule</a>          1273 legacy_plugin.cpp             const_cast&lt;KIID&amp;&gt;( aModule-&gt;m_Uuid ) = KIID( uuid );</span>
+<span class='curline'><a href='../S/501.html#L1285'>aModule</a>          1285 legacy_plugin.cpp             aModule-&gt;SetPlacementCost180( cntRot180 );</span>
+<span class='curline'><a href='../S/501.html#L1295'>aModule</a>          1295 legacy_plugin.cpp             aModule-&gt;SetPlacementCost90( (itmp1 &lt;&lt; 4) | cntRot90 );</span>
+<span class='curline'><a href='../S/501.html#L1310'>aModule</a>          1310 legacy_plugin.cpp             aModule-&gt;SetAttributes( attrs );</span>
+<span class='curline'><a href='../S/501.html#L1319'>aModule</a>          1319 legacy_plugin.cpp                 aModule-&gt;SetPath( KIID_PATH( FROM_UTF8( data ) ) );</span>
+<span class='curline'><a href='../S/501.html#L1324'>aModule</a>          1324 legacy_plugin.cpp             load3D( aModule );</span>
+<span class='curline'><a href='../S/501.html#L1330'>aModule</a>          1330 legacy_plugin.cpp             aModule-&gt;SetDescription( FROM_UTF8( StrPurge( line + SZ( "Cd" ) ) ) );</span>
+<span class='curline'><a href='../S/501.html#L1335'>aModule</a>          1335 legacy_plugin.cpp             aModule-&gt;SetKeywords( FROM_UTF8( StrPurge( line + SZ( "Kw" ) ) ) );</span>
+<span class='curline'><a href='../S/501.html#L1349'>aModule</a>          1349 legacy_plugin.cpp             aModule-&gt;SetLocalSolderPasteMarginRatio( tmp );</span>
+<span class='curline'><a href='../S/501.html#L1355'>aModule</a>          1355 legacy_plugin.cpp             aModule-&gt;SetLocalSolderPasteMargin( tmp );</span>
+<span class='curline'><a href='../S/501.html#L1361'>aModule</a>          1361 legacy_plugin.cpp             aModule-&gt;SetLocalSolderMaskMargin( tmp );</span>
+<span class='curline'><a href='../S/501.html#L1367'>aModule</a>          1367 legacy_plugin.cpp             aModule-&gt;SetLocalClearance( tmp );</span>
+<span class='curline'><a href='../S/501.html#L1373'>aModule</a>          1373 legacy_plugin.cpp             aModule-&gt;SetZoneConnection( (ZONE_CONNECTION) tmp );</span>
+<span class='curline'><a href='../S/501.html#L1379'>aModule</a>          1379 legacy_plugin.cpp             aModule-&gt;SetThermalWidth( tmp );</span>
+<span class='curline'><a href='../S/501.html#L1385'>aModule</a>          1385 legacy_plugin.cpp             aModule-&gt;SetThermalGap( tmp );</span>
+<span class='curline'><a href='../S/501.html#L1390'>aModule</a>          1390 legacy_plugin.cpp             aModule-&gt;CalculateBoundingBox();</span>
+<span class='curline'><a href='../S/501.html#L1398'>aModule</a>          1398 legacy_plugin.cpp         GetChars( aModule-&gt;GetFPID().GetLibItemName() ) );</span>
+<span class='curline'><a href='../S/501.html#L1404'>aModule</a>          1404 legacy_plugin.cpp void LEGACY_PLUGIN::loadPAD( MODULE* aModule )</span>
+<span class='curline'><a href='../S/501.html#L1406'>aModule</a>          1406 legacy_plugin.cpp     unique_ptr&lt;D_PAD&gt; pad( new D_PAD( aModule ) );</span>
+<span class='curline'><a href='../S/501.html#L1452'>aModule</a>          1452 legacy_plugin.cpp                                 GetChars( aModule-&gt;GetFPID().GetLibItemName() )</span>
+<span class='curline'><a href='../S/501.html#L1626'>aModule</a>          1626 legacy_plugin.cpp             RotatePoint( &amp;padpos, aModule-&gt;GetOrientation() );</span>
+<span class='curline'><a href='../S/501.html#L1628'>aModule</a>          1628 legacy_plugin.cpp             pad-&gt;SetPosition( padpos + aModule-&gt;GetPosition() );</span>
+<span class='curline'><a href='../S/501.html#L1630'>aModule</a>          1630 legacy_plugin.cpp             aModule-&gt;Add( pad.release() );</span>
+<span class='curline'><a href='../S/501.html#L1639'>aModule</a>          1639 legacy_plugin.cpp void LEGACY_PLUGIN::loadMODULE_EDGE( MODULE* aModule )</span>
+<span class='curline'><a href='../S/501.html#L1655'>aModule</a>          1655 legacy_plugin.cpp                         GetChars( aModule-&gt;GetFPID().GetLibItemName() )</span>
+<span class='curline'><a href='../S/501.html#L1660'>aModule</a>          1660 legacy_plugin.cpp     unique_ptr&lt;EDGE_MODULE&gt; dwg( new EDGE_MODULE( aModule, shape ) );    // a drawing</span>
+<span class='curline'><a href='../S/501.html#L1762'>aModule</a>          1762 legacy_plugin.cpp     aModule-&gt;Add( em );</span>
+<span class='curline'><a href='../S/501.html#L1864'>aModule</a>          1864 legacy_plugin.cpp void LEGACY_PLUGIN::load3D( MODULE* aModule )</span>
+<span class='curline'><a href='../S/501.html#L1904'>aModule</a>          1904 legacy_plugin.cpp             aModule-&gt;Models().push_back( t3D );</span>
+<span class='curline'><a href='../S/502.html#L109'>aModule</a>           109 legacy_plugin.h     void    SaveModule3D( const MODULE* aModule ) const;</span>
+<span class='curline'><a href='../S/502.html#L197'>aModule</a>           197 legacy_plugin.h     void load3D( MODULE* aModule );</span>
+<span class='curline'><a href='../S/502.html#L198'>aModule</a>           198 legacy_plugin.h     void loadPAD( MODULE* aModule );</span>
+<span class='curline'><a href='../S/502.html#L200'>aModule</a>           200 legacy_plugin.h     void loadMODULE_EDGE( MODULE* aModule );</span>
+<span class='curline'><a href='../S/502.html#L206'>aModule</a>           206 legacy_plugin.h     void loadMODULE( MODULE* aModule );</span>
+<span class='curline'><a href='../S/503.html#L85'>aModule</a>            85 load_select_footprint.cpp bool FOOTPRINT_EDIT_FRAME::Load_Module_From_BOARD( MODULE* aModule )</span>
+<span class='curline'><a href='../S/503.html#L95'>aModule</a>            95 load_select_footprint.cpp     if( aModule == NULL )</span>
+<span class='curline'><a href='../S/503.html#L100'>aModule</a>           100 load_select_footprint.cpp         aModule = SelectFootprintFromBoard( frame-&gt;GetBoard() );</span>
+<span class='curline'><a href='../S/503.html#L103'>aModule</a>           103 load_select_footprint.cpp     if( aModule == NULL )</span>
+<span class='curline'><a href='../S/503.html#L109'>aModule</a>           109 load_select_footprint.cpp     newModule = (MODULE*) aModule-&gt;Duplicate();</span>
+<span class='curline'><a href='../S/503.html#L111'>aModule</a>           111 load_select_footprint.cpp     newModule-&gt;SetLink( aModule-&gt;m_Uuid );</span>
+<span class='curline'><a href='../S/503.html#L472'>aModule</a>           472 load_select_footprint.cpp void PCB_BASE_FRAME::PlaceModule( MODULE* aModule, bool aRecreateRatsnest )</span>
+<span class='curline'><a href='../S/503.html#L474'>aModule</a>           474 load_select_footprint.cpp     if( aModule == 0 )</span>
+<span class='curline'><a href='../S/503.html#L479'>aModule</a>           479 load_select_footprint.cpp     if( aModule-&gt;IsNew() )</span>
+<span class='curline'><a href='../S/503.html#L481'>aModule</a>           481 load_select_footprint.cpp         SaveCopyInUndoList( aModule, UR_NEW );</span>
+<span class='curline'><a href='../S/503.html#L483'>aModule</a>           483 load_select_footprint.cpp     else if( aModule-&gt;IsMoving() )</span>
+<span class='curline'><a href='../S/503.html#L485'>aModule</a>           485 load_select_footprint.cpp         ITEM_PICKER picker( nullptr, aModule, UR_CHANGED );</span>
+<span class='curline'><a href='../S/503.html#L500'>aModule</a>           500 load_select_footprint.cpp     aModule-&gt;SetPosition( (wxPoint) GetCanvas()-&gt;GetViewControls()-&gt;GetCursorPosition() );</span>
+<span class='curline'><a href='../S/503.html#L501'>aModule</a>           501 load_select_footprint.cpp     aModule-&gt;ClearFlags();</span>
+<span class='curline'><a href='../S/503.html#L507'>aModule</a>           507 load_select_footprint.cpp         m_Pcb-&gt;GetConnectivity()-&gt;Update( aModule );</span>
+<span class='curline'><a href='../S/503.html#L512'>aModule</a>           512 load_select_footprint.cpp     SetMsgPanel( aModule );</span>
+<span class='curline'><a href='../S/521.html#L40'>aModule</a>            40 netlist_reader/pcb_netlist.cpp void COMPONENT::SetModule( MODULE* aModule )</span>
+<span class='curline'><a href='../S/521.html#L42'>aModule</a>            42 netlist_reader/pcb_netlist.cpp     m_footprint.reset( aModule );</span>
+<span class='curline'><a href='../S/521.html#L44'>aModule</a>            44 netlist_reader/pcb_netlist.cpp     if( aModule == NULL )</span>
+<span class='curline'><a href='../S/521.html#L47'>aModule</a>            47 netlist_reader/pcb_netlist.cpp     aModule-&gt;SetReference( m_reference );</span>
+<span class='curline'><a href='../S/521.html#L48'>aModule</a>            48 netlist_reader/pcb_netlist.cpp     aModule-&gt;SetValue( m_value );</span>
+<span class='curline'><a href='../S/521.html#L49'>aModule</a>            49 netlist_reader/pcb_netlist.cpp     aModule-&gt;SetFPID( m_fpid );</span>
+<span class='curline'><a href='../S/521.html#L50'>aModule</a>            50 netlist_reader/pcb_netlist.cpp     aModule-&gt;SetPath( m_path );</span>
+<span class='curline'><a href='../S/522.html#L167'>aModule</a>           167 netlist_reader/pcb_netlist.h     void SetModule( MODULE* aModule );</span>
+<span class='curline'><a href='../S/534.html#L159'>aModule</a>           159 pcad2kicadpcb_plugin/pcb_arc.cpp void PCB_ARC::AddToModule( MODULE* aModule )</span>
+<span class='curline'><a href='../S/534.html#L163'>aModule</a>           163 pcad2kicadpcb_plugin/pcb_arc.cpp         EDGE_MODULE* arc = new EDGE_MODULE( aModule, ( IsCircle() ? S_CIRCLE : S_ARC ) );</span>
+<span class='curline'><a href='../S/534.html#L164'>aModule</a>           164 pcad2kicadpcb_plugin/pcb_arc.cpp         aModule-&gt;Add( arc );</span>
+<span class='curline'><a href='../S/535.html#L57'>aModule</a>            57 pcad2kicadpcb_plugin/pcb_arc.h     void            AddToModule( MODULE* aModule ) override;</span>
+<span class='curline'><a href='../S/537.html#L64'>aModule</a>            64 pcad2kicadpcb_plugin/pcb_component.cpp void PCB_COMPONENT::AddToModule( MODULE* aModule )</span>
+<span class='curline'><a href='../S/538.html#L70'>aModule</a>            70 pcad2kicadpcb_plugin/pcb_component.h     virtual void    AddToModule( MODULE* aModule );</span>
+<span class='curline'><a href='../S/545.html#L117'>aModule</a>           117 pcad2kicadpcb_plugin/pcb_line.cpp void PCB_LINE::AddToModule( MODULE* aModule )</span>
+<span class='curline'><a href='../S/545.html#L121'>aModule</a>           121 pcad2kicadpcb_plugin/pcb_line.cpp         EDGE_MODULE* segment = new EDGE_MODULE( aModule, S_SEGMENT );</span>
+<span class='curline'><a href='../S/545.html#L122'>aModule</a>           122 pcad2kicadpcb_plugin/pcb_line.cpp         aModule-&gt;Add( segment );</span>
+<span class='curline'><a href='../S/546.html#L56'>aModule</a>            56 pcad2kicadpcb_plugin/pcb_line.h     void            AddToModule( MODULE* aModule ) override;</span>
+<span class='curline'><a href='../S/551.html#L187'>aModule</a>           187 pcad2kicadpcb_plugin/pcb_pad.cpp void PCB_PAD::AddToModule( MODULE* aModule, int aRotation, bool aEncapsulatedPad )</span>
+<span class='curline'><a href='../S/551.html#L196'>aModule</a>           196 pcad2kicadpcb_plugin/pcb_pad.cpp     D_PAD* pad = new D_PAD( aModule );</span>
+<span class='curline'><a href='../S/551.html#L303'>aModule</a>           303 pcad2kicadpcb_plugin/pcb_pad.cpp         RotatePoint( &amp;padpos, aModule-&gt;GetOrientation() );</span>
+<span class='curline'><a href='../S/551.html#L304'>aModule</a>           304 pcad2kicadpcb_plugin/pcb_pad.cpp         pad-&gt;SetPosition( padpos + aModule-&gt;GetPosition() );</span>
+<span class='curline'><a href='../S/551.html#L307'>aModule</a>           307 pcad2kicadpcb_plugin/pcb_pad.cpp     aModule-&gt;Add( pad );</span>
+<span class='curline'><a href='../S/552.html#L55'>aModule</a>            55 pcad2kicadpcb_plugin/pcb_pad.h     void            AddToModule( MODULE* aModule ) override</span>
+<span class='curline'><a href='../S/552.html#L57'>aModule</a>            57 pcad2kicadpcb_plugin/pcb_pad.h         AddToModule( aModule, 0, true );</span>
+<span class='curline'><a href='../S/552.html#L59'>aModule</a>            59 pcad2kicadpcb_plugin/pcb_pad.h     void            AddToModule( MODULE* aModule, int aRotation, bool aEncapsulatedPad );</span>
+<span class='curline'><a href='../S/557.html#L158'>aModule</a>           158 pcad2kicadpcb_plugin/pcb_polygon.cpp void PCB_POLYGON::AddToModule( MODULE* aModule )</span>
+<span class='curline'><a href='../S/557.html#L162'>aModule</a>           162 pcad2kicadpcb_plugin/pcb_polygon.cpp         EDGE_MODULE* dwg = new EDGE_MODULE( aModule, S_POLYGON );</span>
+<span class='curline'><a href='../S/557.html#L163'>aModule</a>           163 pcad2kicadpcb_plugin/pcb_polygon.cpp         aModule-&gt;Add( dwg );</span>
+<span class='curline'><a href='../S/558.html#L60'>aModule</a>            60 pcad2kicadpcb_plugin/pcb_polygon.h     void            AddToModule( MODULE* aModule ) override;</span>
+<span class='curline'><a href='../S/559.html#L96'>aModule</a>            96 pcad2kicadpcb_plugin/pcb_text.cpp void PCB_TEXT::AddToModule( MODULE* aModule )</span>
+<span class='curline'><a href='../S/560.html#L51'>aModule</a>            51 pcad2kicadpcb_plugin/pcb_text.h     void            AddToModule( MODULE* aModule ) override;</span>
+<span class='curline'><a href='../S/585.html#L1277'>aModule</a>          1277 pcb_edit_frame.cpp int PCB_EDIT_FRAME::InstallExchangeModuleFrame( MODULE* aModule, bool updateMode,</span>
+<span class='curline'><a href='../S/585.html#L1280'>aModule</a>          1280 pcb_edit_frame.cpp     DIALOG_EXCHANGE_FOOTPRINTS dialog( this, aModule, updateMode, selectedMode );</span>
+<span class='curline'><a href='../S/585.html#L1300'>aModule</a>          1300 pcb_edit_frame.cpp void PCB_EDIT_FRAME::LockModule( MODULE* aModule, bool aLocked )</span>
+<span class='curline'><a href='../S/585.html#L1303'>aModule</a>          1303 pcb_edit_frame.cpp     if( aModule )</span>
+<span class='curline'><a href='../S/585.html#L1305'>aModule</a>          1305 pcb_edit_frame.cpp         aModule-&gt;SetLocked( aLocked );</span>
+<span class='curline'><a href='../S/585.html#L1306'>aModule</a>          1306 pcb_edit_frame.cpp         SetMsgPanel( aModule );</span>
+<span class='curline'><a href='../S/586.html#L773'>aModule</a>           773 pcb_edit_frame.h     int InstallExchangeModuleFrame( MODULE* aModule, bool updateMode, bool selectedMode );</span>
+<span class='curline'><a href='../S/586.html#L874'>aModule</a>           874 pcb_edit_frame.h     void LockModule( MODULE* aModule, bool aLocked );</span>
+<span class='curline'><a href='../S/593.html#L1093'>aModule</a>          1093 pcb_painter.cpp void PCB_PAINTER::draw( const MODULE* aModule, int aLayer )</span>
+<span class='curline'><a href='../S/593.html#L1097'>aModule</a>          1097 pcb_painter.cpp         const COLOR4D color = m_pcbSettings.GetColor( aModule, LAYER_ANCHOR );</span>
+<span class='curline'><a href='../S/593.html#L1106'>aModule</a>          1106 pcb_painter.cpp         VECTOR2D center = aModule-&gt;GetPosition();</span>
+<span class='curline'><a href='../S/594.html#L305'>aModule</a>           305 pcb_painter.h      void draw( const MODULE* aModule, int aLayer );</span>
+<span class='curline'><a href='../S/578.html#L93'>aModule</a>            93 pcbplot.h          void PlotFootprintGraphicItems( MODULE* aModule );</span>
+<span class='curline'><a href='../S/578.html#L101'>aModule</a>           101 pcbplot.h          void PlotFootprintTextItems( MODULE* aModule );</span>
+<span class='curline'><a href='../S/605.html#L255'>aModule</a>           255 plot_brditems_plotter.cpp void BRDITEMS_PLOTTER::PlotFootprintTextItems( MODULE* aModule )</span>
+<span class='curline'><a href='../S/605.html#L257'>aModule</a>           257 plot_brditems_plotter.cpp     TEXTE_MODULE* textModule = &amp;aModule-&gt;Reference();</span>
+<span class='curline'><a href='../S/605.html#L267'>aModule</a>           267 plot_brditems_plotter.cpp     textModule = &amp;aModule-&gt;Value();</span>
+<span class='curline'><a href='../S/605.html#L276'>aModule</a>           276 plot_brditems_plotter.cpp     for( auto item : aModule-&gt;GraphicalItems() )</span>
+<span class='curline'><a href='../S/605.html#L458'>aModule</a>           458 plot_brditems_plotter.cpp void BRDITEMS_PLOTTER::PlotFootprintGraphicItems( MODULE* aModule )</span>
+<span class='curline'><a href='../S/605.html#L460'>aModule</a>           460 plot_brditems_plotter.cpp     for( BOARD_ITEM* item : aModule-&gt;GraphicalItems() )</span>
+<span class='curline'><a href='../S/715.html#L3772'>aModule</a>          3772 specctra_import_export/specctra.h     IMAGE* makeIMAGE( BOARD* aBoard, MODULE* aModule );</span>
+<span class='curline'><a href='../S/717.html#L595'>aModule</a>           595 specctra_import_export/specctra_export.cpp IMAGE* SPECCTRA_DB::makeIMAGE( BOARD* aBoard, MODULE* aModule )</span>
+<span class='curline'><a href='../S/717.html#L603'>aModule</a>           603 specctra_import_export/specctra_export.cpp     moduleItems.Collect( aModule, scanPADs );</span>
+<span class='curline'><a href='../S/717.html#L607'>aModule</a>           607 specctra_import_export/specctra_export.cpp     image-&gt;image_id = aModule-&gt;GetFPID().Format().c_str();</span>
+<span class='curline'><a href='../S/717.html#L688'>aModule</a>           688 specctra_import_export/specctra_export.cpp             double angle = pad-&gt;GetOrientationDegrees() - aModule-&gt;GetOrientationDegrees();</span>
+<span class='curline'><a href='../S/717.html#L702'>aModule</a>           702 specctra_import_export/specctra_export.cpp     moduleItems.Collect( aModule, scanEDGEs );</span>
+</pre>
+</body>
+</html>

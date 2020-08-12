@@ -1,0 +1,329 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>board_stackup_manager/class_board_stackup.h</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/829.html'>board_stackup_manager</a>/class_board_stackup.h</h2>
+<em class='comment'>/* [&lt;][&gt;][^][v][top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'><a href='../J/38.html' title='Multiple included from 4 places.'>INCLUDED FROM</a></h2>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * This program source code file is part of KiCad, a free EDA CAD application.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 2019 Jean-Pierre Charras, jp.charras at wanadoo.fr</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> * Copyright (C) 2009-2019 KiCad Developers, see AUTHORS.txt for contributors.</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> *</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> * This program is free software; you can redistribute it and/or</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * modify it under the terms of the GNU General Public License</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * as published by the Free Software Foundation; either version 3</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> * of the License, or (at your option) any later version.</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> *</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> * This program is distributed in the hope that it will be useful,</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> * GNU General Public License for more details.</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> *</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> * You should have received a copy of the GNU General Public License along</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> */</em>
+<a id='L20' name='L20'></a>  20 
+<a id='L21' name='L21'></a>  21 <em class='comment'>/**</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'> * @file class_board_stackup.h</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'> */</em>
+<a id='L24' name='L24'></a>  24 
+<a id='L25' name='L25'></a>  25 <em class='sharp'>#ifndef</em> <a href='../S/41.html#L26' title='Defined at 26 in board_stackup_manager/class_board_stackup.h.'>CLASS_BOARD_STACKUP_H</a>
+<a id='L26' name='L26'></a>  26 <em class='sharp'>#define</em> <a href='../S/41.html#L25' title='Referred from 25 in board_stackup_manager/class_board_stackup.h.'>CLASS_BOARD_STACKUP_H</a>
+<a id='L27' name='L27'></a>  27 
+<a id='L28' name='L28'></a>  28 
+<a id='L29' name='L29'></a>  29 <em class='sharp'>#include</em> &lt;vector&gt;
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#include</em> &lt;wx/string.h&gt;
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#include</em> &lt;layers_id_colors_and_visibility.h&gt;
+<a id='L32' name='L32'></a>  32 
+<a id='L33' name='L33'></a>  33 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../S/35.html#L561' title='Defined at 561 in board_design_settings.cpp.'>BOARD_DESIGN_SETTINGS</a>;
+<a id='L34' name='L34'></a>  34 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../Y/2707.html' title='Multiple used in 79 places.'>OUTPUTFORMATTER</a>;
+<a id='L35' name='L35'></a>  35 
+<a id='L36' name='L36'></a>  36 <em class='comment'>// A enum to manage the different layers inside the stackup layers.</em>
+<a id='L37' name='L37'></a>  37 <em class='comment'>// Note the stackup layers include both dielectric and some layers handled by the board editor</em>
+<a id='L38' name='L38'></a>  38 <em class='comment'>// Therefore a stackup layer item is not exactely like a board layer</em>
+<a id='L39' name='L39'></a>  39 <strong class='reserved'>enum</strong> <a href='../R/202.html' title='Multiple referred from 5 places.'>BOARD_STACKUP_ITEM_TYPE</a>
+<a id='L40' name='L40'></a>  40 <em class='brace'>{</em>
+<a id='L41' name='L41'></a>  41     <a href='../R/215.html' title='Multiple referred from 4 places.'>BS_ITEM_TYPE_UNDEFINED</a>,     <em class='comment'>// For not yet initialized BOARD_STACKUP_ITEM item</em>
+<a id='L42' name='L42'></a>  42     <a href='../R/210.html' title='Multiple referred from 10 places.'>BS_ITEM_TYPE_COPPER</a>,        <em class='comment'>// A initialized BOARD_STACKUP_ITEM item for copper layers</em>
+<a id='L43' name='L43'></a>  43     <a href='../R/211.html' title='Multiple referred from 33 places.'>BS_ITEM_TYPE_DIELECTRIC</a>,    <em class='comment'>// A initialized BOARD_STACKUP_ITEM item for the</em>
+<a id='L44' name='L44'></a>  44                                 <em class='comment'>// dielectric between copper layers</em>
+<a id='L45' name='L45'></a>  45     <a href='../R/214.html' title='Multiple referred from 7 places.'>BS_ITEM_TYPE_SOLDERPASTE</a>,   <em class='comment'>// A initialized BOARD_STACKUP_ITEM item for solder paste layers</em>
+<a id='L46' name='L46'></a>  46     <a href='../R/213.html' title='Multiple referred from 14 places.'>BS_ITEM_TYPE_SOLDERMASK</a>,    <em class='comment'>// A initialized BOARD_STACKUP_ITEM item for solder mask layers</em>
+<a id='L47' name='L47'></a>  47                                 <em class='comment'>// note: this is a specialized dielectric material</em>
+<a id='L48' name='L48'></a>  48     <a href='../R/212.html' title='Multiple referred from 12 places.'>BS_ITEM_TYPE_SILKSCREEN</a>,    <em class='comment'>// A initialized BOARD_STACKUP_ITEM item for silkscreen layers</em>
+<a id='L49' name='L49'></a>  49 <em class='brace'>}</em>;
+<a id='L50' name='L50'></a>  50 
+<a id='L51' name='L51'></a>  51 <em class='comment'>// A enum to manage edge connector fab info</em>
+<a id='L52' name='L52'></a>  52 <strong class='reserved'>enum</strong> <a href='../R/207.html' title='Multiple referred from 2 places.'>BS_EDGE_CONNECTOR_CONSTRAINTS</a>
+<a id='L53' name='L53'></a>  53 <em class='brace'>{</em>
+<a id='L54' name='L54'></a>  54     <a href='../R/209.html' title='Multiple referred from 3 places.'>BS_EDGE_CONNECTOR_NONE</a>,     <em class='comment'>// No edge connector in board</em>
+<a id='L55' name='L55'></a>  55     <a href='../S/595.html#L1042' title='Referred from 1042 in pcb_parser.cpp.'>BS_EDGE_CONNECTOR_IN_USE</a>,   <em class='comment'>// some edge connector in board</em>
+<a id='L56' name='L56'></a>  56     <a href='../R/206.html' title='Multiple referred from 3 places.'>BS_EDGE_CONNECTOR_BEVELLED</a>  <em class='comment'>// Some connector in board, and the connector must be bevelled</em>
+<a id='L57' name='L57'></a>  57 <em class='brace'>}</em>;
+<a id='L58' name='L58'></a>  58 
+<a id='L59' name='L59'></a>  59 
+<a id='L60' name='L60'></a>  60 <em class='comment'>/**</em>
+<a id='L61' name='L61'></a>  61 <em class='comment'> * A helper class to manage a dielectric layer set of parameters</em>
+<a id='L62' name='L62'></a>  62 <em class='comment'> */</em>
+<a id='L63' name='L63'></a>  63 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../Y/654.html' title='Multiple used in 5 places.'>DIELECTRIC_PRMS</a>
+<a id='L64' name='L64'></a>  64 <em class='brace'>{</em>
+<a id='L65' name='L65'></a>  65     <a href='../Y/8129.html' title='Multiple used in 73 places.'>friend</a> <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../D/211.html' title='Multiple defined in 2 places.'>BOARD_STACKUP_ITEM</a>;
+<a id='L66' name='L66'></a>  66 
+<a id='L67' name='L67'></a>  67 <a href='../Y/13721.html' title='Multiple used in 310 places.'>private</a>:
+<a id='L68' name='L68'></a>  68     <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../Y/9765.html' title='Multiple used in 3 places.'>m_Material</a>;    <em class='comment'>/// type of material (for dielectric and solder mask)</em>
+<a id='L69' name='L69'></a>  69     <strong class='reserved'>int</strong> <a href='../S/296.html#L71' title='Defined at 71 in dialogs/dialog_target_properties.cpp.'>m_Thickness</a>;        <em class='comment'>/// the physical layer thickness in internal units</em>
+<a id='L70' name='L70'></a>  70     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/10088.html' title='Multiple used in 4 places.'>m_ThicknessLocked</a>; <em class='comment'>/// true for dielectric layers with a fixed thickness</em>
+<a id='L71' name='L71'></a>  71                             <em class='comment'>/// (for impendace controled purposes), unused for other layers</em>
+<a id='L72' name='L72'></a>  72     <strong class='reserved'>double</strong> <a href='../Y/9380.html' title='Multiple used in 12 places.'>m_EpsilonR</a>;      <em class='comment'>/// For dielectric (and solder mask) the dielectric constant</em>
+<a id='L73' name='L73'></a>  73     <strong class='reserved'>double</strong> <a href='../Y/9740.html' title='Multiple used in 12 places.'>m_LossTangent</a>;   <em class='comment'>/// For dielectric (and solder mask) the dielectric loss</em>
+<a id='L74' name='L74'></a>  74 
+<a id='L75' name='L75'></a>  75 <a href='../Y/13804.html' title='Multiple used in 833 places.'>public</a>:
+<a id='L76' name='L76'></a>  76     <a href='../Y/654.html' title='Multiple used in 5 places.'>DIELECTRIC_PRMS</a>() :
+<a id='L77' name='L77'></a>  77         <a href='../S/296.html#L71' title='Defined at 71 in dialogs/dialog_target_properties.cpp.'>m_Thickness</a>(0), <a href='../Y/10088.html' title='Multiple used in 4 places.'>m_ThicknessLocked</a>( <a href='../Y/7859.html' title='Multiple used in 200 places.'>false</a> ),
+<a id='L78' name='L78'></a>  78         <a href='../Y/9380.html' title='Multiple used in 12 places.'>m_EpsilonR</a>( 1.0 ), <a href='../Y/9740.html' title='Multiple used in 12 places.'>m_LossTangent</a>( 0.0 )
+<a id='L79' name='L79'></a>  79     <em class='brace'>{</em><em class='brace'>}</em>
+<a id='L80' name='L80'></a>  80 <em class='brace'>}</em>;
+<a id='L81' name='L81'></a>  81 
+<a id='L82' name='L82'></a>  82 
+<a id='L83' name='L83'></a>  83 <em class='comment'>/**</em>
+<a id='L84' name='L84'></a>  84 <em class='comment'> * this class manage one layer needed to make a physical board</em>
+<a id='L85' name='L85'></a>  85 <em class='comment'> * it can be a solder mask, silk screen, copper or a dielectric</em>
+<a id='L86' name='L86'></a>  86 <em class='comment'> */</em>
+<a id='L87' name='L87'></a>  87 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../D/211.html' title='Multiple defined in 2 places.'>BOARD_STACKUP_ITEM</a>
+<a id='L88' name='L88'></a>  88 <em class='brace'>{</em>
+<a id='L89' name='L89'></a>  89 <a href='../Y/13804.html' title='Multiple used in 833 places.'>public</a>:
+<a id='L90' name='L90'></a>  90     <a href='../D/211.html' title='Multiple defined in 2 places.'>BOARD_STACKUP_ITEM</a>( <a href='../S/41.html#L39' title='Defined at 39 in board_stackup_manager/class_board_stackup.h.'>BOARD_STACKUP_ITEM_TYPE</a> <a href='../Y/6093.html' title='Multiple used in 92 places.'>aType</a> );
+<a id='L91' name='L91'></a>  91     <a href='../D/211.html' title='Multiple defined in 2 places.'>BOARD_STACKUP_ITEM</a>( <a href='../D/211.html' title='Multiple defined in 2 places.'>BOARD_STACKUP_ITEM</a>&amp; <a href='../Y/5700.html' title='Multiple used in 324 places.'>aOther</a> );
+<a id='L92' name='L92'></a>  92 
+<a id='L93' name='L93'></a>  93 
+<a id='L94' name='L94'></a>  94 <a href='../Y/13721.html' title='Multiple used in 310 places.'>private</a>:
+<a id='L95' name='L95'></a>  95     <a href='../S/41.html#L39' title='Defined at 39 in board_stackup_manager/class_board_stackup.h.'>BOARD_STACKUP_ITEM_TYPE</a> <a href='../Y/10127.html' title='Multiple used in 32 places.'>m_Type</a>;
+<a id='L96' name='L96'></a>  96     <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../Y/9706.html' title='Multiple used in 11 places.'>m_LayerName</a>;   <em class='comment'>/// name of layer as shown in layer manager. Usefull to create reports</em>
+<a id='L97' name='L97'></a>  97     <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../Y/10128.html' title='Multiple used in 9 places.'>m_TypeName</a>;    <em class='comment'>/// type name of layer (copper, silk screen, core, prepreg ...)</em>
+<a id='L98' name='L98'></a>  98     <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../Y/9249.html' title='Multiple used in 11 places.'>m_Color</a>;       <em class='comment'>/// mainly for silkscreen and solder mask</em>
+<a id='L99' name='L99'></a>  99     <a href='../S/423.html#L118' title='Defined at 118 in exporters/gendrill_file_writer_base.h.'>PCB_LAYER_ID</a> <a href='../Y/9702.html' title='Multiple used in 14 places.'>m_LayerId</a>; <em class='comment'>/// the layer id (F.Cu to B.Cu, F.Silk, B.silk, F.Mask, B.Mask)</em>
+<a id='L100' name='L100'></a> 100                             <em class='comment'>/// and UNDEFINED_LAYER (-1) for dielectic layers that are not</em>
+<a id='L101' name='L101'></a> 101                             <em class='comment'>/// really layers for the board editor</em>
+<a id='L102' name='L102'></a> 102     <strong class='reserved'>int</strong> <a href='../Y/9320.html' title='Multiple used in 4 places.'>m_DielectricLayerId</a>;<em class='comment'>/// the "layer" id for dielectric layers,</em>
+<a id='L103' name='L103'></a> 103                             <em class='comment'>/// from 1 (top) to 31 (bottom)</em>
+<a id='L104' name='L104'></a> 104                             <em class='comment'>/// (only 31 dielectric layers for 32 copper layers)</em>
+<a id='L105' name='L105'></a> 105     <em class='comment'>/// List of dielectric parameters</em>
+<a id='L106' name='L106'></a> 106     <em class='comment'>/// usually only one item, but in complex (microwave) boards, one can have</em>
+<a id='L107' name='L107'></a> 107     <em class='comment'>/// more than one dielectic layer between 2 copper layers, and therfore</em>
+<a id='L108' name='L108'></a> 108     <em class='comment'>/// more than one item in list</em>
+<a id='L109' name='L109'></a> 109     <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/15301.html' title='Multiple used in 606 places.'>vector</a>&lt;<a href='../Y/654.html' title='Multiple used in 5 places.'>DIELECTRIC_PRMS</a>&gt; <a href='../Y/9321.html' title='Multiple used in 16 places.'>m_DielectricPrmsList</a>;
+<a id='L110' name='L110'></a> 110 
+<a id='L111' name='L111'></a> 111     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/10775.html' title='Multiple used in 4 places.'>m_enabled</a>;         <em class='comment'>/// true if this stackup item must be taken in account,</em>
+<a id='L112' name='L112'></a> 112                             <em class='comment'>/// false to ignore it. Mainly used in dialog stackup editor.</em>
+<a id='L113' name='L113'></a> 113 
+<a id='L114' name='L114'></a> 114 <a href='../Y/13804.html' title='Multiple used in 833 places.'>public</a>:
+<a id='L115' name='L115'></a> 115     <em class='comment'>/**</em>
+<a id='L116' name='L116'></a> 116 <em class='comment'>     * add (insert) a DIELECTRIC_PRMS item to m_DielectricPrmsList</em>
+<a id='L117' name='L117'></a> 117 <em class='comment'>     * all values are set to default</em>
+<a id='L118' name='L118'></a> 118 <em class='comment'>     * @param aDielectricPrmsIdx is a index in m_DielectricPrmsList</em>
+<a id='L119' name='L119'></a> 119 <em class='comment'>     * the new item will be inserted at this position</em>
+<a id='L120' name='L120'></a> 120 <em class='comment'>     */</em>
+<a id='L121' name='L121'></a> 121     <strong class='reserved'>void</strong> <a href='../S/40.html#L94' title='Defined at 94 in board_stackup_manager/class_board_stackup.cpp.'>AddDielectricPrms</a>( <strong class='reserved'>int</strong> <a href='../Y/5197.html' title='Multiple used in 7 places.'>aDielectricPrmsIdx</a> );
+<a id='L122' name='L122'></a> 122 
+<a id='L123' name='L123'></a> 123     <em class='comment'>/**</em>
+<a id='L124' name='L124'></a> 124 <em class='comment'>     * Remove a DIELECTRIC_PRMS item from m_DielectricPrmsList</em>
+<a id='L125' name='L125'></a> 125 <em class='comment'>     * @param aDielectricPrmsIdx is the index of the parameters set</em>
+<a id='L126' name='L126'></a> 126 <em class='comment'>     * to remove in m_DielectricPrmsList</em>
+<a id='L127' name='L127'></a> 127 <em class='comment'>     */</em>
+<a id='L128' name='L128'></a> 128     <strong class='reserved'>void</strong> <a href='../S/40.html#L104' title='Defined at 104 in board_stackup_manager/class_board_stackup.cpp.'>RemoveDielectricPrms</a>( <strong class='reserved'>int</strong> <a href='../Y/5197.html' title='Multiple used in 7 places.'>aDielectricPrmsIdx</a> );
+<a id='L129' name='L129'></a> 129 
+<a id='L130' name='L130'></a> 130     <em class='comment'>/// @return true if the layer has a meaningfull Epsilon R parameter</em>
+<a id='L131' name='L131'></a> 131     <em class='comment'>/// namely dielectric layers: dielectric and solder mask</em>
+<a id='L132' name='L132'></a> 132     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../S/40.html#L216' title='Defined at 216 in board_stackup_manager/class_board_stackup.cpp.'>HasEpsilonRValue</a>() <strong class='reserved'>const</strong>;
+<a id='L133' name='L133'></a> 133 
+<a id='L134' name='L134'></a> 134     <em class='comment'>/// @return true if the layer has a meaningfull Dielectric Loss parameter</em>
+<a id='L135' name='L135'></a> 135     <em class='comment'>/// namely dielectric layers: dielectric and solder mask</em>
+<a id='L136' name='L136'></a> 136     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../S/40.html#L225' title='Defined at 225 in board_stackup_manager/class_board_stackup.cpp.'>HasLossTangentValue</a>() <strong class='reserved'>const</strong>;
+<a id='L137' name='L137'></a> 137 
+<a id='L138' name='L138'></a> 138     <em class='comment'>/// @return true if the material is specified</em>
+<a id='L139' name='L139'></a> 139     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../S/40.html#L232' title='Defined at 232 in board_stackup_manager/class_board_stackup.cpp.'>HasMaterialValue</a>( <strong class='reserved'>int</strong> <a href='../Y/5198.html' title='Multiple used in 54 places.'>aDielectricSubLayer</a> = 0 ) <strong class='reserved'>const</strong>;
+<a id='L140' name='L140'></a> 140 
+<a id='L141' name='L141'></a> 141     <em class='comment'>/// @return true if the material is editable</em>
+<a id='L142' name='L142'></a> 142     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../S/40.html#L239' title='Defined at 239 in board_stackup_manager/class_board_stackup.cpp.'>IsMaterialEditable</a>() <strong class='reserved'>const</strong>;
+<a id='L143' name='L143'></a> 143 
+<a id='L144' name='L144'></a> 144     <em class='comment'>/// @return true if the color is editable</em>
+<a id='L145' name='L145'></a> 145     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../S/40.html#L248' title='Defined at 248 in board_stackup_manager/class_board_stackup.cpp.'>IsColorEditable</a>() <strong class='reserved'>const</strong>;
+<a id='L146' name='L146'></a> 146 
+<a id='L147' name='L147'></a> 147     <em class='comment'>/// @return true if Thickness is editable</em>
+<a id='L148' name='L148'></a> 148     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../S/40.html#L254' title='Defined at 254 in board_stackup_manager/class_board_stackup.cpp.'>IsThicknessEditable</a>() <strong class='reserved'>const</strong>;
+<a id='L149' name='L149'></a> 149 
+<a id='L150' name='L150'></a> 150     <em class='comment'>/// @return a reasonable default value for a copper layer thickness</em>
+<a id='L151' name='L151'></a> 151     <strong class='reserved'>static</strong> <strong class='reserved'>int</strong> <a href='../S/40.html#L116' title='Defined at 116 in board_stackup_manager/class_board_stackup.cpp.'>GetCopperDefaultThickness</a>();
+<a id='L152' name='L152'></a> 152 
+<a id='L153' name='L153'></a> 153     <em class='comment'>/// @return a reasonable default value for a solder mask layer thickness</em>
+<a id='L154' name='L154'></a> 154     <strong class='reserved'>static</strong> <strong class='reserved'>int</strong> <a href='../S/40.html#L123' title='Defined at 123 in board_stackup_manager/class_board_stackup.cpp.'>GetMaskDefaultThickness</a>();
+<a id='L155' name='L155'></a> 155 
+<a id='L156' name='L156'></a> 156     <em class='comment'>/// @return a the number of sublayers in a dielectric layer.</em>
+<a id='L157' name='L157'></a> 157     <em class='comment'>/// the count is &gt;= 1 (there is at least one layer)</em>
+<a id='L158' name='L158'></a> 158     <strong class='reserved'>int</strong> <a href='../Y/1741.html' title='Multiple used in 38 places.'>GetSublayersCount</a>() <strong class='reserved'>const</strong> <em class='brace'>{</em> <strong class='reserved'>return</strong> <a href='../Y/9321.html' title='Multiple used in 16 places.'>m_DielectricPrmsList</a>.<a href='../S/330.html#L214' title='Defined at 214 in dialogs/panel_fp_lib_table.cpp.'>size</a>(); <em class='brace'>}</em>
+<a id='L159' name='L159'></a> 159 
+<a id='L160' name='L160'></a> 160     <em class='comment'>/// @return a wxString to print/display Epsilon R</em>
+<a id='L161' name='L161'></a> 161     <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../D/1026.html' title='Multiple defined in 2 places.'>FormatEpsilonR</a>( <strong class='reserved'>int</strong> <a href='../Y/5198.html' title='Multiple used in 54 places.'>aDielectricSubLayer</a> = 0 ) <strong class='reserved'>const</strong>;
+<a id='L162' name='L162'></a> 162 
+<a id='L163' name='L163'></a> 163     <em class='comment'>/// @return a wxString to print/display Loss Tangent</em>
+<a id='L164' name='L164'></a> 164     <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../D/1027.html' title='Multiple defined in 2 places.'>FormatLossTangent</a>( <strong class='reserved'>int</strong> <a href='../Y/5198.html' title='Multiple used in 54 places.'>aDielectricSubLayer</a> = 0 ) <strong class='reserved'>const</strong>;
+<a id='L165' name='L165'></a> 165 
+<a id='L166' name='L166'></a> 166     <em class='comment'>/// @return a wxString to print/display a dielectric name</em>
+<a id='L167' name='L167'></a> 167     <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../S/40.html#L299' title='Defined at 299 in board_stackup_manager/class_board_stackup.cpp.'>FormatDielectricLayerName</a>() <strong class='reserved'>const</strong>;
+<a id='L168' name='L168'></a> 168 
+<a id='L169' name='L169'></a> 169     <em class='comment'>// Getters:</em>
+<a id='L170' name='L170'></a> 170     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/2121.html' title='Multiple used in 12 places.'>IsEnabled</a>() <strong class='reserved'>const</strong> <em class='brace'>{</em><strong class='reserved'>return</strong> <a href='../Y/10775.html' title='Multiple used in 4 places.'>m_enabled</a>; <em class='brace'>}</em>
+<a id='L171' name='L171'></a> 171 
+<a id='L172' name='L172'></a> 172     <a href='../S/41.html#L39' title='Defined at 39 in board_stackup_manager/class_board_stackup.h.'>BOARD_STACKUP_ITEM_TYPE</a> <a href='../Y/1782.html' title='Multiple used in 53 places.'>GetType</a>() <strong class='reserved'>const</strong> <em class='brace'>{</em> <strong class='reserved'>return</strong> <a href='../Y/10127.html' title='Multiple used in 32 places.'>m_Type</a>; <em class='brace'>}</em>
+<a id='L173' name='L173'></a> 173     <a href='../S/423.html#L118' title='Defined at 118 in exporters/gendrill_file_writer_base.h.'>PCB_LAYER_ID</a> <a href='../Y/1269.html' title='Multiple used in 19 places.'>GetBrdLayerId</a>() <strong class='reserved'>const</strong> <em class='brace'>{</em> <strong class='reserved'>return</strong> <a href='../Y/9702.html' title='Multiple used in 14 places.'>m_LayerId</a>; <em class='brace'>}</em>
+<a id='L174' name='L174'></a> 174     <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../D/1130.html' title='Multiple defined in 2 places.'>GetColor</a>() <strong class='reserved'>const</strong> <em class='brace'>{</em> <strong class='reserved'>return</strong> <a href='../Y/9249.html' title='Multiple used in 11 places.'>m_Color</a>; <em class='brace'>}</em>
+<a id='L175' name='L175'></a> 175     <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../D/1221.html' title='Multiple defined in 4 places.'>GetLayerName</a>() <strong class='reserved'>const</strong> <em class='brace'>{</em> <strong class='reserved'>return</strong> <a href='../Y/9706.html' title='Multiple used in 11 places.'>m_LayerName</a>; <em class='brace'>}</em>
+<a id='L176' name='L176'></a> 176     <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../Y/1783.html' title='Multiple used in 11 places.'>GetTypeName</a>() <strong class='reserved'>const</strong> <em class='brace'>{</em> <strong class='reserved'>return</strong> <a href='../Y/10128.html' title='Multiple used in 9 places.'>m_TypeName</a>; <em class='brace'>}</em>
+<a id='L177' name='L177'></a> 177     <strong class='reserved'>int</strong> <a href='../Y/1356.html' title='Multiple used in 9 places.'>GetDielectricLayerId</a>() <strong class='reserved'>const</strong> <em class='brace'>{</em> <strong class='reserved'>return</strong> <a href='../Y/9320.html' title='Multiple used in 4 places.'>m_DielectricLayerId</a>; <em class='brace'>}</em>
+<a id='L178' name='L178'></a> 178 
+<a id='L179' name='L179'></a> 179     <strong class='reserved'>int</strong> <a href='../S/40.html#L130' title='Defined at 130 in board_stackup_manager/class_board_stackup.cpp.'>GetThickness</a>( <strong class='reserved'>int</strong> <a href='../Y/5198.html' title='Multiple used in 54 places.'>aDielectricSubLayer</a> = 0 ) <strong class='reserved'>const</strong>;
+<a id='L180' name='L180'></a> 180     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../S/40.html#L154' title='Defined at 154 in board_stackup_manager/class_board_stackup.cpp.'>IsThicknessLocked</a>( <strong class='reserved'>int</strong> <a href='../Y/5198.html' title='Multiple used in 54 places.'>aDielectricSubLayer</a> = 0 ) <strong class='reserved'>const</strong>;
+<a id='L181' name='L181'></a> 181     <strong class='reserved'>double</strong> <a href='../S/40.html#L146' title='Defined at 146 in board_stackup_manager/class_board_stackup.cpp.'>GetEpsilonR</a>( <strong class='reserved'>int</strong> <a href='../Y/5198.html' title='Multiple used in 54 places.'>aDielectricSubLayer</a> = 0 ) <strong class='reserved'>const</strong>;
+<a id='L182' name='L182'></a> 182     <strong class='reserved'>double</strong> <a href='../S/40.html#L138' title='Defined at 138 in board_stackup_manager/class_board_stackup.cpp.'>GetLossTangent</a>( <strong class='reserved'>int</strong> <a href='../Y/5198.html' title='Multiple used in 54 places.'>aDielectricSubLayer</a> = 0 ) <strong class='reserved'>const</strong>;
+<a id='L183' name='L183'></a> 183     <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../S/40.html#L162' title='Defined at 162 in board_stackup_manager/class_board_stackup.cpp.'>GetMaterial</a>( <strong class='reserved'>int</strong> <a href='../Y/5198.html' title='Multiple used in 54 places.'>aDielectricSubLayer</a> = 0 ) <strong class='reserved'>const</strong>;
+<a id='L184' name='L184'></a> 184 
+<a id='L185' name='L185'></a> 185     <em class='comment'>// Setters:</em>
+<a id='L186' name='L186'></a> 186     <strong class='reserved'>void</strong> <a href='../Y/3488.html' title='Multiple used in 3 places.'>SetEnabled</a>( <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/5248.html' title='Multiple used in 37 places.'>aEnable</a>) <em class='brace'>{</em> <a href='../Y/10775.html' title='Multiple used in 4 places.'>m_enabled</a> = <a href='../Y/5248.html' title='Multiple used in 37 places.'>aEnable</a>; <em class='brace'>}</em>
+<a id='L187' name='L187'></a> 187     <strong class='reserved'>void</strong> <a href='../Y/3370.html' title='Multiple used in 10 places.'>SetBrdLayerId</a>( <a href='../S/423.html#L118' title='Defined at 118 in exporters/gendrill_file_writer_base.h.'>PCB_LAYER_ID</a> aBrdLayerId ) <em class='brace'>{</em> <a href='../Y/9702.html' title='Multiple used in 14 places.'>m_LayerId</a> = aBrdLayerId; <em class='brace'>}</em>
+<a id='L188' name='L188'></a> 188     <strong class='reserved'>void</strong> <a href='../Y/3405.html' title='Multiple used in 33 places.'>SetColor</a>( <strong class='reserved'>const</strong> <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>&amp; <a href='../Y/5098.html' title='Multiple used in 3 places.'>aColorName</a> )<em class='brace'>{</em> <a href='../Y/9249.html' title='Multiple used in 11 places.'>m_Color</a> = <a href='../Y/5098.html' title='Multiple used in 3 places.'>aColorName</a>; <em class='brace'>}</em>
+<a id='L189' name='L189'></a> 189     <strong class='reserved'>void</strong> <a href='../S/57.html#L309' title='Defined at 309 in class_board.cpp.'>SetLayerName</a>( <strong class='reserved'>const</strong> <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>&amp; <a href='../Y/5611.html' title='Multiple used in 98 places.'>aName</a> ) <em class='brace'>{</em> <a href='../Y/9706.html' title='Multiple used in 11 places.'>m_LayerName</a> = <a href='../Y/5611.html' title='Multiple used in 98 places.'>aName</a>; <em class='brace'>}</em>
+<a id='L190' name='L190'></a> 190     <strong class='reserved'>void</strong> <a href='../Y/3925.html' title='Multiple used in 13 places.'>SetTypeName</a>( <strong class='reserved'>const</strong> <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>&amp; <a href='../Y/5611.html' title='Multiple used in 98 places.'>aName</a> ) <em class='brace'>{</em> <a href='../Y/10128.html' title='Multiple used in 9 places.'>m_TypeName</a> = <a href='../Y/5611.html' title='Multiple used in 98 places.'>aName</a>; <em class='brace'>}</em>
+<a id='L191' name='L191'></a> 191     <strong class='reserved'>void</strong> <a href='../Y/3459.html' title='Multiple used in 4 places.'>SetDielectricLayerId</a>( <strong class='reserved'>int</strong> <a href='../Y/5479.html' title='Multiple used in 29 places.'>aLayerId</a> ) <em class='brace'>{</em> <a href='../Y/9320.html' title='Multiple used in 4 places.'>m_DielectricLayerId</a> = <a href='../Y/5479.html' title='Multiple used in 29 places.'>aLayerId</a>; <em class='brace'>}</em>
+<a id='L192' name='L192'></a> 192 
+<a id='L193' name='L193'></a> 193     <strong class='reserved'>void</strong> <a href='../S/40.html#L171' title='Defined at 171 in board_stackup_manager/class_board_stackup.cpp.'>SetThickness</a>( <strong class='reserved'>int</strong> <a href='../Y/6058.html' title='Multiple used in 34 places.'>aThickness</a>, <strong class='reserved'>int</strong> <a href='../Y/5198.html' title='Multiple used in 54 places.'>aDielectricSubLayer</a> = 0 );
+<a id='L194' name='L194'></a> 194     <strong class='reserved'>void</strong> <a href='../S/40.html#L198' title='Defined at 198 in board_stackup_manager/class_board_stackup.cpp.'>SetThicknessLocked</a>( <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/5533.html' title='Multiple used in 18 places.'>aLocked</a>, <strong class='reserved'>int</strong> <a href='../Y/5198.html' title='Multiple used in 54 places.'>aDielectricSubLayer</a> = 0 );
+<a id='L195' name='L195'></a> 195     <strong class='reserved'>void</strong> <a href='../S/40.html#L189' title='Defined at 189 in board_stackup_manager/class_board_stackup.cpp.'>SetEpsilonR</a>( <strong class='reserved'>double</strong> <a href='../Y/5263.html' title='Multiple used in 3 places.'>aEpsilon</a>, <strong class='reserved'>int</strong> <a href='../Y/5198.html' title='Multiple used in 54 places.'>aDielectricSubLayer</a> = 0 );
+<a id='L196' name='L196'></a> 196     <strong class='reserved'>void</strong> <a href='../S/40.html#L180' title='Defined at 180 in board_stackup_manager/class_board_stackup.cpp.'>SetLossTangent</a>( <strong class='reserved'>double</strong> <a href='../Y/6055.html' title='Multiple used in 3 places.'>aTg</a>, <strong class='reserved'>int</strong> <a href='../Y/5198.html' title='Multiple used in 54 places.'>aDielectricSubLayer</a> = 0 );
+<a id='L197' name='L197'></a> 197     <strong class='reserved'>void</strong> <a href='../S/40.html#L207' title='Defined at 207 in board_stackup_manager/class_board_stackup.cpp.'>SetMaterial</a>( <strong class='reserved'>const</strong> <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>&amp; <a href='../Y/5611.html' title='Multiple used in 98 places.'>aName</a>, <strong class='reserved'>int</strong> <a href='../Y/5198.html' title='Multiple used in 54 places.'>aDielectricSubLayer</a> = 0 );
+<a id='L198' name='L198'></a> 198 <em class='brace'>}</em>;
+<a id='L199' name='L199'></a> 199 
+<a id='L200' name='L200'></a> 200 
+<a id='L201' name='L201'></a> 201 <em class='comment'>/**</em>
+<a id='L202' name='L202'></a> 202 <em class='comment'> * this class manage the layers needed to make a physical board</em>
+<a id='L203' name='L203'></a> 203 <em class='comment'> * they are solder mask, silk screen, copper and dielectric</em>
+<a id='L204' name='L204'></a> 204 <em class='comment'> * Some other layers, used in fabrication, are not managed here because they</em>
+<a id='L205' name='L205'></a> 205 <em class='comment'> * are not used to make a physical board itself</em>
+<a id='L206' name='L206'></a> 206 <em class='comment'> * Note also there are a few other parameters realed to the physical stackup,</em>
+<a id='L207' name='L207'></a> 207 <em class='comment'> * like finish type, impedance control and a few others</em>
+<a id='L208' name='L208'></a> 208 <em class='comment'> */</em>
+<a id='L209' name='L209'></a> 209 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../D/210.html' title='Multiple defined in 2 places.'>BOARD_STACKUP</a>
+<a id='L210' name='L210'></a> 210 <em class='brace'>{</em>
+<a id='L211' name='L211'></a> 211     <em class='comment'>// The list of items describing the stackup for fabrication.</em>
+<a id='L212' name='L212'></a> 212     <em class='comment'>// this is not just copper layers, but also mask dielectric layers</em>
+<a id='L213' name='L213'></a> 213     <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/15301.html' title='Multiple used in 606 places.'>vector</a>&lt;<a href='../D/211.html' title='Multiple defined in 2 places.'>BOARD_STACKUP_ITEM</a>*&gt; <a href='../Y/11220.html' title='Multiple used in 25 places.'>m_list</a>;
+<a id='L214' name='L214'></a> 214 
+<a id='L215' name='L215'></a> 215 <a href='../Y/13804.html' title='Multiple used in 833 places.'>public</a>:
+<a id='L216' name='L216'></a> 216     <em class='comment'>/** The name of external copper finish</em>
+<a id='L217' name='L217'></a> 217 <em class='comment'>     */</em>
+<a id='L218' name='L218'></a> 218     <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../Y/9403.html' title='Multiple used in 15 places.'>m_FinishType</a>;
+<a id='L219' name='L219'></a> 219 
+<a id='L220' name='L220'></a> 220     <em class='comment'>/** True if some layers have impedance controlled tracks or have specific</em>
+<a id='L221' name='L221'></a> 221 <em class='comment'>     * constrains for micro-wave applications</em>
+<a id='L222' name='L222'></a> 222 <em class='comment'>     * If the board has dielectric constrains, the .gbrjob will contain</em>
+<a id='L223' name='L223'></a> 223 <em class='comment'>     * info about dielectric constrains: loss tangent and Epsilon rel.</em>
+<a id='L224' name='L224'></a> 224 <em class='comment'>     * If not, these values will be not specified in job file.</em>
+<a id='L225' name='L225'></a> 225 <em class='comment'>     */</em>
+<a id='L226' name='L226'></a> 226     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/9446.html' title='Multiple used in 14 places.'>m_HasDielectricConstrains</a>;
+<a id='L227' name='L227'></a> 227 
+<a id='L228' name='L228'></a> 228     <em class='comment'>/** True if some layers (copper and/or dielectric) have specific thickness</em>
+<a id='L229' name='L229'></a> 229 <em class='comment'>     */</em>
+<a id='L230' name='L230'></a> 230     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/9448.html' title='Multiple used in 4 places.'>m_HasThicknessConstrains</a>;
+<a id='L231' name='L231'></a> 231 
+<a id='L232' name='L232'></a> 232     <em class='comment'>/** If the board has edge connector cards, some constrains can be specifed</em>
+<a id='L233' name='L233'></a> 233 <em class='comment'>     * in job file:</em>
+<a id='L234' name='L234'></a> 234 <em class='comment'>     *  BS_EDGE_CONNECTOR_NONE = no edge connector</em>
+<a id='L235' name='L235'></a> 235 <em class='comment'>     *  BS_EDGE_CONNECTOR_IN_USE = board has edge connectors</em>
+<a id='L236' name='L236'></a> 236 <em class='comment'>     *  BS_EDGE_CONNECTOR_BEVELLED = edge connectors are bevelled</em>
+<a id='L237' name='L237'></a> 237 <em class='comment'>     */</em>
+<a id='L238' name='L238'></a> 238     <a href='../S/41.html#L52' title='Defined at 52 in board_stackup_manager/class_board_stackup.h.'>BS_EDGE_CONNECTOR_CONSTRAINTS</a> <a href='../Y/9372.html' title='Multiple used in 18 places.'>m_EdgeConnectorConstraints</a>;
+<a id='L239' name='L239'></a> 239 
+<a id='L240' name='L240'></a> 240     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/9226.html' title='Multiple used in 13 places.'>m_CastellatedPads</a>;         <em class='comment'>///&lt; True if castellated pads exist</em>
+<a id='L241' name='L241'></a> 241     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/9373.html' title='Multiple used in 13 places.'>m_EdgePlating</a>;             <em class='comment'>///&lt; True if the edge board is plated</em>
+<a id='L242' name='L242'></a> 242 
+<a id='L243' name='L243'></a> 243 <a href='../Y/13804.html' title='Multiple used in 833 places.'>public</a>:
+<a id='L244' name='L244'></a> 244     <a href='../D/210.html' title='Multiple defined in 2 places.'>BOARD_STACKUP</a>();
+<a id='L245' name='L245'></a> 245     <a href='../D/210.html' title='Multiple defined in 2 places.'>BOARD_STACKUP</a>( <a href='../D/210.html' title='Multiple defined in 2 places.'>BOARD_STACKUP</a>&amp; <a href='../Y/5700.html' title='Multiple used in 324 places.'>aOther</a> );
+<a id='L246' name='L246'></a> 246     <a href='../D/210.html' title='Multiple defined in 2 places.'>BOARD_STACKUP</a>&amp; <a href='../Y/13158.html' title='Multiple used in 60 places.'>operator</a>=( <strong class='reserved'>const</strong> <a href='../D/210.html' title='Multiple defined in 2 places.'>BOARD_STACKUP</a>&amp; <a href='../Y/5700.html' title='Multiple used in 324 places.'>aOther</a> );
+<a id='L247' name='L247'></a> 247 
+<a id='L248' name='L248'></a> 248     ~<a href='../D/210.html' title='Multiple defined in 2 places.'>BOARD_STACKUP</a>() <em class='brace'>{</em> <a href='../S/40.html#L363' title='Defined at 363 in board_stackup_manager/class_board_stackup.cpp.'>RemoveAll</a>(); <em class='brace'>}</em>
+<a id='L249' name='L249'></a> 249 
+<a id='L250' name='L250'></a> 250     <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/15301.html' title='Multiple used in 606 places.'>vector</a>&lt;<a href='../D/211.html' title='Multiple defined in 2 places.'>BOARD_STACKUP_ITEM</a>*&gt;&amp; <a href='../Y/1523.html' title='Multiple used in 20 places.'>GetList</a>() <em class='brace'>{</em> <strong class='reserved'>return</strong> <a href='../Y/11220.html' title='Multiple used in 25 places.'>m_list</a>; <em class='brace'>}</em>
+<a id='L251' name='L251'></a> 251 
+<a id='L252' name='L252'></a> 252     <em class='comment'>/// @return a reference to the layer aIndex, or nullptr if not exists</em>
+<a id='L253' name='L253'></a> 253     <a href='../D/211.html' title='Multiple defined in 2 places.'>BOARD_STACKUP_ITEM</a>* <a href='../S/40.html#L372' title='Defined at 372 in board_stackup_manager/class_board_stackup.cpp.'>GetStackupLayer</a>( <strong class='reserved'>int</strong> <a href='../Y/5409.html' title='Multiple used in 115 places.'>aIndex</a> );
+<a id='L254' name='L254'></a> 254 
+<a id='L255' name='L255'></a> 255     <em class='comment'>/** @return  the board layers full mask allowed in the stackup list</em>
+<a id='L256' name='L256'></a> 256 <em class='comment'>     * i.e. the SilkS, Mask, Paste and all copper layers</em>
+<a id='L257' name='L257'></a> 257 <em class='comment'>     */</em>
+<a id='L258' name='L258'></a> 258     <strong class='reserved'>static</strong> <a href='../Y/2380.html' title='Multiple used in 386 places.'>LSET</a> <a href='../Y/4031.html' title='Multiple used in 6 places.'>StackupAllowedBrdLayers</a>()
+<a id='L259' name='L259'></a> 259     <em class='brace'>{</em>
+<a id='L260' name='L260'></a> 260         <strong class='reserved'>return</strong> <a href='../Y/2380.html' title='Multiple used in 386 places.'>LSET</a>( 6, <a href='../Y/1025.html' title='Multiple used in 60 places.'>F_SilkS</a>, <a href='../Y/1023.html' title='Multiple used in 58 places.'>F_Mask</a>, <a href='../Y/1024.html' title='Multiple used in 39 places.'>F_Paste</a>, <a href='../Y/290.html' title='Multiple used in 47 places.'>B_SilkS</a>, <a href='../Y/288.html' title='Multiple used in 55 places.'>B_Mask</a>, <a href='../Y/289.html' title='Multiple used in 37 places.'>B_Paste</a> )
+<a id='L261' name='L261'></a> 261                | <a href='../Y/2380.html' title='Multiple used in 386 places.'>LSET</a>::<a href='../Y/961.html' title='Multiple used in 4 places.'>ExternalCuMask</a>() | <a href='../Y/2380.html' title='Multiple used in 386 places.'>LSET</a>::<a href='../Y/2077.html' title='Multiple used in 9 places.'>InternalCuMask</a>();
+<a id='L262' name='L262'></a> 262     <em class='brace'>}</em>
+<a id='L263' name='L263'></a> 263 
+<a id='L264' name='L264'></a> 264 
+<a id='L265' name='L265'></a> 265     <em class='comment'>/// Delete all items in list and clear the list</em>
+<a id='L266' name='L266'></a> 266     <strong class='reserved'>void</strong> <a href='../S/40.html#L363' title='Defined at 363 in board_stackup_manager/class_board_stackup.cpp.'>RemoveAll</a>();
+<a id='L267' name='L267'></a> 267 
+<a id='L268' name='L268'></a> 268     <em class='comment'>/// @return the number of layers in the stackup</em>
+<a id='L269' name='L269'></a> 269     <strong class='reserved'>int</strong> <a href='../Y/1317.html' title='Multiple used in 234 places.'>GetCount</a>() <em class='brace'>{</em> <strong class='reserved'>return</strong> (<strong class='reserved'>int</strong>) <a href='../Y/11220.html' title='Multiple used in 25 places.'>m_list</a>.<a href='../S/330.html#L214' title='Defined at 214 in dialogs/panel_fp_lib_table.cpp.'>size</a>(); <em class='brace'>}</em>
+<a id='L270' name='L270'></a> 270 
+<a id='L271' name='L271'></a> 271     <em class='comment'>/// @return the board thickness ( in UI) from the thickness of BOARD_STACKUP_ITEM list</em>
+<a id='L272' name='L272'></a> 272     <strong class='reserved'>int</strong> <a href='../S/40.html#L381' title='Defined at 381 in board_stackup_manager/class_board_stackup.cpp.'>BuildBoardTicknessFromStackup</a>() <strong class='reserved'>const</strong>;
+<a id='L273' name='L273'></a> 273 
+<a id='L274' name='L274'></a> 274     <em class='comment'>/// Add a new item in stackup layer</em>
+<a id='L275' name='L275'></a> 275     <strong class='reserved'>void</strong> <a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../D/211.html' title='Multiple defined in 2 places.'>BOARD_STACKUP_ITEM</a>* <a href='../Y/5437.html' title='Multiple used in 845 places.'>aItem</a> ) <em class='brace'>{</em> <a href='../Y/11220.html' title='Multiple used in 25 places.'>m_list</a>.<a href='../S/330.html#L228' title='Defined at 228 in dialogs/panel_fp_lib_table.cpp.'>push_back</a>( <a href='../Y/5437.html' title='Multiple used in 845 places.'>aItem</a> ); <em class='brace'>}</em>
+<a id='L276' name='L276'></a> 276 
+<a id='L277' name='L277'></a> 277     <em class='comment'>/**</em>
+<a id='L278' name='L278'></a> 278 <em class='comment'>     * Synchronize the BOARD_STACKUP_ITEM* list with the board.</em>
+<a id='L279' name='L279'></a> 279 <em class='comment'>     * Not enabled layers are removed</em>
+<a id='L280' name='L280'></a> 280 <em class='comment'>     * Missing layers are added</em>
+<a id='L281' name='L281'></a> 281 <em class='comment'>     * @param aSettings, is the current board setting.</em>
+<a id='L282' name='L282'></a> 282 <em class='comment'>     * @return true if changes are made</em>
+<a id='L283' name='L283'></a> 283 <em class='comment'>     */</em>
+<a id='L284' name='L284'></a> 284     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../S/40.html#L396' title='Defined at 396 in board_stackup_manager/class_board_stackup.cpp.'>SynchronizeWithBoard</a>( <a href='../S/35.html#L561' title='Defined at 561 in board_design_settings.cpp.'>BOARD_DESIGN_SETTINGS</a>* <a href='../Y/5944.html' title='Multiple used in 95 places.'>aSettings</a> );
+<a id='L285' name='L285'></a> 285 
+<a id='L286' name='L286'></a> 286     <em class='comment'>/**</em>
+<a id='L287' name='L287'></a> 287 <em class='comment'>     * Creates a default stackup, according to the current BOARD_DESIGN_SETTINGS settings.</em>
+<a id='L288' name='L288'></a> 288 <em class='comment'>     * @param aSettings is the current board setting.</em>
+<a id='L289' name='L289'></a> 289 <em class='comment'>     * if nullptr, build a full stackup (with 32 copper layers)</em>
+<a id='L290' name='L290'></a> 290 <em class='comment'>     * @param aActiveCopperLayersCount is used only if aSettings == nullptr is the number</em>
+<a id='L291' name='L291'></a> 291 <em class='comment'>     * of copper layers to use to calculate a default dielectric thickness.</em>
+<a id='L292' name='L292'></a> 292 <em class='comment'>     * ((&lt;= 0 to use all copper layers)</em>
+<a id='L293' name='L293'></a> 293 <em class='comment'>     */</em>
+<a id='L294' name='L294'></a> 294     <strong class='reserved'>void</strong> <a href='../S/40.html#L489' title='Defined at 489 in board_stackup_manager/class_board_stackup.cpp.'>BuildDefaultStackupList</a>( <a href='../S/35.html#L561' title='Defined at 561 in board_design_settings.cpp.'>BOARD_DESIGN_SETTINGS</a>* <a href='../Y/5944.html' title='Multiple used in 95 places.'>aSettings</a>, <strong class='reserved'>int</strong> <a href='../Y/4973.html' title='Multiple used in 4 places.'>aActiveCopperLayersCount</a> = 0 );
+<a id='L295' name='L295'></a> 295 
+<a id='L296' name='L296'></a> 296     <em class='comment'>/**</em>
+<a id='L297' name='L297'></a> 297 <em class='comment'>     * Writes the stackup info on board file</em>
+<a id='L298' name='L298'></a> 298 <em class='comment'>     * @param aFormatter is the OUTPUTFORMATTER used to create the file</em>
+<a id='L299' name='L299'></a> 299 <em class='comment'>     * @param aBoard is the board</em>
+<a id='L300' name='L300'></a> 300 <em class='comment'>     * @param aNestLevel is the index to nest level to indent the lines in file</em>
+<a id='L301' name='L301'></a> 301 <em class='comment'>     */</em>
+<a id='L302' name='L302'></a> 302     <strong class='reserved'>void</strong> <a href='../S/40.html#L617' title='Defined at 617 in board_stackup_manager/class_board_stackup.cpp.'>FormatBoardStackup</a>( <a href='../Y/2707.html' title='Multiple used in 79 places.'>OUTPUTFORMATTER</a>* <a href='../Y/5330.html' title='Multiple used in 59 places.'>aFormatter</a>,
+<a id='L303' name='L303'></a> 303                              <a href='../S/57.html#L104' title='Defined at 104 in class_board.cpp.'>BOARD</a>* <a href='../Y/5041.html' title='Multiple used in 458 places.'>aBoard</a>, <strong class='reserved'>int</strong> <a href='../Y/5616.html' title='Multiple used in 223 places.'>aNestLevel</a> ) <strong class='reserved'>const</strong>;
+<a id='L304' name='L304'></a> 304 <em class='brace'>}</em>;
+<a id='L305' name='L305'></a> 305 
+<a id='L306' name='L306'></a> 306 
+<a id='L307' name='L307'></a> 307 <em class='sharp'>#endif</em>      <em class='comment'>// #ifndef CLASS_BOARD_STACKUP_H</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;][^][v]<a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>tools/pcb_tool_base.h</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/843.html'>tools</a>/pcb_tool_base.h</h2>
+<em class='comment'>/* [&lt;][&gt;][^][v][top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'><a href='../J/659.html' title='Multiple included from 20 places.'>INCLUDED FROM</a></h2>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * This program source code file is part of KiCad, a free EDA CAD application.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 2016 CERN</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> * @author Tomasz Wlostowski &lt;tomasz.wlostowski@cern.ch&gt;</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> *</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> * This program is free software; you can redistribute it and/or</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * modify it under the terms of the GNU General Public License</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * as published by the Free Software Foundation; either version 2</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> * of the License, or (at your option) any later version.</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> *</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> * This program is distributed in the hope that it will be useful,</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> * GNU General Public License for more details.</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> *</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> * You should have received a copy of the GNU General Public License</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * along with this program; if not, you may find one here:</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> * or you may search the http://www.gnu.org website for the version 2 license,</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'> * or you may write to the Free Software Foundation, Inc.,</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'> * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'> */</em>
+<a id='L24' name='L24'></a>  24 
+<a id='L25' name='L25'></a>  25 <em class='sharp'>#ifndef</em> <a href='../S/792.html#L26' title='Defined at 26 in tools/pcb_tool_base.h.'>PCB_TOOL_BASE_H</a>
+<a id='L26' name='L26'></a>  26 <em class='sharp'>#define</em> <a href='../S/792.html#L25' title='Referred from 25 in tools/pcb_tool_base.h.'>PCB_TOOL_BASE_H</a>
+<a id='L27' name='L27'></a>  27 
+<a id='L28' name='L28'></a>  28 <em class='sharp'>#include</em> &lt;string&gt;
+<a id='L29' name='L29'></a>  29 
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#include</em> &lt;tool/tool_event.h&gt;
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#include</em> &lt;tool/tool_interactive.h&gt;
+<a id='L32' name='L32'></a>  32 <em class='sharp'>#include</em> &lt;<a href='586.html'>pcb_edit_frame.h</a>&gt;
+<a id='L33' name='L33'></a>  33 <em class='sharp'>#include</em> &lt;<a href='58.html'>class_board.h</a>&gt;
+<a id='L34' name='L34'></a>  34 <em class='sharp'>#include</em> &lt;view/view_group.h&gt;
+<a id='L35' name='L35'></a>  35 <em class='sharp'>#include</em> &lt;<a href='602.html'>pcb_view.h</a>&gt;
+<a id='L36' name='L36'></a>  36 <em class='sharp'>#include</em> &lt;<a href='584.html'>pcb_draw_panel_gal.h</a>&gt;
+<a id='L37' name='L37'></a>  37 
+<a id='L38' name='L38'></a>  38 <em class='sharp'>#include</em> &lt;functional&gt;
+<a id='L39' name='L39'></a>  39 <em class='sharp'>#include</em> &lt;tool/tool_menu.h&gt;
+<a id='L40' name='L40'></a>  40 
+<a id='L41' name='L41'></a>  41 <em class='comment'>/**</em>
+<a id='L42' name='L42'></a>  42 <em class='comment'> * PCB_TOOL_BASE</em>
+<a id='L43' name='L43'></a>  43 <em class='comment'> *</em>
+<a id='L44' name='L44'></a>  44 <em class='comment'> * A tool operating on a BOARD object</em>
+<a id='L45' name='L45'></a>  45 <em class='comment'>**/</em>
+<a id='L46' name='L46'></a>  46 
+<a id='L47' name='L47'></a>  47 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../Y/2858.html' title='Multiple used in 55 places.'>PCB_TOOL_BASE</a>;
+<a id='L48' name='L48'></a>  48 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../S/585.html#L356' title='Defined at 356 in pcb_edit_frame.cpp.'>PCB_EDIT_FRAME</a>;
+<a id='L49' name='L49'></a>  49 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../S/582.html#L34' title='Defined at 34 in pcb_display_options.cpp.'>PCB_DISPLAY_OPTIONS</a>;
+<a id='L50' name='L50'></a>  50 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../Y/2805.html' title='Multiple used in 62 places.'>PCBNEW_SELECTION</a>;
+<a id='L51' name='L51'></a>  51 
+<a id='L52' name='L52'></a>  52 <strong class='reserved'>struct</strong> <a href='../R/1709.html' title='Multiple referred from 8 places.'>INTERACTIVE_PLACER_BASE</a>
+<a id='L53' name='L53'></a>  53 <em class='brace'>{</em>
+<a id='L54' name='L54'></a>  54     <a href='../Y/15387.html' title='Multiple used in 761 places.'>virtual</a> ~<a href='../S/792.html#L52' title='Defined at 52 in tools/pcb_tool_base.h.'>INTERACTIVE_PLACER_BASE</a>()
+<a id='L55' name='L55'></a>  55     <em class='brace'>{</em>
+<a id='L56' name='L56'></a>  56     <em class='brace'>}</em>
+<a id='L57' name='L57'></a>  57 
+<a id='L58' name='L58'></a>  58     <a href='../Y/15387.html' title='Multiple used in 761 places.'>virtual</a> <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/15186.html' title='Multiple used in 184 places.'>unique_ptr</a>&lt;<a href='../Y/253.html' title='Multiple used in 610 places.'>BOARD_ITEM</a>&gt; <a href='../D/511.html' title='Multiple defined in 3 places.'>CreateItem</a>() = 0;
+<a id='L59' name='L59'></a>  59     <a href='../Y/15387.html' title='Multiple used in 761 places.'>virtual</a> <strong class='reserved'>void</strong> <a href='../D/3138.html' title='Multiple defined in 2 places.'>SnapItem</a>( <a href='../Y/253.html' title='Multiple used in 610 places.'>BOARD_ITEM</a> *<a href='../Y/5437.html' title='Multiple used in 845 places.'>aItem</a> );
+<a id='L60' name='L60'></a>  60     <a href='../Y/15387.html' title='Multiple used in 761 places.'>virtual</a> <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../D/2636.html' title='Multiple defined in 3 places.'>PlaceItem</a>( <a href='../Y/253.html' title='Multiple used in 610 places.'>BOARD_ITEM</a> *<a href='../Y/5437.html' title='Multiple used in 845 places.'>aItem</a>, <a href='../D/203.html' title='Multiple defined in 3 places.'>BOARD_COMMIT</a>&amp; <a href='../Y/5102.html' title='Multiple used in 106 places.'>aCommit</a> );
+<a id='L61' name='L61'></a>  61 
+<a id='L62' name='L62'></a>  62     <a href='../S/579.html#L54' title='Defined at 54 in pcb_base_edit_frame.cpp.'>PCB_BASE_EDIT_FRAME</a>* <a href='../D/4159.html' title='Multiple defined in 14 places.'>m_frame</a>;
+<a id='L63' name='L63'></a>  63     <a href='../S/57.html#L104' title='Defined at 104 in class_board.cpp.'>BOARD</a>* <a href='../D/4144.html' title='Multiple defined in 3 places.'>m_board</a>;
+<a id='L64' name='L64'></a>  64     <strong class='reserved'>int</strong> <a href='../Y/11362.html' title='Multiple used in 4 places.'>m_modifiers</a>;
+<a id='L65' name='L65'></a>  65 <em class='brace'>}</em>;
+<a id='L66' name='L66'></a>  66 
+<a id='L67' name='L67'></a>  67 
+<a id='L68' name='L68'></a>  68 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../Y/2858.html' title='Multiple used in 55 places.'>PCB_TOOL_BASE</a> : <a href='../Y/13804.html' title='Multiple used in 833 places.'>public</a> <a href='../Y/4103.html' title='Multiple used in 9 places.'>TOOL_INTERACTIVE</a>
+<a id='L69' name='L69'></a>  69 <em class='brace'>{</em>
+<a id='L70' name='L70'></a>  70 <a href='../Y/13804.html' title='Multiple used in 833 places.'>public</a>:
+<a id='L71' name='L71'></a>  71     <em class='comment'>/**</em>
+<a id='L72' name='L72'></a>  72 <em class='comment'>     * Constructor</em>
+<a id='L73' name='L73'></a>  73 <em class='comment'>     *</em>
+<a id='L74' name='L74'></a>  74 <em class='comment'>     * Creates a tool with given id &amp; name. The name must be unique. */</em>
+<a id='L75' name='L75'></a>  75     <a href='../Y/2858.html' title='Multiple used in 55 places.'>PCB_TOOL_BASE</a>( TOOL_ID <a href='../Y/5389.html' title='Multiple used in 71 places.'>aId</a>, <strong class='reserved'>const</strong> <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../D/4641.html' title='Multiple defined in 2 places.'>string</a>&amp; <a href='../Y/5611.html' title='Multiple used in 98 places.'>aName</a> ) :
+<a id='L76' name='L76'></a>  76         <a href='../Y/4103.html' title='Multiple used in 9 places.'>TOOL_INTERACTIVE</a> ( <a href='../Y/5389.html' title='Multiple used in 71 places.'>aId</a>, <a href='../Y/5611.html' title='Multiple used in 98 places.'>aName</a> ),
+<a id='L77' name='L77'></a>  77         <a href='../Y/10757.html' title='Multiple used in 69 places.'>m_editModules</a>( <a href='../Y/7859.html' title='Multiple used in 200 places.'>false</a> )
+<a id='L78' name='L78'></a>  78     <em class='brace'>{</em><em class='brace'>}</em>;
+<a id='L79' name='L79'></a>  79 
+<a id='L80' name='L80'></a>  80     <em class='comment'>/**</em>
+<a id='L81' name='L81'></a>  81 <em class='comment'>     * Constructor</em>
+<a id='L82' name='L82'></a>  82 <em class='comment'>     *</em>
+<a id='L83' name='L83'></a>  83 <em class='comment'>     * Creates a tool with given name. The name must be unique. */</em>
+<a id='L84' name='L84'></a>  84     <a href='../Y/2858.html' title='Multiple used in 55 places.'>PCB_TOOL_BASE</a>( <strong class='reserved'>const</strong> <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../D/4641.html' title='Multiple defined in 2 places.'>string</a>&amp; <a href='../Y/5611.html' title='Multiple used in 98 places.'>aName</a> ) :
+<a id='L85' name='L85'></a>  85         <a href='../Y/4103.html' title='Multiple used in 9 places.'>TOOL_INTERACTIVE</a> ( <a href='../Y/5611.html' title='Multiple used in 98 places.'>aName</a> ),
+<a id='L86' name='L86'></a>  86         <a href='../Y/10757.html' title='Multiple used in 69 places.'>m_editModules</a>( <a href='../Y/7859.html' title='Multiple used in 200 places.'>false</a> )
+<a id='L87' name='L87'></a>  87     <em class='brace'>{</em><em class='brace'>}</em>;
+<a id='L88' name='L88'></a>  88 
+<a id='L89' name='L89'></a>  89     <a href='../Y/15387.html' title='Multiple used in 761 places.'>virtual</a> ~<a href='../Y/2858.html' title='Multiple used in 55 places.'>PCB_TOOL_BASE</a>() <em class='brace'>{</em><em class='brace'>}</em>;
+<a id='L90' name='L90'></a>  90 
+<a id='L91' name='L91'></a>  91     <a href='../Y/15387.html' title='Multiple used in 761 places.'>virtual</a> <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../D/1802.html' title='Multiple defined in 16 places.'>Init</a>() <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a>;
+<a id='L92' name='L92'></a>  92     <a href='../Y/15387.html' title='Multiple used in 761 places.'>virtual</a> <strong class='reserved'>void</strong> <a href='../D/2800.html' title='Multiple defined in 20 places.'>Reset</a>( <a href='../Y/3095.html' title='Multiple used in 40 places.'>RESET_REASON</a> <a href='../Y/5860.html' title='Multiple used in 54 places.'>aReason</a> ) <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a>;
+<a id='L93' name='L93'></a>  93 
+<a id='L94' name='L94'></a>  94     <em class='comment'>/**</em>
+<a id='L95' name='L95'></a>  95 <em class='comment'>     * Function SetEditModules()</em>
+<a id='L96' name='L96'></a>  96 <em class='comment'>     *</em>
+<a id='L97' name='L97'></a>  97 <em class='comment'>     * Toggles edit module mode. When enabled, one may select parts of modules individually</em>
+<a id='L98' name='L98'></a>  98 <em class='comment'>     * (graphics, pads, etc.), so they can be modified.</em>
+<a id='L99' name='L99'></a>  99 <em class='comment'>     * @param aEnabled decides if the mode should be enabled.</em>
+<a id='L100' name='L100'></a> 100 <em class='comment'>     */</em>
+<a id='L101' name='L101'></a> 101     <strong class='reserved'>void</strong> <a href='../Y/3482.html' title='Multiple used in 9 places.'>SetEditModules</a>( <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/5249.html' title='Multiple used in 52 places.'>aEnabled</a> )
+<a id='L102' name='L102'></a> 102     <em class='brace'>{</em>
+<a id='L103' name='L103'></a> 103         <a href='../Y/10757.html' title='Multiple used in 69 places.'>m_editModules</a> = <a href='../Y/5249.html' title='Multiple used in 52 places.'>aEnabled</a>;
+<a id='L104' name='L104'></a> 104     <em class='brace'>}</em>
+<a id='L105' name='L105'></a> 105 
+<a id='L106' name='L106'></a> 106     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/915.html' title='Multiple used in 12 places.'>EditingModules</a>() <strong class='reserved'>const</strong>
+<a id='L107' name='L107'></a> 107     <em class='brace'>{</em>
+<a id='L108' name='L108'></a> 108         <strong class='reserved'>return</strong> <a href='../Y/10757.html' title='Multiple used in 69 places.'>m_editModules</a>;
+<a id='L109' name='L109'></a> 109     <em class='brace'>}</em>
+<a id='L110' name='L110'></a> 110 
+<a id='L111' name='L111'></a> 111 <a href='../Y/13762.html' title='Multiple used in 145 places.'>protected</a>:
+<a id='L112' name='L112'></a> 112 
+<a id='L113' name='L113'></a> 113     <em class='comment'>/**</em>
+<a id='L114' name='L114'></a> 114 <em class='comment'>     * Options for placing items interactively.</em>
+<a id='L115' name='L115'></a> 115 <em class='comment'>     */</em>
+<a id='L116' name='L116'></a> 116     <strong class='reserved'>enum</strong> INTERACTIVE_PLACEMENT_OPTIONS <em class='brace'>{</em>
+<a id='L117' name='L117'></a> 117         <em class='comment'>/// Handle the rotate action in the loop by calling the item's rotate method</em>
+<a id='L118' name='L118'></a> 118         <a href='../R/1716.html' title='Multiple referred from 4 places.'>IPO_ROTATE</a>       = 0x01,
+<a id='L119' name='L119'></a> 119 
+<a id='L120' name='L120'></a> 120         <em class='comment'>/// Handle flip action in the loop by calling the item's flip method</em>
+<a id='L121' name='L121'></a> 121         <a href='../R/1714.html' title='Multiple referred from 4 places.'>IPO_FLIP</a>         = 0x02,
+<a id='L122' name='L122'></a> 122 
+<a id='L123' name='L123'></a> 123         <em class='comment'>/// Create an item immediately on placement starting, otherwise show the pencil cursor</em>
+<a id='L124' name='L124'></a> 124         <em class='comment'>/// until the item is created</em>
+<a id='L125' name='L125'></a> 125         <a href='../R/1717.html' title='Multiple referred from 5 places.'>IPO_SINGLE_CLICK</a> = 0x04,
+<a id='L126' name='L126'></a> 126 
+<a id='L127' name='L127'></a> 127         <em class='comment'>/// Allow repeat placement of the item</em>
+<a id='L128' name='L128'></a> 128         <a href='../R/1715.html' title='Multiple referred from 5 places.'>IPO_REPEAT</a>       = 0x08
+<a id='L129' name='L129'></a> 129     <em class='brace'>}</em>;
+<a id='L130' name='L130'></a> 130 
+<a id='L131' name='L131'></a> 131 
+<a id='L132' name='L132'></a> 132     <em class='comment'>/**</em>
+<a id='L133' name='L133'></a> 133 <em class='comment'>     * Helper function for performing a common interactive idiom:</em>
+<a id='L134' name='L134'></a> 134 <em class='comment'>     * wait for a left click, place an item there (perhaps with a</em>
+<a id='L135' name='L135'></a> 135 <em class='comment'>     * dialog or other user interaction), then have it move with</em>
+<a id='L136' name='L136'></a> 136 <em class='comment'>     * the mouse and respond to rotate/flip, etc</em>
+<a id='L137' name='L137'></a> 137 <em class='comment'>     *</em>
+<a id='L138' name='L138'></a> 138 <em class='comment'>     * More complex interactive processes are not supported here, you</em>
+<a id='L139' name='L139'></a> 139 <em class='comment'>     * should implement a customised event loop for those.</em>
+<a id='L140' name='L140'></a> 140 <em class='comment'>     *</em>
+<a id='L141' name='L141'></a> 141 <em class='comment'>     * @param aItemCreator the callable that will attempt to create the item</em>
+<a id='L142' name='L142'></a> 142 <em class='comment'>     * @param aCommitMessage the message used on a successful commit</em>
+<a id='L143' name='L143'></a> 143 <em class='comment'>     */</em>
+<a id='L144' name='L144'></a> 144     <strong class='reserved'>void</strong> <a href='../S/791.html#L37' title='Defined at 37 in tools/pcb_tool_base.cpp.'>doInteractiveItemPlacement</a>( <strong class='reserved'>const</strong> <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../D/4641.html' title='Multiple defined in 2 places.'>string</a>&amp; <a href='../Y/6070.html' title='Multiple used in 28 places.'>aTool</a>, <a href='../S/792.html#L52' title='Defined at 52 in tools/pcb_tool_base.h.'>INTERACTIVE_PLACER_BASE</a> *<a href='../Y/5786.html' title='Multiple used in 13 places.'>aPlacer</a>,
+<a id='L145' name='L145'></a> 145                                      <strong class='reserved'>const</strong> <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>&amp; <a href='../Y/5103.html' title='Multiple used in 3 places.'>aCommitMessage</a>,
+<a id='L146' name='L146'></a> 146                                      <strong class='reserved'>int</strong> <a href='../Y/5686.html' title='Multiple used in 73 places.'>aOptions</a> = <a href='../S/792.html#L118' title='Defined at 118 in tools/pcb_tool_base.h.'>IPO_ROTATE</a> | <a href='../S/792.html#L121' title='Defined at 121 in tools/pcb_tool_base.h.'>IPO_FLIP</a> | <a href='../S/792.html#L128' title='Defined at 128 in tools/pcb_tool_base.h.'>IPO_REPEAT</a> );
+<a id='L147' name='L147'></a> 147 
+<a id='L148' name='L148'></a> 148     <a href='../Y/15387.html' title='Multiple used in 761 places.'>virtual</a> <strong class='reserved'>void</strong> <a href='../D/4590.html' title='Multiple defined in 21 places.'>setTransitions</a>() <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a>;
+<a id='L149' name='L149'></a> 149 
+<a id='L150' name='L150'></a> 150 
+<a id='L151' name='L151'></a> 151     <a href='../D/1894.html' title='Multiple defined in 2 places.'>KIGFX</a>::<a href='../D/2538.html' title='Multiple defined in 2 places.'>PCB_VIEW</a>* <a href='../Y/15378.html' title='Multiple used in 182 places.'>view</a>() <strong class='reserved'>const</strong>
+<a id='L152' name='L152'></a> 152     <em class='brace'>{</em>
+<a id='L153' name='L153'></a> 153         <strong class='reserved'>return</strong> <a href='../Y/14672.html' title='Multiple used in 20 places.'>static_cast</a>&lt;<a href='../D/1894.html' title='Multiple defined in 2 places.'>KIGFX</a>::<a href='../D/2538.html' title='Multiple defined in 2 places.'>PCB_VIEW</a>*&gt;( <a href='../Y/8265.html' title='Multiple used in 66 places.'>getView</a>() );
+<a id='L154' name='L154'></a> 154     <em class='brace'>}</em>
+<a id='L155' name='L155'></a> 155 
+<a id='L156' name='L156'></a> 156     <a href='../D/1894.html' title='Multiple defined in 2 places.'>KIGFX</a>::<a href='../Y/4801.html' title='Multiple used in 18 places.'>VIEW_CONTROLS</a>* <a href='../Y/7080.html' title='Multiple used in 124 places.'>controls</a>() <strong class='reserved'>const</strong>
+<a id='L157' name='L157'></a> 157     <em class='brace'>{</em>
+<a id='L158' name='L158'></a> 158         <strong class='reserved'>return</strong> <a href='../Y/8266.html' title='Multiple used in 34 places.'>getViewControls</a>();
+<a id='L159' name='L159'></a> 159     <em class='brace'>}</em>
+<a id='L160' name='L160'></a> 160 
+<a id='L161' name='L161'></a> 161     <a href='../S/579.html#L54' title='Defined at 54 in pcb_base_edit_frame.cpp.'>PCB_BASE_EDIT_FRAME</a>* <a href='../Y/8124.html' title='Multiple used in 280 places.'>frame</a>() <strong class='reserved'>const</strong>
+<a id='L162' name='L162'></a> 162     <em class='brace'>{</em>
+<a id='L163' name='L163'></a> 163         <strong class='reserved'>return</strong> <a href='../Y/8253.html' title='Multiple used in 66 places.'>getEditFrame</a>&lt;<a href='../S/579.html#L54' title='Defined at 54 in pcb_base_edit_frame.cpp.'>PCB_BASE_EDIT_FRAME</a>&gt;();
+<a id='L164' name='L164'></a> 164     <em class='brace'>}</em>
+<a id='L165' name='L165'></a> 165 
+<a id='L166' name='L166'></a> 166     <a href='../S/57.html#L104' title='Defined at 104 in class_board.cpp.'>BOARD</a>* <a href='../Y/6700.html' title='Multiple used in 309 places.'>board</a>() <strong class='reserved'>const</strong> <em class='brace'>{</em> <strong class='reserved'>return</strong> <a href='../Y/8259.html' title='Multiple used in 21 places.'>getModel</a>&lt;<a href='../S/57.html#L104' title='Defined at 104 in class_board.cpp.'>BOARD</a>&gt;(); <em class='brace'>}</em>
+<a id='L167' name='L167'></a> 167 
+<a id='L168' name='L168'></a> 168     <a href='../D/2056.html' title='Multiple defined in 3 places.'>MODULE</a>* <a href='../Y/12690.html' title='Multiple used in 858 places.'>module</a>() <strong class='reserved'>const</strong>
+<a id='L169' name='L169'></a> 169     <em class='brace'>{</em>
+<a id='L170' name='L170'></a> 170         <strong class='reserved'>return</strong> <a href='../Y/6700.html' title='Multiple used in 309 places.'>board</a>()-&gt;<a href='../Y/1423.html' title='Multiple used in 58 places.'>GetFirstModule</a>();
+<a id='L171' name='L171'></a> 171     <em class='brace'>}</em>
+<a id='L172' name='L172'></a> 172 
+<a id='L173' name='L173'></a> 173     <strong class='reserved'>const</strong> <a href='../S/582.html#L34' title='Defined at 34 in pcb_display_options.cpp.'>PCB_DISPLAY_OPTIONS</a>&amp; <a href='../S/791.html#L264' title='Defined at 264 in tools/pcb_tool_base.cpp.'>displayOptions</a>() <strong class='reserved'>const</strong>;
+<a id='L174' name='L174'></a> 174     <a href='../D/2482.html' title='Multiple defined in 2 places.'>PCB_DRAW_PANEL_GAL</a>* <a href='../S/791.html#L269' title='Defined at 269 in tools/pcb_tool_base.cpp.'>canvas</a>() <strong class='reserved'>const</strong>;
+<a id='L175' name='L175'></a> 175     <strong class='reserved'>const</strong> <a href='../Y/2805.html' title='Multiple used in 62 places.'>PCBNEW_SELECTION</a>&amp; <a href='../D/4567.html' title='Multiple defined in 2 places.'>selection</a>() <strong class='reserved'>const</strong>;
+<a id='L176' name='L176'></a> 176     <a href='../Y/2805.html' title='Multiple used in 62 places.'>PCBNEW_SELECTION</a>&amp; <a href='../D/4567.html' title='Multiple defined in 2 places.'>selection</a>();
+<a id='L177' name='L177'></a> 177 
+<a id='L178' name='L178'></a> 178     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/10757.html' title='Multiple used in 69 places.'>m_editModules</a>;
+<a id='L179' name='L179'></a> 179 <em class='brace'>}</em>;
+<a id='L180' name='L180'></a> 180 
+<a id='L181' name='L181'></a> 181 <em class='sharp'>#endif</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;][^][v]<a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

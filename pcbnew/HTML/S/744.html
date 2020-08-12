@@ -1,0 +1,640 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>swig/python_scripting.cpp</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/842.html'>swig</a>/python_scripting.cpp</h2>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L69'>[^]</a><a href='#L592'>[v]</a>[top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L69' title='Defined at 69.'>IsWxPythonLoaded</a></li>
+<li><a href='#L80' title='Defined at 80.'>swigAddModule</a></li>
+<li><a href='#L96' title='Defined at 96.'>swigAddBuiltin</a></li>
+<li><a href='#L122' title='Defined at 122.'>swigAddModules</a></li>
+<li><a href='#L140' title='Defined at 140.'>swigSwitchPythonBuiltin</a></li>
+<li><a href='#L154' title='Defined at 154.'>pcbnewInitPythonScripting</a></li>
+<li><a href='#L233' title='Defined at 233.'>pcbnewRunPythonMethodWithReturnedString</a></li>
+<li><a href='#L294' title='Defined at 294.'>pcbnewGetUnloadableScriptNames</a></li>
+<li><a href='#L300' title='Defined at 300.'>pcbnewGetScriptsSearchPaths</a></li>
+<li><a href='#L306' title='Defined at 306.'>pcbnewGetWizardsBackTrace</a></li>
+<li><a href='#L312' title='Defined at 312.'>pcbnewFinishPythonScripting</a></li>
+<li><a href='#L322' title='Defined at 322.'>RedirectStdio</a></li>
+<li><a href='#L342' title='Defined at 342.'>CreatePythonShellWindow</a></li>
+<li><a href='#L440' title='Defined at 440.'>PyStringToWx</a></li>
+<li><a href='#L470' title='Defined at 470.'>PyArrayStringToWx</a></li>
+<li><a href='#L509' title='Defined at 509.'>PyErrStringWithTraceback</a></li>
+<li><a href='#L568' title='Defined at 568.'>PyScriptingPath</a></li>
+<li><a href='#L592' title='Defined at 592.'>PyPluginsPath</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * This program source code file is part of KiCad, a free EDA CAD application.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 2012 NBEE Embedded Systems, Miguel Angel Ajo &lt;miguelangel@nbee.es&gt;</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> * Copyright (C) 1992-2019 KiCad Developers, see AUTHORS.txt for contributors.</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> *</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> * This program is free software; you can redistribute it and/or</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * modify it under the terms of the GNU General Public License</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * as published by the Free Software Foundation; either version 2</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> * of the License, or (at your option) any later version.</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> *</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> * This program is distributed in the hope that it will be useful,</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> * GNU General Public License for more details.</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> *</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> * You should have received a copy of the GNU General Public License</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * along with this program; if not, you may find one here:</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> * or you may search the http://www.gnu.org website for the version 2 license,</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'> * or you may write to the Free Software Foundation, Inc.,</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'> * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'> */</em>
+<a id='L24' name='L24'></a>  24 
+<a id='L25' name='L25'></a>  25 <em class='comment'>/**</em>
+<a id='L26' name='L26'></a>  26 <em class='comment'> * @file python_scripting.cpp</em>
+<a id='L27' name='L27'></a>  27 <em class='comment'> * @brief methods to add scripting capabilities inside pcbnew</em>
+<a id='L28' name='L28'></a>  28 <em class='comment'> */</em>
+<a id='L29' name='L29'></a>  29 
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#include</em> &lt;cstdlib&gt;
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#include</em> &lt;cstring&gt;
+<a id='L32' name='L32'></a>  32 <em class='sharp'>#include</em> &lt;<a href='745.html'>python_scripting.h</a>&gt;
+<a id='L33' name='L33'></a>  33 <em class='sharp'>#include</em> &lt;sstream&gt;
+<a id='L34' name='L34'></a>  34 
+<a id='L35' name='L35'></a>  35 <em class='sharp'>#include</em> &lt;fctsys.h&gt;
+<a id='L36' name='L36'></a>  36 <em class='sharp'>#include</em> &lt;eda_base_frame.h&gt;
+<a id='L37' name='L37'></a>  37 <em class='sharp'>#include</em> &lt;common.h&gt;
+<a id='L38' name='L38'></a>  38 <em class='sharp'>#include</em> &lt;gal/color4d.h&gt;
+<a id='L39' name='L39'></a>  39 <em class='sharp'>#include</em> &lt;macros.h&gt;
+<a id='L40' name='L40'></a>  40 
+<a id='L41' name='L41'></a>  41 <em class='sharp'>#include</em> &lt;pgm_base.h&gt;
+<a id='L42' name='L42'></a>  42 
+<a id='L43' name='L43'></a>  43 <em class='comment'>/* init functions defined by swig */</em>
+<a id='L44' name='L44'></a>  44 
+<a id='L45' name='L45'></a>  45 <em class='sharp'>#if</em> <a href='../Y/2929.html' title='Multiple used in 12 places.'>PY_MAJOR_VERSION</a> &gt;= 3
+<a id='L46' name='L46'></a>  46 <strong class='reserved'>extern</strong> "C" <a href='../Y/3032.html' title='Multiple used in 77 places.'>PyObject</a>* <a href='../Y/3020.html' title='Multiple used in 2 places.'>PyInit__pcbnew</a>( <strong class='reserved'>void</strong> );
+<a id='L47' name='L47'></a>  47 <em class='sharp'>#else</em>
+<a id='L48' name='L48'></a>  48 <strong class='reserved'>extern</strong> "C" <strong class='reserved'>void</strong> init_kicad( <strong class='reserved'>void</strong> );
+<a id='L49' name='L49'></a>  49 
+<a id='L50' name='L50'></a>  50 <strong class='reserved'>extern</strong> "C" <strong class='reserved'>void</strong> <a href='../Y/8556.html' title='Multiple used in 2 places.'>init_pcbnew</a>( <strong class='reserved'>void</strong> );
+<a id='L51' name='L51'></a>  51 <em class='sharp'>#endif</em>
+<a id='L52' name='L52'></a>  52 
+<a id='L53' name='L53'></a>  53 <em class='sharp'>#define</em> <a href='../S/744.html#L106' title='Referred from 106 in swig/python_scripting.cpp.'>EXTRA_PYTHON_MODULES</a> 10     <em class='comment'>// this is the number of python</em>
+<a id='L54' name='L54'></a>  54                                     <em class='comment'>// modules that we want to add into the list</em>
+<a id='L55' name='L55'></a>  55 
+<a id='L56' name='L56'></a>  56 
+<a id='L57' name='L57'></a>  57 <em class='comment'>/* python inittab that links module names to module init functions</em>
+<a id='L58' name='L58'></a>  58 <em class='comment'> * we will rebuild it to include the original python modules plus</em>
+<a id='L59' name='L59'></a>  59 <em class='comment'> * our own ones</em>
+<a id='L60' name='L60'></a>  60 <em class='comment'> */</em>
+<a id='L61' name='L61'></a>  61 
+<a id='L62' name='L62'></a>  62 <strong class='reserved'>struct</strong> <a href='../Y/4959.html' title='Multiple used in 3 places.'>_inittab</a>*    <a href='../Y/4056.html' title='Multiple used in 7 places.'>SwigImportInittab</a>;
+<a id='L63' name='L63'></a>  63 <strong class='reserved'>static</strong> <strong class='reserved'>int</strong>          <a href='../Y/4057.html' title='Multiple used in 6 places.'>SwigNumModules</a> = 0;
+<a id='L64' name='L64'></a>  64 
+<a id='L65' name='L65'></a>  65 <em class='comment'>/// True if the wxPython scripting layer was successfully loaded.</em>
+<a id='L66' name='L66'></a>  66 <strong class='reserved'>static</strong> <strong class='reserved'>bool</strong> <a href='../Y/15879.html' title='Multiple used in 3 places.'>wxPythonLoaded</a> = <strong class='reserved'>false</strong>;
+<a id='L67' name='L67'></a>  67 
+<a id='L68' name='L68'></a>  68 
+<a id='L69' name='L69'></a>  69 <strong class='reserved'>bool</strong> <a href='../R/1800.html' title='Multiple referred from 5 places.'>IsWxPythonLoaded</a>()
+<a id='L70' name='L70'></a>  70 <em class='brace'>{</em>
+<a id='L71' name='L71'></a>  71     <strong class='reserved'>return</strong> <a href='../Y/15879.html' title='Multiple used in 3 places.'>wxPythonLoaded</a>;
+<a id='L72' name='L72'></a>  72 <em class='brace'>}</em>
+<a id='L73' name='L73'></a>  73 
+<a id='L74' name='L74'></a>  74 
+<a id='L75' name='L75'></a>  75 <em class='comment'>/**</em>
+<a id='L76' name='L76'></a>  76 <em class='comment'> * Add a name + initfuction to our SwigImportInittab</em>
+<a id='L77' name='L77'></a>  77 <em class='comment'> */</em>
+<a id='L78' name='L78'></a>  78 
+<a id='L79' name='L79'></a>  79 <em class='sharp'>#if</em> <a href='../Y/2929.html' title='Multiple used in 12 places.'>PY_MAJOR_VERSION</a> &gt;= 3
+<a id='L80' name='L80'></a>  80 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong> <a href='../R/4490.html' title='Multiple referred from 4 places.'>swigAddModule</a>( <strong class='reserved'>const</strong> <strong class='reserved'>char</strong>* <a href='../Y/12783.html' title='Multiple used in 255 places.'>name</a>, <a href='../Y/3032.html' title='Multiple used in 77 places.'>PyObject</a>* (* <a href='../Y/8557.html' title='Multiple used in 5 places.'>initfunc</a>)() )
+<a id='L81' name='L81'></a>  81 <em class='sharp'>#else</em>
+<a id='L82' name='L82'></a>  82 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong> <a href='../S/744.html#L80' title='Defined at 80 in swig/python_scripting.cpp.'>swigAddModule</a>( <strong class='reserved'>const</strong> <strong class='reserved'>char</strong>* <a href='../Y/12783.html' title='Multiple used in 255 places.'>name</a>, <strong class='reserved'>void</strong> (* <a href='../Y/8557.html' title='Multiple used in 5 places.'>initfunc</a>)() )
+<a id='L83' name='L83'></a>  83 <em class='sharp'>#endif</em>
+<a id='L84' name='L84'></a>  84 <em class='brace'>{</em>
+<a id='L85' name='L85'></a>  85     <a href='../Y/4056.html' title='Multiple used in 7 places.'>SwigImportInittab</a>[<a href='../Y/4057.html' title='Multiple used in 6 places.'>SwigNumModules</a>].<a href='../Y/12783.html' title='Multiple used in 255 places.'>name</a>      = (<strong class='reserved'>char</strong>*) <a href='../Y/12783.html' title='Multiple used in 255 places.'>name</a>;
+<a id='L86' name='L86'></a>  86     <a href='../Y/4056.html' title='Multiple used in 7 places.'>SwigImportInittab</a>[<a href='../Y/4057.html' title='Multiple used in 6 places.'>SwigNumModules</a>].<a href='../Y/8557.html' title='Multiple used in 5 places.'>initfunc</a>  = <a href='../Y/8557.html' title='Multiple used in 5 places.'>initfunc</a>;
+<a id='L87' name='L87'></a>  87     <a href='../Y/4057.html' title='Multiple used in 6 places.'>SwigNumModules</a>++;
+<a id='L88' name='L88'></a>  88     <a href='../Y/4056.html' title='Multiple used in 7 places.'>SwigImportInittab</a>[<a href='../Y/4057.html' title='Multiple used in 6 places.'>SwigNumModules</a>].<a href='../Y/12783.html' title='Multiple used in 255 places.'>name</a>      = (<strong class='reserved'>char</strong>*) 0;
+<a id='L89' name='L89'></a>  89     <a href='../Y/4056.html' title='Multiple used in 7 places.'>SwigImportInittab</a>[<a href='../Y/4057.html' title='Multiple used in 6 places.'>SwigNumModules</a>].<a href='../Y/8557.html' title='Multiple used in 5 places.'>initfunc</a>  = 0;
+<a id='L90' name='L90'></a>  90 <em class='brace'>}</em>
+<a id='L91' name='L91'></a>  91 
+<a id='L92' name='L92'></a>  92 
+<a id='L93' name='L93'></a>  93 <em class='comment'>/**</em>
+<a id='L94' name='L94'></a>  94 <em class='comment'> * Add the builtin python modules</em>
+<a id='L95' name='L95'></a>  95 <em class='comment'> */</em>
+<a id='L96' name='L96'></a>  96 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong> <a href='../S/744.html#L159' title='Referred from 159 in swig/python_scripting.cpp.'>swigAddBuiltin</a>()
+<a id='L97' name='L97'></a>  97 <em class='brace'>{</em>
+<a id='L98' name='L98'></a>  98     <strong class='reserved'>int</strong> <a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a> = 0;
+<a id='L99' name='L99'></a>  99 
+<a id='L100' name='L100'></a> 100     <em class='comment'>/* discover the length of the pyimport inittab */</em>
+<a id='L101' name='L101'></a> 101     <strong class='reserved'>while</strong>( <a href='../Y/3019.html' title='Multiple used in 4 places.'>PyImport_Inittab</a>[<a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a>].<a href='../Y/12783.html' title='Multiple used in 255 places.'>name</a> )
+<a id='L102' name='L102'></a> 102         <a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a>++;
+<a id='L103' name='L103'></a> 103 
+<a id='L104' name='L104'></a> 104     <em class='comment'>/* allocate memory for the python module table */</em>
+<a id='L105' name='L105'></a> 105     <a href='../Y/4056.html' title='Multiple used in 7 places.'>SwigImportInittab</a> = (<strong class='reserved'>struct</strong> <a href='../Y/4959.html' title='Multiple used in 3 places.'>_inittab</a>*) malloc(
+<a id='L106' name='L106'></a> 106         <strong class='reserved'>sizeof</strong>( <strong class='reserved'>struct</strong> <a href='../Y/4959.html' title='Multiple used in 3 places.'>_inittab</a> ) * ( <a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a> + <a href='../S/744.html#L53' title='Defined at 53 in swig/python_scripting.cpp.'>EXTRA_PYTHON_MODULES</a> ) );
+<a id='L107' name='L107'></a> 107 
+<a id='L108' name='L108'></a> 108     <em class='comment'>/* copy all pre-existing python modules into our newly created table */</em>
+<a id='L109' name='L109'></a> 109     <a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a> = 0;
+<a id='L110' name='L110'></a> 110 
+<a id='L111' name='L111'></a> 111     <strong class='reserved'>while</strong>( <a href='../Y/3019.html' title='Multiple used in 4 places.'>PyImport_Inittab</a>[<a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a>].<a href='../Y/12783.html' title='Multiple used in 255 places.'>name</a> )
+<a id='L112' name='L112'></a> 112     <em class='brace'>{</em>
+<a id='L113' name='L113'></a> 113         <a href='../S/744.html#L80' title='Defined at 80 in swig/python_scripting.cpp.'>swigAddModule</a>( <a href='../Y/3019.html' title='Multiple used in 4 places.'>PyImport_Inittab</a>[<a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a>].<a href='../Y/12783.html' title='Multiple used in 255 places.'>name</a>, <a href='../Y/3019.html' title='Multiple used in 4 places.'>PyImport_Inittab</a>[<a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a>].<a href='../Y/8557.html' title='Multiple used in 5 places.'>initfunc</a> );
+<a id='L114' name='L114'></a> 114         <a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a>++;
+<a id='L115' name='L115'></a> 115     <em class='brace'>}</em>
+<a id='L116' name='L116'></a> 116 <em class='brace'>}</em>
+<a id='L117' name='L117'></a> 117 
+<a id='L118' name='L118'></a> 118 
+<a id='L119' name='L119'></a> 119 <em class='comment'>/**</em>
+<a id='L120' name='L120'></a> 120 <em class='comment'> * Add the internal modules to the python scripting so they will be available to the scripts.</em>
+<a id='L121' name='L121'></a> 121 <em class='comment'> */</em>
+<a id='L122' name='L122'></a> 122 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong> <a href='../S/744.html#L160' title='Referred from 160 in swig/python_scripting.cpp.'>swigAddModules</a>()
+<a id='L123' name='L123'></a> 123 <em class='brace'>{</em>
+<a id='L124' name='L124'></a> 124 <em class='sharp'>#if</em> <a href='../Y/2929.html' title='Multiple used in 12 places.'>PY_MAJOR_VERSION</a> &gt;= 3
+<a id='L125' name='L125'></a> 125     <a href='../S/744.html#L80' title='Defined at 80 in swig/python_scripting.cpp.'>swigAddModule</a>( "_pcbnew", <a href='../Y/3020.html' title='Multiple used in 2 places.'>PyInit__pcbnew</a> );
+<a id='L126' name='L126'></a> 126 <em class='sharp'>#else</em>
+<a id='L127' name='L127'></a> 127     <a href='../S/744.html#L80' title='Defined at 80 in swig/python_scripting.cpp.'>swigAddModule</a>( "_pcbnew", <a href='../Y/8556.html' title='Multiple used in 2 places.'>init_pcbnew</a> );
+<a id='L128' name='L128'></a> 128 <em class='sharp'>#endif</em>
+<a id='L129' name='L129'></a> 129 
+<a id='L130' name='L130'></a> 130     <em class='comment'>// finally it seems better to include all in just one module</em>
+<a id='L131' name='L131'></a> 131     <em class='comment'>// but in case we needed to include any other modules,</em>
+<a id='L132' name='L132'></a> 132     <em class='comment'>// it must be done like this:</em>
+<a id='L133' name='L133'></a> 133     <em class='comment'>// swigAddModule( "_kicad", init_kicad );</em>
+<a id='L134' name='L134'></a> 134 <em class='brace'>}</em>
+<a id='L135' name='L135'></a> 135 
+<a id='L136' name='L136'></a> 136 
+<a id='L137' name='L137'></a> 137 <em class='comment'>/**</em>
+<a id='L138' name='L138'></a> 138 <em class='comment'> * Switch the python module table to the Pcbnew built one.</em>
+<a id='L139' name='L139'></a> 139 <em class='comment'> */</em>
+<a id='L140' name='L140'></a> 140 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong> <a href='../S/744.html#L161' title='Referred from 161 in swig/python_scripting.cpp.'>swigSwitchPythonBuiltin</a>()
+<a id='L141' name='L141'></a> 141 <em class='brace'>{</em>
+<a id='L142' name='L142'></a> 142     <a href='../Y/3019.html' title='Multiple used in 4 places.'>PyImport_Inittab</a> = <a href='../Y/4056.html' title='Multiple used in 7 places.'>SwigImportInittab</a>;
+<a id='L143' name='L143'></a> 143 <em class='brace'>}</em>
+<a id='L144' name='L144'></a> 144 
+<a id='L145' name='L145'></a> 145 
+<a id='L146' name='L146'></a> 146 PyThreadState* <a href='../Y/8179.html' title='Multiple used in 3 places.'>g_PythonMainTState</a>;
+<a id='L147' name='L147'></a> 147 
+<a id='L148' name='L148'></a> 148 
+<a id='L149' name='L149'></a> 149 <em class='comment'>/**</em>
+<a id='L150' name='L150'></a> 150 <em class='comment'> * Initialize the python environment and publish the Pcbnew interface inside it.</em>
+<a id='L151' name='L151'></a> 151 <em class='comment'> *</em>
+<a id='L152' name='L152'></a> 152 <em class='comment'> * This initializes all the wxPython interface and returns the python thread control structure</em>
+<a id='L153' name='L153'></a> 153 <em class='comment'> */</em>
+<a id='L154' name='L154'></a> 154 <strong class='reserved'>bool</strong> <a href='../R/4294.html' title='Multiple referred from 2 places.'>pcbnewInitPythonScripting</a>( <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> * <a href='../Y/6129.html' title='Multiple used in 3 places.'>aUserScriptingPath</a> )
+<a id='L155' name='L155'></a> 155 <em class='brace'>{</em>
+<a id='L156' name='L156'></a> 156     <strong class='reserved'>int</strong>  <a href='../Y/14028.html' title='Multiple used in 13 places.'>retv</a>;
+<a id='L157' name='L157'></a> 157     <strong class='reserved'>char</strong> <a href='../Y/6955.html' title='Multiple used in 16 places.'>cmd</a>[1024];
+<a id='L158' name='L158'></a> 158 
+<a id='L159' name='L159'></a> 159     <a href='../S/744.html#L96' title='Defined at 96 in swig/python_scripting.cpp.'>swigAddBuiltin</a>();           <em class='comment'>// add builtin functions</em>
+<a id='L160' name='L160'></a> 160     <a href='../S/744.html#L122' title='Defined at 122 in swig/python_scripting.cpp.'>swigAddModules</a>();           <em class='comment'>// add our own modules</em>
+<a id='L161' name='L161'></a> 161     <a href='../S/744.html#L140' title='Defined at 140 in swig/python_scripting.cpp.'>swigSwitchPythonBuiltin</a>();  <em class='comment'>// switch the python builtin modules to our new list</em>
+<a id='L162' name='L162'></a> 162 
+<a id='L163' name='L163'></a> 163     Py_Initialize();
+<a id='L164' name='L164'></a> 164     PySys_SetArgv( <a href='../S/567.html#L200' title='Defined at 200 in pcbnew.cpp.'>Pgm</a>().<a href='../Y/178.html' title='Multiple used in 3 places.'>App</a>().<a href='../Y/6440.html' title='Multiple used in 4 places.'>argc</a>, <a href='../S/567.html#L200' title='Defined at 200 in pcbnew.cpp.'>Pgm</a>().<a href='../Y/178.html' title='Multiple used in 3 places.'>App</a>().<a href='../Y/6443.html' title='Multiple used in 4 places.'>argv</a> );
+<a id='L165' name='L165'></a> 165 
+<a id='L166' name='L166'></a> 166 <em class='sharp'>#ifdef</em> <a href='../Y/2243.html' title='Multiple used in 15 places.'>KICAD_SCRIPTING_WXPYTHON</a>
+<a id='L167' name='L167'></a> 167     PyEval_InitThreads();
+<a id='L168' name='L168'></a> 168 
+<a id='L169' name='L169'></a> 169 <em class='sharp'>#ifndef</em> <a href='../Y/2244.html' title='Multiple used in 4 places.'>KICAD_SCRIPTING_WXPYTHON_PHOENIX</a>
+<a id='L170' name='L170'></a> 170 <em class='sharp'>#ifndef</em> <a href='../Y/4947.html' title='Multiple used in 13 places.'>__WINDOWS__</a>   <em class='comment'>// import wxversion.py currently not working under winbuilder, and not useful.</em>
+<a id='L171' name='L171'></a> 171     <em class='comment'>// Make sure that that the correct version of wxPython is loaded. In systems where there</em>
+<a id='L172' name='L172'></a> 172     <em class='comment'>// are different versions of wxPython installed this can lead to select wrong wxPython</em>
+<a id='L173' name='L173'></a> 173     <em class='comment'>// version being selected.</em>
+<a id='L174' name='L174'></a> 174     <a href='../Y/14545.html' title='Multiple used in 15 places.'>snprintf</a>( <a href='../Y/6955.html' title='Multiple used in 16 places.'>cmd</a>, <strong class='reserved'>sizeof</strong>( <a href='../Y/6955.html' title='Multiple used in 16 places.'>cmd</a> ), "import wxversion;  wxversion.select( '%s' )", WXPYTHON_VERSION );
+<a id='L175' name='L175'></a> 175 
+<a id='L176' name='L176'></a> 176     <a href='../Y/14028.html' title='Multiple used in 13 places.'>retv</a> = <a href='../Y/3036.html' title='Multiple used in 5 places.'>PyRun_SimpleString</a>( <a href='../Y/6955.html' title='Multiple used in 16 places.'>cmd</a> );
+<a id='L177' name='L177'></a> 177 
+<a id='L178' name='L178'></a> 178     <strong class='reserved'>if</strong>( <a href='../Y/14028.html' title='Multiple used in 13 places.'>retv</a> != 0 )
+<a id='L179' name='L179'></a> 179     <em class='brace'>{</em>
+<a id='L180' name='L180'></a> 180         <a href='../Y/15823.html' title='Multiple used in 29 places.'>wxLogError</a>( "Python error %d occurred running command:\n\n`%s`", <a href='../Y/14028.html' title='Multiple used in 13 places.'>retv</a>, <a href='../Y/6955.html' title='Multiple used in 16 places.'>cmd</a> );
+<a id='L181' name='L181'></a> 181         <strong class='reserved'>return</strong> <strong class='reserved'>false</strong>;
+<a id='L182' name='L182'></a> 182     <em class='brace'>}</em>
+<a id='L183' name='L183'></a> 183 <em class='sharp'>#endif</em>      <em class='comment'>// ifndef __WINDOWS__</em>
+<a id='L184' name='L184'></a> 184 
+<a id='L185' name='L185'></a> 185     <em class='comment'>// Load the wxPython core API.  Imports the wx._core_ module and sets a</em>
+<a id='L186' name='L186'></a> 186     <em class='comment'>// local pointer to a function table located there.  The pointer is used</em>
+<a id='L187' name='L187'></a> 187     <em class='comment'>// internally by the rest of the API functions.</em>
+<a id='L188' name='L188'></a> 188     <strong class='reserved'>if</strong>( !wxPyCoreAPI_IMPORT() )
+<a id='L189' name='L189'></a> 189     <em class='brace'>{</em>
+<a id='L190' name='L190'></a> 190         <a href='../Y/15823.html' title='Multiple used in 29 places.'>wxLogError</a>( "***** Error importing the wxPython API! *****" );
+<a id='L191' name='L191'></a> 191         <a href='../Y/3009.html' title='Multiple used in 3 places.'>PyErr_Print</a>();
+<a id='L192' name='L192'></a> 192         <a href='../Y/3046.html' title='Multiple used in 2 places.'>Py_Finalize</a>();
+<a id='L193' name='L193'></a> 193         <strong class='reserved'>return</strong> <strong class='reserved'>false</strong>;
+<a id='L194' name='L194'></a> 194     <em class='brace'>}</em>
+<a id='L195' name='L195'></a> 195 <em class='sharp'>#endif</em>
+<a id='L196' name='L196'></a> 196 
+<a id='L197' name='L197'></a> 197 <em class='sharp'>#if</em> <strong class='reserved'>defined</strong>( <a href='../Y/583.html' title='Multiple used in 44 places.'>DEBUG</a> )
+<a id='L198' name='L198'></a> 198     <a href='../S/744.html#L322' title='Defined at 322 in swig/python_scripting.cpp.'>RedirectStdio</a>();
+<a id='L199' name='L199'></a> 199 <em class='sharp'>#endif</em>
+<a id='L200' name='L200'></a> 200 
+<a id='L201' name='L201'></a> 201     <a href='../Y/15879.html' title='Multiple used in 3 places.'>wxPythonLoaded</a> = <strong class='reserved'>true</strong>;
+<a id='L202' name='L202'></a> 202 
+<a id='L203' name='L203'></a> 203     <em class='comment'>// Save the current Python thread state and release the</em>
+<a id='L204' name='L204'></a> 204     <em class='comment'>// Global Interpreter Lock.</em>
+<a id='L205' name='L205'></a> 205     <a href='../Y/8179.html' title='Multiple used in 3 places.'>g_PythonMainTState</a> = PyEval_SaveThread();
+<a id='L206' name='L206'></a> 206 
+<a id='L207' name='L207'></a> 207 <em class='sharp'>#endif</em>  <em class='comment'>// ifdef KICAD_SCRIPTING_WXPYTHON</em>
+<a id='L208' name='L208'></a> 208 
+<a id='L209' name='L209'></a> 209     <em class='comment'>// Load pcbnew inside Python and load all the user plugins, TODO: add system wide plugins</em>
+<a id='L210' name='L210'></a> 210     <em class='brace'>{</em>
+<a id='L211' name='L211'></a> 211         <a href='../Y/3023.html' title='Multiple used in 41 places.'>PyLOCK</a> <a href='../Y/9116.html' title='Multiple used in 54 places.'>lock</a>;
+<a id='L212' name='L212'></a> 212 
+<a id='L213' name='L213'></a> 213         <a href='../Y/14545.html' title='Multiple used in 15 places.'>snprintf</a>( <a href='../Y/6955.html' title='Multiple used in 16 places.'>cmd</a>, <strong class='reserved'>sizeof</strong>( <a href='../Y/6955.html' title='Multiple used in 16 places.'>cmd</a> ), "import sys, traceback\n"
+<a id='L214' name='L214'></a> 214                   "sys.path.append(\".\")\n"
+<a id='L215' name='L215'></a> 215                   "import pcbnew\n"
+<a id='L216' name='L216'></a> 216                   "pcbnew.LoadPlugins(\"%s\")", <a href='../Y/6129.html' title='Multiple used in 3 places.'>aUserScriptingPath</a> );
+<a id='L217' name='L217'></a> 217         <a href='../Y/14028.html' title='Multiple used in 13 places.'>retv</a> = <a href='../Y/3036.html' title='Multiple used in 5 places.'>PyRun_SimpleString</a>( <a href='../Y/6955.html' title='Multiple used in 16 places.'>cmd</a> );
+<a id='L218' name='L218'></a> 218 
+<a id='L219' name='L219'></a> 219         <strong class='reserved'>if</strong>( <a href='../Y/14028.html' title='Multiple used in 13 places.'>retv</a> != 0 )
+<a id='L220' name='L220'></a> 220             <a href='../Y/15823.html' title='Multiple used in 29 places.'>wxLogError</a>( "Python error %d occurred running command:\n\n`%s`", <a href='../Y/14028.html' title='Multiple used in 13 places.'>retv</a>, <a href='../Y/6955.html' title='Multiple used in 16 places.'>cmd</a> );
+<a id='L221' name='L221'></a> 221     <em class='brace'>}</em>
+<a id='L222' name='L222'></a> 222 
+<a id='L223' name='L223'></a> 223     <strong class='reserved'>return</strong> <strong class='reserved'>true</strong>;
+<a id='L224' name='L224'></a> 224 <em class='brace'>}</em>
+<a id='L225' name='L225'></a> 225 
+<a id='L226' name='L226'></a> 226 
+<a id='L227' name='L227'></a> 227 <em class='comment'>/**</em>
+<a id='L228' name='L228'></a> 228 <em class='comment'> * Run a python method from the pcbnew module.</em>
+<a id='L229' name='L229'></a> 229 <em class='comment'> *</em>
+<a id='L230' name='L230'></a> 230 <em class='comment'> * @param aMethodName is the name of the method (like "pcbnew.myfunction" )</em>
+<a id='L231' name='L231'></a> 231 <em class='comment'> * @param aNames will contain the returned string</em>
+<a id='L232' name='L232'></a> 232 <em class='comment'> */</em>
+<a id='L233' name='L233'></a> 233 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong> <a href='../R/4295.html' title='Multiple referred from 3 places.'>pcbnewRunPythonMethodWithReturnedString</a>( <strong class='reserved'>const</strong> <strong class='reserved'>char</strong>* <a href='../Y/5569.html' title='Multiple used in 2 places.'>aMethodName</a>, <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>&amp; <a href='../Y/5613.html' title='Multiple used in 15 places.'>aNames</a> )
+<a id='L234' name='L234'></a> 234 <em class='brace'>{</em>
+<a id='L235' name='L235'></a> 235     <a href='../Y/5613.html' title='Multiple used in 15 places.'>aNames</a>.<a href='../D/434.html' title='Multiple defined in 11 places.'>Clear</a>();
+<a id='L236' name='L236'></a> 236 
+<a id='L237' name='L237'></a> 237     <a href='../Y/3023.html' title='Multiple used in 41 places.'>PyLOCK</a>      <a href='../Y/9116.html' title='Multiple used in 54 places.'>lock</a>;
+<a id='L238' name='L238'></a> 238     <a href='../Y/3005.html' title='Multiple used in 5 places.'>PyErr_Clear</a>();
+<a id='L239' name='L239'></a> 239 
+<a id='L240' name='L240'></a> 240     <a href='../Y/3032.html' title='Multiple used in 77 places.'>PyObject</a>* <a href='../Y/6778.html' title='Multiple used in 10 places.'>builtins</a> = <a href='../Y/3018.html' title='Multiple used in 3 places.'>PyImport_ImportModule</a>( "pcbnew" );
+<a id='L241' name='L241'></a> 241     <a href='../Y/15500.html' title='Multiple used in 180 places.'>wxASSERT</a>( <a href='../Y/6778.html' title='Multiple used in 10 places.'>builtins</a> );
+<a id='L242' name='L242'></a> 242 
+<a id='L243' name='L243'></a> 243     <strong class='reserved'>if</strong>( !<a href='../Y/6778.html' title='Multiple used in 10 places.'>builtins</a> ) <em class='comment'>// Something is wrong in pcbnew.py module (incorrect version?)</em>
+<a id='L244' name='L244'></a> 244         <strong class='reserved'>return</strong>;
+<a id='L245' name='L245'></a> 245 
+<a id='L246' name='L246'></a> 246     <a href='../Y/3032.html' title='Multiple used in 77 places.'>PyObject</a>* <a href='../Y/8279.html' title='Multiple used in 9 places.'>globals</a> = <a href='../Y/3003.html' title='Multiple used in 3 places.'>PyDict_New</a>();
+<a id='L247' name='L247'></a> 247     <a href='../Y/3004.html' title='Multiple used in 2 places.'>PyDict_SetItemString</a>( <a href='../Y/8279.html' title='Multiple used in 9 places.'>globals</a>, "pcbnew", <a href='../Y/6778.html' title='Multiple used in 10 places.'>builtins</a> );
+<a id='L248' name='L248'></a> 248     <a href='../Y/3045.html' title='Multiple used in 25 places.'>Py_DECREF</a>( <a href='../Y/6778.html' title='Multiple used in 10 places.'>builtins</a> );
+<a id='L249' name='L249'></a> 249 
+<a id='L250' name='L250'></a> 250     <em class='comment'>// Build the python code</em>
+<a id='L251' name='L251'></a> 251     <strong class='reserved'>char</strong> <a href='../Y/6955.html' title='Multiple used in 16 places.'>cmd</a>[1024];
+<a id='L252' name='L252'></a> 252     <a href='../Y/14545.html' title='Multiple used in 15 places.'>snprintf</a>( <a href='../Y/6955.html' title='Multiple used in 16 places.'>cmd</a>, <strong class='reserved'>sizeof</strong>(<a href='../Y/6955.html' title='Multiple used in 16 places.'>cmd</a>), "result = %s()", <a href='../Y/5569.html' title='Multiple used in 2 places.'>aMethodName</a> );
+<a id='L253' name='L253'></a> 253 
+<a id='L254' name='L254'></a> 254     <em class='comment'>// Execute the python code and get the returned data</em>
+<a id='L255' name='L255'></a> 255     <a href='../Y/3032.html' title='Multiple used in 77 places.'>PyObject</a>* <a href='../Y/9106.html' title='Multiple used in 4 places.'>localDict</a> = <a href='../Y/3003.html' title='Multiple used in 3 places.'>PyDict_New</a>();
+<a id='L256' name='L256'></a> 256     <a href='../Y/3032.html' title='Multiple used in 77 places.'>PyObject</a>* <a href='../Y/13586.html' title='Multiple used in 3 places.'>pobj</a> = <a href='../Y/3037.html' title='Multiple used in 2 places.'>PyRun_String</a>( <a href='../Y/6955.html' title='Multiple used in 16 places.'>cmd</a>,  <a href='../Y/3052.html' title='Multiple used in 2 places.'>Py_file_input</a>, <a href='../Y/8279.html' title='Multiple used in 9 places.'>globals</a>, <a href='../Y/9106.html' title='Multiple used in 4 places.'>localDict</a>);
+<a id='L257' name='L257'></a> 257     <a href='../Y/3045.html' title='Multiple used in 25 places.'>Py_DECREF</a>( <a href='../Y/8279.html' title='Multiple used in 9 places.'>globals</a> );
+<a id='L258' name='L258'></a> 258 
+<a id='L259' name='L259'></a> 259     <strong class='reserved'>if</strong>( <a href='../Y/13586.html' title='Multiple used in 3 places.'>pobj</a> )
+<a id='L260' name='L260'></a> 260     <em class='brace'>{</em>
+<a id='L261' name='L261'></a> 261         <a href='../Y/3032.html' title='Multiple used in 77 places.'>PyObject</a>* <a href='../Y/14704.html' title='Multiple used in 102 places.'>str</a> = <a href='../Y/3002.html' title='Multiple used in 2 places.'>PyDict_GetItemString</a>(<a href='../Y/9106.html' title='Multiple used in 4 places.'>localDict</a>, "result" );
+<a id='L262' name='L262'></a> 262 <em class='sharp'>#if</em> <a href='../Y/2929.html' title='Multiple used in 12 places.'>PY_MAJOR_VERSION</a> &gt;= 3
+<a id='L263' name='L263'></a> 263         <strong class='reserved'>const</strong> <strong class='reserved'>char</strong>* <a href='../Y/14707.html' title='Multiple used in 13 places.'>str_res</a> = <a href='../Y/2643.html' title='Multiple used in 1581 places.'>NULL</a>;
+<a id='L264' name='L264'></a> 264 
+<a id='L265' name='L265'></a> 265         <strong class='reserved'>if</strong>(<a href='../Y/14704.html' title='Multiple used in 102 places.'>str</a>)
+<a id='L266' name='L266'></a> 266         <em class='brace'>{</em>
+<a id='L267' name='L267'></a> 267             <a href='../Y/3032.html' title='Multiple used in 77 places.'>PyObject</a>* <a href='../Y/14825.html' title='Multiple used in 12 places.'>temp_bytes</a> = <a href='../Y/3042.html' title='Multiple used in 3 places.'>PyUnicode_AsEncodedString</a>( <a href='../Y/14704.html' title='Multiple used in 102 places.'>str</a>, "UTF-8", "strict" );
+<a id='L268' name='L268'></a> 268 
+<a id='L269' name='L269'></a> 269             <strong class='reserved'>if</strong>( <a href='../Y/14825.html' title='Multiple used in 12 places.'>temp_bytes</a> != <a href='../Y/2643.html' title='Multiple used in 1581 places.'>NULL</a> )
+<a id='L270' name='L270'></a> 270             <em class='brace'>{</em>
+<a id='L271' name='L271'></a> 271                 <a href='../Y/14707.html' title='Multiple used in 13 places.'>str_res</a> = <a href='../Y/3000.html' title='Multiple used in 3 places.'>PyBytes_AS_STRING</a>( <a href='../Y/14825.html' title='Multiple used in 12 places.'>temp_bytes</a> );
+<a id='L272' name='L272'></a> 272                 <a href='../Y/14707.html' title='Multiple used in 13 places.'>str_res</a> = strdup( <a href='../Y/14707.html' title='Multiple used in 13 places.'>str_res</a> );
+<a id='L273' name='L273'></a> 273                 <a href='../Y/3045.html' title='Multiple used in 25 places.'>Py_DECREF</a>( <a href='../Y/14825.html' title='Multiple used in 12 places.'>temp_bytes</a> );
+<a id='L274' name='L274'></a> 274             <em class='brace'>}</em>
+<a id='L275' name='L275'></a> 275             <strong class='reserved'>else</strong>
+<a id='L276' name='L276'></a> 276             <em class='brace'>{</em>
+<a id='L277' name='L277'></a> 277                 <a href='../Y/15824.html' title='Multiple used in 15 places.'>wxLogMessage</a>( "cannot encode unicode python string" );
+<a id='L278' name='L278'></a> 278             <em class='brace'>}</em>
+<a id='L279' name='L279'></a> 279         <em class='brace'>}</em>
+<a id='L280' name='L280'></a> 280 <em class='sharp'>#else</em>
+<a id='L281' name='L281'></a> 281         <strong class='reserved'>const</strong> <strong class='reserved'>char</strong>* <a href='../Y/14707.html' title='Multiple used in 13 places.'>str_res</a> = <a href='../Y/14704.html' title='Multiple used in 102 places.'>str</a> ? <a href='../Y/3038.html' title='Multiple used in 3 places.'>PyString_AsString</a>( <a href='../Y/14704.html' title='Multiple used in 102 places.'>str</a> ) : 0;
+<a id='L282' name='L282'></a> 282 <em class='sharp'>#endif</em>
+<a id='L283' name='L283'></a> 283         <a href='../Y/5613.html' title='Multiple used in 15 places.'>aNames</a> = <a href='../Y/1012.html' title='Multiple used in 106 places.'>FROM_UTF8</a>( <a href='../Y/14707.html' title='Multiple used in 13 places.'>str_res</a> );
+<a id='L284' name='L284'></a> 284         <a href='../Y/3045.html' title='Multiple used in 25 places.'>Py_DECREF</a>( <a href='../Y/13586.html' title='Multiple used in 3 places.'>pobj</a> );
+<a id='L285' name='L285'></a> 285     <em class='brace'>}</em>
+<a id='L286' name='L286'></a> 286 
+<a id='L287' name='L287'></a> 287     <a href='../Y/3045.html' title='Multiple used in 25 places.'>Py_DECREF</a>( <a href='../Y/9106.html' title='Multiple used in 4 places.'>localDict</a> );
+<a id='L288' name='L288'></a> 288 
+<a id='L289' name='L289'></a> 289     <strong class='reserved'>if</strong>( <a href='../Y/3008.html' title='Multiple used in 5 places.'>PyErr_Occurred</a>() )
+<a id='L290' name='L290'></a> 290         <a href='../Y/15824.html' title='Multiple used in 15 places.'>wxLogMessage</a>( <a href='../S/744.html#L509' title='Defined at 509 in swig/python_scripting.cpp.'>PyErrStringWithTraceback</a>() );
+<a id='L291' name='L291'></a> 291 <em class='brace'>}</em>
+<a id='L292' name='L292'></a> 292 
+<a id='L293' name='L293'></a> 293 
+<a id='L294' name='L294'></a> 294 <strong class='reserved'>void</strong> <a href='../R/4292.html' title='Multiple referred from 2 places.'>pcbnewGetUnloadableScriptNames</a>( <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>&amp; <a href='../Y/5613.html' title='Multiple used in 15 places.'>aNames</a> )
+<a id='L295' name='L295'></a> 295 <em class='brace'>{</em>
+<a id='L296' name='L296'></a> 296     <a href='../S/744.html#L233' title='Defined at 233 in swig/python_scripting.cpp.'>pcbnewRunPythonMethodWithReturnedString</a>( "pcbnew.GetUnLoadableWizards", <a href='../Y/5613.html' title='Multiple used in 15 places.'>aNames</a> );
+<a id='L297' name='L297'></a> 297 <em class='brace'>}</em>
+<a id='L298' name='L298'></a> 298 
+<a id='L299' name='L299'></a> 299 
+<a id='L300' name='L300'></a> 300 <strong class='reserved'>void</strong> <a href='../R/4291.html' title='Multiple referred from 2 places.'>pcbnewGetScriptsSearchPaths</a>( <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>&amp; <a href='../Y/5613.html' title='Multiple used in 15 places.'>aNames</a> )
+<a id='L301' name='L301'></a> 301 <em class='brace'>{</em>
+<a id='L302' name='L302'></a> 302     <a href='../S/744.html#L233' title='Defined at 233 in swig/python_scripting.cpp.'>pcbnewRunPythonMethodWithReturnedString</a>( "pcbnew.GetWizardsSearchPaths", <a href='../Y/5613.html' title='Multiple used in 15 places.'>aNames</a> );
+<a id='L303' name='L303'></a> 303 <em class='brace'>}</em>
+<a id='L304' name='L304'></a> 304 
+<a id='L305' name='L305'></a> 305 
+<a id='L306' name='L306'></a> 306 <strong class='reserved'>void</strong> <a href='../R/4293.html' title='Multiple referred from 2 places.'>pcbnewGetWizardsBackTrace</a>( <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>&amp; <a href='../Y/5613.html' title='Multiple used in 15 places.'>aNames</a> )
+<a id='L307' name='L307'></a> 307 <em class='brace'>{</em>
+<a id='L308' name='L308'></a> 308     <a href='../S/744.html#L233' title='Defined at 233 in swig/python_scripting.cpp.'>pcbnewRunPythonMethodWithReturnedString</a>( "pcbnew.GetWizardsBackTrace", <a href='../Y/5613.html' title='Multiple used in 15 places.'>aNames</a> );
+<a id='L309' name='L309'></a> 309 <em class='brace'>}</em>
+<a id='L310' name='L310'></a> 310 
+<a id='L311' name='L311'></a> 311 
+<a id='L312' name='L312'></a> 312 <strong class='reserved'>void</strong> <a href='../R/4290.html' title='Multiple referred from 2 places.'>pcbnewFinishPythonScripting</a>()
+<a id='L313' name='L313'></a> 313 <em class='brace'>{</em>
+<a id='L314' name='L314'></a> 314 <em class='sharp'>#ifdef</em> <a href='../Y/2243.html' title='Multiple used in 15 places.'>KICAD_SCRIPTING_WXPYTHON</a>
+<a id='L315' name='L315'></a> 315     PyEval_RestoreThread( <a href='../Y/8179.html' title='Multiple used in 3 places.'>g_PythonMainTState</a> );
+<a id='L316' name='L316'></a> 316 <em class='sharp'>#endif</em>
+<a id='L317' name='L317'></a> 317     <a href='../Y/3046.html' title='Multiple used in 2 places.'>Py_Finalize</a>();
+<a id='L318' name='L318'></a> 318 <em class='brace'>}</em>
+<a id='L319' name='L319'></a> 319 
+<a id='L320' name='L320'></a> 320 
+<a id='L321' name='L321'></a> 321 <em class='sharp'>#if</em> <strong class='reserved'>defined</strong>( <a href='../Y/2243.html' title='Multiple used in 15 places.'>KICAD_SCRIPTING_WXPYTHON</a> )
+<a id='L322' name='L322'></a> 322 <strong class='reserved'>void</strong> <a href='../R/2660.html' title='Multiple referred from 2 places.'>RedirectStdio</a>()
+<a id='L323' name='L323'></a> 323 <em class='brace'>{</em>
+<a id='L324' name='L324'></a> 324     <em class='comment'>// This is a helpful little tidbit to help debugging and such.  It</em>
+<a id='L325' name='L325'></a> 325     <em class='comment'>// redirects Python's stdout and stderr to a window that will popup</em>
+<a id='L326' name='L326'></a> 326     <em class='comment'>// only on demand when something is printed, like a traceback.</em>
+<a id='L327' name='L327'></a> 327     <strong class='reserved'>const</strong> <strong class='reserved'>char</strong>* <a href='../Y/13825.html' title='Multiple used in 3 places.'>python_redirect</a> =
+<a id='L328' name='L328'></a> 328         "import sys\n"
+<a id='L329' name='L329'></a> 329         "import wx\n"
+<a id='L330' name='L330'></a> 330         "output = wx.PyOnDemandOutputWindow()\n"
+<a id='L331' name='L331'></a> 331         "sys.stderr = output\n";
+<a id='L332' name='L332'></a> 332 
+<a id='L333' name='L333'></a> 333     <a href='../Y/3023.html' title='Multiple used in 41 places.'>PyLOCK</a> <a href='../Y/9116.html' title='Multiple used in 54 places.'>lock</a>;
+<a id='L334' name='L334'></a> 334 
+<a id='L335' name='L335'></a> 335     <strong class='reserved'>int</strong> <a href='../Y/14028.html' title='Multiple used in 13 places.'>retv</a> = <a href='../Y/3036.html' title='Multiple used in 5 places.'>PyRun_SimpleString</a>( <a href='../Y/13825.html' title='Multiple used in 3 places.'>python_redirect</a> );
+<a id='L336' name='L336'></a> 336 
+<a id='L337' name='L337'></a> 337     <strong class='reserved'>if</strong>( <a href='../Y/14028.html' title='Multiple used in 13 places.'>retv</a> != 0 )
+<a id='L338' name='L338'></a> 338         <a href='../Y/15823.html' title='Multiple used in 29 places.'>wxLogError</a>( "Python error %d occurred running command:\n\n`%s`", <a href='../Y/14028.html' title='Multiple used in 13 places.'>retv</a>, <a href='../Y/13825.html' title='Multiple used in 3 places.'>python_redirect</a> );
+<a id='L339' name='L339'></a> 339 <em class='brace'>}</em>
+<a id='L340' name='L340'></a> 340 
+<a id='L341' name='L341'></a> 341 
+<a id='L342' name='L342'></a> 342 <a href='../Y/15994.html' title='Multiple used in 253 places.'>wxWindow</a>* <a href='../R/495.html' title='Multiple referred from 2 places.'>CreatePythonShellWindow</a>( <a href='../Y/15994.html' title='Multiple used in 253 places.'>wxWindow</a>* <a href='../S/714.html#L3496' title='Defined at 3496 in specctra_import_export/specctra.cpp.'>parent</a>, <strong class='reserved'>const</strong> <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>&amp; <a href='../Y/5340.html' title='Multiple used in 3 places.'>aFramenameId</a> )
+<a id='L343' name='L343'></a> 343 <em class='brace'>{</em>
+<a id='L344' name='L344'></a> 344     <em class='comment'>// parent is actually *PCB_EDIT_FRAME</em>
+<a id='L345' name='L345'></a> 345     <strong class='reserved'>const</strong> <strong class='reserved'>int</strong> <a href='../Y/13414.html' title='Multiple used in 3 places.'>parentId</a> = <a href='../S/714.html#L3496' title='Defined at 3496 in specctra_import_export/specctra.cpp.'>parent</a>-&gt;<a href='../S/417.html#L111' title='Defined at 111 in exporters/export_hyperlynx.cpp.'>GetId</a>();
+<a id='L346' name='L346'></a> 346     <em class='brace'>{</em>
+<a id='L347' name='L347'></a> 347         <a href='../Y/15994.html' title='Multiple used in 253 places.'>wxWindow</a>* <a href='../Y/13411.html' title='Multiple used in 2 places.'>parent2</a> = <a href='../Y/15994.html' title='Multiple used in 253 places.'>wxWindow</a>::<a href='../Y/1062.html' title='Multiple used in 4 places.'>FindWindowById</a>( <a href='../Y/13414.html' title='Multiple used in 3 places.'>parentId</a> );
+<a id='L348' name='L348'></a> 348         <a href='../Y/15500.html' title='Multiple used in 180 places.'>wxASSERT</a>( <a href='../Y/13411.html' title='Multiple used in 2 places.'>parent2</a> == <a href='../S/714.html#L3496' title='Defined at 3496 in specctra_import_export/specctra.cpp.'>parent</a> );
+<a id='L349' name='L349'></a> 349     <em class='brace'>}</em>
+<a id='L350' name='L350'></a> 350 
+<a id='L351' name='L351'></a> 351     <em class='comment'>// passing window ids instead of pointers is because wxPython is not</em>
+<a id='L352' name='L352'></a> 352     <em class='comment'>// exposing the needed c++ apis to make that possible.</em>
+<a id='L353' name='L353'></a> 353     <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::stringstream <a href='../Y/13470.html' title='Multiple used in 9 places.'>pcbnew_pyshell_one_step</a>;
+<a id='L354' name='L354'></a> 354     <a href='../Y/13470.html' title='Multiple used in 9 places.'>pcbnew_pyshell_one_step</a> &lt;&lt; "import kicad_pyshell\n";
+<a id='L355' name='L355'></a> 355     <a href='../Y/13470.html' title='Multiple used in 9 places.'>pcbnew_pyshell_one_step</a> &lt;&lt; "import wx\n";
+<a id='L356' name='L356'></a> 356     <a href='../Y/13470.html' title='Multiple used in 9 places.'>pcbnew_pyshell_one_step</a> &lt;&lt; "\n";
+<a id='L357' name='L357'></a> 357     <a href='../Y/13470.html' title='Multiple used in 9 places.'>pcbnew_pyshell_one_step</a> &lt;&lt; "parent = wx.FindWindowById( " &lt;&lt; <a href='../Y/13414.html' title='Multiple used in 3 places.'>parentId</a> &lt;&lt; " )\n";
+<a id='L358' name='L358'></a> 358     <a href='../Y/13470.html' title='Multiple used in 9 places.'>pcbnew_pyshell_one_step</a> &lt;&lt; "newshell = kicad_pyshell.makePcbnewShellWindow( parent )\n";
+<a id='L359' name='L359'></a> 359     <a href='../Y/13470.html' title='Multiple used in 9 places.'>pcbnew_pyshell_one_step</a> &lt;&lt; "newshell.SetName( \"" &lt;&lt; <a href='../Y/5340.html' title='Multiple used in 3 places.'>aFramenameId</a> &lt;&lt; "\" )\n";
+<a id='L360' name='L360'></a> 360     <em class='comment'>// return value goes into a "global". It's not actually global, but rather</em>
+<a id='L361' name='L361'></a> 361     <em class='comment'>// the dict that is passed to PyRun_String</em>
+<a id='L362' name='L362'></a> 362     <a href='../Y/13470.html' title='Multiple used in 9 places.'>pcbnew_pyshell_one_step</a> &lt;&lt; "retval = newshell.GetId()\n";
+<a id='L363' name='L363'></a> 363 
+<a id='L364' name='L364'></a> 364     <em class='comment'>// As always, first grab the GIL</em>
+<a id='L365' name='L365'></a> 365     <a href='../Y/3023.html' title='Multiple used in 41 places.'>PyLOCK</a>      <a href='../Y/9116.html' title='Multiple used in 54 places.'>lock</a>;
+<a id='L366' name='L366'></a> 366 
+<a id='L367' name='L367'></a> 367     <em class='comment'>// Now make a dictionary to serve as the global namespace when the code is</em>
+<a id='L368' name='L368'></a> 368     <em class='comment'>// executed.  Put a reference to the builtins module in it.</em>
+<a id='L369' name='L369'></a> 369 
+<a id='L370' name='L370'></a> 370     <a href='../Y/3032.html' title='Multiple used in 77 places.'>PyObject</a>*   <a href='../Y/8279.html' title='Multiple used in 9 places.'>globals</a>     = <a href='../Y/3003.html' title='Multiple used in 3 places.'>PyDict_New</a>();
+<a id='L371' name='L371'></a> 371 <em class='sharp'>#if</em> <a href='../Y/2929.html' title='Multiple used in 12 places.'>PY_MAJOR_VERSION</a> &gt;= 3
+<a id='L372' name='L372'></a> 372     <a href='../Y/3032.html' title='Multiple used in 77 places.'>PyObject</a>*   <a href='../Y/6778.html' title='Multiple used in 10 places.'>builtins</a>    = <a href='../Y/3018.html' title='Multiple used in 3 places.'>PyImport_ImportModule</a>( "builtins" );
+<a id='L373' name='L373'></a> 373 <em class='sharp'>#else</em>
+<a id='L374' name='L374'></a> 374     <a href='../Y/3032.html' title='Multiple used in 77 places.'>PyObject</a>*   <a href='../Y/6778.html' title='Multiple used in 10 places.'>builtins</a>    = <a href='../Y/3018.html' title='Multiple used in 3 places.'>PyImport_ImportModule</a>( "__builtin__" );
+<a id='L375' name='L375'></a> 375 <em class='sharp'>#endif</em>
+<a id='L376' name='L376'></a> 376 
+<a id='L377' name='L377'></a> 377     <a href='../Y/15500.html' title='Multiple used in 180 places.'>wxASSERT</a>( <a href='../Y/6778.html' title='Multiple used in 10 places.'>builtins</a> );
+<a id='L378' name='L378'></a> 378 
+<a id='L379' name='L379'></a> 379     <a href='../Y/3004.html' title='Multiple used in 2 places.'>PyDict_SetItemString</a>( <a href='../Y/8279.html' title='Multiple used in 9 places.'>globals</a>, "__builtins__", <a href='../Y/6778.html' title='Multiple used in 10 places.'>builtins</a> );
+<a id='L380' name='L380'></a> 380     <a href='../Y/3045.html' title='Multiple used in 25 places.'>Py_DECREF</a>( <a href='../Y/6778.html' title='Multiple used in 10 places.'>builtins</a> );
+<a id='L381' name='L381'></a> 381 
+<a id='L382' name='L382'></a> 382 <em class='sharp'>#ifdef</em> <a href='../Y/2244.html' title='Multiple used in 4 places.'>KICAD_SCRIPTING_WXPYTHON_PHOENIX</a>
+<a id='L383' name='L383'></a> 383     <strong class='reserved'>auto</strong> <a href='../Y/6389.html' title='Multiple used in 2 places.'>app_ptr</a> = wxTheApp;
+<a id='L384' name='L384'></a> 384 <em class='sharp'>#endif</em>
+<a id='L385' name='L385'></a> 385     <em class='comment'>// Execute the code to make the makeWindow function we defined above</em>
+<a id='L386' name='L386'></a> 386     <a href='../Y/3032.html' title='Multiple used in 77 places.'>PyObject</a>*   <a href='../Y/14021.html' title='Multiple used in 201 places.'>result</a> = <a href='../Y/3037.html' title='Multiple used in 2 places.'>PyRun_String</a>( <a href='../Y/13470.html' title='Multiple used in 9 places.'>pcbnew_pyshell_one_step</a>.<a href='../Y/14704.html' title='Multiple used in 102 places.'>str</a>().<a href='../Y/6800.html' title='Multiple used in 467 places.'>c_str</a>(), <a href='../Y/3052.html' title='Multiple used in 2 places.'>Py_file_input</a>,
+<a id='L387' name='L387'></a> 387                                        <a href='../Y/8279.html' title='Multiple used in 9 places.'>globals</a>, <a href='../Y/8279.html' title='Multiple used in 9 places.'>globals</a> );
+<a id='L388' name='L388'></a> 388 
+<a id='L389' name='L389'></a> 389 <em class='sharp'>#ifdef</em> <a href='../Y/2244.html' title='Multiple used in 4 places.'>KICAD_SCRIPTING_WXPYTHON_PHOENIX</a>
+<a id='L390' name='L390'></a> 390     <em class='comment'>// This absolutely ugly hack is to work around the pyshell re-writing the global</em>
+<a id='L391' name='L391'></a> 391     <em class='comment'>// wxApp variable.  Once we can initialize Phoenix to access the appropriate instance</em>
+<a id='L392' name='L392'></a> 392     <em class='comment'>// of wx, we can remove this line</em>
+<a id='L393' name='L393'></a> 393     <a href='../Y/15509.html' title='Multiple used in 2 places.'>wxApp</a>::SetInstance( <a href='../Y/6389.html' title='Multiple used in 2 places.'>app_ptr</a> );
+<a id='L394' name='L394'></a> 394 <em class='sharp'>#endif</em>
+<a id='L395' name='L395'></a> 395     <em class='comment'>// Was there an exception?</em>
+<a id='L396' name='L396'></a> 396     <strong class='reserved'>if</strong>( !<a href='../Y/14021.html' title='Multiple used in 201 places.'>result</a> )
+<a id='L397' name='L397'></a> 397     <em class='brace'>{</em>
+<a id='L398' name='L398'></a> 398         <a href='../Y/3009.html' title='Multiple used in 3 places.'>PyErr_Print</a>();
+<a id='L399' name='L399'></a> 399         <strong class='reserved'>return</strong> <a href='../Y/2643.html' title='Multiple used in 1581 places.'>NULL</a>;
+<a id='L400' name='L400'></a> 400     <em class='brace'>}</em>
+<a id='L401' name='L401'></a> 401 
+<a id='L402' name='L402'></a> 402     <a href='../Y/3045.html' title='Multiple used in 25 places.'>Py_DECREF</a>( <a href='../Y/14021.html' title='Multiple used in 201 places.'>result</a> );
+<a id='L403' name='L403'></a> 403 
+<a id='L404' name='L404'></a> 404     <a href='../Y/14021.html' title='Multiple used in 201 places.'>result</a> = <a href='../Y/3002.html' title='Multiple used in 2 places.'>PyDict_GetItemString</a>( <a href='../Y/8279.html' title='Multiple used in 9 places.'>globals</a>, "retval" );
+<a id='L405' name='L405'></a> 405 
+<a id='L406' name='L406'></a> 406 <em class='sharp'>#if</em> <a href='../Y/2929.html' title='Multiple used in 12 places.'>PY_MAJOR_VERSION</a> &gt;= 3
+<a id='L407' name='L407'></a> 407     <strong class='reserved'>if</strong>( !<a href='../Y/3030.html' title='Multiple used in 2 places.'>PyLong_Check</a>( <a href='../Y/14021.html' title='Multiple used in 201 places.'>result</a> ) )
+<a id='L408' name='L408'></a> 408 <em class='sharp'>#else</em>
+<a id='L409' name='L409'></a> 409     <strong class='reserved'>if</strong>( !<a href='../Y/3022.html' title='Multiple used in 2 places.'>PyInt_Check</a>( <a href='../Y/14021.html' title='Multiple used in 201 places.'>result</a> ) )
+<a id='L410' name='L410'></a> 410 <em class='sharp'>#endif</em>
+<a id='L411' name='L411'></a> 411     <em class='brace'>{</em>
+<a id='L412' name='L412'></a> 412         <a href='../Y/15823.html' title='Multiple used in 29 places.'>wxLogError</a>( "creation of scripting window didn't return a number" );
+<a id='L413' name='L413'></a> 413         <strong class='reserved'>return</strong> <a href='../Y/2643.html' title='Multiple used in 1581 places.'>NULL</a>;
+<a id='L414' name='L414'></a> 414     <em class='brace'>}</em>
+<a id='L415' name='L415'></a> 415 
+<a id='L416' name='L416'></a> 416 <em class='sharp'>#if</em> <a href='../Y/2929.html' title='Multiple used in 12 places.'>PY_MAJOR_VERSION</a> &gt;= 3
+<a id='L417' name='L417'></a> 417     <strong class='reserved'>const</strong> <strong class='reserved'>long</strong> <a href='../Y/15451.html' title='Multiple used in 4 places.'>windowId</a> = <a href='../Y/3029.html' title='Multiple used in 2 places.'>PyLong_AsLong</a>( <a href='../Y/14021.html' title='Multiple used in 201 places.'>result</a> );
+<a id='L418' name='L418'></a> 418 <em class='sharp'>#else</em>
+<a id='L419' name='L419'></a> 419     <strong class='reserved'>const</strong> <strong class='reserved'>long</strong> <a href='../Y/15451.html' title='Multiple used in 4 places.'>windowId</a> = <a href='../Y/3021.html' title='Multiple used in 2 places.'>PyInt_AsLong</a>( <a href='../Y/14021.html' title='Multiple used in 201 places.'>result</a> );
+<a id='L420' name='L420'></a> 420 <em class='sharp'>#endif</em>
+<a id='L421' name='L421'></a> 421 
+<a id='L422' name='L422'></a> 422     <em class='comment'>// It's important not to decref globals before extracting the window id.</em>
+<a id='L423' name='L423'></a> 423     <em class='comment'>// If you do it early, globals, and the retval int it contains, may/will be garbage collected.</em>
+<a id='L424' name='L424'></a> 424     <em class='comment'>// We do not need to decref result, because GetItemString returns a borrowed reference.</em>
+<a id='L425' name='L425'></a> 425     <a href='../Y/3045.html' title='Multiple used in 25 places.'>Py_DECREF</a>( <a href='../Y/8279.html' title='Multiple used in 9 places.'>globals</a> );
+<a id='L426' name='L426'></a> 426 
+<a id='L427' name='L427'></a> 427     <a href='../Y/15994.html' title='Multiple used in 253 places.'>wxWindow</a>* <a href='../Y/15450.html' title='Multiple used in 27 places.'>window</a> = <a href='../Y/15994.html' title='Multiple used in 253 places.'>wxWindow</a>::<a href='../Y/1062.html' title='Multiple used in 4 places.'>FindWindowById</a>( <a href='../Y/15451.html' title='Multiple used in 4 places.'>windowId</a> );
+<a id='L428' name='L428'></a> 428 
+<a id='L429' name='L429'></a> 429     <strong class='reserved'>if</strong>( !<a href='../Y/15450.html' title='Multiple used in 27 places.'>window</a> )
+<a id='L430' name='L430'></a> 430     <em class='brace'>{</em>
+<a id='L431' name='L431'></a> 431         <a href='../Y/15823.html' title='Multiple used in 29 places.'>wxLogError</a>( "unable to find pyshell window with id %d", <a href='../Y/15451.html' title='Multiple used in 4 places.'>windowId</a> );
+<a id='L432' name='L432'></a> 432         <strong class='reserved'>return</strong> <a href='../Y/2643.html' title='Multiple used in 1581 places.'>NULL</a>;
+<a id='L433' name='L433'></a> 433     <em class='brace'>}</em>
+<a id='L434' name='L434'></a> 434 
+<a id='L435' name='L435'></a> 435     <strong class='reserved'>return</strong> <a href='../Y/15450.html' title='Multiple used in 27 places.'>window</a>;
+<a id='L436' name='L436'></a> 436 <em class='brace'>}</em>
+<a id='L437' name='L437'></a> 437 <em class='sharp'>#endif</em>
+<a id='L438' name='L438'></a> 438 
+<a id='L439' name='L439'></a> 439 
+<a id='L440' name='L440'></a> 440 <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../R/2574.html' title='Multiple referred from 4 places.'>PyStringToWx</a>( <a href='../Y/3032.html' title='Multiple used in 77 places.'>PyObject</a>* <a href='../Y/6024.html' title='Multiple used in 12 places.'>aString</a> )
+<a id='L441' name='L441'></a> 441 <em class='brace'>{</em>
+<a id='L442' name='L442'></a> 442     <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>    <a href='../Y/14022.html' title='Multiple used in 319 places.'>ret</a>;
+<a id='L443' name='L443'></a> 443 
+<a id='L444' name='L444'></a> 444     <strong class='reserved'>if</strong>( !<a href='../Y/6024.html' title='Multiple used in 12 places.'>aString</a> )
+<a id='L445' name='L445'></a> 445         <strong class='reserved'>return</strong> <a href='../Y/14022.html' title='Multiple used in 319 places.'>ret</a>;
+<a id='L446' name='L446'></a> 446 
+<a id='L447' name='L447'></a> 447 <em class='sharp'>#if</em> <a href='../Y/2929.html' title='Multiple used in 12 places.'>PY_MAJOR_VERSION</a> &gt;= 3
+<a id='L448' name='L448'></a> 448     <strong class='reserved'>const</strong> <strong class='reserved'>char</strong>* <a href='../Y/14707.html' title='Multiple used in 13 places.'>str_res</a> = <a href='../Y/2643.html' title='Multiple used in 1581 places.'>NULL</a>;
+<a id='L449' name='L449'></a> 449     <a href='../Y/3032.html' title='Multiple used in 77 places.'>PyObject</a>* <a href='../Y/14825.html' title='Multiple used in 12 places.'>temp_bytes</a> = <a href='../Y/3042.html' title='Multiple used in 3 places.'>PyUnicode_AsEncodedString</a>( <a href='../Y/6024.html' title='Multiple used in 12 places.'>aString</a>, "UTF-8", "strict" );
+<a id='L450' name='L450'></a> 450 
+<a id='L451' name='L451'></a> 451     <strong class='reserved'>if</strong>( <a href='../Y/14825.html' title='Multiple used in 12 places.'>temp_bytes</a> != <a href='../Y/2643.html' title='Multiple used in 1581 places.'>NULL</a> )
+<a id='L452' name='L452'></a> 452     <em class='brace'>{</em>
+<a id='L453' name='L453'></a> 453         <a href='../Y/14707.html' title='Multiple used in 13 places.'>str_res</a> = <a href='../Y/3000.html' title='Multiple used in 3 places.'>PyBytes_AS_STRING</a>( <a href='../Y/14825.html' title='Multiple used in 12 places.'>temp_bytes</a> );
+<a id='L454' name='L454'></a> 454         <a href='../Y/14022.html' title='Multiple used in 319 places.'>ret</a> = <a href='../Y/1012.html' title='Multiple used in 106 places.'>FROM_UTF8</a>( <a href='../Y/14707.html' title='Multiple used in 13 places.'>str_res</a> );
+<a id='L455' name='L455'></a> 455         <a href='../Y/3045.html' title='Multiple used in 25 places.'>Py_DECREF</a>( <a href='../Y/14825.html' title='Multiple used in 12 places.'>temp_bytes</a> );
+<a id='L456' name='L456'></a> 456     <em class='brace'>}</em>
+<a id='L457' name='L457'></a> 457     <strong class='reserved'>else</strong>
+<a id='L458' name='L458'></a> 458     <em class='brace'>{</em>
+<a id='L459' name='L459'></a> 459         <a href='../Y/15824.html' title='Multiple used in 15 places.'>wxLogMessage</a>( "cannot encode unicode python string" );
+<a id='L460' name='L460'></a> 460     <em class='brace'>}</em>
+<a id='L461' name='L461'></a> 461 <em class='sharp'>#else</em>
+<a id='L462' name='L462'></a> 462     <strong class='reserved'>const</strong> <strong class='reserved'>char</strong>* <a href='../Y/14707.html' title='Multiple used in 13 places.'>str_res</a> = <a href='../Y/3038.html' title='Multiple used in 3 places.'>PyString_AsString</a>( <a href='../Y/6024.html' title='Multiple used in 12 places.'>aString</a> );
+<a id='L463' name='L463'></a> 463     <a href='../Y/14022.html' title='Multiple used in 319 places.'>ret</a> = <a href='../Y/1012.html' title='Multiple used in 106 places.'>FROM_UTF8</a>( <a href='../Y/14707.html' title='Multiple used in 13 places.'>str_res</a> );
+<a id='L464' name='L464'></a> 464 <em class='sharp'>#endif</em>
+<a id='L465' name='L465'></a> 465 
+<a id='L466' name='L466'></a> 466     <strong class='reserved'>return</strong> <a href='../Y/14022.html' title='Multiple used in 319 places.'>ret</a>;
+<a id='L467' name='L467'></a> 467 <em class='brace'>}</em>
+<a id='L468' name='L468'></a> 468 
+<a id='L469' name='L469'></a> 469 
+<a id='L470' name='L470'></a> 470 <a href='../Y/15511.html' title='Multiple used in 171 places.'>wxArrayString</a> <a href='../R/2570.html' title='Multiple referred from 3 places.'>PyArrayStringToWx</a>( <a href='../Y/3032.html' title='Multiple used in 77 places.'>PyObject</a>* <a href='../Y/5012.html' title='Multiple used in 4 places.'>aArrayString</a> )
+<a id='L471' name='L471'></a> 471 <em class='brace'>{</em>
+<a id='L472' name='L472'></a> 472     <a href='../Y/15511.html' title='Multiple used in 171 places.'>wxArrayString</a>   <a href='../Y/14022.html' title='Multiple used in 319 places.'>ret</a>;
+<a id='L473' name='L473'></a> 473 
+<a id='L474' name='L474'></a> 474     <strong class='reserved'>if</strong>( !<a href='../Y/5012.html' title='Multiple used in 4 places.'>aArrayString</a> )
+<a id='L475' name='L475'></a> 475         <strong class='reserved'>return</strong> <a href='../Y/14022.html' title='Multiple used in 319 places.'>ret</a>;
+<a id='L476' name='L476'></a> 476 
+<a id='L477' name='L477'></a> 477     <strong class='reserved'>int</strong> <a href='../Y/9086.html' title='Multiple used in 2 places.'>list_size</a> = PyList_Size( <a href='../Y/5012.html' title='Multiple used in 4 places.'>aArrayString</a> );
+<a id='L478' name='L478'></a> 478 
+<a id='L479' name='L479'></a> 479     <strong class='reserved'>for</strong>( <strong class='reserved'>int</strong> <a href='../D/4274.html' title='Multiple defined in 2 places.'>n</a> = 0; <a href='../D/4274.html' title='Multiple defined in 2 places.'>n</a> &lt; <a href='../Y/9086.html' title='Multiple used in 2 places.'>list_size</a>; <a href='../D/4274.html' title='Multiple defined in 2 places.'>n</a>++ )
+<a id='L480' name='L480'></a> 480     <em class='brace'>{</em>
+<a id='L481' name='L481'></a> 481         <a href='../Y/3032.html' title='Multiple used in 77 places.'>PyObject</a>* <a href='../Y/7681.html' title='Multiple used in 12 places.'>element</a> = PyList_GetItem( <a href='../Y/5012.html' title='Multiple used in 4 places.'>aArrayString</a>, <a href='../D/4274.html' title='Multiple defined in 2 places.'>n</a> );
+<a id='L482' name='L482'></a> 482 
+<a id='L483' name='L483'></a> 483         <strong class='reserved'>if</strong>( <a href='../Y/7681.html' title='Multiple used in 12 places.'>element</a> )
+<a id='L484' name='L484'></a> 484         <em class='brace'>{</em>
+<a id='L485' name='L485'></a> 485 <em class='sharp'>#if</em> <a href='../Y/2929.html' title='Multiple used in 12 places.'>PY_MAJOR_VERSION</a> &gt;= 3
+<a id='L486' name='L486'></a> 486             <strong class='reserved'>const</strong> <strong class='reserved'>char</strong>* <a href='../Y/14707.html' title='Multiple used in 13 places.'>str_res</a> = <a href='../Y/2643.html' title='Multiple used in 1581 places.'>NULL</a>;
+<a id='L487' name='L487'></a> 487             <a href='../Y/3032.html' title='Multiple used in 77 places.'>PyObject</a>* <a href='../Y/14825.html' title='Multiple used in 12 places.'>temp_bytes</a> = <a href='../Y/3042.html' title='Multiple used in 3 places.'>PyUnicode_AsEncodedString</a>( <a href='../Y/7681.html' title='Multiple used in 12 places.'>element</a>, "UTF-8", "strict" );
+<a id='L488' name='L488'></a> 488 
+<a id='L489' name='L489'></a> 489             <strong class='reserved'>if</strong>( <a href='../Y/14825.html' title='Multiple used in 12 places.'>temp_bytes</a> != <a href='../Y/2643.html' title='Multiple used in 1581 places.'>NULL</a> )
+<a id='L490' name='L490'></a> 490             <em class='brace'>{</em>
+<a id='L491' name='L491'></a> 491                 <a href='../Y/14707.html' title='Multiple used in 13 places.'>str_res</a> = <a href='../Y/3000.html' title='Multiple used in 3 places.'>PyBytes_AS_STRING</a>( <a href='../Y/14825.html' title='Multiple used in 12 places.'>temp_bytes</a> );
+<a id='L492' name='L492'></a> 492                 <a href='../Y/14022.html' title='Multiple used in 319 places.'>ret</a>.<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../Y/1012.html' title='Multiple used in 106 places.'>FROM_UTF8</a>( <a href='../Y/14707.html' title='Multiple used in 13 places.'>str_res</a> ), 1 );
+<a id='L493' name='L493'></a> 493                 <a href='../Y/3045.html' title='Multiple used in 25 places.'>Py_DECREF</a>( <a href='../Y/14825.html' title='Multiple used in 12 places.'>temp_bytes</a> );
+<a id='L494' name='L494'></a> 494             <em class='brace'>}</em>
+<a id='L495' name='L495'></a> 495             <strong class='reserved'>else</strong>
+<a id='L496' name='L496'></a> 496             <em class='brace'>{</em>
+<a id='L497' name='L497'></a> 497                 <a href='../Y/15824.html' title='Multiple used in 15 places.'>wxLogMessage</a>( "cannot encode unicode python string" );
+<a id='L498' name='L498'></a> 498             <em class='brace'>}</em>
+<a id='L499' name='L499'></a> 499 <em class='sharp'>#else</em>
+<a id='L500' name='L500'></a> 500             <a href='../Y/14022.html' title='Multiple used in 319 places.'>ret</a>.<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../Y/1012.html' title='Multiple used in 106 places.'>FROM_UTF8</a>( <a href='../Y/3038.html' title='Multiple used in 3 places.'>PyString_AsString</a>( <a href='../Y/7681.html' title='Multiple used in 12 places.'>element</a> ) ), 1 );
+<a id='L501' name='L501'></a> 501 <em class='sharp'>#endif</em>
+<a id='L502' name='L502'></a> 502         <em class='brace'>}</em>
+<a id='L503' name='L503'></a> 503     <em class='brace'>}</em>
+<a id='L504' name='L504'></a> 504 
+<a id='L505' name='L505'></a> 505     <strong class='reserved'>return</strong> <a href='../Y/14022.html' title='Multiple used in 319 places.'>ret</a>;
+<a id='L506' name='L506'></a> 506 <em class='brace'>}</em>
+<a id='L507' name='L507'></a> 507 
+<a id='L508' name='L508'></a> 508 
+<a id='L509' name='L509'></a> 509 <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../R/2571.html' title='Multiple referred from 4 places.'>PyErrStringWithTraceback</a>()
+<a id='L510' name='L510'></a> 510 <em class='brace'>{</em>
+<a id='L511' name='L511'></a> 511     <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../Y/7767.html' title='Multiple used in 33 places.'>err</a>;
+<a id='L512' name='L512'></a> 512 
+<a id='L513' name='L513'></a> 513     <strong class='reserved'>if</strong>( !<a href='../Y/3008.html' title='Multiple used in 5 places.'>PyErr_Occurred</a>() )
+<a id='L514' name='L514'></a> 514         <strong class='reserved'>return</strong> <a href='../Y/7767.html' title='Multiple used in 33 places.'>err</a>;
+<a id='L515' name='L515'></a> 515 
+<a id='L516' name='L516'></a> 516     <a href='../Y/3032.html' title='Multiple used in 77 places.'>PyObject</a>*   <a href='../Y/15150.html' title='Multiple used in 142 places.'>type</a>;
+<a id='L517' name='L517'></a> 517     <a href='../Y/3032.html' title='Multiple used in 77 places.'>PyObject</a>*   <a href='../Y/15283.html' title='Multiple used in 208 places.'>value</a>;
+<a id='L518' name='L518'></a> 518     <a href='../Y/3032.html' title='Multiple used in 77 places.'>PyObject</a>*   <a href='../Y/15070.html' title='Multiple used in 9 places.'>traceback</a>;
+<a id='L519' name='L519'></a> 519 
+<a id='L520' name='L520'></a> 520     PyErr_Fetch( &amp;<a href='../Y/15150.html' title='Multiple used in 142 places.'>type</a>, &amp;<a href='../Y/15283.html' title='Multiple used in 208 places.'>value</a>, &amp;<a href='../Y/15070.html' title='Multiple used in 9 places.'>traceback</a> );
+<a id='L521' name='L521'></a> 521 
+<a id='L522' name='L522'></a> 522     PyErr_NormalizeException( &amp;<a href='../Y/15150.html' title='Multiple used in 142 places.'>type</a>, &amp;<a href='../Y/15283.html' title='Multiple used in 208 places.'>value</a>, &amp;<a href='../Y/15070.html' title='Multiple used in 9 places.'>traceback</a> );
+<a id='L523' name='L523'></a> 523 
+<a id='L524' name='L524'></a> 524     <strong class='reserved'>if</strong>( <a href='../Y/15070.html' title='Multiple used in 9 places.'>traceback</a> == <a href='../Y/2643.html' title='Multiple used in 1581 places.'>NULL</a> )
+<a id='L525' name='L525'></a> 525     <em class='brace'>{</em>
+<a id='L526' name='L526'></a> 526         <a href='../Y/15070.html' title='Multiple used in 9 places.'>traceback</a> = <a href='../Y/3049.html' title='Multiple used in 3 places.'>Py_None</a>;
+<a id='L527' name='L527'></a> 527         Py_INCREF( <a href='../Y/15070.html' title='Multiple used in 9 places.'>traceback</a> );
+<a id='L528' name='L528'></a> 528     <em class='brace'>}</em>
+<a id='L529' name='L529'></a> 529 
+<a id='L530' name='L530'></a> 530 <em class='sharp'>#if</em> <a href='../Y/2929.html' title='Multiple used in 12 places.'>PY_MAJOR_VERSION</a> &gt;= 3
+<a id='L531' name='L531'></a> 531     PyException_SetTraceback( <a href='../Y/15283.html' title='Multiple used in 208 places.'>value</a>, <a href='../Y/15070.html' title='Multiple used in 9 places.'>traceback</a> );
+<a id='L532' name='L532'></a> 532 
+<a id='L533' name='L533'></a> 533     <a href='../Y/3032.html' title='Multiple used in 77 places.'>PyObject</a>* <a href='../Y/15072.html' title='Multiple used in 4 places.'>tracebackModuleString</a> = <a href='../Y/3043.html' title='Multiple used in 2 places.'>PyUnicode_FromString</a>( "traceback" );
+<a id='L534' name='L534'></a> 534 <em class='sharp'>#else</em>
+<a id='L535' name='L535'></a> 535     <a href='../Y/3032.html' title='Multiple used in 77 places.'>PyObject</a>* <a href='../Y/15072.html' title='Multiple used in 4 places.'>tracebackModuleString</a> = <a href='../Y/3039.html' title='Multiple used in 2 places.'>PyString_FromString</a>( "traceback" );
+<a id='L536' name='L536'></a> 536 <em class='sharp'>#endif</em>
+<a id='L537' name='L537'></a> 537     <a href='../Y/3032.html' title='Multiple used in 77 places.'>PyObject</a>* <a href='../Y/15071.html' title='Multiple used in 3 places.'>tracebackModule</a> = PyImport_Import( <a href='../Y/15072.html' title='Multiple used in 4 places.'>tracebackModuleString</a> );
+<a id='L538' name='L538'></a> 538     <a href='../Y/3045.html' title='Multiple used in 25 places.'>Py_DECREF</a>( <a href='../Y/15072.html' title='Multiple used in 4 places.'>tracebackModuleString</a> );
+<a id='L539' name='L539'></a> 539 
+<a id='L540' name='L540'></a> 540     <a href='../Y/3032.html' title='Multiple used in 77 places.'>PyObject</a>* <a href='../Y/8065.html' title='Multiple used in 3 places.'>formatException</a> = <a href='../Y/3034.html' title='Multiple used in 4 places.'>PyObject_GetAttrString</a>( <a href='../Y/15071.html' title='Multiple used in 3 places.'>tracebackModule</a>,
+<a id='L541' name='L541'></a> 541                                                         "format_exception" );
+<a id='L542' name='L542'></a> 542     <a href='../Y/3045.html' title='Multiple used in 25 places.'>Py_DECREF</a>( <a href='../Y/15071.html' title='Multiple used in 3 places.'>tracebackModule</a> );
+<a id='L543' name='L543'></a> 543 
+<a id='L544' name='L544'></a> 544     <a href='../Y/3032.html' title='Multiple used in 77 places.'>PyObject</a>* <a href='../Y/6442.html' title='Multiple used in 5 places.'>args</a> = <a href='../Y/3044.html' title='Multiple used in 9 places.'>Py_BuildValue</a>( "(O,O,O)", <a href='../Y/15150.html' title='Multiple used in 142 places.'>type</a>, <a href='../Y/15283.html' title='Multiple used in 208 places.'>value</a>, <a href='../Y/15070.html' title='Multiple used in 9 places.'>traceback</a> );
+<a id='L545' name='L545'></a> 545     <a href='../Y/3032.html' title='Multiple used in 77 places.'>PyObject</a>* <a href='../Y/14021.html' title='Multiple used in 201 places.'>result</a> = <a href='../Y/3033.html' title='Multiple used in 3 places.'>PyObject_CallObject</a>( <a href='../Y/8065.html' title='Multiple used in 3 places.'>formatException</a>, <a href='../Y/6442.html' title='Multiple used in 5 places.'>args</a> );
+<a id='L546' name='L546'></a> 546     <a href='../Y/3050.html' title='Multiple used in 14 places.'>Py_XDECREF</a>( <a href='../Y/8065.html' title='Multiple used in 3 places.'>formatException</a> );
+<a id='L547' name='L547'></a> 547     <a href='../Y/3050.html' title='Multiple used in 14 places.'>Py_XDECREF</a>( <a href='../Y/6442.html' title='Multiple used in 5 places.'>args</a> );
+<a id='L548' name='L548'></a> 548     <a href='../Y/3050.html' title='Multiple used in 14 places.'>Py_XDECREF</a>( <a href='../Y/15150.html' title='Multiple used in 142 places.'>type</a> );
+<a id='L549' name='L549'></a> 549     <a href='../Y/3050.html' title='Multiple used in 14 places.'>Py_XDECREF</a>( <a href='../Y/15283.html' title='Multiple used in 208 places.'>value</a> );
+<a id='L550' name='L550'></a> 550     <a href='../Y/3050.html' title='Multiple used in 14 places.'>Py_XDECREF</a>( <a href='../Y/15070.html' title='Multiple used in 9 places.'>traceback</a> );
+<a id='L551' name='L551'></a> 551 
+<a id='L552' name='L552'></a> 552     <a href='../Y/15511.html' title='Multiple used in 171 places.'>wxArrayString</a> <a href='../Y/14003.html' title='Multiple used in 41 places.'>res</a> = <a href='../S/744.html#L470' title='Defined at 470 in swig/python_scripting.cpp.'>PyArrayStringToWx</a>( <a href='../Y/14021.html' title='Multiple used in 201 places.'>result</a> );
+<a id='L553' name='L553'></a> 553 
+<a id='L554' name='L554'></a> 554     <strong class='reserved'>for</strong>( <strong class='reserved'>unsigned</strong> <a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a> = 0; <a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a>&lt;<a href='../Y/14003.html' title='Multiple used in 41 places.'>res</a>.<a href='../Y/551.html' title='Multiple used in 27 places.'>Count</a>(); <a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a>++ )
+<a id='L555' name='L555'></a> 555     <em class='brace'>{</em>
+<a id='L556' name='L556'></a> 556         <a href='../Y/7767.html' title='Multiple used in 33 places.'>err</a> += <a href='../Y/14003.html' title='Multiple used in 41 places.'>res</a>[<a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a>] + <a href='../Y/15966.html' title='Multiple used in 1011 places.'>wxT</a>( "\n" );
+<a id='L557' name='L557'></a> 557     <em class='brace'>}</em>
+<a id='L558' name='L558'></a> 558 
+<a id='L559' name='L559'></a> 559     <a href='../Y/3005.html' title='Multiple used in 5 places.'>PyErr_Clear</a>();
+<a id='L560' name='L560'></a> 560 
+<a id='L561' name='L561'></a> 561     <strong class='reserved'>return</strong> <a href='../Y/7767.html' title='Multiple used in 33 places.'>err</a>;
+<a id='L562' name='L562'></a> 562 <em class='brace'>}</em>
+<a id='L563' name='L563'></a> 563 
+<a id='L564' name='L564'></a> 564 
+<a id='L565' name='L565'></a> 565 <em class='comment'>/**</em>
+<a id='L566' name='L566'></a> 566 <em class='comment'> * Find the Python scripting path.</em>
+<a id='L567' name='L567'></a> 567 <em class='comment'> */</em>
+<a id='L568' name='L568'></a> 568 <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../R/2573.html' title='Multiple referred from 4 places.'>PyScriptingPath</a>()
+<a id='L569' name='L569'></a> 569 <em class='brace'>{</em>
+<a id='L570' name='L570'></a> 570     <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../Y/13439.html' title='Multiple used in 195 places.'>path</a>;
+<a id='L571' name='L571'></a> 571 
+<a id='L572' name='L572'></a> 572     <em class='comment'>//@todo This should this be a user configurable variable eg KISCRIPT?</em>
+<a id='L573' name='L573'></a> 573 <em class='sharp'>#if</em> <strong class='reserved'>defined</strong>( <a href='../Y/4951.html' title='Multiple used in 12 places.'>__WXMAC__</a> )
+<a id='L574' name='L574'></a> 574     <a href='../Y/13439.html' title='Multiple used in 195 places.'>path</a> = <a href='../Y/1581.html' title='Multiple used in 2 places.'>GetOSXKicadDataDir</a>() + <a href='../Y/15966.html' title='Multiple used in 1011 places.'>wxT</a>( "/scripting" );
+<a id='L575' name='L575'></a> 575 <em class='sharp'>#else</em>
+<a id='L576' name='L576'></a> 576     <a href='../Y/13439.html' title='Multiple used in 195 places.'>path</a> = <a href='../S/567.html#L200' title='Defined at 200 in pcbnew.cpp.'>Pgm</a>().<a href='../Y/1402.html' title='Multiple used in 5 places.'>GetExecutablePath</a>() + <a href='../Y/15966.html' title='Multiple used in 1011 places.'>wxT</a>( "../share/kicad/scripting" );
+<a id='L577' name='L577'></a> 577 <em class='sharp'>#endif</em>
+<a id='L578' name='L578'></a> 578 
+<a id='L579' name='L579'></a> 579     <a href='../Y/15715.html' title='Multiple used in 165 places.'>wxFileName</a> <a href='../Y/14254.html' title='Multiple used in 3 places.'>scriptPath</a>( <a href='../Y/13439.html' title='Multiple used in 195 places.'>path</a> );
+<a id='L580' name='L580'></a> 580     <a href='../Y/14254.html' title='Multiple used in 3 places.'>scriptPath</a>.<a href='../Y/2537.html' title='Multiple used in 6 places.'>MakeAbsolute</a>();
+<a id='L581' name='L581'></a> 581 
+<a id='L582' name='L582'></a> 582     <em class='comment'>// Convert '\' to '/' in path, because later python script read \n or \r</em>
+<a id='L583' name='L583'></a> 583     <em class='comment'>// as escaped sequence, and create issues, when calling it by PyRun_SimpleString() method.</em>
+<a id='L584' name='L584'></a> 584     <em class='comment'>// It can happen on Windows.</em>
+<a id='L585' name='L585'></a> 585     <a href='../Y/13439.html' title='Multiple used in 195 places.'>path</a> = <a href='../Y/14254.html' title='Multiple used in 3 places.'>scriptPath</a>.<a href='../Y/1439.html' title='Multiple used in 150 places.'>GetFullPath</a>();
+<a id='L586' name='L586'></a> 586     <a href='../Y/13439.html' title='Multiple used in 195 places.'>path</a>.<a href='../D/2797.html' title='Multiple defined in 4 places.'>Replace</a>( '\\', '/' );
+<a id='L587' name='L587'></a> 587 
+<a id='L588' name='L588'></a> 588     <strong class='reserved'>return</strong> <a href='../Y/13439.html' title='Multiple used in 195 places.'>path</a>;
+<a id='L589' name='L589'></a> 589 <em class='brace'>}</em>
+<a id='L590' name='L590'></a> 590 
+<a id='L591' name='L591'></a> 591 
+<a id='L592' name='L592'></a> 592 <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../S/745.html#L114' title='Referred from 114 in swig/python_scripting.h.'>PyPluginsPath</a>()
+<a id='L593' name='L593'></a> 593 <em class='brace'>{</em>
+<a id='L594' name='L594'></a> 594     <em class='comment'>// Note we are using unix path separator, because window separator sometimes</em>
+<a id='L595' name='L595'></a> 595     <em class='comment'>// creates issues when passing a command string to a python method by PyRun_SimpleString</em>
+<a id='L596' name='L596'></a> 596     <strong class='reserved'>return</strong> <a href='../S/744.html#L568' title='Defined at 568 in swig/python_scripting.cpp.'>PyScriptingPath</a>() + '/' + "plugins";
+<a id='L597' name='L597'></a> 597 <em class='brace'>}</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L69'>[^]</a><a href='#L592'>[v]</a><a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

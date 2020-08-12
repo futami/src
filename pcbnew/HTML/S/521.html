@@ -1,0 +1,252 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>netlist_reader/pcb_netlist.cpp</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/837.html'>netlist_reader</a>/pcb_netlist.cpp</h2>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L32'>[^]</a><a href='#L204'>[v]</a>[top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L32' title='Defined at 32.'>Format</a></li>
+<li><a href='#L40' title='Defined at 40.'>SetModule</a></li>
+<li><a href='#L57' title='Defined at 57.'>GetNet</a></li>
+<li><a href='#L69' title='Defined at 69.'>Format</a></li>
+<li><a href='#L122' title='Defined at 122.'>Format</a></li>
+<li><a href='#L137' title='Defined at 137.'>AddComponent</a></li>
+<li><a href='#L143' title='Defined at 143.'>GetComponentByReference</a></li>
+<li><a href='#L160' title='Defined at 160.'>GetComponentByPath</a></li>
+<li><a href='#L176' title='Defined at 176.'>ByFPID</a></li>
+<li><a href='#L182' title='Defined at 182.'>SortByFPID</a></li>
+<li><a href='#L198' title='Defined at 198.'>SortByReference</a></li>
+<li><a href='#L204' title='Defined at 204.'>AnyFootprintsLinked</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * This program source code file is part of KiCad, a free EDA CAD application.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 1992-2011 Jean-Pierre Charras.</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> * Copyright (C) 2013 Wayne Stambaugh &lt;stambaughw@verizon.net&gt;.</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> * Copyright (C) 1992-2020 KiCad Developers, see AUTHORS.txt for contributors.</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> *</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * This program is free software; you can redistribute it and/or</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * modify it under the terms of the GNU General Public License</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> * as published by the Free Software Foundation; either version 2</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> * of the License, or (at your option) any later version.</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> *</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * This program is distributed in the hope that it will be useful,</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> * GNU General Public License for more details.</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> *</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * You should have received a copy of the GNU General Public License</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> * along with this program; if not, you may find one here:</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'> * or you may search the http://www.gnu.org website for the version 2 license,</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'> * or you may write to the Free Software Foundation, Inc.,</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'> * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA</em>
+<a id='L24' name='L24'></a>  24 <em class='comment'> */</em>
+<a id='L25' name='L25'></a>  25 
+<a id='L26' name='L26'></a>  26 
+<a id='L27' name='L27'></a>  27 <em class='sharp'>#include</em> &lt;refdes_utils.h&gt;
+<a id='L28' name='L28'></a>  28 <em class='sharp'>#include</em> "<a href='522.html'>pcb_netlist.h</a>"
+<a id='L29' name='L29'></a>  29 <em class='sharp'>#include</em> &lt;<a href='69.html'>class_module.h</a>&gt;
+<a id='L30' name='L30'></a>  30 
+<a id='L31' name='L31'></a>  31 
+<a id='L32' name='L32'></a>  32 <strong class='reserved'>int</strong> <a href='../Y/415.html' title='Multiple used in 15 places.'>COMPONENT_NET</a>::<a href='../R/984.html' title='Multiple referred from 524 places.'>Format</a>( <a href='../Y/2707.html' title='Multiple used in 79 places.'>OUTPUTFORMATTER</a>* <a href='../Y/5704.html' title='Multiple used in 30 places.'>aOut</a>, <strong class='reserved'>int</strong> <a href='../Y/5616.html' title='Multiple used in 223 places.'>aNestLevel</a>, <strong class='reserved'>int</strong> <a href='../Y/5153.html' title='Multiple used in 23 places.'>aCtl</a> )
+<a id='L33' name='L33'></a>  33 <em class='brace'>{</em>
+<a id='L34' name='L34'></a>  34     <strong class='reserved'>return</strong> <a href='../Y/5704.html' title='Multiple used in 30 places.'>aOut</a>-&gt;<a href='../S/275.html#L433' title='Defined at 433 in dialogs/dialog_print_pcbnew.cpp.'>Print</a>( <a href='../Y/5616.html' title='Multiple used in 223 places.'>aNestLevel</a>, "(pin_net %s %s)",
+<a id='L35' name='L35'></a>  35                         <a href='../Y/5704.html' title='Multiple used in 30 places.'>aOut</a>-&gt;<a href='../Y/3060.html' title='Multiple used in 37 places.'>Quotew</a>( <a href='../Y/11587.html' title='Multiple used in 6 places.'>m_pinName</a> ).<a href='../Y/6800.html' title='Multiple used in 467 places.'>c_str</a>(),
+<a id='L36' name='L36'></a>  36                         <a href='../Y/5704.html' title='Multiple used in 30 places.'>aOut</a>-&gt;<a href='../Y/3060.html' title='Multiple used in 37 places.'>Quotew</a>( <a href='../Y/11398.html' title='Multiple used in 4 places.'>m_netName</a> ).<a href='../Y/6800.html' title='Multiple used in 467 places.'>c_str</a>() );
+<a id='L37' name='L37'></a>  37 <em class='brace'>}</em>
+<a id='L38' name='L38'></a>  38 
+<a id='L39' name='L39'></a>  39 
+<a id='L40' name='L40'></a>  40 <strong class='reserved'>void</strong> <a href='../Y/412.html' title='Multiple used in 59 places.'>COMPONENT</a>::<a href='../R/2929.html' title='Multiple referred from 2 places.'>SetModule</a>( <a href='../D/2056.html' title='Multiple defined in 3 places.'>MODULE</a>* <a href='../Y/5598.html' title='Multiple used in 419 places.'>aModule</a> )
+<a id='L41' name='L41'></a>  41 <em class='brace'>{</em>
+<a id='L42' name='L42'></a>  42     <a href='../Y/10873.html' title='Multiple used in 106 places.'>m_footprint</a>.<a href='../S/777.html#L170' title='Defined at 170 in tools/pcbnew_picker_tool.cpp.'>reset</a>( <a href='../Y/5598.html' title='Multiple used in 419 places.'>aModule</a> );
+<a id='L43' name='L43'></a>  43 
+<a id='L44' name='L44'></a>  44     <strong class='reserved'>if</strong>( <a href='../Y/5598.html' title='Multiple used in 419 places.'>aModule</a> == <a href='../Y/2643.html' title='Multiple used in 1581 places.'>NULL</a> )
+<a id='L45' name='L45'></a>  45         <strong class='reserved'>return</strong>;
+<a id='L46' name='L46'></a>  46 
+<a id='L47' name='L47'></a>  47     <a href='../Y/5598.html' title='Multiple used in 419 places.'>aModule</a>-&gt;<a href='../Y/3791.html' title='Multiple used in 14 places.'>SetReference</a>( <a href='../Y/11750.html' title='Multiple used in 5 places.'>m_reference</a> );
+<a id='L48' name='L48'></a>  48     <a href='../Y/5598.html' title='Multiple used in 419 places.'>aModule</a>-&gt;<a href='../D/3095.html' title='Multiple defined in 3 places.'>SetValue</a>( <a href='../S/469.html#L82' title='Defined at 82 in grid_layer_box_helpers.cpp.'>m_value</a> );
+<a id='L49' name='L49'></a>  49     <a href='../Y/5598.html' title='Multiple used in 419 places.'>aModule</a>-&gt;<a href='../Y/3508.html' title='Multiple used in 26 places.'>SetFPID</a>( <a href='../Y/10914.html' title='Multiple used in 17 places.'>m_fpid</a> );
+<a id='L50' name='L50'></a>  50     <a href='../Y/5598.html' title='Multiple used in 419 places.'>aModule</a>-&gt;<a href='../Y/3749.html' title='Multiple used in 35 places.'>SetPath</a>( <a href='../Y/11571.html' title='Multiple used in 6 places.'>m_path</a> );
+<a id='L51' name='L51'></a>  51 <em class='brace'>}</em>
+<a id='L52' name='L52'></a>  52 
+<a id='L53' name='L53'></a>  53 
+<a id='L54' name='L54'></a>  54 <a href='../Y/415.html' title='Multiple used in 15 places.'>COMPONENT_NET</a> <a href='../Y/412.html' title='Multiple used in 59 places.'>COMPONENT</a>::<a href='../Y/10769.html' title='Multiple used in 3 places.'>m_emptyNet</a>;
+<a id='L55' name='L55'></a>  55 
+<a id='L56' name='L56'></a>  56 
+<a id='L57' name='L57'></a>  57 <strong class='reserved'>const</strong> <a href='../Y/415.html' title='Multiple used in 15 places.'>COMPONENT_NET</a>&amp; <a href='../Y/412.html' title='Multiple used in 59 places.'>COMPONENT</a>::<a href='../R/1209.html' title='Multiple referred from 86 places.'>GetNet</a>( <strong class='reserved'>const</strong> <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>&amp; <a href='../Y/5779.html' title='Multiple used in 7 places.'>aPinName</a> ) <strong class='reserved'>const</strong>
+<a id='L58' name='L58'></a>  58 <em class='brace'>{</em>
+<a id='L59' name='L59'></a>  59     <strong class='reserved'>for</strong>( <strong class='reserved'>unsigned</strong> <a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a> = 0;  <a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a> &lt; <a href='../Y/11418.html' title='Multiple used in 33 places.'>m_nets</a>.<a href='../S/330.html#L214' title='Defined at 214 in dialogs/panel_fp_lib_table.cpp.'>size</a>();  <a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a>++ )
+<a id='L60' name='L60'></a>  60     <em class='brace'>{</em>
+<a id='L61' name='L61'></a>  61         <strong class='reserved'>if</strong>( <a href='../Y/11418.html' title='Multiple used in 33 places.'>m_nets</a>[<a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a>].<a href='../Y/1618.html' title='Multiple used in 3 places.'>GetPinName</a>() == <a href='../Y/5779.html' title='Multiple used in 7 places.'>aPinName</a> )
+<a id='L62' name='L62'></a>  62             <strong class='reserved'>return</strong> <a href='../Y/11418.html' title='Multiple used in 33 places.'>m_nets</a>[<a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a>];
+<a id='L63' name='L63'></a>  63     <em class='brace'>}</em>
+<a id='L64' name='L64'></a>  64 
+<a id='L65' name='L65'></a>  65     <strong class='reserved'>return</strong> <a href='../Y/10769.html' title='Multiple used in 3 places.'>m_emptyNet</a>;
+<a id='L66' name='L66'></a>  66 <em class='brace'>}</em>
+<a id='L67' name='L67'></a>  67 
+<a id='L68' name='L68'></a>  68 
+<a id='L69' name='L69'></a>  69 <strong class='reserved'>void</strong> <a href='../Y/412.html' title='Multiple used in 59 places.'>COMPONENT</a>::<a href='../R/984.html' title='Multiple referred from 524 places.'>Format</a>( <a href='../Y/2707.html' title='Multiple used in 79 places.'>OUTPUTFORMATTER</a>* <a href='../Y/5704.html' title='Multiple used in 30 places.'>aOut</a>, <strong class='reserved'>int</strong> <a href='../Y/5616.html' title='Multiple used in 223 places.'>aNestLevel</a>, <strong class='reserved'>int</strong> <a href='../Y/5153.html' title='Multiple used in 23 places.'>aCtl</a> )
+<a id='L70' name='L70'></a>  70 <em class='brace'>{</em>
+<a id='L71' name='L71'></a>  71     <strong class='reserved'>int</strong> <a href='../Y/13010.html' title='Multiple used in 14 places.'>nl</a> = <a href='../Y/5616.html' title='Multiple used in 223 places.'>aNestLevel</a>;
+<a id='L72' name='L72'></a>  72 
+<a id='L73' name='L73'></a>  73     <a href='../Y/5704.html' title='Multiple used in 30 places.'>aOut</a>-&gt;<a href='../S/275.html#L433' title='Defined at 433 in dialogs/dialog_print_pcbnew.cpp.'>Print</a>( <a href='../Y/13010.html' title='Multiple used in 14 places.'>nl</a>, "(ref %s ",      <a href='../Y/5704.html' title='Multiple used in 30 places.'>aOut</a>-&gt;<a href='../Y/3060.html' title='Multiple used in 37 places.'>Quotew</a>( <a href='../Y/11750.html' title='Multiple used in 5 places.'>m_reference</a> ).<a href='../Y/6800.html' title='Multiple used in 467 places.'>c_str</a>() );
+<a id='L74' name='L74'></a>  74     <a href='../Y/5704.html' title='Multiple used in 30 places.'>aOut</a>-&gt;<a href='../S/275.html#L433' title='Defined at 433 in dialogs/dialog_print_pcbnew.cpp.'>Print</a>( 0, "(fpid %s)\n",    <a href='../Y/5704.html' title='Multiple used in 30 places.'>aOut</a>-&gt;<a href='../Y/3060.html' title='Multiple used in 37 places.'>Quotew</a>( <a href='../Y/10914.html' title='Multiple used in 17 places.'>m_fpid</a>.<a href='../D/1022.html' title='Multiple defined in 7 places.'>Format</a>() ).<a href='../Y/6800.html' title='Multiple used in 467 places.'>c_str</a>() );
+<a id='L75' name='L75'></a>  75 
+<a id='L76' name='L76'></a>  76     <strong class='reserved'>if</strong>( ! ( <a href='../Y/5153.html' title='Multiple used in 23 places.'>aCtl</a> &amp; <a href='../S/522.html#L296' title='Defined at 296 in netlist_reader/pcb_netlist.h.'>CTL_OMIT_EXTRA</a> ) )
+<a id='L77' name='L77'></a>  77     <em class='brace'>{</em>
+<a id='L78' name='L78'></a>  78         <a href='../Y/5704.html' title='Multiple used in 30 places.'>aOut</a>-&gt;<a href='../S/275.html#L433' title='Defined at 433 in dialogs/dialog_print_pcbnew.cpp.'>Print</a>( <a href='../Y/13010.html' title='Multiple used in 14 places.'>nl</a>+1, "(value %s)\n",    <a href='../Y/5704.html' title='Multiple used in 30 places.'>aOut</a>-&gt;<a href='../Y/3060.html' title='Multiple used in 37 places.'>Quotew</a>( <a href='../S/469.html#L82' title='Defined at 82 in grid_layer_box_helpers.cpp.'>m_value</a> ).<a href='../Y/6800.html' title='Multiple used in 467 places.'>c_str</a>() );
+<a id='L79' name='L79'></a>  79         <a href='../Y/5704.html' title='Multiple used in 30 places.'>aOut</a>-&gt;<a href='../S/275.html#L433' title='Defined at 433 in dialogs/dialog_print_pcbnew.cpp.'>Print</a>( <a href='../Y/13010.html' title='Multiple used in 14 places.'>nl</a>+1, "(name %s)\n",     <a href='../Y/5704.html' title='Multiple used in 30 places.'>aOut</a>-&gt;<a href='../Y/3060.html' title='Multiple used in 37 places.'>Quotew</a>( <a href='../Y/11382.html' title='Multiple used in 86 places.'>m_name</a> ).<a href='../Y/6800.html' title='Multiple used in 467 places.'>c_str</a>() );
+<a id='L80' name='L80'></a>  80         <a href='../Y/5704.html' title='Multiple used in 30 places.'>aOut</a>-&gt;<a href='../S/275.html#L433' title='Defined at 433 in dialogs/dialog_print_pcbnew.cpp.'>Print</a>( <a href='../Y/13010.html' title='Multiple used in 14 places.'>nl</a>+1, "(library %s)\n",  <a href='../Y/5704.html' title='Multiple used in 30 places.'>aOut</a>-&gt;<a href='../Y/3060.html' title='Multiple used in 37 places.'>Quotew</a>( <a href='../Y/11205.html' title='Multiple used in 5 places.'>m_library</a> ).<a href='../Y/6800.html' title='Multiple used in 467 places.'>c_str</a>() );
+<a id='L81' name='L81'></a>  81 
+<a id='L82' name='L82'></a>  82         <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../Y/13439.html' title='Multiple used in 195 places.'>path</a>;
+<a id='L83' name='L83'></a>  83 
+<a id='L84' name='L84'></a>  84         <strong class='reserved'>for</strong>( <strong class='reserved'>const</strong> <a href='../Y/2255.html' title='Multiple used in 48 places.'>KIID</a>&amp; <a href='../Y/13442.html' title='Multiple used in 2 places.'>pathStep</a> : <a href='../Y/11571.html' title='Multiple used in 6 places.'>m_path</a> )
+<a id='L85' name='L85'></a>  85             <a href='../Y/13439.html' title='Multiple used in 195 places.'>path</a> += '/' + <a href='../Y/13442.html' title='Multiple used in 2 places.'>pathStep</a>.<a href='../Y/212.html' title='Multiple used in 27 places.'>AsString</a>();
+<a id='L86' name='L86'></a>  86 
+<a id='L87' name='L87'></a>  87         <a href='../Y/5704.html' title='Multiple used in 30 places.'>aOut</a>-&gt;<a href='../S/275.html#L433' title='Defined at 433 in dialogs/dialog_print_pcbnew.cpp.'>Print</a>( <a href='../Y/13010.html' title='Multiple used in 14 places.'>nl</a>+1, "(timestamp %s)\n", <a href='../Y/5704.html' title='Multiple used in 30 places.'>aOut</a>-&gt;<a href='../Y/3060.html' title='Multiple used in 37 places.'>Quotew</a>( <a href='../Y/13439.html' title='Multiple used in 195 places.'>path</a> ).<a href='../Y/6800.html' title='Multiple used in 467 places.'>c_str</a>() );
+<a id='L88' name='L88'></a>  88     <em class='brace'>}</em>
+<a id='L89' name='L89'></a>  89 
+<a id='L90' name='L90'></a>  90     <strong class='reserved'>if</strong>( !( <a href='../Y/5153.html' title='Multiple used in 23 places.'>aCtl</a> &amp; <a href='../S/522.html#L298' title='Defined at 298 in netlist_reader/pcb_netlist.h.'>CTL_OMIT_FILTERS</a> ) &amp;&amp; <a href='../Y/10876.html' title='Multiple used in 6 places.'>m_footprintFilters</a>.<a href='../Y/1317.html' title='Multiple used in 234 places.'>GetCount</a>() )
+<a id='L91' name='L91'></a>  91     <em class='brace'>{</em>
+<a id='L92' name='L92'></a>  92         <a href='../Y/5704.html' title='Multiple used in 30 places.'>aOut</a>-&gt;<a href='../S/275.html#L433' title='Defined at 433 in dialogs/dialog_print_pcbnew.cpp.'>Print</a>( <a href='../Y/13010.html' title='Multiple used in 14 places.'>nl</a>+1, "(fp_filters" );
+<a id='L93' name='L93'></a>  93 
+<a id='L94' name='L94'></a>  94         <strong class='reserved'>for</strong>( <strong class='reserved'>unsigned</strong> <a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a> = 0;  <a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a> &lt; <a href='../Y/10876.html' title='Multiple used in 6 places.'>m_footprintFilters</a>.<a href='../Y/1317.html' title='Multiple used in 234 places.'>GetCount</a>();  ++<a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a> )
+<a id='L95' name='L95'></a>  95             <a href='../Y/5704.html' title='Multiple used in 30 places.'>aOut</a>-&gt;<a href='../S/275.html#L433' title='Defined at 433 in dialogs/dialog_print_pcbnew.cpp.'>Print</a>( 0, " %s", <a href='../Y/5704.html' title='Multiple used in 30 places.'>aOut</a>-&gt;<a href='../Y/3060.html' title='Multiple used in 37 places.'>Quotew</a>( <a href='../Y/10876.html' title='Multiple used in 6 places.'>m_footprintFilters</a>[<a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a>] ).<a href='../Y/6800.html' title='Multiple used in 467 places.'>c_str</a>() );
+<a id='L96' name='L96'></a>  96 
+<a id='L97' name='L97'></a>  97         <a href='../Y/5704.html' title='Multiple used in 30 places.'>aOut</a>-&gt;<a href='../S/275.html#L433' title='Defined at 433 in dialogs/dialog_print_pcbnew.cpp.'>Print</a>( 0, ")\n" );
+<a id='L98' name='L98'></a>  98     <em class='brace'>}</em>
+<a id='L99' name='L99'></a>  99 
+<a id='L100' name='L100'></a> 100     <strong class='reserved'>if</strong>( !( <a href='../Y/5153.html' title='Multiple used in 23 places.'>aCtl</a> &amp; <a href='../D/395.html' title='Multiple defined in 2 places.'>CTL_OMIT_NETS</a> ) &amp;&amp; <a href='../Y/11418.html' title='Multiple used in 33 places.'>m_nets</a>.<a href='../S/330.html#L214' title='Defined at 214 in dialogs/panel_fp_lib_table.cpp.'>size</a>() )
+<a id='L101' name='L101'></a> 101     <em class='brace'>{</em>
+<a id='L102' name='L102'></a> 102         <strong class='reserved'>int</strong> <a href='../Y/9090.html' title='Multiple used in 4 places.'>llen</a> = <a href='../Y/5704.html' title='Multiple used in 30 places.'>aOut</a>-&gt;<a href='../S/275.html#L433' title='Defined at 433 in dialogs/dialog_print_pcbnew.cpp.'>Print</a>( <a href='../Y/13010.html' title='Multiple used in 14 places.'>nl</a>+1, "(nets " );
+<a id='L103' name='L103'></a> 103 
+<a id='L104' name='L104'></a> 104         <strong class='reserved'>for</strong>( <strong class='reserved'>unsigned</strong> <a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a> = 0;  <a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a> &lt; <a href='../Y/11418.html' title='Multiple used in 33 places.'>m_nets</a>.<a href='../S/330.html#L214' title='Defined at 214 in dialogs/panel_fp_lib_table.cpp.'>size</a>();  ++<a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a> )
+<a id='L105' name='L105'></a> 105         <em class='brace'>{</em>
+<a id='L106' name='L106'></a> 106             <strong class='reserved'>if</strong>( <a href='../Y/9090.html' title='Multiple used in 4 places.'>llen</a> &gt; 80 )
+<a id='L107' name='L107'></a> 107             <em class='brace'>{</em>
+<a id='L108' name='L108'></a> 108                 <a href='../Y/5704.html' title='Multiple used in 30 places.'>aOut</a>-&gt;<a href='../S/275.html#L433' title='Defined at 433 in dialogs/dialog_print_pcbnew.cpp.'>Print</a>( 0, "\n" );
+<a id='L109' name='L109'></a> 109                 <a href='../Y/9090.html' title='Multiple used in 4 places.'>llen</a> = <a href='../Y/5704.html' title='Multiple used in 30 places.'>aOut</a>-&gt;<a href='../S/275.html#L433' title='Defined at 433 in dialogs/dialog_print_pcbnew.cpp.'>Print</a>( <a href='../Y/13010.html' title='Multiple used in 14 places.'>nl</a>+1, "  " );
+<a id='L110' name='L110'></a> 110             <em class='brace'>}</em>
+<a id='L111' name='L111'></a> 111 
+<a id='L112' name='L112'></a> 112             <a href='../Y/9090.html' title='Multiple used in 4 places.'>llen</a> += <a href='../Y/11418.html' title='Multiple used in 33 places.'>m_nets</a>[<a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a>].<a href='../D/1022.html' title='Multiple defined in 7 places.'>Format</a>( <a href='../Y/5704.html' title='Multiple used in 30 places.'>aOut</a>, 0, <a href='../Y/5153.html' title='Multiple used in 23 places.'>aCtl</a> );
+<a id='L113' name='L113'></a> 113         <em class='brace'>}</em>
+<a id='L114' name='L114'></a> 114 
+<a id='L115' name='L115'></a> 115         <a href='../Y/5704.html' title='Multiple used in 30 places.'>aOut</a>-&gt;<a href='../S/275.html#L433' title='Defined at 433 in dialogs/dialog_print_pcbnew.cpp.'>Print</a>( 0, ")\n" );
+<a id='L116' name='L116'></a> 116     <em class='brace'>}</em>
+<a id='L117' name='L117'></a> 117 
+<a id='L118' name='L118'></a> 118     <a href='../Y/5704.html' title='Multiple used in 30 places.'>aOut</a>-&gt;<a href='../S/275.html#L433' title='Defined at 433 in dialogs/dialog_print_pcbnew.cpp.'>Print</a>( <a href='../Y/13010.html' title='Multiple used in 14 places.'>nl</a>, ")\n" );    <em class='comment'>// &lt;/ref&gt;</em>
+<a id='L119' name='L119'></a> 119 <em class='brace'>}</em>
+<a id='L120' name='L120'></a> 120 
+<a id='L121' name='L121'></a> 121 
+<a id='L122' name='L122'></a> 122 <strong class='reserved'>void</strong> <a href='../Y/2607.html' title='Multiple used in 58 places.'>NETLIST</a>::<a href='../R/984.html' title='Multiple referred from 524 places.'>Format</a>( <strong class='reserved'>const</strong> <strong class='reserved'>char</strong>* <a href='../Y/5213.html' title='Multiple used in 3 places.'>aDocName</a>, <a href='../Y/2707.html' title='Multiple used in 79 places.'>OUTPUTFORMATTER</a>* <a href='../Y/5704.html' title='Multiple used in 30 places.'>aOut</a>, <strong class='reserved'>int</strong> <a href='../Y/5616.html' title='Multiple used in 223 places.'>aNestLevel</a>, <strong class='reserved'>int</strong> <a href='../Y/5153.html' title='Multiple used in 23 places.'>aCtl</a> )
+<a id='L123' name='L123'></a> 123 <em class='brace'>{</em>
+<a id='L124' name='L124'></a> 124     <strong class='reserved'>int</strong> <a href='../Y/13010.html' title='Multiple used in 14 places.'>nl</a> = <a href='../Y/5616.html' title='Multiple used in 223 places.'>aNestLevel</a>;
+<a id='L125' name='L125'></a> 125 
+<a id='L126' name='L126'></a> 126     <a href='../Y/5704.html' title='Multiple used in 30 places.'>aOut</a>-&gt;<a href='../S/275.html#L433' title='Defined at 433 in dialogs/dialog_print_pcbnew.cpp.'>Print</a>( <a href='../Y/13010.html' title='Multiple used in 14 places.'>nl</a>, "(%s\n", <a href='../Y/5213.html' title='Multiple used in 3 places.'>aDocName</a> );
+<a id='L127' name='L127'></a> 127 
+<a id='L128' name='L128'></a> 128     <strong class='reserved'>for</strong>( <strong class='reserved'>unsigned</strong> <a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a> = 0;  <a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a> &lt; <a href='../Y/10549.html' title='Multiple used in 35 places.'>m_components</a>.<a href='../S/330.html#L214' title='Defined at 214 in dialogs/panel_fp_lib_table.cpp.'>size</a>();  <a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a>++ )
+<a id='L129' name='L129'></a> 129     <em class='brace'>{</em>
+<a id='L130' name='L130'></a> 130         <a href='../Y/10549.html' title='Multiple used in 35 places.'>m_components</a>[<a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a>].<a href='../D/1022.html' title='Multiple defined in 7 places.'>Format</a>( <a href='../Y/5704.html' title='Multiple used in 30 places.'>aOut</a>, <a href='../Y/13010.html' title='Multiple used in 14 places.'>nl</a>+1, <a href='../Y/5153.html' title='Multiple used in 23 places.'>aCtl</a> );
+<a id='L131' name='L131'></a> 131     <em class='brace'>}</em>
+<a id='L132' name='L132'></a> 132 
+<a id='L133' name='L133'></a> 133     <a href='../Y/5704.html' title='Multiple used in 30 places.'>aOut</a>-&gt;<a href='../S/275.html#L433' title='Defined at 433 in dialogs/dialog_print_pcbnew.cpp.'>Print</a>( <a href='../Y/13010.html' title='Multiple used in 14 places.'>nl</a>, ")\n" );
+<a id='L134' name='L134'></a> 134 <em class='brace'>}</em>
+<a id='L135' name='L135'></a> 135 
+<a id='L136' name='L136'></a> 136 
+<a id='L137' name='L137'></a> 137 <strong class='reserved'>void</strong> <a href='../Y/2607.html' title='Multiple used in 58 places.'>NETLIST</a>::<a href='../R/99.html' title='Multiple referred from 5 places.'>AddComponent</a>( <a href='../Y/412.html' title='Multiple used in 59 places.'>COMPONENT</a>* <a href='../Y/5111.html' title='Multiple used in 30 places.'>aComponent</a> )
+<a id='L138' name='L138'></a> 138 <em class='brace'>{</em>
+<a id='L139' name='L139'></a> 139     <a href='../Y/10549.html' title='Multiple used in 35 places.'>m_components</a>.<a href='../S/330.html#L228' title='Defined at 228 in dialogs/panel_fp_lib_table.cpp.'>push_back</a>( <a href='../Y/5111.html' title='Multiple used in 30 places.'>aComponent</a> );
+<a id='L140' name='L140'></a> 140 <em class='brace'>}</em>
+<a id='L141' name='L141'></a> 141 
+<a id='L142' name='L142'></a> 142 
+<a id='L143' name='L143'></a> 143 <a href='../Y/412.html' title='Multiple used in 59 places.'>COMPONENT</a>* <a href='../Y/2607.html' title='Multiple used in 58 places.'>NETLIST</a>::<a href='../R/1097.html' title='Multiple referred from 6 places.'>GetComponentByReference</a>( <strong class='reserved'>const</strong> <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>&amp; <a href='../Y/5877.html' title='Multiple used in 12 places.'>aReference</a> )
+<a id='L144' name='L144'></a> 144 <em class='brace'>{</em>
+<a id='L145' name='L145'></a> 145     <a href='../Y/412.html' title='Multiple used in 59 places.'>COMPONENT</a>* <a href='../Y/7024.html' title='Multiple used in 140 places.'>component</a> = <a href='../Y/2643.html' title='Multiple used in 1581 places.'>NULL</a>;
+<a id='L146' name='L146'></a> 146 
+<a id='L147' name='L147'></a> 147     <strong class='reserved'>for</strong>( <strong class='reserved'>unsigned</strong> <a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a> = 0;  <a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a> &lt; <a href='../Y/10549.html' title='Multiple used in 35 places.'>m_components</a>.<a href='../S/330.html#L214' title='Defined at 214 in dialogs/panel_fp_lib_table.cpp.'>size</a>();  <a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a>++ )
+<a id='L148' name='L148'></a> 148     <em class='brace'>{</em>
+<a id='L149' name='L149'></a> 149         <strong class='reserved'>if</strong>( <a href='../Y/10549.html' title='Multiple used in 35 places.'>m_components</a>[<a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a>].<a href='../Y/1663.html' title='Multiple used in 115 places.'>GetReference</a>() == <a href='../Y/5877.html' title='Multiple used in 12 places.'>aReference</a> )
+<a id='L150' name='L150'></a> 150         <em class='brace'>{</em>
+<a id='L151' name='L151'></a> 151             <a href='../Y/7024.html' title='Multiple used in 140 places.'>component</a> = &amp;<a href='../Y/10549.html' title='Multiple used in 35 places.'>m_components</a>[<a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a>];
+<a id='L152' name='L152'></a> 152             <strong class='reserved'>break</strong>;
+<a id='L153' name='L153'></a> 153         <em class='brace'>}</em>
+<a id='L154' name='L154'></a> 154     <em class='brace'>}</em>
+<a id='L155' name='L155'></a> 155 
+<a id='L156' name='L156'></a> 156     <strong class='reserved'>return</strong> <a href='../Y/7024.html' title='Multiple used in 140 places.'>component</a>;
+<a id='L157' name='L157'></a> 157 <em class='brace'>}</em>
+<a id='L158' name='L158'></a> 158 
+<a id='L159' name='L159'></a> 159 
+<a id='L160' name='L160'></a> 160 <a href='../Y/412.html' title='Multiple used in 59 places.'>COMPONENT</a>* <a href='../Y/2607.html' title='Multiple used in 58 places.'>NETLIST</a>::<a href='../R/1096.html' title='Multiple referred from 2 places.'>GetComponentByPath</a>( <strong class='reserved'>const</strong> <a href='../Y/2256.html' title='Multiple used in 15 places.'>KIID_PATH</a>&amp; <a href='../Y/6131.html' title='Multiple used in 2 places.'>aUuidPath</a> )
+<a id='L161' name='L161'></a> 161 <em class='brace'>{</em>
+<a id='L162' name='L162'></a> 162     <strong class='reserved'>for</strong>( <a href='../Y/412.html' title='Multiple used in 59 places.'>COMPONENT</a>&amp; <a href='../Y/7024.html' title='Multiple used in 140 places.'>component</a> : <a href='../Y/10549.html' title='Multiple used in 35 places.'>m_components</a> )
+<a id='L163' name='L163'></a> 163     <em class='brace'>{</em>
+<a id='L164' name='L164'></a> 164         <strong class='reserved'>if</strong>( <a href='../Y/7024.html' title='Multiple used in 140 places.'>component</a>.<a href='../D/1292.html' title='Multiple defined in 2 places.'>GetPath</a>() == <a href='../Y/6131.html' title='Multiple used in 2 places.'>aUuidPath</a> )
+<a id='L165' name='L165'></a> 165             <strong class='reserved'>return</strong> &amp;<a href='../Y/7024.html' title='Multiple used in 140 places.'>component</a>;
+<a id='L166' name='L166'></a> 166     <em class='brace'>}</em>
+<a id='L167' name='L167'></a> 167 
+<a id='L168' name='L168'></a> 168     <strong class='reserved'>return</strong> <a href='../Y/13059.html' title='Multiple used in 610 places.'>nullptr</a>;
+<a id='L169' name='L169'></a> 169 <em class='brace'>}</em>
+<a id='L170' name='L170'></a> 170 
+<a id='L171' name='L171'></a> 171 
+<a id='L172' name='L172'></a> 172 <em class='comment'>/**</em>
+<a id='L173' name='L173'></a> 173 <em class='comment'> * Function ByFPID</em>
+<a id='L174' name='L174'></a> 174 <em class='comment'> * is a helper function used to sort the component list used by loadNewModules.</em>
+<a id='L175' name='L175'></a> 175 <em class='comment'> */</em>
+<a id='L176' name='L176'></a> 176 <strong class='reserved'>static</strong> <strong class='reserved'>bool</strong> <a href='../S/521.html#L184' title='Referred from 184 in netlist_reader/pcb_netlist.cpp.'>ByFPID</a>( <strong class='reserved'>const</strong> <a href='../Y/412.html' title='Multiple used in 59 places.'>COMPONENT</a>&amp; <a href='../Y/13892.html' title='Multiple used in 65 places.'>ref</a>, <strong class='reserved'>const</strong> <a href='../Y/412.html' title='Multiple used in 59 places.'>COMPONENT</a>&amp; <a href='../S/56.html#L63' title='Defined at 63 in build_BOM_from_board.cpp.'>cmp</a> )
+<a id='L177' name='L177'></a> 177 <em class='brace'>{</em>
+<a id='L178' name='L178'></a> 178     <strong class='reserved'>return</strong> <a href='../Y/13892.html' title='Multiple used in 65 places.'>ref</a>.<a href='../Y/1404.html' title='Multiple used in 91 places.'>GetFPID</a>() &gt; <a href='../S/56.html#L63' title='Defined at 63 in build_BOM_from_board.cpp.'>cmp</a>.<a href='../Y/1404.html' title='Multiple used in 91 places.'>GetFPID</a>();
+<a id='L179' name='L179'></a> 179 <em class='brace'>}</em>
+<a id='L180' name='L180'></a> 180 
+<a id='L181' name='L181'></a> 181 
+<a id='L182' name='L182'></a> 182 <strong class='reserved'>void</strong> <a href='../Y/2607.html' title='Multiple used in 58 places.'>NETLIST</a>::<a href='../R/3018.html' title='Multiple referred from 2 places.'>SortByFPID</a>()
+<a id='L183' name='L183'></a> 183 <em class='brace'>{</em>
+<a id='L184' name='L184'></a> 184     <a href='../Y/10549.html' title='Multiple used in 35 places.'>m_components</a>.<a href='../Y/14557.html' title='Multiple used in 56 places.'>sort</a>( <a href='../S/521.html#L176' title='Defined at 176 in netlist_reader/pcb_netlist.cpp.'>ByFPID</a> );
+<a id='L185' name='L185'></a> 185 <em class='brace'>}</em>
+<a id='L186' name='L186'></a> 186 
+<a id='L187' name='L187'></a> 187 
+<a id='L188' name='L188'></a> 188 <em class='comment'>/**</em>
+<a id='L189' name='L189'></a> 189 <em class='comment'> * Operator &lt;</em>
+<a id='L190' name='L190'></a> 190 <em class='comment'> * compares two #COMPONENT objects by reference designator.</em>
+<a id='L191' name='L191'></a> 191 <em class='comment'> */</em>
+<a id='L192' name='L192'></a> 192 <strong class='reserved'>bool</strong> <strong class='reserved'>operator</strong> &lt; ( <strong class='reserved'>const</strong> <a href='../Y/412.html' title='Multiple used in 59 places.'>COMPONENT</a>&amp; <a href='../Y/8711.html' title='Multiple used in 2 places.'>item1</a>, <strong class='reserved'>const</strong> <a href='../Y/412.html' title='Multiple used in 59 places.'>COMPONENT</a>&amp; <a href='../Y/8712.html' title='Multiple used in 2 places.'>item2</a> )
+<a id='L193' name='L193'></a> 193 <em class='brace'>{</em>
+<a id='L194' name='L194'></a> 194     <strong class='reserved'>return</strong> <a href='../Y/4746.html' title='Multiple used in 6 places.'>UTIL</a>::RefDesStringCompare( <a href='../Y/8711.html' title='Multiple used in 2 places.'>item1</a>.<a href='../Y/1663.html' title='Multiple used in 115 places.'>GetReference</a>(), <a href='../Y/8712.html' title='Multiple used in 2 places.'>item2</a>.<a href='../Y/1663.html' title='Multiple used in 115 places.'>GetReference</a>() ) &lt; 0;
+<a id='L195' name='L195'></a> 195 <em class='brace'>}</em>
+<a id='L196' name='L196'></a> 196 
+<a id='L197' name='L197'></a> 197 
+<a id='L198' name='L198'></a> 198 <strong class='reserved'>void</strong> <a href='../Y/2607.html' title='Multiple used in 58 places.'>NETLIST</a>::<a href='../R/3019.html' title='Multiple referred from 2 places.'>SortByReference</a>()
+<a id='L199' name='L199'></a> 199 <em class='brace'>{</em>
+<a id='L200' name='L200'></a> 200     <a href='../Y/10549.html' title='Multiple used in 35 places.'>m_components</a>.<a href='../Y/14557.html' title='Multiple used in 56 places.'>sort</a>();
+<a id='L201' name='L201'></a> 201 <em class='brace'>}</em>
+<a id='L202' name='L202'></a> 202 
+<a id='L203' name='L203'></a> 203 
+<a id='L204' name='L204'></a> 204 <strong class='reserved'>bool</strong> <a href='../Y/2607.html' title='Multiple used in 58 places.'>NETLIST</a>::<a href='../S/522.html#L292' title='Referred from 292 in netlist_reader/pcb_netlist.h.'>AnyFootprintsLinked</a>() <strong class='reserved'>const</strong>
+<a id='L205' name='L205'></a> 205 <em class='brace'>{</em>
+<a id='L206' name='L206'></a> 206     <strong class='reserved'>for</strong>( <strong class='reserved'>unsigned</strong> <a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a> = 0;  <a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a> &lt; <a href='../Y/10549.html' title='Multiple used in 35 places.'>m_components</a>.<a href='../S/330.html#L214' title='Defined at 214 in dialogs/panel_fp_lib_table.cpp.'>size</a>();  <a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a>++ )
+<a id='L207' name='L207'></a> 207     <em class='brace'>{</em>
+<a id='L208' name='L208'></a> 208         <strong class='reserved'>if</strong>( !<a href='../Y/10549.html' title='Multiple used in 35 places.'>m_components</a>[<a href='../Y/8446.html' title='Multiple used in 1463 places.'>i</a>].<a href='../Y/1404.html' title='Multiple used in 91 places.'>GetFPID</a>().<a href='../Y/7690.html' title='Multiple used in 167 places.'>empty</a>() )
+<a id='L209' name='L209'></a> 209             <strong class='reserved'>return</strong> <strong class='reserved'>true</strong>;
+<a id='L210' name='L210'></a> 210     <em class='brace'>}</em>
+<a id='L211' name='L211'></a> 211 
+<a id='L212' name='L212'></a> 212     <strong class='reserved'>return</strong> <strong class='reserved'>false</strong>;
+<a id='L213' name='L213'></a> 213 <em class='brace'>}</em>
+<a id='L214' name='L214'></a> 214 
+<a id='L215' name='L215'></a> 215 
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L32'>[^]</a><a href='#L204'>[v]</a><a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

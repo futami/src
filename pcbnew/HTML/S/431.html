@@ -1,0 +1,128 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>exporters/gerber_placefile_writer.h</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/833.html'>exporters</a>/gerber_placefile_writer.h</h2>
+<em class='comment'>/* [&lt;][&gt;][^][v][top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'><a href='../J/364.html' title='Multiple included from 2 places.'>INCLUDED FROM</a></h2>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * This program source code file is part of KiCad, a free EDA CAD application.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 2019 Jean_Pierre Charras &lt;jp.charras at wanadoo.fr&gt;</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> * Copyright (C) 1992-2019 KiCad Developers, see AUTHORS.txt for contributors.</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> *</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> * This program is free software: you can redistribute it and/or modify it</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * under the terms of the GNU General Public License as published by the</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * Free Software Foundation, either version 3 of the License, or (at your</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> * option) any later version.</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> *</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> * This program is distributed in the hope that it will be useful, but</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> * General Public License for more details.</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> *</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> * You should have received a copy of the GNU General Public License along</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> */</em>
+<a id='L20' name='L20'></a>  20 
+<a id='L21' name='L21'></a>  21 <em class='comment'>/**</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'> * @file gerber_placefile_writer.h</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'> * @brief Classes used in place file generation.</em>
+<a id='L24' name='L24'></a>  24 <em class='comment'> */</em>
+<a id='L25' name='L25'></a>  25 
+<a id='L26' name='L26'></a>  26 <em class='sharp'>#ifndef</em> <a href='../S/431.html#L27' title='Defined at 27 in exporters/gerber_placefile_writer.h.'>PLACEFILE_GERBER_WRITER_H</a>
+<a id='L27' name='L27'></a>  27 <em class='sharp'>#define</em> <a href='../S/431.html#L26' title='Referred from 26 in exporters/gerber_placefile_writer.h.'>PLACEFILE_GERBER_WRITER_H</a>
+<a id='L28' name='L28'></a>  28 
+<a id='L29' name='L29'></a>  29 <em class='sharp'>#include</em> &lt;layers_id_colors_and_visibility.h&gt;
+<a id='L30' name='L30'></a>  30 
+<a id='L31' name='L31'></a>  31 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../S/57.html#L104' title='Defined at 104 in class_board.cpp.'>BOARD</a>;
+<a id='L32' name='L32'></a>  32 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../D/2056.html' title='Multiple defined in 3 places.'>MODULE</a>;
+<a id='L33' name='L33'></a>  33 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../D/777.html' title='Multiple defined in 2 places.'>D_PAD</a>;
+<a id='L34' name='L34'></a>  34 
+<a id='L35' name='L35'></a>  35 <em class='comment'>/**</em>
+<a id='L36' name='L36'></a>  36 <em class='comment'> * PLACEFILE_GERBER_WRITER is a class mainly used to create Gerber drill files</em>
+<a id='L37' name='L37'></a>  37 <em class='comment'> */</em>
+<a id='L38' name='L38'></a>  38 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../S/430.html#L46' title='Defined at 46 in exporters/gerber_placefile_writer.cpp.'>PLACEFILE_GERBER_WRITER</a>
+<a id='L39' name='L39'></a>  39 <em class='brace'>{</em>
+<a id='L40' name='L40'></a>  40 <a href='../Y/13804.html' title='Multiple used in 833 places.'>public</a>:
+<a id='L41' name='L41'></a>  41     <a href='../S/430.html#L46' title='Defined at 46 in exporters/gerber_placefile_writer.cpp.'>PLACEFILE_GERBER_WRITER</a>( <a href='../S/57.html#L104' title='Defined at 104 in class_board.cpp.'>BOARD</a>* <a href='../Y/5769.html' title='Multiple used in 107 places.'>aPcb</a> );
+<a id='L42' name='L42'></a>  42 
+<a id='L43' name='L43'></a>  43     <a href='../Y/15387.html' title='Multiple used in 761 places.'>virtual</a> ~<a href='../S/430.html#L46' title='Defined at 46 in exporters/gerber_placefile_writer.cpp.'>PLACEFILE_GERBER_WRITER</a>()
+<a id='L44' name='L44'></a>  44     <em class='brace'>{</em>
+<a id='L45' name='L45'></a>  45     <em class='brace'>}</em>
+<a id='L46' name='L46'></a>  46 
+<a id='L47' name='L47'></a>  47 
+<a id='L48' name='L48'></a>  48     <em class='comment'>/**</em>
+<a id='L49' name='L49'></a>  49 <em class='comment'>     * Function SetOptions</em>
+<a id='L50' name='L50'></a>  50 <em class='comment'>     * Initialize internal parameters to match drill options</em>
+<a id='L51' name='L51'></a>  51 <em class='comment'>     * note: PTH and NPTH are always separate files in Gerber format</em>
+<a id='L52' name='L52'></a>  52 <em class='comment'>     * @param aOffset = drill coordinates offset</em>
+<a id='L53' name='L53'></a>  53 <em class='comment'>     */</em>
+<a id='L54' name='L54'></a>  54     <strong class='reserved'>void</strong> <a href='../Y/3724.html' title='Multiple used in 6 places.'>SetOptions</a>( <a href='../Y/15871.html' title='Multiple used in 1252 places.'>wxPoint</a> <a href='../Y/5671.html' title='Multiple used in 34 places.'>aOffset</a> )
+<a id='L55' name='L55'></a>  55     <em class='brace'>{</em>
+<a id='L56' name='L56'></a>  56         <a href='../Y/11449.html' title='Multiple used in 20 places.'>m_offset</a> = <a href='../Y/5671.html' title='Multiple used in 34 places.'>aOffset</a>;
+<a id='L57' name='L57'></a>  57     <em class='brace'>}</em>
+<a id='L58' name='L58'></a>  58 
+<a id='L59' name='L59'></a>  59     <em class='comment'>/**</em>
+<a id='L60' name='L60'></a>  60 <em class='comment'>     * Creates an pnp gerber file</em>
+<a id='L61' name='L61'></a>  61 <em class='comment'>     * @param aFullFilename = the full filename</em>
+<a id='L62' name='L62'></a>  62 <em class='comment'>     * @param aLayer = layer (F_Cu or B_Cu) to generate</em>
+<a id='L63' name='L63'></a>  63 <em class='comment'>     * @param aIncludeBrdEdges = true to include board outlines</em>
+<a id='L64' name='L64'></a>  64 <em class='comment'>     * @return component count, or -1 if the file cannot be created</em>
+<a id='L65' name='L65'></a>  65 <em class='comment'>     */</em>
+<a id='L66' name='L66'></a>  66     <strong class='reserved'>int</strong>  <a href='../S/430.html#L58' title='Defined at 58 in exporters/gerber_placefile_writer.cpp.'>CreatePlaceFile</a>( <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>&amp; <a href='../Y/5349.html' title='Multiple used in 27 places.'>aFullFilename</a>, <a href='../S/423.html#L118' title='Defined at 118 in exporters/gendrill_file_writer_base.h.'>PCB_LAYER_ID</a> <a href='../Y/5477.html' title='Multiple used in 585 places.'>aLayer</a>,
+<a id='L67' name='L67'></a>  67                           <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/5402.html' title='Multiple used in 3 places.'>aIncludeBrdEdges</a> );
+<a id='L68' name='L68'></a>  68 
+<a id='L69' name='L69'></a>  69     <em class='comment'>/**</em>
+<a id='L70' name='L70'></a>  70 <em class='comment'>     * @return a filename which identify the drill file function.</em>
+<a id='L71' name='L71'></a>  71 <em class='comment'>     * @param aFullBaseFilename = a full filename. it will be modified</em>
+<a id='L72' name='L72'></a>  72 <em class='comment'>     * to add "-pnp" and set the extension</em>
+<a id='L73' name='L73'></a>  73 <em class='comment'>     * @param aLayer = layer (F_Cu or B_Cu) to generate</em>
+<a id='L74' name='L74'></a>  74 <em class='comment'>     */</em>
+<a id='L75' name='L75'></a>  75     <strong class='reserved'>const</strong> <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../S/430.html#L347' title='Defined at 347 in exporters/gerber_placefile_writer.cpp.'>GetPlaceFileName</a>( <strong class='reserved'>const</strong> <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>&amp; <a href='../Y/5345.html' title='Multiple used in 3 places.'>aFullBaseFilename</a>,
+<a id='L76' name='L76'></a>  76                                      <a href='../S/423.html#L118' title='Defined at 118 in exporters/gendrill_file_writer_base.h.'>PCB_LAYER_ID</a> <a href='../Y/5477.html' title='Multiple used in 585 places.'>aLayer</a> ) <strong class='reserved'>const</strong>;
+<a id='L77' name='L77'></a>  77 
+<a id='L78' name='L78'></a>  78 <a href='../Y/13721.html' title='Multiple used in 310 places.'>private</a>:
+<a id='L79' name='L79'></a>  79     <a href='../S/57.html#L104' title='Defined at 104 in class_board.cpp.'>BOARD</a>*          <a href='../Y/11573.html' title='Multiple used in 136 places.'>m_pcb</a>;
+<a id='L80' name='L80'></a>  80     <em class='comment'>/// The board layer currently used (typically F_Cu or B_Cu)</em>
+<a id='L81' name='L81'></a>  81     <a href='../S/423.html#L118' title='Defined at 118 in exporters/gendrill_file_writer_base.h.'>PCB_LAYER_ID</a>    <a href='../Y/11149.html' title='Multiple used in 35 places.'>m_layer</a>;
+<a id='L82' name='L82'></a>  82     <strong class='reserved'>double</strong>          <a href='../Y/10571.html' title='Multiple used in 20 places.'>m_conversionUnits</a>;  <em class='comment'>// scaling factor to convert the board unites to</em>
+<a id='L83' name='L83'></a>  83                                         <em class='comment'>// Excellon/Gerber units (i.e inches or mm)</em>
+<a id='L84' name='L84'></a>  84     <a href='../Y/15871.html' title='Multiple used in 1252 places.'>wxPoint</a>         <a href='../Y/11449.html' title='Multiple used in 20 places.'>m_offset</a>;           <em class='comment'>// Drill offset coordinates</em>
+<a id='L85' name='L85'></a>  85     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a>            <a href='../Y/10896.html' title='Multiple used in 5 places.'>m_forceSmdItems</a>;
+<a id='L86' name='L86'></a>  86     <em class='comment'>// True to plot a flashed marker shape at pad 1 position</em>
+<a id='L87' name='L87'></a>  87     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a>            <a href='../Y/11617.html' title='Multiple used in 3 places.'>m_plotPad1Marker</a>;
+<a id='L88' name='L88'></a>  88     <em class='comment'>// True to plot a marker shape at other pads position</em>
+<a id='L89' name='L89'></a>  89     <em class='comment'>// This is a flashed 0 sized round pad</em>
+<a id='L90' name='L90'></a>  90     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a>            <a href='../Y/11615.html' title='Multiple used in 3 places.'>m_plotOtherPadsMarker</a>;
+<a id='L91' name='L91'></a>  91 
+<a id='L92' name='L92'></a>  92 
+<a id='L93' name='L93'></a>  93     <em class='comment'>/** convert a kicad footprint orientation to gerber rotation</em>
+<a id='L94' name='L94'></a>  94 <em class='comment'>     *  both are in degrees</em>
+<a id='L95' name='L95'></a>  95 <em class='comment'>     */</em>
+<a id='L96' name='L96'></a>  96     <strong class='reserved'>double</strong>      <a href='../S/430.html#L322' title='Defined at 322 in exporters/gerber_placefile_writer.cpp.'>mapRotationAngle</a>( <strong class='reserved'>double</strong> <a href='../Y/4998.html' title='Multiple used in 90 places.'>aAngle</a> );
+<a id='L97' name='L97'></a>  97 
+<a id='L98' name='L98'></a>  98     <em class='comment'>/** Find the pad(s) 1 (or pad "A1") of a footprint</em>
+<a id='L99' name='L99'></a>  99 <em class='comment'>     * Usefull to plot a marker at this (these) position(s)</em>
+<a id='L100' name='L100'></a> 100 <em class='comment'>     * @param aPadList is the list to fill</em>
+<a id='L101' name='L101'></a> 101 <em class='comment'>     * @param aFootprint is the footprint to test</em>
+<a id='L102' name='L102'></a> 102 <em class='comment'>     */</em>
+<a id='L103' name='L103'></a> 103     <strong class='reserved'>void</strong> <a href='../S/430.html#L330' title='Defined at 330 in exporters/gerber_placefile_writer.cpp.'>findPads1</a>( <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/15301.html' title='Multiple used in 606 places.'>vector</a>&lt;<a href='../D/777.html' title='Multiple defined in 2 places.'>D_PAD</a>*&gt;&amp; <a href='../Y/5730.html' title='Multiple used in 10 places.'>aPadList</a>, <a href='../D/2056.html' title='Multiple defined in 3 places.'>MODULE</a>* <a href='../Y/5312.html' title='Multiple used in 35 places.'>aFootprint</a> ) <strong class='reserved'>const</strong>;
+<a id='L104' name='L104'></a> 104 <em class='brace'>}</em>;
+<a id='L105' name='L105'></a> 105 
+<a id='L106' name='L106'></a> 106 <em class='sharp'>#endif</em>  <em class='comment'>//  #ifndef PLACEFILE_GERBER_WRITER_H</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;][^][v]<a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

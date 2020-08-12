@@ -1,0 +1,505 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>microwave/microwave_inductor.cpp</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/836.html'>microwave</a>/microwave_inductor.cpp</h2>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L51'>[^]</a><a href='#L327'>[v]</a>[top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L51' title='Defined at 51.'>gen_arc</a></li>
+<li><a href='#L98' title='Defined at 98.'>BuildCornersList_S_Shape</a></li>
+<li><a href='#L293' title='Defined at 293.'>createInductorBetween</a></li>
+<li><a href='#L327' title='Defined at 327.'>createMicrowaveInductor</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * This program source code file is part of KiCad, a free EDA CAD application.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 2017-2020 KiCad Developers, see AUTHORS.txt for contributors.</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> *</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> * This program is free software; you can redistribute it and/or</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> * modify it under the terms of the GNU General Public License</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * as published by the Free Software Foundation; either version 2</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * of the License, or (at your option) any later version.</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> *</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> * This program is distributed in the hope that it will be useful,</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> * but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * GNU General Public License for more details.</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> *</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> * You should have received a copy of the GNU General Public License</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> * along with this program; if not, you may find one here:</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> * or you may search the http://www.gnu.org website for the version 2 license,</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> * or you may write to the Free Software Foundation, Inc.,</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'> * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'> */</em>
+<a id='L23' name='L23'></a>  23 
+<a id='L24' name='L24'></a>  24 <em class='sharp'>#include</em> &lt;wx/wx.h&gt;
+<a id='L25' name='L25'></a>  25 
+<a id='L26' name='L26'></a>  26 <em class='sharp'>#include</em> &lt;base_units.h&gt;
+<a id='L27' name='L27'></a>  27 <em class='sharp'>#include</em> &lt;<a href='32.html'>board_commit.h</a>&gt;
+<a id='L28' name='L28'></a>  28 <em class='sharp'>#include</em> &lt;<a href='71.html'>class_pad.h</a>&gt;
+<a id='L29' name='L29'></a>  29 <em class='sharp'>#include</em> &lt;<a href='65.html'>class_edge_mod.h</a>&gt;
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#include</em> &lt;<a href='69.html'>class_module.h</a>&gt;
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#include</em> &lt;confirm.h&gt;
+<a id='L32' name='L32'></a>  32 <em class='sharp'>#include</em> &lt;dialog_text_entry.h&gt;
+<a id='L33' name='L33'></a>  33 <em class='sharp'>#include</em> &lt;geometry/geometry_utils.h&gt;
+<a id='L34' name='L34'></a>  34 <em class='sharp'>#include</em> &lt;math/util.h&gt;      <em class='comment'>// for KiROUND</em>
+<a id='L35' name='L35'></a>  35 <em class='sharp'>#include</em> &lt;<a href='510.html'>microwave/microwave_tool.h</a>&gt;
+<a id='L36' name='L36'></a>  36 <em class='sharp'>#include</em> &lt;tool/tool_manager.h&gt;
+<a id='L37' name='L37'></a>  37 <em class='sharp'>#include</em> &lt;<a href='782.html'>tools/pcb_actions.h</a>&gt;
+<a id='L38' name='L38'></a>  38 <em class='sharp'>#include</em> &lt;<a href='586.html'>pcb_edit_frame.h</a>&gt;
+<a id='L39' name='L39'></a>  39 <em class='sharp'>#include</em> &lt;validators.h&gt;
+<a id='L40' name='L40'></a>  40 
+<a id='L41' name='L41'></a>  41 <em class='comment'>/**</em>
+<a id='L42' name='L42'></a>  42 <em class='comment'> * Function  gen_arc</em>
+<a id='L43' name='L43'></a>  43 <em class='comment'> * generates an arc using arc approximation by lines:</em>
+<a id='L44' name='L44'></a>  44 <em class='comment'> * Center aCenter</em>
+<a id='L45' name='L45'></a>  45 <em class='comment'> * Angle "angle" (in 0.1 deg)</em>
+<a id='L46' name='L46'></a>  46 <em class='comment'> * @param  aBuffer = a buffer to store points.</em>
+<a id='L47' name='L47'></a>  47 <em class='comment'> * @param  aStartPoint = starting point of arc.</em>
+<a id='L48' name='L48'></a>  48 <em class='comment'> * @param  aCenter = arc centre.</em>
+<a id='L49' name='L49'></a>  49 <em class='comment'> * @param  a_ArcAngle = arc length in 0.1 degrees.</em>
+<a id='L50' name='L50'></a>  50 <em class='comment'> */</em>
+<a id='L51' name='L51'></a>  51 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong> <a href='../R/3807.html' title='Multiple referred from 3 places.'>gen_arc</a>( <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/15301.html' title='Multiple used in 606 places.'>vector</a> &lt;<a href='../Y/15871.html' title='Multiple used in 1252 places.'>wxPoint</a>&gt;&amp; <a href='../Y/5056.html' title='Multiple used in 28 places.'>aBuffer</a>,
+<a id='L52' name='L52'></a>  52                      <strong class='reserved'>const</strong> <a href='../Y/15871.html' title='Multiple used in 1252 places.'>wxPoint</a>&amp;         <a href='../Y/6007.html' title='Multiple used in 7 places.'>aStartPoint</a>,
+<a id='L53' name='L53'></a>  53                      <strong class='reserved'>const</strong> <a href='../Y/15871.html' title='Multiple used in 1252 places.'>wxPoint</a>&amp;         <a href='../Y/5069.html' title='Multiple used in 39 places.'>aCenter</a>,
+<a id='L54' name='L54'></a>  54                      <strong class='reserved'>int</strong>                    <a href='../Y/6200.html' title='Multiple used in 3 places.'>a_ArcAngle</a> )
+<a id='L55' name='L55'></a>  55 <em class='brace'>{</em>
+<a id='L56' name='L56'></a>  56     <strong class='reserved'>auto</strong> <a href='../Y/8001.html' title='Multiple used in 4 places.'>first_point</a> = <a href='../Y/6007.html' title='Multiple used in 7 places.'>aStartPoint</a> - <a href='../Y/5069.html' title='Multiple used in 39 places.'>aCenter</a>;
+<a id='L57' name='L57'></a>  57     <strong class='reserved'>auto</strong> <a href='../Y/13847.html' title='Multiple used in 236 places.'>radius</a> = <a href='../Y/2278.html' title='Multiple used in 168 places.'>KiROUND</a>( <a href='../Y/949.html' title='Multiple used in 58 places.'>EuclideanNorm</a>( <a href='../Y/8001.html' title='Multiple used in 4 places.'>first_point</a> ) );
+<a id='L58' name='L58'></a>  58     <strong class='reserved'>int</strong>  <a href='../Y/14282.html' title='Multiple used in 3 places.'>seg_count</a> = <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/12483.html' title='Multiple used in 216 places.'>max</a>( <a href='../Y/1243.html' title='Multiple used in 18 places.'>GetArcToSegmentCount</a>( <a href='../Y/13847.html' title='Multiple used in 236 places.'>radius</a>, <a href='../Y/77.html' title='Multiple used in 25 places.'>ARC_HIGH_DEF</a>, <a href='../Y/6200.html' title='Multiple used in 3 places.'>a_ArcAngle</a> / 10.0 ), 3 );
+<a id='L59' name='L59'></a>  59 
+<a id='L60' name='L60'></a>  60     <strong class='reserved'>double</strong> <a href='../Y/8534.html' title='Multiple used in 2 places.'>increment_angle</a> = (<strong class='reserved'>double</strong>) <a href='../Y/6200.html' title='Multiple used in 3 places.'>a_ArcAngle</a> * <a href='../Y/2532.html' title='Multiple used in 38 places.'>M_PI</a> / 1800 / <a href='../Y/14282.html' title='Multiple used in 3 places.'>seg_count</a>;
+<a id='L61' name='L61'></a>  61 
+<a id='L62' name='L62'></a>  62     <em class='comment'>// Creates nb_seg point to approximate arc by segments:</em>
+<a id='L63' name='L63'></a>  63     <strong class='reserved'>for</strong>( <strong class='reserved'>int</strong> <a href='../Y/8489.html' title='Multiple used in 495 places.'>ii</a> = 1; <a href='../Y/8489.html' title='Multiple used in 495 places.'>ii</a> &lt;= <a href='../Y/14282.html' title='Multiple used in 3 places.'>seg_count</a>; <a href='../Y/8489.html' title='Multiple used in 495 places.'>ii</a>++ )
+<a id='L64' name='L64'></a>  64     <em class='brace'>{</em>
+<a id='L65' name='L65'></a>  65         <strong class='reserved'>double</strong>  <a href='../Y/14058.html' title='Multiple used in 3 places.'>rot_angle</a> = <a href='../Y/8534.html' title='Multiple used in 2 places.'>increment_angle</a> * <a href='../Y/8489.html' title='Multiple used in 495 places.'>ii</a>;
+<a id='L66' name='L66'></a>  66         <strong class='reserved'>double</strong>  <a href='../Y/7868.html' title='Multiple used in 3 places.'>fcos</a> = <a href='../Y/7129.html' title='Multiple used in 28 places.'>cos</a>( <a href='../Y/14058.html' title='Multiple used in 3 places.'>rot_angle</a> );
+<a id='L67' name='L67'></a>  67         <strong class='reserved'>double</strong>  <a href='../Y/8144.html' title='Multiple used in 3 places.'>fsin</a> = <a href='../Y/14468.html' title='Multiple used in 29 places.'>sin</a>( <a href='../Y/14058.html' title='Multiple used in 3 places.'>rot_angle</a> );
+<a id='L68' name='L68'></a>  68         <a href='../Y/15871.html' title='Multiple used in 1252 places.'>wxPoint</a> <a href='../Y/7246.html' title='Multiple used in 4 places.'>currpt</a>;
+<a id='L69' name='L69'></a>  69 
+<a id='L70' name='L70'></a>  70         <em class='comment'>// Rotate current point:</em>
+<a id='L71' name='L71'></a>  71         <a href='../Y/7246.html' title='Multiple used in 4 places.'>currpt</a>.<a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a> = <a href='../Y/2278.html' title='Multiple used in 168 places.'>KiROUND</a>( ( <a href='../Y/8001.html' title='Multiple used in 4 places.'>first_point</a>.<a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a> * <a href='../Y/7868.html' title='Multiple used in 3 places.'>fcos</a> + <a href='../Y/8001.html' title='Multiple used in 4 places.'>first_point</a>.<a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a> * <a href='../Y/8144.html' title='Multiple used in 3 places.'>fsin</a> ) );
+<a id='L72' name='L72'></a>  72         <a href='../Y/7246.html' title='Multiple used in 4 places.'>currpt</a>.<a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a> = <a href='../Y/2278.html' title='Multiple used in 168 places.'>KiROUND</a>( ( <a href='../Y/8001.html' title='Multiple used in 4 places.'>first_point</a>.<a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a> * <a href='../Y/7868.html' title='Multiple used in 3 places.'>fcos</a> - <a href='../Y/8001.html' title='Multiple used in 4 places.'>first_point</a>.<a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a> * <a href='../Y/8144.html' title='Multiple used in 3 places.'>fsin</a> ) );
+<a id='L73' name='L73'></a>  73 
+<a id='L74' name='L74'></a>  74         <strong class='reserved'>auto</strong> <a href='../Y/7118.html' title='Multiple used in 54 places.'>corner</a> = <a href='../Y/5069.html' title='Multiple used in 39 places.'>aCenter</a> + <a href='../Y/7246.html' title='Multiple used in 4 places.'>currpt</a>;
+<a id='L75' name='L75'></a>  75         <a href='../Y/5056.html' title='Multiple used in 28 places.'>aBuffer</a>.<a href='../S/330.html#L228' title='Defined at 228 in dialogs/panel_fp_lib_table.cpp.'>push_back</a>( <a href='../Y/7118.html' title='Multiple used in 54 places.'>corner</a> );
+<a id='L76' name='L76'></a>  76     <em class='brace'>}</em>
+<a id='L77' name='L77'></a>  77 <em class='brace'>}</em>
+<a id='L78' name='L78'></a>  78 
+<a id='L79' name='L79'></a>  79 
+<a id='L80' name='L80'></a>  80 <strong class='reserved'>enum</strong> <strong class='reserved'>class</strong> <a href='../R/1707.html' title='Multiple referred from 10 places.'>INDUCTOR_S_SHAPE_RESULT</a>
+<a id='L81' name='L81'></a>  81 <em class='brace'>{</em>
+<a id='L82' name='L82'></a>  82     <a href='../Y/2696.html' title='Multiple used in 3 places.'>OK</a>,        <em class='comment'>/// S-shape constructed</em>
+<a id='L83' name='L83'></a>  83     <a href='../S/674.html#L54' title='Defined at 54 in router/pns_meander_placer_base.h.'>TOO_LONG</a>,  <em class='comment'>/// Requested length too long</em>
+<a id='L84' name='L84'></a>  84     <a href='../S/674.html#L53' title='Defined at 53 in router/pns_meander_placer_base.h.'>TOO_SHORT</a>, <em class='comment'>/// Requested length too short</em>
+<a id='L85' name='L85'></a>  85     <a href='../Y/2635.html' title='Multiple used in 3 places.'>NO_REPR</a>,   <em class='comment'>/// Requested length can't be represented</em>
+<a id='L86' name='L86'></a>  86 <em class='brace'>}</em>;
+<a id='L87' name='L87'></a>  87 
+<a id='L88' name='L88'></a>  88 
+<a id='L89' name='L89'></a>  89 <em class='comment'>/**</em>
+<a id='L90' name='L90'></a>  90 <em class='comment'> * Function BuildCornersList_S_Shape</em>
+<a id='L91' name='L91'></a>  91 <em class='comment'> * Create a path like a S-shaped coil</em>
+<a id='L92' name='L92'></a>  92 <em class='comment'> * @param  aBuffer =  a buffer where to store points (ends of segments)</em>
+<a id='L93' name='L93'></a>  93 <em class='comment'> * @param  aStartPoint = starting point of the path</em>
+<a id='L94' name='L94'></a>  94 <em class='comment'> * @param  aEndPoint = ending point of the path</em>
+<a id='L95' name='L95'></a>  95 <em class='comment'> * @param  aLength = full length of the path</em>
+<a id='L96' name='L96'></a>  96 <em class='comment'> * @param  aWidth = segment width</em>
+<a id='L97' name='L97'></a>  97 <em class='comment'> */</em>
+<a id='L98' name='L98'></a>  98 <strong class='reserved'>static</strong> <a href='../S/507.html#L80' title='Defined at 80 in microwave/microwave_inductor.cpp.'>INDUCTOR_S_SHAPE_RESULT</a> <a href='../S/507.html#L391' title='Referred from 391 in microwave/microwave_inductor.cpp.'>BuildCornersList_S_Shape</a>( <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/15301.html' title='Multiple used in 606 places.'>vector</a>&lt;<a href='../Y/15871.html' title='Multiple used in 1252 places.'>wxPoint</a>&gt;&amp; <a href='../Y/5056.html' title='Multiple used in 28 places.'>aBuffer</a>,
+<a id='L99' name='L99'></a>  99         <strong class='reserved'>const</strong> <a href='../Y/15871.html' title='Multiple used in 1252 places.'>wxPoint</a>&amp; <a href='../Y/6007.html' title='Multiple used in 7 places.'>aStartPoint</a>, <strong class='reserved'>const</strong> <a href='../Y/15871.html' title='Multiple used in 1252 places.'>wxPoint</a>&amp; <a href='../Y/5255.html' title='Multiple used in 8 places.'>aEndPoint</a>, <strong class='reserved'>int</strong> <a href='../Y/5493.html' title='Multiple used in 11 places.'>aLength</a>, <strong class='reserved'>int</strong> <a href='../Y/6171.html' title='Multiple used in 160 places.'>aWidth</a> )
+<a id='L100' name='L100'></a> 100 <em class='brace'>{</em>
+<a id='L101' name='L101'></a> 101 <em class='comment'>/* We must determine:</em>
+<a id='L102' name='L102'></a> 102 <em class='comment'> * segm_count = number of segments perpendicular to the direction</em>
+<a id='L103' name='L103'></a> 103 <em class='comment'> * segm_len = length of a strand</em>
+<a id='L104' name='L104'></a> 104 <em class='comment'> * radius = radius of rounded parts of the coil</em>
+<a id='L105' name='L105'></a> 105 <em class='comment'> * stubs_len = length of the 2 stubs( segments parallel to the direction)</em>
+<a id='L106' name='L106'></a> 106 <em class='comment'> *         connecting the start point to the start point of the S shape</em>
+<a id='L107' name='L107'></a> 107 <em class='comment'> *         and the ending point to the end point of the S shape</em>
+<a id='L108' name='L108'></a> 108 <em class='comment'> * The equations are (assuming the area size of the entire shape is Size:</em>
+<a id='L109' name='L109'></a> 109 <em class='comment'> * Size.x = 2 * radius + segm_len</em>
+<a id='L110' name='L110'></a> 110 <em class='comment'> * Size.y = (segm_count + 2 ) * 2 * radius + 2 * stubs_len</em>
+<a id='L111' name='L111'></a> 111 <em class='comment'> * aInductorPattern.m_length = 2 * delta // connections to the coil</em>
+<a id='L112' name='L112'></a> 112 <em class='comment'> *             + (segm_count-2) * segm_len      // length of the strands except 1st and last</em>
+<a id='L113' name='L113'></a> 113 <em class='comment'> *             + (segm_count) * (PI * radius)   // length of rounded</em>
+<a id='L114' name='L114'></a> 114 <em class='comment'> * segm_len + / 2 - radius * 2)                 // length of 1st and last bit</em>
+<a id='L115' name='L115'></a> 115 <em class='comment'> *</em>
+<a id='L116' name='L116'></a> 116 <em class='comment'> * The constraints are:</em>
+<a id='L117' name='L117'></a> 117 <em class='comment'> * segm_count &gt;= 2</em>
+<a id='L118' name='L118'></a> 118 <em class='comment'> * radius &lt; m_Size.x</em>
+<a id='L119' name='L119'></a> 119 <em class='comment'> * Size.y = (radius * 4) + (2 * stubs_len)</em>
+<a id='L120' name='L120'></a> 120 <em class='comment'> * segm_len &gt; radius * 2</em>
+<a id='L121' name='L121'></a> 121 <em class='comment'> *</em>
+<a id='L122' name='L122'></a> 122 <em class='comment'> * The calculation is conducted in the following way:</em>
+<a id='L123' name='L123'></a> 123 <em class='comment'> * first:</em>
+<a id='L124' name='L124'></a> 124 <em class='comment'> * segm_count = 2</em>
+<a id='L125' name='L125'></a> 125 <em class='comment'> * radius = 4 * Size.x (arbitrarily fixed value)</em>
+<a id='L126' name='L126'></a> 126 <em class='comment'> * Then:</em>
+<a id='L127' name='L127'></a> 127 <em class='comment'> * Increasing the number of segments to the desired length</em>
+<a id='L128' name='L128'></a> 128 <em class='comment'> * (radius decreases if necessary)</em>
+<a id='L129' name='L129'></a> 129 <em class='comment'> */</em>
+<a id='L130' name='L130'></a> 130     <a href='../Y/15871.html' title='Multiple used in 1252 places.'>wxPoint</a> <a href='../S/330.html#L214' title='Defined at 214 in dialogs/panel_fp_lib_table.cpp.'>size</a>;
+<a id='L131' name='L131'></a> 131 
+<a id='L132' name='L132'></a> 132     <em class='comment'>// This scale factor adjusts the arc length to handle</em>
+<a id='L133' name='L133'></a> 133     <em class='comment'>// the arc to segment approximation.</em>
+<a id='L134' name='L134'></a> 134     <em class='comment'>// because we use SEGM_COUNT_PER_360DEG segment to approximate a circle,</em>
+<a id='L135' name='L135'></a> 135     <em class='comment'>// the trace len must be corrected when calculated using arcs</em>
+<a id='L136' name='L136'></a> 136     <em class='comment'>// this factor adjust calculations and must be changed if SEGM_COUNT_PER_360DEG is modified</em>
+<a id='L137' name='L137'></a> 137     <em class='comment'>// because trace using segment is shorter the corresponding arc</em>
+<a id='L138' name='L138'></a> 138     <em class='comment'>// ADJUST_SIZE is the ratio between tline len and the arc len for an arc</em>
+<a id='L139' name='L139'></a> 139     <em class='comment'>// of 360/ADJUST_SIZE angle</em>
+<a id='L140' name='L140'></a> 140 <em class='sharp'>    #define</em> <a href='../R/15.html' title='Multiple referred from 2 places.'>ADJUST_SIZE</a> 0.988
+<a id='L141' name='L141'></a> 141 
+<a id='L142' name='L142'></a> 142     <strong class='reserved'>auto</strong>    <a href='../Y/13782.html' title='Multiple used in 280 places.'>pt</a>       = <a href='../Y/5255.html' title='Multiple used in 8 places.'>aEndPoint</a> - <a href='../Y/6007.html' title='Multiple used in 7 places.'>aStartPoint</a>;
+<a id='L143' name='L143'></a> 143     <strong class='reserved'>double</strong>  <a href='../S/642.html#L178' title='Defined at 178 in router/pns_diff_pair.cpp.'>angle</a>    = -<a href='../Y/208.html' title='Multiple used in 14 places.'>ArcTangente</a>( <a href='../Y/13782.html' title='Multiple used in 280 places.'>pt</a>.<a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a>, <a href='../Y/13782.html' title='Multiple used in 280 places.'>pt</a>.<a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a> );
+<a id='L144' name='L144'></a> 144     <strong class='reserved'>int</strong>     <a href='../Y/12608.html' title='Multiple used in 6 places.'>min_len</a>  = <a href='../Y/2278.html' title='Multiple used in 168 places.'>KiROUND</a>( <a href='../Y/949.html' title='Multiple used in 58 places.'>EuclideanNorm</a>( <a href='../Y/13782.html' title='Multiple used in 280 places.'>pt</a> ) );
+<a id='L145' name='L145'></a> 145     <strong class='reserved'>int</strong>     <a href='../Y/14297.html' title='Multiple used in 8 places.'>segm_len</a> = 0;           <em class='comment'>// length of segments</em>
+<a id='L146' name='L146'></a> 146     <strong class='reserved'>int</strong>     <a href='../Y/8155.html' title='Multiple used in 7 places.'>full_len</a>;               <em class='comment'>// full len of shape (sum of length of all segments + arcs)</em>
+<a id='L147' name='L147'></a> 147 
+<a id='L148' name='L148'></a> 148 
+<a id='L149' name='L149'></a> 149     <em class='comment'>/* Note: calculations are made for a vertical coil (more easy calculations)</em>
+<a id='L150' name='L150'></a> 150 <em class='comment'>     * and after points are rotated to their actual position</em>
+<a id='L151' name='L151'></a> 151 <em class='comment'>     * So the main direction is the Y axis.</em>
+<a id='L152' name='L152'></a> 152 <em class='comment'>     * the 2 stubs are on the Y axis</em>
+<a id='L153' name='L153'></a> 153 <em class='comment'>     * the others segments are parallel to the X axis.</em>
+<a id='L154' name='L154'></a> 154 <em class='comment'>     */</em>
+<a id='L155' name='L155'></a> 155 
+<a id='L156' name='L156'></a> 156     <em class='comment'>// Calculate the size of area (for a vertical shape)</em>
+<a id='L157' name='L157'></a> 157     <a href='../S/330.html#L214' title='Defined at 214 in dialogs/panel_fp_lib_table.cpp.'>size</a>.<a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a> = <a href='../Y/12608.html' title='Multiple used in 6 places.'>min_len</a> / 2;
+<a id='L158' name='L158'></a> 158     <a href='../S/330.html#L214' title='Defined at 214 in dialogs/panel_fp_lib_table.cpp.'>size</a>.<a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a> = <a href='../Y/12608.html' title='Multiple used in 6 places.'>min_len</a>;
+<a id='L159' name='L159'></a> 159 
+<a id='L160' name='L160'></a> 160     <em class='comment'>// Choose a reasonable starting value for the radius of the arcs.</em>
+<a id='L161' name='L161'></a> 161     <strong class='reserved'>int</strong> <a href='../Y/13847.html' title='Multiple used in 236 places.'>radius</a> = <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/12575.html' title='Multiple used in 115 places.'>min</a>( <a href='../Y/6171.html' title='Multiple used in 160 places.'>aWidth</a> * 5, <a href='../S/330.html#L214' title='Defined at 214 in dialogs/panel_fp_lib_table.cpp.'>size</a>.<a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a> / 4 );
+<a id='L162' name='L162'></a> 162 
+<a id='L163' name='L163'></a> 163     <strong class='reserved'>int</strong> <a href='../Y/14296.html' title='Multiple used in 9 places.'>segm_count</a>;     <em class='comment'>// number of full len segments</em>
+<a id='L164' name='L164'></a> 164                         <em class='comment'>// the half size segments (first and last segment) are not counted here</em>
+<a id='L165' name='L165'></a> 165     <strong class='reserved'>int</strong> <a href='../Y/14735.html' title='Multiple used in 8 places.'>stubs_len</a> = 0;  <em class='comment'>// length of first or last segment (half size of others segments)</em>
+<a id='L166' name='L166'></a> 166 
+<a id='L167' name='L167'></a> 167     <strong class='reserved'>for</strong>( <a href='../Y/14296.html' title='Multiple used in 9 places.'>segm_count</a> = 0; ; <a href='../Y/14296.html' title='Multiple used in 9 places.'>segm_count</a>++ )
+<a id='L168' name='L168'></a> 168     <em class='brace'>{</em>
+<a id='L169' name='L169'></a> 169         <a href='../Y/14735.html' title='Multiple used in 8 places.'>stubs_len</a> = ( <a href='../S/330.html#L214' title='Defined at 214 in dialogs/panel_fp_lib_table.cpp.'>size</a>.<a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a> - ( <a href='../Y/13847.html' title='Multiple used in 236 places.'>radius</a> * 2 * (<a href='../Y/14296.html' title='Multiple used in 9 places.'>segm_count</a> + 2 ) ) ) / 2;
+<a id='L170' name='L170'></a> 170 
+<a id='L171' name='L171'></a> 171         <strong class='reserved'>if</strong>( <a href='../Y/14735.html' title='Multiple used in 8 places.'>stubs_len</a> &lt; <a href='../S/330.html#L214' title='Defined at 214 in dialogs/panel_fp_lib_table.cpp.'>size</a>.<a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a> / 10 ) <em class='comment'>// Reduce radius.</em>
+<a id='L172' name='L172'></a> 172         <em class='brace'>{</em>
+<a id='L173' name='L173'></a> 173             <a href='../Y/14735.html' title='Multiple used in 8 places.'>stubs_len</a> = <a href='../S/330.html#L214' title='Defined at 214 in dialogs/panel_fp_lib_table.cpp.'>size</a>.<a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a> / 10;
+<a id='L174' name='L174'></a> 174             <a href='../Y/13847.html' title='Multiple used in 236 places.'>radius</a>    = ( <a href='../S/330.html#L214' title='Defined at 214 in dialogs/panel_fp_lib_table.cpp.'>size</a>.<a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a> - (2 * <a href='../Y/14735.html' title='Multiple used in 8 places.'>stubs_len</a>) ) / ( 2 * (<a href='../Y/14296.html' title='Multiple used in 9 places.'>segm_count</a> + 2) );
+<a id='L175' name='L175'></a> 175 
+<a id='L176' name='L176'></a> 176             <strong class='reserved'>if</strong>( <a href='../Y/13847.html' title='Multiple used in 236 places.'>radius</a> &lt; <a href='../Y/6171.html' title='Multiple used in 160 places.'>aWidth</a> ) <em class='comment'>// Radius too small.</em>
+<a id='L177' name='L177'></a> 177             <em class='brace'>{</em>
+<a id='L178' name='L178'></a> 178                 <em class='comment'>// Unable to create line: Requested length value is too large for room</em>
+<a id='L179' name='L179'></a> 179                 <strong class='reserved'>return</strong> <a href='../S/507.html#L80' title='Defined at 80 in microwave/microwave_inductor.cpp.'>INDUCTOR_S_SHAPE_RESULT</a>::<a href='../S/674.html#L54' title='Defined at 54 in router/pns_meander_placer_base.h.'>TOO_LONG</a>;
+<a id='L180' name='L180'></a> 180             <em class='brace'>}</em>
+<a id='L181' name='L181'></a> 181         <em class='brace'>}</em>
+<a id='L182' name='L182'></a> 182 
+<a id='L183' name='L183'></a> 183         <a href='../Y/14297.html' title='Multiple used in 8 places.'>segm_len</a>  = <a href='../S/330.html#L214' title='Defined at 214 in dialogs/panel_fp_lib_table.cpp.'>size</a>.<a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a> - ( <a href='../Y/13847.html' title='Multiple used in 236 places.'>radius</a> * 2 );
+<a id='L184' name='L184'></a> 184         <a href='../Y/8155.html' title='Multiple used in 7 places.'>full_len</a>  = 2 * <a href='../Y/14735.html' title='Multiple used in 8 places.'>stubs_len</a>;               <em class='comment'>// Length of coil connections.</em>
+<a id='L185' name='L185'></a> 185         <a href='../Y/8155.html' title='Multiple used in 7 places.'>full_len</a> += <a href='../Y/14297.html' title='Multiple used in 8 places.'>segm_len</a> * <a href='../Y/14296.html' title='Multiple used in 9 places.'>segm_count</a>;       <em class='comment'>// Length of full length segments.</em>
+<a id='L186' name='L186'></a> 186         <a href='../Y/8155.html' title='Multiple used in 7 places.'>full_len</a> += <a href='../Y/2278.html' title='Multiple used in 168 places.'>KiROUND</a>( ( <a href='../Y/14296.html' title='Multiple used in 9 places.'>segm_count</a> + 2 ) * <a href='../Y/2532.html' title='Multiple used in 38 places.'>M_PI</a> * <a href='../S/507.html#L140' title='Defined at 140 in microwave/microwave_inductor.cpp.'>ADJUST_SIZE</a> * <a href='../Y/13847.html' title='Multiple used in 236 places.'>radius</a> );    <em class='comment'>// Ard arcs len</em>
+<a id='L187' name='L187'></a> 187         <a href='../Y/8155.html' title='Multiple used in 7 places.'>full_len</a> += <a href='../Y/14297.html' title='Multiple used in 8 places.'>segm_len</a> - (2 * <a href='../Y/13847.html' title='Multiple used in 236 places.'>radius</a>);     <em class='comment'>// Length of first and last segments</em>
+<a id='L188' name='L188'></a> 188                                                  <em class='comment'>// (half size segments len = segm_len/2 - radius).</em>
+<a id='L189' name='L189'></a> 189 
+<a id='L190' name='L190'></a> 190         <strong class='reserved'>if</strong>( <a href='../Y/8155.html' title='Multiple used in 7 places.'>full_len</a> &gt;= <a href='../Y/5493.html' title='Multiple used in 11 places.'>aLength</a> )
+<a id='L191' name='L191'></a> 191             <strong class='reserved'>break</strong>;
+<a id='L192' name='L192'></a> 192     <em class='brace'>}</em>
+<a id='L193' name='L193'></a> 193 
+<a id='L194' name='L194'></a> 194     <em class='comment'>// Adjust len by adjusting segm_len:</em>
+<a id='L195' name='L195'></a> 195     <strong class='reserved'>int</strong> <a href='../Y/7355.html' title='Multiple used in 2 places.'>delta_size</a> = <a href='../Y/8155.html' title='Multiple used in 7 places.'>full_len</a> - <a href='../Y/5493.html' title='Multiple used in 11 places.'>aLength</a>;
+<a id='L196' name='L196'></a> 196 
+<a id='L197' name='L197'></a> 197     <em class='comment'>// reduce len of the segm_count segments + 2 half size segments (= 1 full size segment)</em>
+<a id='L198' name='L198'></a> 198     <a href='../Y/14297.html' title='Multiple used in 8 places.'>segm_len</a> -= <a href='../Y/7355.html' title='Multiple used in 2 places.'>delta_size</a> / (<a href='../Y/14296.html' title='Multiple used in 9 places.'>segm_count</a> + 1);
+<a id='L199' name='L199'></a> 199 
+<a id='L200' name='L200'></a> 200     <em class='comment'>// at this point, it could still be that the requested length is too</em>
+<a id='L201' name='L201'></a> 201     <em class='comment'>// short (because 4 quarter-circles are too long)</em>
+<a id='L202' name='L202'></a> 202     <em class='comment'>// to fix this is a relatively complex numerical problem which probably</em>
+<a id='L203' name='L203'></a> 203     <em class='comment'>// needs a refactor in this area. For now, just reject these cases:</em>
+<a id='L204' name='L204'></a> 204     <em class='brace'>{</em>
+<a id='L205' name='L205'></a> 205         <strong class='reserved'>const</strong> <strong class='reserved'>int</strong> <a href='../Y/12613.html' title='Multiple used in 2 places.'>min_total_length</a> = 2 * <a href='../Y/14735.html' title='Multiple used in 8 places.'>stubs_len</a> + 2 * <a href='../Y/2532.html' title='Multiple used in 38 places.'>M_PI</a> * <a href='../S/507.html#L140' title='Defined at 140 in microwave/microwave_inductor.cpp.'>ADJUST_SIZE</a> * <a href='../Y/13847.html' title='Multiple used in 236 places.'>radius</a>;
+<a id='L206' name='L206'></a> 206         <strong class='reserved'>if</strong>( <a href='../Y/12613.html' title='Multiple used in 2 places.'>min_total_length</a> &gt; <a href='../Y/5493.html' title='Multiple used in 11 places.'>aLength</a> )
+<a id='L207' name='L207'></a> 207         <em class='brace'>{</em>
+<a id='L208' name='L208'></a> 208             <em class='comment'>// we can't express this inductor with 90-deg arcs of this radius</em>
+<a id='L209' name='L209'></a> 209             <strong class='reserved'>return</strong> <a href='../S/507.html#L80' title='Defined at 80 in microwave/microwave_inductor.cpp.'>INDUCTOR_S_SHAPE_RESULT</a>::<a href='../S/674.html#L53' title='Defined at 53 in router/pns_meander_placer_base.h.'>TOO_SHORT</a>;
+<a id='L210' name='L210'></a> 210         <em class='brace'>}</em>
+<a id='L211' name='L211'></a> 211     <em class='brace'>}</em>
+<a id='L212' name='L212'></a> 212 
+<a id='L213' name='L213'></a> 213     <strong class='reserved'>if</strong>( <a href='../Y/14297.html' title='Multiple used in 8 places.'>segm_len</a> - 2 * <a href='../Y/13847.html' title='Multiple used in 236 places.'>radius</a> &lt; 0 )
+<a id='L214' name='L214'></a> 214     <em class='brace'>{</em>
+<a id='L215' name='L215'></a> 215         <em class='comment'>// we can't represent this exact requested length with this number</em>
+<a id='L216' name='L216'></a> 216         <em class='comment'>// of segments (using the current algorithm). This stems from when</em>
+<a id='L217' name='L217'></a> 217         <em class='comment'>// you add a segment, you also add another half-circle, so there's a</em>
+<a id='L218' name='L218'></a> 218         <em class='comment'>// little bit of "dead" space.</em>
+<a id='L219' name='L219'></a> 219         <em class='comment'>// It's a bit ugly to just reject the input, as it might be possible</em>
+<a id='L220' name='L220'></a> 220         <em class='comment'>// to tweak the radius, but, again, that probably needs a refactor.</em>
+<a id='L221' name='L221'></a> 221         <strong class='reserved'>return</strong> <a href='../S/507.html#L80' title='Defined at 80 in microwave/microwave_inductor.cpp.'>INDUCTOR_S_SHAPE_RESULT</a>::<a href='../Y/2635.html' title='Multiple used in 3 places.'>NO_REPR</a>;
+<a id='L222' name='L222'></a> 222     <em class='brace'>}</em>
+<a id='L223' name='L223'></a> 223 
+<a id='L224' name='L224'></a> 224     <em class='comment'>// Generate first line (the first stub) and first arc (90 deg arc)</em>
+<a id='L225' name='L225'></a> 225     <a href='../Y/13782.html' title='Multiple used in 280 places.'>pt</a> = <a href='../Y/6007.html' title='Multiple used in 7 places.'>aStartPoint</a>;
+<a id='L226' name='L226'></a> 226     <a href='../Y/5056.html' title='Multiple used in 28 places.'>aBuffer</a>.<a href='../S/330.html#L228' title='Defined at 228 in dialogs/panel_fp_lib_table.cpp.'>push_back</a>( <a href='../Y/13782.html' title='Multiple used in 280 places.'>pt</a> );
+<a id='L227' name='L227'></a> 227     <a href='../Y/13782.html' title='Multiple used in 280 places.'>pt</a>.<a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a> += <a href='../Y/14735.html' title='Multiple used in 8 places.'>stubs_len</a>;
+<a id='L228' name='L228'></a> 228     <a href='../Y/5056.html' title='Multiple used in 28 places.'>aBuffer</a>.<a href='../S/330.html#L228' title='Defined at 228 in dialogs/panel_fp_lib_table.cpp.'>push_back</a>( <a href='../Y/13782.html' title='Multiple used in 280 places.'>pt</a> );
+<a id='L229' name='L229'></a> 229 
+<a id='L230' name='L230'></a> 230     <strong class='reserved'>auto</strong> <a href='../Y/6842.html' title='Multiple used in 21 places.'>centre</a> = <a href='../Y/13782.html' title='Multiple used in 280 places.'>pt</a>;
+<a id='L231' name='L231'></a> 231     <a href='../Y/6842.html' title='Multiple used in 21 places.'>centre</a>.<a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a> -= <a href='../Y/13847.html' title='Multiple used in 236 places.'>radius</a>;
+<a id='L232' name='L232'></a> 232     <a href='../S/507.html#L51' title='Defined at 51 in microwave/microwave_inductor.cpp.'>gen_arc</a>( <a href='../Y/5056.html' title='Multiple used in 28 places.'>aBuffer</a>, <a href='../Y/13782.html' title='Multiple used in 280 places.'>pt</a>, <a href='../Y/6842.html' title='Multiple used in 21 places.'>centre</a>, -900 );
+<a id='L233' name='L233'></a> 233     <a href='../Y/13782.html' title='Multiple used in 280 places.'>pt</a> = <a href='../Y/5056.html' title='Multiple used in 28 places.'>aBuffer</a>.<a href='../Y/6636.html' title='Multiple used in 42 places.'>back</a>();
+<a id='L234' name='L234'></a> 234 
+<a id='L235' name='L235'></a> 235     <strong class='reserved'>int</strong> <a href='../Y/8335.html' title='Multiple used in 3 places.'>half_size_seg_len</a> = <a href='../Y/14297.html' title='Multiple used in 8 places.'>segm_len</a> / 2 - <a href='../Y/13847.html' title='Multiple used in 236 places.'>radius</a>;
+<a id='L236' name='L236'></a> 236 
+<a id='L237' name='L237'></a> 237     <strong class='reserved'>if</strong>( <a href='../Y/8335.html' title='Multiple used in 3 places.'>half_size_seg_len</a> )
+<a id='L238' name='L238'></a> 238     <em class='brace'>{</em>
+<a id='L239' name='L239'></a> 239         <a href='../Y/13782.html' title='Multiple used in 280 places.'>pt</a>.<a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a> -= <a href='../Y/8335.html' title='Multiple used in 3 places.'>half_size_seg_len</a>;
+<a id='L240' name='L240'></a> 240         <a href='../Y/5056.html' title='Multiple used in 28 places.'>aBuffer</a>.<a href='../S/330.html#L228' title='Defined at 228 in dialogs/panel_fp_lib_table.cpp.'>push_back</a>( <a href='../Y/13782.html' title='Multiple used in 280 places.'>pt</a> );
+<a id='L241' name='L241'></a> 241     <em class='brace'>}</em>
+<a id='L242' name='L242'></a> 242 
+<a id='L243' name='L243'></a> 243     <em class='comment'>// Create shape.</em>
+<a id='L244' name='L244'></a> 244     <strong class='reserved'>int</strong> <a href='../Y/8489.html' title='Multiple used in 495 places.'>ii</a>;
+<a id='L245' name='L245'></a> 245     <strong class='reserved'>int</strong> <a href='../Y/14462.html' title='Multiple used in 29 places.'>sign</a> = 1;
+<a id='L246' name='L246'></a> 246     <a href='../Y/14296.html' title='Multiple used in 9 places.'>segm_count</a> += 1;    <em class='comment'>// increase segm_count to create the last half_size segment</em>
+<a id='L247' name='L247'></a> 247 
+<a id='L248' name='L248'></a> 248     <strong class='reserved'>for</strong>( <a href='../Y/8489.html' title='Multiple used in 495 places.'>ii</a> = 0; <a href='../Y/8489.html' title='Multiple used in 495 places.'>ii</a> &lt; <a href='../Y/14296.html' title='Multiple used in 9 places.'>segm_count</a>; <a href='../Y/8489.html' title='Multiple used in 495 places.'>ii</a>++ )
+<a id='L249' name='L249'></a> 249     <em class='brace'>{</em>
+<a id='L250' name='L250'></a> 250         <strong class='reserved'>int</strong> <a href='../Y/6409.html' title='Multiple used in 10 places.'>arc_angle</a>;
+<a id='L251' name='L251'></a> 251 
+<a id='L252' name='L252'></a> 252         <strong class='reserved'>if</strong>( <a href='../Y/8489.html' title='Multiple used in 495 places.'>ii</a> &amp; 1 ) <em class='comment'>// odd order arcs are greater than 0</em>
+<a id='L253' name='L253'></a> 253             <a href='../Y/14462.html' title='Multiple used in 29 places.'>sign</a> = -1;
+<a id='L254' name='L254'></a> 254         <strong class='reserved'>else</strong>
+<a id='L255' name='L255'></a> 255             <a href='../Y/14462.html' title='Multiple used in 29 places.'>sign</a> = 1;
+<a id='L256' name='L256'></a> 256 
+<a id='L257' name='L257'></a> 257         <a href='../Y/6409.html' title='Multiple used in 10 places.'>arc_angle</a> = 1800 * <a href='../Y/14462.html' title='Multiple used in 29 places.'>sign</a>;
+<a id='L258' name='L258'></a> 258         <a href='../Y/6842.html' title='Multiple used in 21 places.'>centre</a>    = <a href='../Y/13782.html' title='Multiple used in 280 places.'>pt</a>;
+<a id='L259' name='L259'></a> 259         <a href='../Y/6842.html' title='Multiple used in 21 places.'>centre</a>.<a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a> += <a href='../Y/13847.html' title='Multiple used in 236 places.'>radius</a>;
+<a id='L260' name='L260'></a> 260         <a href='../S/507.html#L51' title='Defined at 51 in microwave/microwave_inductor.cpp.'>gen_arc</a>( <a href='../Y/5056.html' title='Multiple used in 28 places.'>aBuffer</a>, <a href='../Y/13782.html' title='Multiple used in 280 places.'>pt</a>, <a href='../Y/6842.html' title='Multiple used in 21 places.'>centre</a>, <a href='../Y/6409.html' title='Multiple used in 10 places.'>arc_angle</a> );
+<a id='L261' name='L261'></a> 261         <a href='../Y/13782.html' title='Multiple used in 280 places.'>pt</a>    = <a href='../Y/5056.html' title='Multiple used in 28 places.'>aBuffer</a>.<a href='../Y/6636.html' title='Multiple used in 42 places.'>back</a>();
+<a id='L262' name='L262'></a> 262         <a href='../Y/13782.html' title='Multiple used in 280 places.'>pt</a>.<a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a> += <a href='../Y/14297.html' title='Multiple used in 8 places.'>segm_len</a> * <a href='../Y/14462.html' title='Multiple used in 29 places.'>sign</a>;
+<a id='L263' name='L263'></a> 263         <a href='../Y/5056.html' title='Multiple used in 28 places.'>aBuffer</a>.<a href='../S/330.html#L228' title='Defined at 228 in dialogs/panel_fp_lib_table.cpp.'>push_back</a>( <a href='../Y/13782.html' title='Multiple used in 280 places.'>pt</a> );
+<a id='L264' name='L264'></a> 264     <em class='brace'>}</em>
+<a id='L265' name='L265'></a> 265 
+<a id='L266' name='L266'></a> 266     <em class='comment'>// The last point is false:</em>
+<a id='L267' name='L267'></a> 267     <em class='comment'>// it is the end of a full size segment, but must be</em>
+<a id='L268' name='L268'></a> 268     <em class='comment'>// the end of the second half_size segment. Change it.</em>
+<a id='L269' name='L269'></a> 269     <a href='../Y/14462.html' title='Multiple used in 29 places.'>sign</a> *= -1;
+<a id='L270' name='L270'></a> 270     <a href='../Y/5056.html' title='Multiple used in 28 places.'>aBuffer</a>.<a href='../Y/6636.html' title='Multiple used in 42 places.'>back</a>().<a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a> = <a href='../Y/6007.html' title='Multiple used in 7 places.'>aStartPoint</a>.<a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a> + <a href='../Y/13847.html' title='Multiple used in 236 places.'>radius</a> * <a href='../Y/14462.html' title='Multiple used in 29 places.'>sign</a>;
+<a id='L271' name='L271'></a> 271 
+<a id='L272' name='L272'></a> 272     <em class='comment'>// create last arc</em>
+<a id='L273' name='L273'></a> 273     <a href='../Y/13782.html' title='Multiple used in 280 places.'>pt</a>        = <a href='../Y/5056.html' title='Multiple used in 28 places.'>aBuffer</a>.<a href='../Y/6636.html' title='Multiple used in 42 places.'>back</a>();
+<a id='L274' name='L274'></a> 274     <a href='../Y/6842.html' title='Multiple used in 21 places.'>centre</a>    = <a href='../Y/13782.html' title='Multiple used in 280 places.'>pt</a>;
+<a id='L275' name='L275'></a> 275     <a href='../Y/6842.html' title='Multiple used in 21 places.'>centre</a>.<a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a> += <a href='../Y/13847.html' title='Multiple used in 236 places.'>radius</a>;
+<a id='L276' name='L276'></a> 276     <a href='../S/507.html#L51' title='Defined at 51 in microwave/microwave_inductor.cpp.'>gen_arc</a>( <a href='../Y/5056.html' title='Multiple used in 28 places.'>aBuffer</a>, <a href='../Y/13782.html' title='Multiple used in 280 places.'>pt</a>, <a href='../Y/6842.html' title='Multiple used in 21 places.'>centre</a>, 900 * <a href='../Y/14462.html' title='Multiple used in 29 places.'>sign</a> );
+<a id='L277' name='L277'></a> 277 
+<a id='L278' name='L278'></a> 278     <em class='comment'>// Rotate point</em>
+<a id='L279' name='L279'></a> 279     <a href='../S/642.html#L178' title='Defined at 178 in router/pns_diff_pair.cpp.'>angle</a> += 900;
+<a id='L280' name='L280'></a> 280 
+<a id='L281' name='L281'></a> 281     <strong class='reserved'>for</strong>( <strong class='reserved'>unsigned</strong> <a href='../Y/8766.html' title='Multiple used in 73 places.'>jj</a> = 0; <a href='../Y/8766.html' title='Multiple used in 73 places.'>jj</a> &lt; <a href='../Y/5056.html' title='Multiple used in 28 places.'>aBuffer</a>.<a href='../S/330.html#L214' title='Defined at 214 in dialogs/panel_fp_lib_table.cpp.'>size</a>(); <a href='../Y/8766.html' title='Multiple used in 73 places.'>jj</a>++ )
+<a id='L282' name='L282'></a> 282     <em class='brace'>{</em>
+<a id='L283' name='L283'></a> 283         <a href='../Y/3193.html' title='Multiple used in 107 places.'>RotatePoint</a>( &amp;<a href='../Y/5056.html' title='Multiple used in 28 places.'>aBuffer</a>[<a href='../Y/8766.html' title='Multiple used in 73 places.'>jj</a>], <a href='../Y/6007.html' title='Multiple used in 7 places.'>aStartPoint</a>, <a href='../S/642.html#L178' title='Defined at 178 in router/pns_diff_pair.cpp.'>angle</a> );
+<a id='L284' name='L284'></a> 284     <em class='brace'>}</em>
+<a id='L285' name='L285'></a> 285 
+<a id='L286' name='L286'></a> 286     <em class='comment'>// push last point (end point)</em>
+<a id='L287' name='L287'></a> 287     <a href='../Y/5056.html' title='Multiple used in 28 places.'>aBuffer</a>.<a href='../S/330.html#L228' title='Defined at 228 in dialogs/panel_fp_lib_table.cpp.'>push_back</a>( <a href='../Y/5255.html' title='Multiple used in 8 places.'>aEndPoint</a> );
+<a id='L288' name='L288'></a> 288 
+<a id='L289' name='L289'></a> 289     <strong class='reserved'>return</strong> <a href='../S/507.html#L80' title='Defined at 80 in microwave/microwave_inductor.cpp.'>INDUCTOR_S_SHAPE_RESULT</a>::<a href='../Y/2696.html' title='Multiple used in 3 places.'>OK</a>;
+<a id='L290' name='L290'></a> 290 <em class='brace'>}</em>
+<a id='L291' name='L291'></a> 291 
+<a id='L292' name='L292'></a> 292 
+<a id='L293' name='L293'></a> 293 <strong class='reserved'>void</strong> <a href='../D/2043.html' title='Multiple defined in 2 places.'>MICROWAVE_TOOL</a>::<a href='../R/3577.html' title='Multiple referred from 2 places.'>createInductorBetween</a>( <strong class='reserved'>const</strong> <a href='../Y/4788.html' title='Multiple used in 795 places.'>VECTOR2I</a>&amp; <a href='../Y/6000.html' title='Multiple used in 114 places.'>aStart</a>, <strong class='reserved'>const</strong> <a href='../Y/4788.html' title='Multiple used in 795 places.'>VECTOR2I</a>&amp; <a href='../Y/5251.html' title='Multiple used in 84 places.'>aEnd</a> )
+<a id='L294' name='L294'></a> 294 <em class='brace'>{</em>
+<a id='L295' name='L295'></a> 295     <a href='../S/585.html#L356' title='Defined at 356 in pcb_edit_frame.cpp.'>PCB_EDIT_FRAME</a>&amp; <a href='../Y/7658.html' title='Multiple used in 96 places.'>editFrame</a> = *<a href='../Y/8253.html' title='Multiple used in 66 places.'>getEditFrame</a>&lt;<a href='../S/585.html#L356' title='Defined at 356 in pcb_edit_frame.cpp.'>PCB_EDIT_FRAME</a>&gt;();
+<a id='L296' name='L296'></a> 296 
+<a id='L297' name='L297'></a> 297     <a href='../S/510.html#L43' title='Defined at 43 in microwave/microwave_tool.h.'>MICROWAVE_INDUCTOR_PATTERN</a> <a href='../Y/13450.html' title='Multiple used in 5 places.'>pattern</a>;
+<a id='L298' name='L298'></a> 298 
+<a id='L299' name='L299'></a> 299     <a href='../Y/13450.html' title='Multiple used in 5 places.'>pattern</a>.<a href='../Y/10185.html' title='Multiple used in 68 places.'>m_Width</a> = <a href='../Y/6700.html' title='Multiple used in 309 places.'>board</a>()-&gt;<a href='../D/1162.html' title='Multiple defined in 2 places.'>GetDesignSettings</a>().<a href='../Y/1329.html' title='Multiple used in 8 places.'>GetCurrentTrackWidth</a>();
+<a id='L300' name='L300'></a> 300 
+<a id='L301' name='L301'></a> 301     <a href='../Y/13450.html' title='Multiple used in 5 places.'>pattern</a>.<a href='../Y/10058.html' title='Multiple used in 110 places.'>m_Start</a> = <em class='brace'>{</em> <a href='../Y/6000.html' title='Multiple used in 114 places.'>aStart</a>.<a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a>, <a href='../Y/6000.html' title='Multiple used in 114 places.'>aStart</a>.<a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a> <em class='brace'>}</em>;
+<a id='L302' name='L302'></a> 302     <a href='../Y/13450.html' title='Multiple used in 5 places.'>pattern</a>.<a href='../Y/9374.html' title='Multiple used in 102 places.'>m_End</a> = <em class='brace'>{</em> <a href='../Y/5251.html' title='Multiple used in 84 places.'>aEnd</a>.<a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a>, <a href='../Y/5251.html' title='Multiple used in 84 places.'>aEnd</a>.<a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a> <em class='brace'>}</em>;
+<a id='L303' name='L303'></a> 303 
+<a id='L304' name='L304'></a> 304     <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../Y/7776.html' title='Multiple used in 5 places.'>errorMessage</a>;
+<a id='L305' name='L305'></a> 305 
+<a id='L306' name='L306'></a> 306     <strong class='reserved'>auto</strong> <a href='../Y/8547.html' title='Multiple used in 4 places.'>inductorModule</a> = <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/15186.html' title='Multiple used in 184 places.'>unique_ptr</a>&lt;<a href='../D/2056.html' title='Multiple defined in 3 places.'>MODULE</a>&gt;( <a href='../S/507.html#L327' title='Defined at 327 in microwave/microwave_inductor.cpp.'>createMicrowaveInductor</a>( <a href='../Y/13450.html' title='Multiple used in 5 places.'>pattern</a>,
+<a id='L307' name='L307'></a> 307                                                                             <a href='../Y/7776.html' title='Multiple used in 5 places.'>errorMessage</a> ) );
+<a id='L308' name='L308'></a> 308 
+<a id='L309' name='L309'></a> 309     <em class='comment'>// on any error, report if we can</em>
+<a id='L310' name='L310'></a> 310     <strong class='reserved'>if</strong> ( !<a href='../Y/8547.html' title='Multiple used in 4 places.'>inductorModule</a> || !<a href='../Y/7776.html' title='Multiple used in 5 places.'>errorMessage</a>.<a href='../Y/2119.html' title='Multiple used in 204 places.'>IsEmpty</a>() )
+<a id='L311' name='L311'></a> 311     <em class='brace'>{</em>
+<a id='L312' name='L312'></a> 312         <strong class='reserved'>if</strong> ( !<a href='../Y/7776.html' title='Multiple used in 5 places.'>errorMessage</a>.<a href='../Y/2119.html' title='Multiple used in 204 places.'>IsEmpty</a>() )
+<a id='L313' name='L313'></a> 313             <a href='../Y/785.html' title='Multiple used in 89 places.'>DisplayError</a>( &amp;<a href='../Y/7658.html' title='Multiple used in 96 places.'>editFrame</a>, <a href='../Y/7776.html' title='Multiple used in 5 places.'>errorMessage</a> );
+<a id='L314' name='L314'></a> 314     <em class='brace'>}</em>
+<a id='L315' name='L315'></a> 315     <strong class='reserved'>else</strong>
+<a id='L316' name='L316'></a> 316     <em class='brace'>{</em>
+<a id='L317' name='L317'></a> 317         <em class='comment'>// at this point, we can save the module</em>
+<a id='L318' name='L318'></a> 318         <a href='../Y/12210.html' title='Multiple used in 265 places.'>m_toolMgr</a>-&gt;<a href='../Y/3195.html' title='Multiple used in 158 places.'>RunAction</a>( <a href='../Y/2808.html' title='Multiple used in 1029 places.'>PCB_ACTIONS</a>::<a href='../Y/14317.html' title='Multiple used in 24 places.'>selectItem</a>, <strong class='reserved'>true</strong>, <a href='../Y/8547.html' title='Multiple used in 4 places.'>inductorModule</a>.<a href='../Y/8249.html' title='Multiple used in 194 places.'>get</a>() );
+<a id='L319' name='L319'></a> 319 
+<a id='L320' name='L320'></a> 320         <a href='../D/203.html' title='Multiple defined in 3 places.'>BOARD_COMMIT</a> <a href='../Y/7008.html' title='Multiple used in 225 places.'>commit</a>( <strong class='reserved'>this</strong> );
+<a id='L321' name='L321'></a> 321         <a href='../Y/7008.html' title='Multiple used in 225 places.'>commit</a>.<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../Y/8547.html' title='Multiple used in 4 places.'>inductorModule</a>.<a href='../S/646.html#L124' title='Defined at 124 in router/pns_dp_meander_placer.cpp.'>release</a>() );
+<a id='L322' name='L322'></a> 322         <a href='../Y/7008.html' title='Multiple used in 225 places.'>commit</a>.<a href='../S/31.html#L84' title='Defined at 84 in board_commit.cpp.'>Push</a>( <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>("Add microwave inductor" ) );
+<a id='L323' name='L323'></a> 323     <em class='brace'>}</em>
+<a id='L324' name='L324'></a> 324 <em class='brace'>}</em>
+<a id='L325' name='L325'></a> 325 
+<a id='L326' name='L326'></a> 326 
+<a id='L327' name='L327'></a> 327 <a href='../D/2056.html' title='Multiple defined in 3 places.'>MODULE</a>* <a href='../D/2043.html' title='Multiple defined in 2 places.'>MICROWAVE_TOOL</a>::<a href='../R/3579.html' title='Multiple referred from 2 places.'>createMicrowaveInductor</a>( <a href='../S/510.html#L43' title='Defined at 43 in microwave/microwave_tool.h.'>MICROWAVE_INDUCTOR_PATTERN</a>&amp; <a href='../Y/5414.html' title='Multiple used in 15 places.'>aInductorPattern</a>,
+<a id='L328' name='L328'></a> 328                                                  <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a>&amp; <a href='../Y/5272.html' title='Multiple used in 13 places.'>aErrorMessage</a> )
+<a id='L329' name='L329'></a> 329 <em class='brace'>{</em>
+<a id='L330' name='L330'></a> 330     <em class='comment'>/* Build a microwave inductor footprint.</em>
+<a id='L331' name='L331'></a> 331 <em class='comment'>     * - Length Mself.lng</em>
+<a id='L332' name='L332'></a> 332 <em class='comment'>     * - Extremities Mself.m_Start and Mself.m_End</em>
+<a id='L333' name='L333'></a> 333 <em class='comment'>     * We must determine:</em>
+<a id='L334' name='L334'></a> 334 <em class='comment'>     * Mself.nbrin = number of segments perpendicular to the direction</em>
+<a id='L335' name='L335'></a> 335 <em class='comment'>     * (The coil nbrin will demicercles + 1 + 2 1 / 4 circle)</em>
+<a id='L336' name='L336'></a> 336 <em class='comment'>     * Mself.lbrin = length of a strand</em>
+<a id='L337' name='L337'></a> 337 <em class='comment'>     * Mself.radius = radius of rounded parts of the coil</em>
+<a id='L338' name='L338'></a> 338 <em class='comment'>     * Mself.delta = segments extremities connection between him and the coil even</em>
+<a id='L339' name='L339'></a> 339 <em class='comment'>     *</em>
+<a id='L340' name='L340'></a> 340 <em class='comment'>     * The equations are</em>
+<a id='L341' name='L341'></a> 341 <em class='comment'>     * Mself.m_Size.x = 2 * Mself.radius + Mself.lbrin</em>
+<a id='L342' name='L342'></a> 342 <em class='comment'>     * Mself.m_Size.y * Mself.delta = 2 + 2 * Mself.nbrin * Mself.radius</em>
+<a id='L343' name='L343'></a> 343 <em class='comment'>     * Mself.lng = 2 * Mself.delta / / connections to the coil</em>
+<a id='L344' name='L344'></a> 344 <em class='comment'>     + (Mself.nbrin-2) * Mself.lbrin / / length of the strands except 1st and last</em>
+<a id='L345' name='L345'></a> 345 <em class='comment'>     + (Mself.nbrin 1) * (PI * Mself.radius) / / length of rounded</em>
+<a id='L346' name='L346'></a> 346 <em class='comment'>     * Mself.lbrin + / 2 - Melf.radius * 2) / / length of 1st and last bit</em>
+<a id='L347' name='L347'></a> 347 <em class='comment'>     *</em>
+<a id='L348' name='L348'></a> 348 <em class='comment'>     * The constraints are:</em>
+<a id='L349' name='L349'></a> 349 <em class='comment'>     * Nbrin &gt;= 2</em>
+<a id='L350' name='L350'></a> 350 <em class='comment'>     * Mself.radius &lt; Mself.m_Size.x</em>
+<a id='L351' name='L351'></a> 351 <em class='comment'>     * Mself.m_Size.y = Mself.radius * 4 + 2 * Mself.raccord</em>
+<a id='L352' name='L352'></a> 352 <em class='comment'>     * Mself.lbrin&gt; Mself.radius * 2</em>
+<a id='L353' name='L353'></a> 353 <em class='comment'>     *</em>
+<a id='L354' name='L354'></a> 354 <em class='comment'>     * The calculation is conducted in the following way:</em>
+<a id='L355' name='L355'></a> 355 <em class='comment'>     * Initially:</em>
+<a id='L356' name='L356'></a> 356 <em class='comment'>     * Nbrin = 2</em>
+<a id='L357' name='L357'></a> 357 <em class='comment'>     * Radius = 4 * m_Size.x (arbitrarily fixed value)</em>
+<a id='L358' name='L358'></a> 358 <em class='comment'>     * Then:</em>
+<a id='L359' name='L359'></a> 359 <em class='comment'>     * Increasing the number of segments to the desired length</em>
+<a id='L360' name='L360'></a> 360 <em class='comment'>     * (Radius decreases if necessary)</em>
+<a id='L361' name='L361'></a> 361 <em class='comment'>     */</em>
+<a id='L362' name='L362'></a> 362 
+<a id='L363' name='L363'></a> 363     <a href='../D/777.html' title='Multiple defined in 2 places.'>D_PAD</a>*   <a href='../Y/13288.html' title='Multiple used in 1010 places.'>pad</a>;
+<a id='L364' name='L364'></a> 364     <a href='../D/4774.html' title='Multiple defined in 3 places.'>wxString</a> <a href='../Y/12733.html' title='Multiple used in 994 places.'>msg</a>;
+<a id='L365' name='L365'></a> 365 
+<a id='L366' name='L366'></a> 366     <a href='../S/585.html#L356' title='Defined at 356 in pcb_edit_frame.cpp.'>PCB_EDIT_FRAME</a>&amp; <a href='../Y/7658.html' title='Multiple used in 96 places.'>editFrame</a> = *<a href='../Y/8253.html' title='Multiple used in 66 places.'>getEditFrame</a>&lt;<a href='../S/585.html#L356' title='Defined at 356 in pcb_edit_frame.cpp.'>PCB_EDIT_FRAME</a>&gt;();
+<a id='L367' name='L367'></a> 367 
+<a id='L368' name='L368'></a> 368     <strong class='reserved'>auto</strong> <a href='../Y/13782.html' title='Multiple used in 280 places.'>pt</a>      = <a href='../Y/5414.html' title='Multiple used in 15 places.'>aInductorPattern</a>.<a href='../Y/9374.html' title='Multiple used in 102 places.'>m_End</a> - <a href='../Y/5414.html' title='Multiple used in 15 places.'>aInductorPattern</a>.<a href='../Y/10058.html' title='Multiple used in 110 places.'>m_Start</a>;
+<a id='L369' name='L369'></a> 369     <strong class='reserved'>int</strong>  <a href='../Y/12608.html' title='Multiple used in 6 places.'>min_len</a> = <a href='../Y/2278.html' title='Multiple used in 168 places.'>KiROUND</a>( <a href='../Y/949.html' title='Multiple used in 58 places.'>EuclideanNorm</a>( <a href='../Y/13782.html' title='Multiple used in 280 places.'>pt</a> ) );
+<a id='L370' name='L370'></a> 370     <a href='../Y/5414.html' title='Multiple used in 15 places.'>aInductorPattern</a>.<a href='../Y/11193.html' title='Multiple used in 8 places.'>m_length</a> = <a href='../Y/12608.html' title='Multiple used in 6 places.'>min_len</a>;
+<a id='L371' name='L371'></a> 371 
+<a id='L372' name='L372'></a> 372     <em class='comment'>// Enter the desired length.</em>
+<a id='L373' name='L373'></a> 373     <a href='../Y/12733.html' title='Multiple used in 994 places.'>msg</a> = <a href='../Y/4045.html' title='Multiple used in 54 places.'>StringFromValue</a>( <a href='../Y/7658.html' title='Multiple used in 96 places.'>editFrame</a>.<a href='../S/738.html#L280' title='Defined at 280 in swig/pcbnew_scripting_helpers.cpp.'>GetUserUnits</a>(), <a href='../Y/5414.html' title='Multiple used in 15 places.'>aInductorPattern</a>.<a href='../Y/11193.html' title='Multiple used in 8 places.'>m_length</a>, <strong class='reserved'>true</strong> );
+<a id='L374' name='L374'></a> 374     <a href='../Y/4888.html' title='Multiple used in 7 places.'>WX_TEXT_ENTRY_DIALOG</a> <a href='../Y/7493.html' title='Multiple used in 304 places.'>dlg</a>( &amp;<a href='../Y/7658.html' title='Multiple used in 96 places.'>editFrame</a>, <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Length of Trace:" ), <a href='../Y/15676.html' title='Multiple used in 516 places.'>wxEmptyString</a>, <a href='../Y/12733.html' title='Multiple used in 994 places.'>msg</a> );
+<a id='L375' name='L375'></a> 375 
+<a id='L376' name='L376'></a> 376     <strong class='reserved'>if</strong>( <a href='../Y/7493.html' title='Multiple used in 304 places.'>dlg</a>.<a href='../S/444.html#L846' title='Defined at 846 in footprint_viewer_frame.cpp.'>ShowModal</a>() != <a href='../Y/15789.html' title='Multiple used in 108 places.'>wxID_OK</a> )
+<a id='L377' name='L377'></a> 377         <strong class='reserved'>return</strong> <a href='../Y/13059.html' title='Multiple used in 610 places.'>nullptr</a>; <em class='comment'>// canceled by user</em>
+<a id='L378' name='L378'></a> 378 
+<a id='L379' name='L379'></a> 379     <a href='../Y/12733.html' title='Multiple used in 994 places.'>msg</a> = <a href='../Y/7493.html' title='Multiple used in 304 places.'>dlg</a>.<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>();
+<a id='L380' name='L380'></a> 380     <a href='../Y/5414.html' title='Multiple used in 15 places.'>aInductorPattern</a>.<a href='../Y/11193.html' title='Multiple used in 8 places.'>m_length</a> = <a href='../Y/4818.html' title='Multiple used in 33 places.'>ValueFromString</a>( <a href='../Y/7658.html' title='Multiple used in 96 places.'>editFrame</a>.<a href='../S/738.html#L280' title='Defined at 280 in swig/pcbnew_scripting_helpers.cpp.'>GetUserUnits</a>(), <a href='../Y/12733.html' title='Multiple used in 994 places.'>msg</a> );
+<a id='L381' name='L381'></a> 381 
+<a id='L382' name='L382'></a> 382     <em class='comment'>// Control values (ii = minimum length)</em>
+<a id='L383' name='L383'></a> 383     <strong class='reserved'>if</strong>( <a href='../Y/5414.html' title='Multiple used in 15 places.'>aInductorPattern</a>.<a href='../Y/11193.html' title='Multiple used in 8 places.'>m_length</a> &lt; <a href='../Y/12608.html' title='Multiple used in 6 places.'>min_len</a> )
+<a id='L384' name='L384'></a> 384     <em class='brace'>{</em>
+<a id='L385' name='L385'></a> 385         <a href='../Y/5272.html' title='Multiple used in 13 places.'>aErrorMessage</a> = <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Requested length &lt; minimum length" );
+<a id='L386' name='L386'></a> 386         <strong class='reserved'>return</strong> <a href='../Y/13059.html' title='Multiple used in 610 places.'>nullptr</a>;
+<a id='L387' name='L387'></a> 387     <em class='brace'>}</em>
+<a id='L388' name='L388'></a> 388 
+<a id='L389' name='L389'></a> 389     <em class='comment'>// Calculate the elements.</em>
+<a id='L390' name='L390'></a> 390     <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/15301.html' title='Multiple used in 606 places.'>vector</a> &lt;<a href='../Y/15871.html' title='Multiple used in 1252 places.'>wxPoint</a>&gt; <a href='../Y/6775.html' title='Multiple used in 75 places.'>buffer</a>;
+<a id='L391' name='L391'></a> 391     <strong class='reserved'>const</strong> <a href='../S/507.html#L80' title='Defined at 80 in microwave/microwave_inductor.cpp.'>INDUCTOR_S_SHAPE_RESULT</a> <a href='../Y/14003.html' title='Multiple used in 41 places.'>res</a> = <a href='../S/507.html#L98' title='Defined at 98 in microwave/microwave_inductor.cpp.'>BuildCornersList_S_Shape</a>( <a href='../Y/6775.html' title='Multiple used in 75 places.'>buffer</a>, <a href='../Y/5414.html' title='Multiple used in 15 places.'>aInductorPattern</a>.<a href='../Y/10058.html' title='Multiple used in 110 places.'>m_Start</a>,
+<a id='L392' name='L392'></a> 392             <a href='../Y/5414.html' title='Multiple used in 15 places.'>aInductorPattern</a>.<a href='../Y/9374.html' title='Multiple used in 102 places.'>m_End</a>, <a href='../Y/5414.html' title='Multiple used in 15 places.'>aInductorPattern</a>.<a href='../Y/11193.html' title='Multiple used in 8 places.'>m_length</a>, <a href='../Y/5414.html' title='Multiple used in 15 places.'>aInductorPattern</a>.<a href='../Y/10185.html' title='Multiple used in 68 places.'>m_Width</a> );
+<a id='L393' name='L393'></a> 393 
+<a id='L394' name='L394'></a> 394     <strong class='reserved'>switch</strong>( <a href='../Y/14003.html' title='Multiple used in 41 places.'>res</a> )
+<a id='L395' name='L395'></a> 395     <em class='brace'>{</em>
+<a id='L396' name='L396'></a> 396     <strong class='reserved'>case</strong> <a href='../S/507.html#L80' title='Defined at 80 in microwave/microwave_inductor.cpp.'>INDUCTOR_S_SHAPE_RESULT</a>::<a href='../S/674.html#L54' title='Defined at 54 in router/pns_meander_placer_base.h.'>TOO_LONG</a>:
+<a id='L397' name='L397'></a> 397         <a href='../Y/5272.html' title='Multiple used in 13 places.'>aErrorMessage</a> = <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Requested length too large" );
+<a id='L398' name='L398'></a> 398         <strong class='reserved'>return</strong> <a href='../Y/13059.html' title='Multiple used in 610 places.'>nullptr</a>;
+<a id='L399' name='L399'></a> 399     <strong class='reserved'>case</strong> <a href='../S/507.html#L80' title='Defined at 80 in microwave/microwave_inductor.cpp.'>INDUCTOR_S_SHAPE_RESULT</a>::<a href='../S/674.html#L53' title='Defined at 53 in router/pns_meander_placer_base.h.'>TOO_SHORT</a>:
+<a id='L400' name='L400'></a> 400         <a href='../Y/5272.html' title='Multiple used in 13 places.'>aErrorMessage</a> = <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Requested length too small" );
+<a id='L401' name='L401'></a> 401         <strong class='reserved'>return</strong> <a href='../Y/13059.html' title='Multiple used in 610 places.'>nullptr</a>;
+<a id='L402' name='L402'></a> 402     <strong class='reserved'>case</strong> <a href='../S/507.html#L80' title='Defined at 80 in microwave/microwave_inductor.cpp.'>INDUCTOR_S_SHAPE_RESULT</a>::<a href='../Y/2635.html' title='Multiple used in 3 places.'>NO_REPR</a>:
+<a id='L403' name='L403'></a> 403         <a href='../Y/5272.html' title='Multiple used in 13 places.'>aErrorMessage</a> = <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Requested length can't be represented" );
+<a id='L404' name='L404'></a> 404         <strong class='reserved'>return</strong> <a href='../Y/13059.html' title='Multiple used in 610 places.'>nullptr</a>;
+<a id='L405' name='L405'></a> 405     <strong class='reserved'>case</strong> <a href='../S/507.html#L80' title='Defined at 80 in microwave/microwave_inductor.cpp.'>INDUCTOR_S_SHAPE_RESULT</a>::<a href='../Y/2696.html' title='Multiple used in 3 places.'>OK</a>:
+<a id='L406' name='L406'></a> 406         <strong class='reserved'>break</strong>;
+<a id='L407' name='L407'></a> 407     <em class='brace'>}</em>
+<a id='L408' name='L408'></a> 408 
+<a id='L409' name='L409'></a> 409     <em class='comment'>// Generate footprint. the value is also used as footprint name.</em>
+<a id='L410' name='L410'></a> 410     <a href='../Y/12733.html' title='Multiple used in 994 places.'>msg</a> = "L";
+<a id='L411' name='L411'></a> 411     <a href='../Y/4888.html' title='Multiple used in 7 places.'>WX_TEXT_ENTRY_DIALOG</a> <a href='../Y/6964.html' title='Multiple used in 3 places.'>cmpdlg</a>( &amp;<a href='../Y/7658.html' title='Multiple used in 96 places.'>editFrame</a>, <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Component Value:" ), <a href='../Y/15676.html' title='Multiple used in 516 places.'>wxEmptyString</a>, <a href='../Y/12733.html' title='Multiple used in 994 places.'>msg</a> );
+<a id='L412' name='L412'></a> 412     <a href='../Y/6964.html' title='Multiple used in 3 places.'>cmpdlg</a>.<a href='../Y/3905.html' title='Multiple used in 4 places.'>SetTextValidator</a>( <a href='../Y/2523.html' title='Multiple used in 3 places.'>MODULE_NAME_CHAR_VALIDATOR</a>( &amp;<a href='../Y/12733.html' title='Multiple used in 994 places.'>msg</a> ) );
+<a id='L413' name='L413'></a> 413 
+<a id='L414' name='L414'></a> 414     <strong class='reserved'>if</strong>( ( <a href='../Y/6964.html' title='Multiple used in 3 places.'>cmpdlg</a>.<a href='../S/444.html#L846' title='Defined at 846 in footprint_viewer_frame.cpp.'>ShowModal</a>() != <a href='../Y/15789.html' title='Multiple used in 108 places.'>wxID_OK</a> ) || <a href='../Y/12733.html' title='Multiple used in 994 places.'>msg</a>.<a href='../Y/2119.html' title='Multiple used in 204 places.'>IsEmpty</a>() )
+<a id='L415' name='L415'></a> 415         <strong class='reserved'>return</strong> <a href='../Y/13059.html' title='Multiple used in 610 places.'>nullptr</a>;    <em class='comment'>//  Aborted by user</em>
+<a id='L416' name='L416'></a> 416 
+<a id='L417' name='L417'></a> 417     <a href='../D/2056.html' title='Multiple defined in 3 places.'>MODULE</a>* <a href='../Y/12690.html' title='Multiple used in 858 places.'>module</a> = <a href='../Y/7658.html' title='Multiple used in 96 places.'>editFrame</a>.<a href='../S/439.html#L1002' title='Defined at 1002 in footprint_libraries_utils.cpp.'>CreateNewModule</a>( <a href='../Y/12733.html' title='Multiple used in 994 places.'>msg</a> );
+<a id='L418' name='L418'></a> 418 
+<a id='L419' name='L419'></a> 419     <a href='../Y/12690.html' title='Multiple used in 858 places.'>module</a>-&gt;<a href='../Y/3508.html' title='Multiple used in 26 places.'>SetFPID</a>( <a href='../Y/2356.html' title='Multiple used in 120 places.'>LIB_ID</a>( <a href='../Y/15676.html' title='Multiple used in 516 places.'>wxEmptyString</a>, <a href='../Y/15966.html' title='Multiple used in 1011 places.'>wxT</a>( "mw_inductor" ) ) );
+<a id='L420' name='L420'></a> 420     <a href='../Y/12690.html' title='Multiple used in 858 places.'>module</a>-&gt;<a href='../Y/3345.html' title='Multiple used in 12 places.'>SetAttributes</a>( <a href='../S/69.html#L70' title='Defined at 70 in class_module.h.'>MOD_VIRTUAL</a> | <a href='../S/69.html#L68' title='Defined at 68 in class_module.h.'>MOD_CMS</a> );
+<a id='L421' name='L421'></a> 421     <a href='../Y/12690.html' title='Multiple used in 858 places.'>module</a>-&gt;<a href='../Y/492.html' title='Multiple used in 24 places.'>ClearFlags</a>();
+<a id='L422' name='L422'></a> 422     <a href='../Y/12690.html' title='Multiple used in 858 places.'>module</a>-&gt;<a href='../D/3066.html' title='Multiple defined in 5 places.'>SetPosition</a>( <a href='../Y/5414.html' title='Multiple used in 15 places.'>aInductorPattern</a>.<a href='../Y/9374.html' title='Multiple used in 102 places.'>m_End</a> );
+<a id='L423' name='L423'></a> 423 
+<a id='L424' name='L424'></a> 424     <em class='comment'>// Generate segments</em>
+<a id='L425' name='L425'></a> 425     <strong class='reserved'>for</strong>( <strong class='reserved'>unsigned</strong> <a href='../Y/8766.html' title='Multiple used in 73 places.'>jj</a> = 1; <a href='../Y/8766.html' title='Multiple used in 73 places.'>jj</a> &lt; <a href='../Y/6775.html' title='Multiple used in 75 places.'>buffer</a>.<a href='../S/330.html#L214' title='Defined at 214 in dialogs/panel_fp_lib_table.cpp.'>size</a>(); <a href='../Y/8766.html' title='Multiple used in 73 places.'>jj</a>++ )
+<a id='L426' name='L426'></a> 426     <em class='brace'>{</em>
+<a id='L427' name='L427'></a> 427         <a href='../D/848.html' title='Multiple defined in 2 places.'>EDGE_MODULE</a>* <a href='../Y/2992.html' title='Multiple used in 11 places.'>PtSegm</a>;
+<a id='L428' name='L428'></a> 428         <a href='../Y/2992.html' title='Multiple used in 11 places.'>PtSegm</a> = <strong class='reserved'>new</strong> <a href='../D/848.html' title='Multiple defined in 2 places.'>EDGE_MODULE</a>( <a href='../Y/12690.html' title='Multiple used in 858 places.'>module</a> );
+<a id='L429' name='L429'></a> 429         <a href='../Y/2992.html' title='Multiple used in 11 places.'>PtSegm</a>-&gt;<a href='../Y/3868.html' title='Multiple used in 67 places.'>SetStart</a>( <a href='../Y/6775.html' title='Multiple used in 75 places.'>buffer</a>[<a href='../Y/8766.html' title='Multiple used in 73 places.'>jj</a> - 1] );
+<a id='L430' name='L430'></a> 430         <a href='../Y/2992.html' title='Multiple used in 11 places.'>PtSegm</a>-&gt;<a href='../S/60.html#L199' title='Defined at 199 in class_dimension.cpp.'>SetEnd</a>( <a href='../Y/6775.html' title='Multiple used in 75 places.'>buffer</a>[<a href='../Y/8766.html' title='Multiple used in 73 places.'>jj</a>] );
+<a id='L431' name='L431'></a> 431         <a href='../Y/2992.html' title='Multiple used in 11 places.'>PtSegm</a>-&gt;<a href='../S/528.html#L245' title='Defined at 245 in pcad2kicadpcb_plugin/pcad2kicad_common.cpp.'>SetWidth</a>( <a href='../Y/5414.html' title='Multiple used in 15 places.'>aInductorPattern</a>.<a href='../Y/10185.html' title='Multiple used in 68 places.'>m_Width</a> );
+<a id='L432' name='L432'></a> 432         <a href='../Y/2992.html' title='Multiple used in 11 places.'>PtSegm</a>-&gt;<a href='../D/3034.html' title='Multiple defined in 4 places.'>SetLayer</a>( <a href='../Y/12690.html' title='Multiple used in 858 places.'>module</a>-&gt;<a href='../D/1216.html' title='Multiple defined in 2 places.'>GetLayer</a>() );
+<a id='L433' name='L433'></a> 433         <a href='../Y/2992.html' title='Multiple used in 11 places.'>PtSegm</a>-&gt;<a href='../Y/3834.html' title='Multiple used in 179 places.'>SetShape</a>( <a href='../Y/3304.html' title='Multiple used in 75 places.'>S_SEGMENT</a> );
+<a id='L434' name='L434'></a> 434         <a href='../Y/2992.html' title='Multiple used in 11 places.'>PtSegm</a>-&gt;<a href='../Y/3869.html' title='Multiple used in 16 places.'>SetStart0</a>( <a href='../Y/2992.html' title='Multiple used in 11 places.'>PtSegm</a>-&gt;<a href='../Y/1728.html' title='Multiple used in 182 places.'>GetStart</a>() - <a href='../Y/12690.html' title='Multiple used in 858 places.'>module</a>-&gt;<a href='../D/1302.html' title='Multiple defined in 5 places.'>GetPosition</a>() );
+<a id='L435' name='L435'></a> 435         <a href='../Y/2992.html' title='Multiple used in 11 places.'>PtSegm</a>-&gt;<a href='../Y/3489.html' title='Multiple used in 17 places.'>SetEnd0</a>( <a href='../Y/2992.html' title='Multiple used in 11 places.'>PtSegm</a>-&gt;<a href='../Y/1386.html' title='Multiple used in 189 places.'>GetEnd</a>() - <a href='../Y/12690.html' title='Multiple used in 858 places.'>module</a>-&gt;<a href='../D/1302.html' title='Multiple defined in 5 places.'>GetPosition</a>() );
+<a id='L436' name='L436'></a> 436         <a href='../Y/12690.html' title='Multiple used in 858 places.'>module</a>-&gt;<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../Y/2992.html' title='Multiple used in 11 places.'>PtSegm</a> );
+<a id='L437' name='L437'></a> 437     <em class='brace'>}</em>
+<a id='L438' name='L438'></a> 438 
+<a id='L439' name='L439'></a> 439     <em class='comment'>// Place a pad on each end of coil.</em>
+<a id='L440' name='L440'></a> 440     <a href='../Y/13288.html' title='Multiple used in 1010 places.'>pad</a> = <strong class='reserved'>new</strong> <a href='../D/777.html' title='Multiple defined in 2 places.'>D_PAD</a>( <a href='../Y/12690.html' title='Multiple used in 858 places.'>module</a> );
+<a id='L441' name='L441'></a> 441 
+<a id='L442' name='L442'></a> 442     <a href='../Y/12690.html' title='Multiple used in 858 places.'>module</a>-&gt;<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../Y/13288.html' title='Multiple used in 1010 places.'>pad</a> );
+<a id='L443' name='L443'></a> 443 
+<a id='L444' name='L444'></a> 444     <a href='../Y/13288.html' title='Multiple used in 1010 places.'>pad</a>-&gt;<a href='../S/547.html#L371' title='Defined at 371 in pcad2kicadpcb_plugin/pcb_module.cpp.'>SetName</a>( "1" );
+<a id='L445' name='L445'></a> 445     <a href='../Y/13288.html' title='Multiple used in 1010 places.'>pad</a>-&gt;<a href='../D/3066.html' title='Multiple defined in 5 places.'>SetPosition</a>( <a href='../Y/5414.html' title='Multiple used in 15 places.'>aInductorPattern</a>.<a href='../Y/9374.html' title='Multiple used in 102 places.'>m_End</a> );
+<a id='L446' name='L446'></a> 446     <a href='../Y/13288.html' title='Multiple used in 1010 places.'>pad</a>-&gt;<a href='../Y/3776.html' title='Multiple used in 28 places.'>SetPos0</a>( <a href='../Y/13288.html' title='Multiple used in 1010 places.'>pad</a>-&gt;<a href='../D/1302.html' title='Multiple defined in 5 places.'>GetPosition</a>() - <a href='../Y/12690.html' title='Multiple used in 858 places.'>module</a>-&gt;<a href='../D/1302.html' title='Multiple defined in 5 places.'>GetPosition</a>() );
+<a id='L447' name='L447'></a> 447 
+<a id='L448' name='L448'></a> 448     <a href='../Y/13288.html' title='Multiple used in 1010 places.'>pad</a>-&gt;<a href='../S/469.html#L113' title='Defined at 113 in grid_layer_box_helpers.cpp.'>SetSize</a>( <a href='../Y/15943.html' title='Multiple used in 474 places.'>wxSize</a>( <a href='../Y/5414.html' title='Multiple used in 15 places.'>aInductorPattern</a>.<a href='../Y/10185.html' title='Multiple used in 68 places.'>m_Width</a>, <a href='../Y/5414.html' title='Multiple used in 15 places.'>aInductorPattern</a>.<a href='../Y/10185.html' title='Multiple used in 68 places.'>m_Width</a> ) );
+<a id='L449' name='L449'></a> 449 
+<a id='L450' name='L450'></a> 450     <a href='../Y/13288.html' title='Multiple used in 1010 places.'>pad</a>-&gt;<a href='../S/80.html#L236' title='Defined at 236 in class_zone.cpp.'>SetLayerSet</a>( <a href='../Y/2380.html' title='Multiple used in 386 places.'>LSET</a>( <a href='../Y/12690.html' title='Multiple used in 858 places.'>module</a>-&gt;<a href='../D/1216.html' title='Multiple defined in 2 places.'>GetLayer</a>() ) );
+<a id='L451' name='L451'></a> 451     <a href='../Y/13288.html' title='Multiple used in 1010 places.'>pad</a>-&gt;<a href='../S/70.html#L446' title='Defined at 446 in class_pad.cpp.'>SetAttribute</a>( <a href='../Y/2751.html' title='Multiple used in 28 places.'>PAD_ATTRIB_SMD</a> );
+<a id='L452' name='L452'></a> 452     <a href='../Y/13288.html' title='Multiple used in 1010 places.'>pad</a>-&gt;<a href='../Y/3834.html' title='Multiple used in 179 places.'>SetShape</a>( <a href='../Y/2769.html' title='Multiple used in 52 places.'>PAD_SHAPE_CIRCLE</a> );
+<a id='L453' name='L453'></a> 453 
+<a id='L454' name='L454'></a> 454     <a href='../D/777.html' title='Multiple defined in 2 places.'>D_PAD</a>* <a href='../Y/12983.html' title='Multiple used in 3 places.'>newpad</a> = <strong class='reserved'>new</strong> <a href='../D/777.html' title='Multiple defined in 2 places.'>D_PAD</a>( *<a href='../Y/13288.html' title='Multiple used in 1010 places.'>pad</a> );
+<a id='L455' name='L455'></a> 455 
+<a id='L456' name='L456'></a> 456     <a href='../Y/12690.html' title='Multiple used in 858 places.'>module</a>-&gt;<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../Y/12983.html' title='Multiple used in 3 places.'>newpad</a> );
+<a id='L457' name='L457'></a> 457 
+<a id='L458' name='L458'></a> 458     <a href='../Y/13288.html' title='Multiple used in 1010 places.'>pad</a> = <a href='../Y/12983.html' title='Multiple used in 3 places.'>newpad</a>;
+<a id='L459' name='L459'></a> 459     <a href='../Y/13288.html' title='Multiple used in 1010 places.'>pad</a>-&gt;<a href='../S/547.html#L371' title='Defined at 371 in pcad2kicadpcb_plugin/pcb_module.cpp.'>SetName</a>( "2" );
+<a id='L460' name='L460'></a> 460     <a href='../Y/13288.html' title='Multiple used in 1010 places.'>pad</a>-&gt;<a href='../D/3066.html' title='Multiple defined in 5 places.'>SetPosition</a>( <a href='../Y/5414.html' title='Multiple used in 15 places.'>aInductorPattern</a>.<a href='../Y/10058.html' title='Multiple used in 110 places.'>m_Start</a> );
+<a id='L461' name='L461'></a> 461     <a href='../Y/13288.html' title='Multiple used in 1010 places.'>pad</a>-&gt;<a href='../Y/3776.html' title='Multiple used in 28 places.'>SetPos0</a>( <a href='../Y/13288.html' title='Multiple used in 1010 places.'>pad</a>-&gt;<a href='../D/1302.html' title='Multiple defined in 5 places.'>GetPosition</a>() - <a href='../Y/12690.html' title='Multiple used in 858 places.'>module</a>-&gt;<a href='../D/1302.html' title='Multiple defined in 5 places.'>GetPosition</a>() );
+<a id='L462' name='L462'></a> 462 
+<a id='L463' name='L463'></a> 463     <em class='comment'>// Modify text positions.</em>
+<a id='L464' name='L464'></a> 464     <a href='../Y/15871.html' title='Multiple used in 1252 places.'>wxPoint</a> <a href='../Y/13908.html' title='Multiple used in 16 places.'>refPos</a>( ( <a href='../Y/5414.html' title='Multiple used in 15 places.'>aInductorPattern</a>.<a href='../Y/10058.html' title='Multiple used in 110 places.'>m_Start</a>.<a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a> + <a href='../Y/5414.html' title='Multiple used in 15 places.'>aInductorPattern</a>.<a href='../Y/9374.html' title='Multiple used in 102 places.'>m_End</a>.<a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a> ) / 2,
+<a id='L465' name='L465'></a> 465                     ( <a href='../Y/5414.html' title='Multiple used in 15 places.'>aInductorPattern</a>.<a href='../Y/10058.html' title='Multiple used in 110 places.'>m_Start</a>.<a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a> + <a href='../Y/5414.html' title='Multiple used in 15 places.'>aInductorPattern</a>.<a href='../Y/9374.html' title='Multiple used in 102 places.'>m_End</a>.<a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a> ) / 2 );
+<a id='L466' name='L466'></a> 466 
+<a id='L467' name='L467'></a> 467     <a href='../Y/15871.html' title='Multiple used in 1252 places.'>wxPoint</a> <a href='../Y/15280.html' title='Multiple used in 3 places.'>valPos</a> = <a href='../Y/13908.html' title='Multiple used in 16 places.'>refPos</a>;
+<a id='L468' name='L468'></a> 468 
+<a id='L469' name='L469'></a> 469     <a href='../Y/13908.html' title='Multiple used in 16 places.'>refPos</a>.<a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a> -= <a href='../Y/12690.html' title='Multiple used in 858 places.'>module</a>-&gt;<a href='../Y/3145.html' title='Multiple used in 62 places.'>Reference</a>().<a href='../S/35.html#L953' title='Defined at 953 in board_design_settings.cpp.'>GetTextSize</a>().<a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a>;
+<a id='L470' name='L470'></a> 470     <a href='../Y/12690.html' title='Multiple used in 858 places.'>module</a>-&gt;<a href='../Y/3145.html' title='Multiple used in 62 places.'>Reference</a>().<a href='../D/3066.html' title='Multiple defined in 5 places.'>SetPosition</a>( <a href='../Y/13908.html' title='Multiple used in 16 places.'>refPos</a> );
+<a id='L471' name='L471'></a> 471     <a href='../Y/15280.html' title='Multiple used in 3 places.'>valPos</a>.<a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a> += <a href='../Y/12690.html' title='Multiple used in 858 places.'>module</a>-&gt;<a href='../Y/4816.html' title='Multiple used in 68 places.'>Value</a>().<a href='../S/35.html#L953' title='Defined at 953 in board_design_settings.cpp.'>GetTextSize</a>().<a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a>;
+<a id='L472' name='L472'></a> 472     <a href='../Y/12690.html' title='Multiple used in 858 places.'>module</a>-&gt;<a href='../Y/4816.html' title='Multiple used in 68 places.'>Value</a>().<a href='../D/3066.html' title='Multiple defined in 5 places.'>SetPosition</a>( <a href='../Y/15280.html' title='Multiple used in 3 places.'>valPos</a> );
+<a id='L473' name='L473'></a> 473 
+<a id='L474' name='L474'></a> 474     <a href='../Y/12690.html' title='Multiple used in 858 places.'>module</a>-&gt;<a href='../S/68.html#L494' title='Defined at 494 in class_module.cpp.'>CalculateBoundingBox</a>();
+<a id='L475' name='L475'></a> 475     <strong class='reserved'>return</strong> <a href='../Y/12690.html' title='Multiple used in 858 places.'>module</a>;
+<a id='L476' name='L476'></a> 476 <em class='brace'>}</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L51'>[^]</a><a href='#L327'>[v]</a><a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

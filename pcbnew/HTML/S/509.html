@@ -1,0 +1,275 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>microwave/microwave_tool.cpp</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/836.html'>microwave</a>/microwave_tool.cpp</h2>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L51'>[^]</a><a href='#L236'>[v]</a>[top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L51' title='Defined at 51.'>Reset</a></li>
+<li><a href='#L56' title='Defined at 56.'>addMicrowaveFootprint</a></li>
+<li><a href='#L62' title='Defined at 62.'>m_itemType</a></li>
+<li><a href='#L69' title='Defined at 69.'>CreateItem</a></li>
+<li><a href='#L110' title='Defined at 110.'>drawMicrowaveInductor</a></li>
+<li><a href='#L236' title='Defined at 236.'>setTransitions</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * This program source code file is part of KiCad, a free EDA CAD application.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 2017-2020 Kicad Developers, see change_log.txt for contributors.</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> *</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> * This program is free software; you can redistribute it and/or</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> * modify it under the terms of the GNU General Public License</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * as published by the Free Software Foundation; either version 2</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * of the License, or (at your option) any later version.</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> *</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> * This program is distributed in the hope that it will be useful,</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> * but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * GNU General Public License for more details.</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> *</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> * You should have received a copy of the GNU General Public License</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> * along with this program; if not, you may find one here:</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> * or you may search the http://www.gnu.org website for the version 2 license,</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> * or you may write to the Free Software Foundation, Inc.,</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'> * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'> */</em>
+<a id='L23' name='L23'></a>  23 
+<a id='L24' name='L24'></a>  24 <em class='sharp'>#include</em> &lt;bitmaps.h&gt;
+<a id='L25' name='L25'></a>  25 <em class='sharp'>#include</em> &lt;<a href='32.html'>board_commit.h</a>&gt;
+<a id='L26' name='L26'></a>  26 <em class='sharp'>#include</em> &lt;class_board_item.h&gt;
+<a id='L27' name='L27'></a>  27 <em class='sharp'>#include</em> &lt;class_draw_panel_gal.h&gt;
+<a id='L28' name='L28'></a>  28 <em class='sharp'>#include</em> &lt;<a href='69.html'>class_module.h</a>&gt;
+<a id='L29' name='L29'></a>  29 <em class='sharp'>#include</em> &lt;confirm.h&gt;
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#include</em> &lt;gal/graphics_abstraction_layer.h&gt;
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#include</em> &lt;<a href='510.html'>microwave/microwave_tool.h</a>&gt;
+<a id='L32' name='L32'></a>  32 <em class='sharp'>#include</em> &lt;preview_items/two_point_geom_manager.h&gt;
+<a id='L33' name='L33'></a>  33 <em class='sharp'>#include</em> &lt;preview_items/centreline_rect_item.h&gt;
+<a id='L34' name='L34'></a>  34 <em class='sharp'>#include</em> &lt;tool/tool_manager.h&gt;
+<a id='L35' name='L35'></a>  35 <em class='sharp'>#include</em> &lt;<a href='782.html'>tools/pcb_actions.h</a>&gt;
+<a id='L36' name='L36'></a>  36 <em class='sharp'>#include</em> &lt;<a href='802.html'>tools/selection_tool.h</a>&gt;
+<a id='L37' name='L37'></a>  37 <em class='sharp'>#include</em> &lt;view/view_controls.h&gt;
+<a id='L38' name='L38'></a>  38 <em class='sharp'>#include</em> &lt;view/view.h&gt;
+<a id='L39' name='L39'></a>  39 
+<a id='L40' name='L40'></a>  40 
+<a id='L41' name='L41'></a>  41 <a href='../D/2043.html' title='Multiple defined in 2 places.'>MICROWAVE_TOOL</a>::<a href='../R/1953.html' title='Multiple referred from 22 places.'>MICROWAVE_TOOL</a>() :
+<a id='L42' name='L42'></a>  42         <a href='../Y/2858.html' title='Multiple used in 55 places.'>PCB_TOOL_BASE</a>( "pcbnew.MicrowaveTool" )
+<a id='L43' name='L43'></a>  43 <em class='brace'>{</em>
+<a id='L44' name='L44'></a>  44 <em class='brace'>}</em>
+<a id='L45' name='L45'></a>  45 
+<a id='L46' name='L46'></a>  46 
+<a id='L47' name='L47'></a>  47 <a href='../D/2043.html' title='Multiple defined in 2 places.'>MICROWAVE_TOOL</a>::~<a href='../R/1953.html' title='Multiple referred from 22 places.'>MICROWAVE_TOOL</a>()
+<a id='L48' name='L48'></a>  48 <em class='brace'>{</em><em class='brace'>}</em>
+<a id='L49' name='L49'></a>  49 
+<a id='L50' name='L50'></a>  50 
+<a id='L51' name='L51'></a>  51 <strong class='reserved'>void</strong> <a href='../D/2043.html' title='Multiple defined in 2 places.'>MICROWAVE_TOOL</a>::<a href='../R/2683.html' title='Multiple referred from 26 places.'>Reset</a>( <a href='../Y/3095.html' title='Multiple used in 40 places.'>RESET_REASON</a> <a href='../Y/5860.html' title='Multiple used in 54 places.'>aReason</a> )
+<a id='L52' name='L52'></a>  52 <em class='brace'>{</em>
+<a id='L53' name='L53'></a>  53 <em class='brace'>}</em>
+<a id='L54' name='L54'></a>  54 
+<a id='L55' name='L55'></a>  55 
+<a id='L56' name='L56'></a>  56 <strong class='reserved'>int</strong> <a href='../D/2043.html' title='Multiple defined in 2 places.'>MICROWAVE_TOOL</a>::<a href='../R/3425.html' title='Multiple referred from 5 places.'>addMicrowaveFootprint</a>( <strong class='reserved'>const</strong> <a href='../Y/4100.html' title='Multiple used in 418 places.'>TOOL_EVENT</a>&amp; <a href='../Y/5276.html' title='Multiple used in 837 places.'>aEvent</a> )
+<a id='L57' name='L57'></a>  57 <em class='brace'>{</em>
+<a id='L58' name='L58'></a>  58     <strong class='reserved'>struct</strong> <a href='../R/1952.html' title='Multiple referred from 2 places.'>MICROWAVE_PLACER</a> : <strong class='reserved'>public</strong> <a href='../S/792.html#L52' title='Defined at 52 in tools/pcb_tool_base.h.'>INTERACTIVE_PLACER_BASE</a>
+<a id='L59' name='L59'></a>  59     <em class='brace'>{</em>
+<a id='L60' name='L60'></a>  60         <a href='../S/509.html#L58' title='Defined at 58 in microwave/microwave_tool.cpp.'>MICROWAVE_PLACER</a>( <a href='../D/2043.html' title='Multiple defined in 2 places.'>MICROWAVE_TOOL</a>* <a href='../Y/6070.html' title='Multiple used in 28 places.'>aTool</a>, <a href='../Y/2477.html' title='Multiple used in 21 places.'>MICROWAVE_FOOTPRINT_SHAPE</a> <a href='../Y/6093.html' title='Multiple used in 92 places.'>aType</a> ) :
+<a id='L61' name='L61'></a>  61                 <a href='../Y/12206.html' title='Multiple used in 36 places.'>m_tool</a>( <a href='../Y/6070.html' title='Multiple used in 28 places.'>aTool</a> ),
+<a id='L62' name='L62'></a>  62                 <a href='../R/4018.html' title='Multiple referred from 3 places.'>m_itemType</a>( <a href='../Y/6093.html' title='Multiple used in 92 places.'>aType</a> )
+<a id='L63' name='L63'></a>  63         <em class='brace'>{</em> <em class='brace'>}</em>;
+<a id='L64' name='L64'></a>  64 
+<a id='L65' name='L65'></a>  65         <strong class='reserved'>virtual</strong> ~MICROWAVE_PLACER()
+<a id='L66' name='L66'></a>  66         <em class='brace'>{</em>
+<a id='L67' name='L67'></a>  67         <em class='brace'>}</em>
+<a id='L68' name='L68'></a>  68 
+<a id='L69' name='L69'></a>  69         <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/15186.html' title='Multiple used in 184 places.'>unique_ptr</a>&lt;<a href='../Y/253.html' title='Multiple used in 610 places.'>BOARD_ITEM</a>&gt; <a href='../R/487.html' title='Multiple referred from 2 places.'>CreateItem</a>() <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a>
+<a id='L70' name='L70'></a>  70         <em class='brace'>{</em>
+<a id='L71' name='L71'></a>  71             <strong class='reserved'>switch</strong>( <a href='../S/509.html#L62' title='Defined at 62 in microwave/microwave_tool.cpp.'>m_itemType</a> )
+<a id='L72' name='L72'></a>  72             <em class='brace'>{</em>
+<a id='L73' name='L73'></a>  73             <strong class='reserved'>case</strong> <a href='../Y/2477.html' title='Multiple used in 21 places.'>MICROWAVE_FOOTPRINT_SHAPE</a>::<a href='../Y/1132.html' title='Multiple used in 5 places.'>GAP</a>:
+<a id='L74' name='L74'></a>  74             <strong class='reserved'>case</strong> <a href='../Y/2477.html' title='Multiple used in 21 places.'>MICROWAVE_FOOTPRINT_SHAPE</a>::<a href='../Y/3289.html' title='Multiple used in 5 places.'>STUB</a>:
+<a id='L75' name='L75'></a>  75             <strong class='reserved'>case</strong> <a href='../Y/2477.html' title='Multiple used in 21 places.'>MICROWAVE_FOOTPRINT_SHAPE</a>::<a href='../Y/3290.html' title='Multiple used in 6 places.'>STUB_ARC</a>:
+<a id='L76' name='L76'></a>  76                 <strong class='reserved'>return</strong> <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/15186.html' title='Multiple used in 184 places.'>unique_ptr</a>&lt;<a href='../D/2056.html' title='Multiple defined in 3 places.'>MODULE</a>&gt;( <a href='../Y/12206.html' title='Multiple used in 36 places.'>m_tool</a>-&gt;<a href='../S/506.html#L31' title='Defined at 31 in microwave/microwave_footprint.cpp.'>createFootprint</a>( <a href='../S/509.html#L62' title='Defined at 62 in microwave/microwave_tool.cpp.'>m_itemType</a> ) );
+<a id='L77' name='L77'></a>  77 
+<a id='L78' name='L78'></a>  78             <strong class='reserved'>case</strong> <a href='../Y/2477.html' title='Multiple used in 21 places.'>MICROWAVE_FOOTPRINT_SHAPE</a>::<a href='../Y/1016.html' title='Multiple used in 3 places.'>FUNCTION_SHAPE</a>:
+<a id='L79' name='L79'></a>  79                 <strong class='reserved'>return</strong> <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/15186.html' title='Multiple used in 184 places.'>unique_ptr</a>&lt;<a href='../D/2056.html' title='Multiple defined in 3 places.'>MODULE</a>&gt;( <a href='../Y/12206.html' title='Multiple used in 36 places.'>m_tool</a>-&gt;<a href='../S/508.html#L241' title='Defined at 241 in microwave/microwave_polygon.cpp.'>createPolygonShape</a>() );
+<a id='L80' name='L80'></a>  80 
+<a id='L81' name='L81'></a>  81             <strong class='reserved'>default</strong>:
+<a id='L82' name='L82'></a>  82                 <strong class='reserved'>return</strong> <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/15186.html' title='Multiple used in 184 places.'>unique_ptr</a>&lt;<a href='../D/2056.html' title='Multiple defined in 3 places.'>MODULE</a>&gt;();
+<a id='L83' name='L83'></a>  83             <em class='brace'>}</em>;
+<a id='L84' name='L84'></a>  84         <em class='brace'>}</em>
+<a id='L85' name='L85'></a>  85 
+<a id='L86' name='L86'></a>  86     <strong class='reserved'>private</strong>:
+<a id='L87' name='L87'></a>  87         <a href='../D/2043.html' title='Multiple defined in 2 places.'>MICROWAVE_TOOL</a>*           <a href='../Y/12206.html' title='Multiple used in 36 places.'>m_tool</a>;
+<a id='L88' name='L88'></a>  88         <a href='../Y/2477.html' title='Multiple used in 21 places.'>MICROWAVE_FOOTPRINT_SHAPE</a> <a href='../S/509.html#L62' title='Defined at 62 in microwave/microwave_tool.cpp.'>m_itemType</a>;
+<a id='L89' name='L89'></a>  89     <em class='brace'>}</em>;
+<a id='L90' name='L90'></a>  90 
+<a id='L91' name='L91'></a>  91     <a href='../S/509.html#L58' title='Defined at 58 in microwave/microwave_tool.cpp.'>MICROWAVE_PLACER</a> <a href='../Y/13539.html' title='Multiple used in 22 places.'>placer</a>( <strong class='reserved'>this</strong>, <a href='../Y/5276.html' title='Multiple used in 837 places.'>aEvent</a>.<a href='../Y/2938.html' title='Multiple used in 28 places.'>Parameter</a>&lt;<a href='../Y/2477.html' title='Multiple used in 21 places.'>MICROWAVE_FOOTPRINT_SHAPE</a>&gt;() );
+<a id='L92' name='L92'></a>  92 
+<a id='L93' name='L93'></a>  93     <a href='../S/791.html#L37' title='Defined at 37 in tools/pcb_tool_base.cpp.'>doInteractiveItemPlacement</a>( <a href='../Y/5276.html' title='Multiple used in 837 places.'>aEvent</a>.<a href='../Y/1302.html' title='Multiple used in 25 places.'>GetCommandStr</a>().<a href='../Y/8249.html' title='Multiple used in 194 places.'>get</a>(), &amp;<a href='../Y/13539.html' title='Multiple used in 22 places.'>placer</a>,
+<a id='L94' name='L94'></a>  94                                 <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Place microwave feature" ),
+<a id='L95' name='L95'></a>  95                                 <a href='../S/792.html#L128' title='Defined at 128 in tools/pcb_tool_base.h.'>IPO_REPEAT</a> | <a href='../S/792.html#L118' title='Defined at 118 in tools/pcb_tool_base.h.'>IPO_ROTATE</a> | <a href='../S/792.html#L121' title='Defined at 121 in tools/pcb_tool_base.h.'>IPO_FLIP</a> );
+<a id='L96' name='L96'></a>  96 
+<a id='L97' name='L97'></a>  97     <strong class='reserved'>return</strong> 0;
+<a id='L98' name='L98'></a>  98 <em class='brace'>}</em>
+<a id='L99' name='L99'></a>  99 
+<a id='L100' name='L100'></a> 100 
+<a id='L101' name='L101'></a> 101 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <a href='../Y/391.html' title='Multiple used in 170 places.'>COLOR4D</a> <a href='../Y/8544.html' title='Multiple used in 2 places.'>inductorAreaFill</a>( 0.3, 0.3, 0.5, 0.3 );
+<a id='L102' name='L102'></a> 102 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <a href='../Y/391.html' title='Multiple used in 170 places.'>COLOR4D</a> <a href='../Y/8545.html' title='Multiple used in 2 places.'>inductorAreaStroke</a>( 0.4, 1.0, 1.0, 1.0 );
+<a id='L103' name='L103'></a> 103 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <strong class='reserved'>double</strong>  <a href='../Y/8546.html' title='Multiple used in 2 places.'>inductorAreaStrokeWidth</a> = 1.0;
+<a id='L104' name='L104'></a> 104 
+<a id='L105' name='L105'></a> 105 <em class='comment'>///&gt; Aspect of the preview rectangle - this is hardcoded in the</em>
+<a id='L106' name='L106'></a> 106 <em class='comment'>///&gt; microwave backend for now</em>
+<a id='L107' name='L107'></a> 107 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <strong class='reserved'>double</strong>  <a href='../Y/8543.html' title='Multiple used in 2 places.'>inductorAreaAspect</a> = 0.5;
+<a id='L108' name='L108'></a> 108 
+<a id='L109' name='L109'></a> 109 
+<a id='L110' name='L110'></a> 110 <strong class='reserved'>int</strong> <a href='../D/2043.html' title='Multiple defined in 2 places.'>MICROWAVE_TOOL</a>::<a href='../R/3709.html' title='Multiple referred from 2 places.'>drawMicrowaveInductor</a>( <strong class='reserved'>const</strong> <a href='../Y/4100.html' title='Multiple used in 418 places.'>TOOL_EVENT</a>&amp; <a href='../Y/5276.html' title='Multiple used in 837 places.'>aEvent</a> )
+<a id='L111' name='L111'></a> 111 <em class='brace'>{</em>
+<a id='L112' name='L112'></a> 112     <strong class='reserved'>using</strong> <strong class='reserved'>namespace</strong> <a href='../D/1894.html' title='Multiple defined in 2 places.'>KIGFX</a>::<a href='../Y/2905.html' title='Multiple used in 16 places.'>PREVIEW</a>;
+<a id='L113' name='L113'></a> 113 
+<a id='L114' name='L114'></a> 114     <a href='../D/1894.html' title='Multiple defined in 2 places.'>KIGFX</a>::<a href='../Y/4798.html' title='Multiple used in 92 places.'>VIEW</a>&amp; <a href='../Y/15378.html' title='Multiple used in 182 places.'>view</a> = *<a href='../Y/8265.html' title='Multiple used in 66 places.'>getView</a>();
+<a id='L115' name='L115'></a> 115     <a href='../D/1894.html' title='Multiple defined in 2 places.'>KIGFX</a>::<a href='../Y/4801.html' title='Multiple used in 18 places.'>VIEW_CONTROLS</a>&amp; <a href='../Y/7080.html' title='Multiple used in 124 places.'>controls</a> = *<a href='../Y/8266.html' title='Multiple used in 34 places.'>getViewControls</a>();
+<a id='L116' name='L116'></a> 116     <a href='../S/585.html#L356' title='Defined at 356 in pcb_edit_frame.cpp.'>PCB_EDIT_FRAME</a>&amp; <a href='../Y/8124.html' title='Multiple used in 280 places.'>frame</a> = *<a href='../Y/8253.html' title='Multiple used in 66 places.'>getEditFrame</a>&lt;<a href='../S/585.html#L356' title='Defined at 356 in pcb_edit_frame.cpp.'>PCB_EDIT_FRAME</a>&gt;();
+<a id='L117' name='L117'></a> 117 
+<a id='L118' name='L118'></a> 118     <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../D/4641.html' title='Multiple defined in 2 places.'>string</a> <a href='../Y/15006.html' title='Multiple used in 117 places.'>tool</a> = <a href='../Y/5276.html' title='Multiple used in 837 places.'>aEvent</a>.<a href='../Y/1302.html' title='Multiple used in 25 places.'>GetCommandStr</a>().<a href='../Y/8249.html' title='Multiple used in 194 places.'>get</a>();
+<a id='L119' name='L119'></a> 119     <a href='../Y/8124.html' title='Multiple used in 280 places.'>frame</a>.<a href='../Y/2999.html' title='Multiple used in 19 places.'>PushTool</a>( <a href='../Y/15006.html' title='Multiple used in 117 places.'>tool</a> );
+<a id='L120' name='L120'></a> 120     <a href='../Y/93.html' title='Multiple used in 33 places.'>Activate</a>();
+<a id='L121' name='L121'></a> 121 
+<a id='L122' name='L122'></a> 122     <a href='../Y/4137.html' title='Multiple used in 4 places.'>TWO_POINT_GEOMETRY_MANAGER</a> <a href='../Y/15060.html' title='Multiple used in 7 places.'>tpGeomMgr</a>;
+<a id='L123' name='L123'></a> 123 
+<a id='L124' name='L124'></a> 124     CENTRELINE_RECT_ITEM <a href='../Y/13702.html' title='Multiple used in 12 places.'>previewRect</a>( <a href='../Y/15060.html' title='Multiple used in 7 places.'>tpGeomMgr</a>, <a href='../Y/8543.html' title='Multiple used in 2 places.'>inductorAreaAspect</a> );
+<a id='L125' name='L125'></a> 125 
+<a id='L126' name='L126'></a> 126     <a href='../Y/13702.html' title='Multiple used in 12 places.'>previewRect</a>.<a href='../Y/3513.html' title='Multiple used in 18 places.'>SetFillColor</a>( <a href='../Y/8544.html' title='Multiple used in 2 places.'>inductorAreaFill</a> );
+<a id='L127' name='L127'></a> 127     <a href='../Y/13702.html' title='Multiple used in 12 places.'>previewRect</a>.<a href='../Y/3881.html' title='Multiple used in 33 places.'>SetStrokeColor</a>( <a href='../Y/8545.html' title='Multiple used in 2 places.'>inductorAreaStroke</a> );
+<a id='L128' name='L128'></a> 128     <a href='../Y/13702.html' title='Multiple used in 12 places.'>previewRect</a>.<a href='../Y/3654.html' title='Multiple used in 45 places.'>SetLineWidth</a>( <a href='../Y/8546.html' title='Multiple used in 2 places.'>inductorAreaStrokeWidth</a> );
+<a id='L129' name='L129'></a> 129 
+<a id='L130' name='L130'></a> 130     <strong class='reserved'>bool</strong> <a href='../Y/13193.html' title='Multiple used in 21 places.'>originSet</a> = <strong class='reserved'>false</strong>;
+<a id='L131' name='L131'></a> 131 
+<a id='L132' name='L132'></a> 132     <a href='../Y/7080.html' title='Multiple used in 124 places.'>controls</a>.<a href='../Y/3990.html' title='Multiple used in 24 places.'>ShowCursor</a>( <strong class='reserved'>true</strong> );
+<a id='L133' name='L133'></a> 133     <a href='../Y/7080.html' title='Multiple used in 124 places.'>controls</a>.<a href='../Y/3862.html' title='Multiple used in 23 places.'>SetSnapping</a>( <strong class='reserved'>true</strong> );
+<a id='L134' name='L134'></a> 134     <a href='../Y/7080.html' title='Multiple used in 124 places.'>controls</a>.<a href='../Y/464.html' title='Multiple used in 29 places.'>CaptureCursor</a>( <strong class='reserved'>false</strong> );
+<a id='L135' name='L135'></a> 135     <a href='../Y/7080.html' title='Multiple used in 124 places.'>controls</a>.<a href='../Y/3346.html' title='Multiple used in 48 places.'>SetAutoPan</a>( <strong class='reserved'>false</strong> );
+<a id='L136' name='L136'></a> 136 
+<a id='L137' name='L137'></a> 137     <a href='../Y/15378.html' title='Multiple used in 182 places.'>view</a>.<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( &amp;<a href='../Y/13702.html' title='Multiple used in 12 places.'>previewRect</a> );
+<a id='L138' name='L138'></a> 138 
+<a id='L139' name='L139'></a> 139     <strong class='reserved'>while</strong>( <strong class='reserved'>auto</strong> <a href='../Y/7795.html' title='Multiple used in 362 places.'>evt</a> = <a href='../Y/4890.html' title='Multiple used in 29 places.'>Wait</a>() )
+<a id='L140' name='L140'></a> 140     <em class='brace'>{</em>
+<a id='L141' name='L141'></a> 141         <a href='../Y/8124.html' title='Multiple used in 280 places.'>frame</a>.<a href='../S/581.html#L712' title='Defined at 712 in pcb_base_frame.cpp.'>GetCanvas</a>()-&gt;<a href='../Y/3424.html' title='Multiple used in 22 places.'>SetCurrentCursor</a>( <a href='../Y/15564.html' title='Multiple used in 10 places.'>wxCURSOR_PENCIL</a> );
+<a id='L142' name='L142'></a> 142         <a href='../Y/4788.html' title='Multiple used in 795 places.'>VECTOR2I</a> <a href='../Y/7249.html' title='Multiple used in 94 places.'>cursorPos</a> = <a href='../Y/7080.html' title='Multiple used in 124 places.'>controls</a>.<a href='../Y/1332.html' title='Multiple used in 37 places.'>GetCursorPosition</a>();
+<a id='L143' name='L143'></a> 143 
+<a id='L144' name='L144'></a> 144         <strong class='reserved'>auto</strong> <a href='../Y/6913.html' title='Multiple used in 27 places.'>cleanup</a> = [&amp;] () <em class='brace'>{</em>
+<a id='L145' name='L145'></a> 145             <a href='../Y/13193.html' title='Multiple used in 21 places.'>originSet</a> = <strong class='reserved'>false</strong>;
+<a id='L146' name='L146'></a> 146             <a href='../Y/7080.html' title='Multiple used in 124 places.'>controls</a>.<a href='../Y/464.html' title='Multiple used in 29 places.'>CaptureCursor</a>( <strong class='reserved'>false</strong> );
+<a id='L147' name='L147'></a> 147             <a href='../Y/7080.html' title='Multiple used in 124 places.'>controls</a>.<a href='../Y/3346.html' title='Multiple used in 48 places.'>SetAutoPan</a>( <strong class='reserved'>false</strong> );
+<a id='L148' name='L148'></a> 148             <a href='../Y/15378.html' title='Multiple used in 182 places.'>view</a>.<a href='../S/628.html#L470' title='Defined at 470 in ratsnest/ratsnest_data.cpp.'>SetVisible</a>( &amp;<a href='../Y/13702.html' title='Multiple used in 12 places.'>previewRect</a>, <strong class='reserved'>false</strong> );
+<a id='L149' name='L149'></a> 149             <a href='../Y/15378.html' title='Multiple used in 182 places.'>view</a>.<a href='../D/3313.html' title='Multiple defined in 6 places.'>Update</a>( &amp;<a href='../Y/13702.html' title='Multiple used in 12 places.'>previewRect</a>, <a href='../D/1894.html' title='Multiple defined in 2 places.'>KIGFX</a>::<a href='../Y/1172.html' title='Multiple used in 24 places.'>GEOMETRY</a> );
+<a id='L150' name='L150'></a> 150         <em class='brace'>}</em>;
+<a id='L151' name='L151'></a> 151 
+<a id='L152' name='L152'></a> 152         <strong class='reserved'>if</strong>( <a href='../Y/7795.html' title='Multiple used in 362 places.'>evt</a>-&gt;<a href='../Y/2096.html' title='Multiple used in 27 places.'>IsCancelInteractive</a>() )
+<a id='L153' name='L153'></a> 153         <em class='brace'>{</em>
+<a id='L154' name='L154'></a> 154             <strong class='reserved'>if</strong>( <a href='../Y/13193.html' title='Multiple used in 21 places.'>originSet</a> )
+<a id='L155' name='L155'></a> 155                 <a href='../Y/6913.html' title='Multiple used in 27 places.'>cleanup</a>();
+<a id='L156' name='L156'></a> 156             <strong class='reserved'>else</strong>
+<a id='L157' name='L157'></a> 157             <em class='brace'>{</em>
+<a id='L158' name='L158'></a> 158                 <a href='../Y/8124.html' title='Multiple used in 280 places.'>frame</a>.<a href='../Y/2969.html' title='Multiple used in 33 places.'>PopTool</a>( <a href='../Y/15006.html' title='Multiple used in 117 places.'>tool</a> );
+<a id='L159' name='L159'></a> 159                 <strong class='reserved'>break</strong>;
+<a id='L160' name='L160'></a> 160             <em class='brace'>}</em>
+<a id='L161' name='L161'></a> 161         <em class='brace'>}</em>
+<a id='L162' name='L162'></a> 162 
+<a id='L163' name='L163'></a> 163         <strong class='reserved'>else</strong> <strong class='reserved'>if</strong>( <a href='../Y/7795.html' title='Multiple used in 362 places.'>evt</a>-&gt;<a href='../Y/2090.html' title='Multiple used in 26 places.'>IsActivate</a>() )
+<a id='L164' name='L164'></a> 164         <em class='brace'>{</em>
+<a id='L165' name='L165'></a> 165             <strong class='reserved'>if</strong>( <a href='../Y/13193.html' title='Multiple used in 21 places.'>originSet</a> )
+<a id='L166' name='L166'></a> 166                 <a href='../Y/6913.html' title='Multiple used in 27 places.'>cleanup</a>();
+<a id='L167' name='L167'></a> 167 
+<a id='L168' name='L168'></a> 168             <strong class='reserved'>if</strong>( <a href='../Y/7795.html' title='Multiple used in 362 places.'>evt</a>-&gt;<a href='../Y/2158.html' title='Multiple used in 14 places.'>IsMoveTool</a>() )
+<a id='L169' name='L169'></a> 169             <em class='brace'>{</em>
+<a id='L170' name='L170'></a> 170                 <em class='comment'>// leave ourselves on the stack so we come back after the move</em>
+<a id='L171' name='L171'></a> 171                 <strong class='reserved'>break</strong>;
+<a id='L172' name='L172'></a> 172             <em class='brace'>}</em>
+<a id='L173' name='L173'></a> 173             <strong class='reserved'>else</strong>
+<a id='L174' name='L174'></a> 174             <em class='brace'>{</em>
+<a id='L175' name='L175'></a> 175                 <a href='../Y/8124.html' title='Multiple used in 280 places.'>frame</a>.<a href='../Y/2969.html' title='Multiple used in 33 places.'>PopTool</a>( <a href='../Y/15006.html' title='Multiple used in 117 places.'>tool</a> );
+<a id='L176' name='L176'></a> 176                 <strong class='reserved'>break</strong>;
+<a id='L177' name='L177'></a> 177             <em class='brace'>}</em>
+<a id='L178' name='L178'></a> 178         <em class='brace'>}</em>
+<a id='L179' name='L179'></a> 179 
+<a id='L180' name='L180'></a> 180         <em class='comment'>// A click or drag starts</em>
+<a id='L181' name='L181'></a> 181         <strong class='reserved'>else</strong> <strong class='reserved'>if</strong>( !<a href='../Y/13193.html' title='Multiple used in 21 places.'>originSet</a> &amp;&amp; ( <a href='../Y/7795.html' title='Multiple used in 362 places.'>evt</a>-&gt;<a href='../Y/2099.html' title='Multiple used in 41 places.'>IsClick</a>( <a href='../Y/281.html' title='Multiple used in 44 places.'>BUT_LEFT</a> ) || <a href='../Y/7795.html' title='Multiple used in 362 places.'>evt</a>-&gt;<a href='../Y/2116.html' title='Multiple used in 13 places.'>IsDrag</a>( <a href='../Y/281.html' title='Multiple used in 44 places.'>BUT_LEFT</a> ) ) )
+<a id='L182' name='L182'></a> 182         <em class='brace'>{</em>
+<a id='L183' name='L183'></a> 183             <a href='../Y/15060.html' title='Multiple used in 7 places.'>tpGeomMgr</a>.<a href='../S/60.html#L191' title='Defined at 191 in class_dimension.cpp.'>SetOrigin</a>( <a href='../Y/7249.html' title='Multiple used in 94 places.'>cursorPos</a> );
+<a id='L184' name='L184'></a> 184             <a href='../Y/15060.html' title='Multiple used in 7 places.'>tpGeomMgr</a>.<a href='../S/60.html#L199' title='Defined at 199 in class_dimension.cpp.'>SetEnd</a>( <a href='../Y/7249.html' title='Multiple used in 94 places.'>cursorPos</a> );
+<a id='L185' name='L185'></a> 185 
+<a id='L186' name='L186'></a> 186             <a href='../Y/13193.html' title='Multiple used in 21 places.'>originSet</a> = <strong class='reserved'>true</strong>;
+<a id='L187' name='L187'></a> 187             <a href='../Y/7080.html' title='Multiple used in 124 places.'>controls</a>.<a href='../Y/464.html' title='Multiple used in 29 places.'>CaptureCursor</a>( <strong class='reserved'>true</strong> );
+<a id='L188' name='L188'></a> 188             <a href='../Y/7080.html' title='Multiple used in 124 places.'>controls</a>.<a href='../Y/3346.html' title='Multiple used in 48 places.'>SetAutoPan</a>( <strong class='reserved'>true</strong> );
+<a id='L189' name='L189'></a> 189         <em class='brace'>}</em>
+<a id='L190' name='L190'></a> 190 
+<a id='L191' name='L191'></a> 191         <em class='comment'>// another click after origin set is the end</em>
+<a id='L192' name='L192'></a> 192         <em class='comment'>// left up is also the end, as you'll only get that after a drag</em>
+<a id='L193' name='L193'></a> 193         <strong class='reserved'>else</strong> <strong class='reserved'>if</strong>( <a href='../Y/13193.html' title='Multiple used in 21 places.'>originSet</a> &amp;&amp; ( <a href='../Y/7795.html' title='Multiple used in 362 places.'>evt</a>-&gt;<a href='../Y/2099.html' title='Multiple used in 41 places.'>IsClick</a>( <a href='../Y/281.html' title='Multiple used in 44 places.'>BUT_LEFT</a> ) || <a href='../Y/7795.html' title='Multiple used in 362 places.'>evt</a>-&gt;<a href='../Y/2157.html' title='Multiple used in 6 places.'>IsMouseUp</a>( <a href='../Y/281.html' title='Multiple used in 44 places.'>BUT_LEFT</a> ) ) )
+<a id='L194' name='L194'></a> 194         <em class='brace'>{</em>
+<a id='L195' name='L195'></a> 195             <em class='comment'>// second click, we're done:</em>
+<a id='L196' name='L196'></a> 196             <em class='comment'>// delegate to the point-to-point inductor creator function</em>
+<a id='L197' name='L197'></a> 197             <a href='../S/507.html#L293' title='Defined at 293 in microwave/microwave_inductor.cpp.'>createInductorBetween</a>( <a href='../Y/15060.html' title='Multiple used in 7 places.'>tpGeomMgr</a>.<a href='../S/771.html#L93' title='Defined at 93 in tools/grid_helper.cpp.'>GetOrigin</a>(), <a href='../Y/15060.html' title='Multiple used in 7 places.'>tpGeomMgr</a>.<a href='../Y/1386.html' title='Multiple used in 189 places.'>GetEnd</a>() );
+<a id='L198' name='L198'></a> 198 
+<a id='L199' name='L199'></a> 199             <em class='comment'>// start again if needed</em>
+<a id='L200' name='L200'></a> 200             <a href='../Y/13193.html' title='Multiple used in 21 places.'>originSet</a> = <strong class='reserved'>false</strong>;
+<a id='L201' name='L201'></a> 201             <a href='../Y/7080.html' title='Multiple used in 124 places.'>controls</a>.<a href='../Y/464.html' title='Multiple used in 29 places.'>CaptureCursor</a>( <strong class='reserved'>false</strong> );
+<a id='L202' name='L202'></a> 202             <a href='../Y/7080.html' title='Multiple used in 124 places.'>controls</a>.<a href='../Y/3346.html' title='Multiple used in 48 places.'>SetAutoPan</a>( <strong class='reserved'>false</strong> );
+<a id='L203' name='L203'></a> 203 
+<a id='L204' name='L204'></a> 204             <a href='../Y/15378.html' title='Multiple used in 182 places.'>view</a>.<a href='../S/628.html#L470' title='Defined at 470 in ratsnest/ratsnest_data.cpp.'>SetVisible</a>( &amp;<a href='../Y/13702.html' title='Multiple used in 12 places.'>previewRect</a>, <strong class='reserved'>false</strong> );
+<a id='L205' name='L205'></a> 205             <a href='../Y/15378.html' title='Multiple used in 182 places.'>view</a>.<a href='../D/3313.html' title='Multiple defined in 6 places.'>Update</a>( &amp;<a href='../Y/13702.html' title='Multiple used in 12 places.'>previewRect</a>, <a href='../D/1894.html' title='Multiple defined in 2 places.'>KIGFX</a>::<a href='../Y/1172.html' title='Multiple used in 24 places.'>GEOMETRY</a> );
+<a id='L206' name='L206'></a> 206         <em class='brace'>}</em>
+<a id='L207' name='L207'></a> 207 
+<a id='L208' name='L208'></a> 208         <em class='comment'>// any move or drag once the origin was set updates</em>
+<a id='L209' name='L209'></a> 209         <em class='comment'>// the end point</em>
+<a id='L210' name='L210'></a> 210         <strong class='reserved'>else</strong> <strong class='reserved'>if</strong>( <a href='../Y/13193.html' title='Multiple used in 21 places.'>originSet</a> &amp;&amp; ( <a href='../Y/7795.html' title='Multiple used in 362 places.'>evt</a>-&gt;<a href='../Y/2156.html' title='Multiple used in 21 places.'>IsMotion</a>() || <a href='../Y/7795.html' title='Multiple used in 362 places.'>evt</a>-&gt;<a href='../Y/2116.html' title='Multiple used in 13 places.'>IsDrag</a>( <a href='../Y/281.html' title='Multiple used in 44 places.'>BUT_LEFT</a> ) ) )
+<a id='L211' name='L211'></a> 211         <em class='brace'>{</em>
+<a id='L212' name='L212'></a> 212             <a href='../Y/15060.html' title='Multiple used in 7 places.'>tpGeomMgr</a>.<a href='../Y/3339.html' title='Multiple used in 7 places.'>SetAngleSnap</a>( <a href='../Y/7795.html' title='Multiple used in 362 places.'>evt</a>-&gt;<a href='../Y/2584.html' title='Multiple used in 55 places.'>Modifier</a>( <a href='../Y/2456.html' title='Multiple used in 37 places.'>MD_CTRL</a> ) );
+<a id='L213' name='L213'></a> 213             <a href='../Y/15060.html' title='Multiple used in 7 places.'>tpGeomMgr</a>.<a href='../S/60.html#L199' title='Defined at 199 in class_dimension.cpp.'>SetEnd</a>( <a href='../Y/7249.html' title='Multiple used in 94 places.'>cursorPos</a> );
+<a id='L214' name='L214'></a> 214 
+<a id='L215' name='L215'></a> 215             <a href='../Y/15378.html' title='Multiple used in 182 places.'>view</a>.<a href='../S/628.html#L470' title='Defined at 470 in ratsnest/ratsnest_data.cpp.'>SetVisible</a>( &amp;<a href='../Y/13702.html' title='Multiple used in 12 places.'>previewRect</a>, <strong class='reserved'>true</strong> );
+<a id='L216' name='L216'></a> 216             <a href='../Y/15378.html' title='Multiple used in 182 places.'>view</a>.<a href='../D/3313.html' title='Multiple defined in 6 places.'>Update</a>( &amp;<a href='../Y/13702.html' title='Multiple used in 12 places.'>previewRect</a>, <a href='../D/1894.html' title='Multiple defined in 2 places.'>KIGFX</a>::<a href='../Y/1172.html' title='Multiple used in 24 places.'>GEOMETRY</a> );
+<a id='L217' name='L217'></a> 217         <em class='brace'>}</em>
+<a id='L218' name='L218'></a> 218 
+<a id='L219' name='L219'></a> 219         <strong class='reserved'>else</strong> <strong class='reserved'>if</strong>( <a href='../Y/7795.html' title='Multiple used in 362 places.'>evt</a>-&gt;<a href='../Y/2099.html' title='Multiple used in 41 places.'>IsClick</a>( <a href='../Y/282.html' title='Multiple used in 15 places.'>BUT_RIGHT</a> ) )
+<a id='L220' name='L220'></a> 220         <em class='brace'>{</em>
+<a id='L221' name='L221'></a> 221             <a href='../Y/11311.html' title='Multiple used in 28 places.'>m_menu</a>.<a href='../Y/3989.html' title='Multiple used in 15 places.'>ShowContextMenu</a>( <a href='../D/4567.html' title='Multiple defined in 2 places.'>selection</a>() );
+<a id='L222' name='L222'></a> 222         <em class='brace'>}</em>
+<a id='L223' name='L223'></a> 223 
+<a id='L224' name='L224'></a> 224         <strong class='reserved'>else</strong>
+<a id='L225' name='L225'></a> 225             <a href='../Y/7795.html' title='Multiple used in 362 places.'>evt</a>-&gt;<a href='../Y/3748.html' title='Multiple used in 19 places.'>SetPassEvent</a>();
+<a id='L226' name='L226'></a> 226     <em class='brace'>}</em>
+<a id='L227' name='L227'></a> 227 
+<a id='L228' name='L228'></a> 228     <a href='../Y/7080.html' title='Multiple used in 124 places.'>controls</a>.<a href='../Y/464.html' title='Multiple used in 29 places.'>CaptureCursor</a>( <strong class='reserved'>false</strong> );
+<a id='L229' name='L229'></a> 229     <a href='../Y/7080.html' title='Multiple used in 124 places.'>controls</a>.<a href='../Y/3346.html' title='Multiple used in 48 places.'>SetAutoPan</a>( <strong class='reserved'>false</strong> );
+<a id='L230' name='L230'></a> 230     <a href='../Y/15378.html' title='Multiple used in 182 places.'>view</a>.<a href='../D/2784.html' title='Multiple defined in 16 places.'>Remove</a>( &amp;<a href='../Y/13702.html' title='Multiple used in 12 places.'>previewRect</a> );
+<a id='L231' name='L231'></a> 231     <strong class='reserved'>return</strong> 0;
+<a id='L232' name='L232'></a> 232 <em class='brace'>}</em>
+<a id='L233' name='L233'></a> 233 
+<a id='L234' name='L234'></a> 234 
+<a id='L235' name='L235'></a> 235 
+<a id='L236' name='L236'></a> 236 <strong class='reserved'>void</strong> <a href='../D/2043.html' title='Multiple defined in 2 places.'>MICROWAVE_TOOL</a>::<a href='../R/4434.html' title='Multiple referred from 21 places.'>setTransitions</a>()
+<a id='L237' name='L237'></a> 237 <em class='brace'>{</em>
+<a id='L238' name='L238'></a> 238     <a href='../Y/1825.html' title='Multiple used in 294 places.'>Go</a>( &amp;<a href='../D/2043.html' title='Multiple defined in 2 places.'>MICROWAVE_TOOL</a>::<a href='../S/509.html#L56' title='Defined at 56 in microwave/microwave_tool.cpp.'>addMicrowaveFootprint</a>, <a href='../Y/2808.html' title='Multiple used in 1029 places.'>PCB_ACTIONS</a>::<a href='../Y/12556.html' title='Multiple used in 5 places.'>microwaveCreateGap</a>.<a href='../Y/2541.html' title='Multiple used in 287 places.'>MakeEvent</a>() );
+<a id='L239' name='L239'></a> 239     <a href='../Y/1825.html' title='Multiple used in 294 places.'>Go</a>( &amp;<a href='../D/2043.html' title='Multiple defined in 2 places.'>MICROWAVE_TOOL</a>::<a href='../S/509.html#L56' title='Defined at 56 in microwave/microwave_tool.cpp.'>addMicrowaveFootprint</a>, <a href='../Y/2808.html' title='Multiple used in 1029 places.'>PCB_ACTIONS</a>::<a href='../Y/12558.html' title='Multiple used in 5 places.'>microwaveCreateStub</a>.<a href='../Y/2541.html' title='Multiple used in 287 places.'>MakeEvent</a>() );
+<a id='L240' name='L240'></a> 240     <a href='../Y/1825.html' title='Multiple used in 294 places.'>Go</a>( &amp;<a href='../D/2043.html' title='Multiple defined in 2 places.'>MICROWAVE_TOOL</a>::<a href='../S/509.html#L56' title='Defined at 56 in microwave/microwave_tool.cpp.'>addMicrowaveFootprint</a>, <a href='../Y/2808.html' title='Multiple used in 1029 places.'>PCB_ACTIONS</a>::<a href='../Y/12559.html' title='Multiple used in 5 places.'>microwaveCreateStubArc</a>.<a href='../Y/2541.html' title='Multiple used in 287 places.'>MakeEvent</a>() );
+<a id='L241' name='L241'></a> 241     <a href='../Y/1825.html' title='Multiple used in 294 places.'>Go</a>( &amp;<a href='../D/2043.html' title='Multiple defined in 2 places.'>MICROWAVE_TOOL</a>::<a href='../S/509.html#L56' title='Defined at 56 in microwave/microwave_tool.cpp.'>addMicrowaveFootprint</a>, <a href='../Y/2808.html' title='Multiple used in 1029 places.'>PCB_ACTIONS</a>::<a href='../Y/12555.html' title='Multiple used in 5 places.'>microwaveCreateFunctionShape</a>.<a href='../Y/2541.html' title='Multiple used in 287 places.'>MakeEvent</a>() );
+<a id='L242' name='L242'></a> 242 
+<a id='L243' name='L243'></a> 243     <a href='../Y/1825.html' title='Multiple used in 294 places.'>Go</a>( &amp;<a href='../D/2043.html' title='Multiple defined in 2 places.'>MICROWAVE_TOOL</a>::<a href='../S/509.html#L110' title='Defined at 110 in microwave/microwave_tool.cpp.'>drawMicrowaveInductor</a>, <a href='../Y/2808.html' title='Multiple used in 1029 places.'>PCB_ACTIONS</a>::<a href='../Y/12557.html' title='Multiple used in 5 places.'>microwaveCreateLine</a>.<a href='../Y/2541.html' title='Multiple used in 287 places.'>MakeEvent</a>() );
+<a id='L244' name='L244'></a> 244 <em class='brace'>}</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L51'>[^]</a><a href='#L236'>[v]</a><a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

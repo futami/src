@@ -1,0 +1,262 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>tools/drawing_tool.h</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/843.html'>tools</a>/drawing_tool.h</h2>
+<em class='comment'>/* [&lt;][&gt;][^][v][top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'><a href='../J/637.html' title='Multiple included from 5 places.'>INCLUDED FROM</a></h2>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * This program source code file is part of KiCad, a free EDA CAD application.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 2014-2017 CERN</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> * Copyright (C) 2018-2020 KiCad Developers, see AUTHORS.txt for contributors.</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> * @author Maciej Suminski &lt;maciej.suminski@cern.ch&gt;</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> *</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * This program is free software; you can redistribute it and/or</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * modify it under the terms of the GNU General Public License</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> * as published by the Free Software Foundation; either version 2</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> * of the License, or (at your option) any later version.</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> *</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * This program is distributed in the hope that it will be useful,</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> * GNU General Public License for more details.</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> *</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * You should have received a copy of the GNU General Public License</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> * along with this program; if not, you may find one here:</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'> * or you may search the http://www.gnu.org website for the version 2 license,</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'> * or you may write to the Free Software Foundation, Inc.,</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'> * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA</em>
+<a id='L24' name='L24'></a>  24 <em class='comment'> */</em>
+<a id='L25' name='L25'></a>  25 
+<a id='L26' name='L26'></a>  26 <em class='sharp'>#ifndef</em> <a href='../S/764.html#L27' title='Defined at 27 in tools/drawing_tool.h.'>__DRAWING_TOOL_H</a>
+<a id='L27' name='L27'></a>  27 <em class='sharp'>#define</em> <a href='../S/764.html#L26' title='Referred from 26 in tools/drawing_tool.h.'>__DRAWING_TOOL_H</a>
+<a id='L28' name='L28'></a>  28 
+<a id='L29' name='L29'></a>  29 <em class='sharp'>#include</em> &lt;core/optional.h&gt;
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#include</em> &lt;tool/tool_menu.h&gt;
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#include</em> &lt;<a href='792.html'>tools/pcb_tool_base.h</a>&gt;
+<a id='L32' name='L32'></a>  32 <em class='sharp'>#include</em> &lt;<a href='782.html'>tools/pcb_actions.h</a>&gt;
+<a id='L33' name='L33'></a>  33 
+<a id='L34' name='L34'></a>  34 <a href='../Y/12795.html' title='Multiple used in 89 places.'>namespace</a> <a href='../D/1894.html' title='Multiple defined in 2 places.'>KIGFX</a>
+<a id='L35' name='L35'></a>  35 <em class='brace'>{</em>
+<a id='L36' name='L36'></a>  36     <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../Y/4798.html' title='Multiple used in 92 places.'>VIEW</a>;
+<a id='L37' name='L37'></a>  37     <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../Y/4801.html' title='Multiple used in 18 places.'>VIEW_CONTROLS</a>;
+<a id='L38' name='L38'></a>  38 <em class='brace'>}</em>
+<a id='L39' name='L39'></a>  39 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../S/57.html#L104' title='Defined at 104 in class_board.cpp.'>BOARD</a>;
+<a id='L40' name='L40'></a>  40 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../S/579.html#L54' title='Defined at 54 in pcb_base_edit_frame.cpp.'>PCB_BASE_EDIT_FRAME</a>;
+<a id='L41' name='L41'></a>  41 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../D/717.html' title='Multiple defined in 2 places.'>DRAWSEGMENT</a>;
+<a id='L42' name='L42'></a>  42 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../Y/2896.html' title='Multiple used in 17 places.'>POLYGON_GEOM_MANAGER</a>;
+<a id='L43' name='L43'></a>  43 
+<a id='L44' name='L44'></a>  44 <em class='comment'>/**</em>
+<a id='L45' name='L45'></a>  45 <em class='comment'> * DRAWING_TOOL</em>
+<a id='L46' name='L46'></a>  46 <em class='comment'> *</em>
+<a id='L47' name='L47'></a>  47 <em class='comment'> * Tool responsible for drawing graphical elements like lines, arcs, circles, etc.</em>
+<a id='L48' name='L48'></a>  48 <em class='comment'> */</em>
+<a id='L49' name='L49'></a>  49 
+<a id='L50' name='L50'></a>  50 <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../S/763.html#L71' title='Defined at 71 in tools/drawing_tool.cpp.'>DRAWING_TOOL</a> : <a href='../Y/13804.html' title='Multiple used in 833 places.'>public</a> <a href='../Y/2858.html' title='Multiple used in 55 places.'>PCB_TOOL_BASE</a>
+<a id='L51' name='L51'></a>  51 <em class='brace'>{</em>
+<a id='L52' name='L52'></a>  52 <a href='../Y/13804.html' title='Multiple used in 833 places.'>public</a>:
+<a id='L53' name='L53'></a>  53     <a href='../S/763.html#L71' title='Defined at 71 in tools/drawing_tool.cpp.'>DRAWING_TOOL</a>();
+<a id='L54' name='L54'></a>  54     ~<a href='../S/763.html#L71' title='Defined at 71 in tools/drawing_tool.cpp.'>DRAWING_TOOL</a>();
+<a id='L55' name='L55'></a>  55 
+<a id='L56' name='L56'></a>  56     <em class='comment'>/// @copydoc TOOL_INTERACTIVE::Init()</em>
+<a id='L57' name='L57'></a>  57     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../D/1802.html' title='Multiple defined in 16 places.'>Init</a>() <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a>;
+<a id='L58' name='L58'></a>  58 
+<a id='L59' name='L59'></a>  59     <em class='comment'>/// @copydoc TOOL_INTERACTIVE::Reset()</em>
+<a id='L60' name='L60'></a>  60     <strong class='reserved'>void</strong> <a href='../D/2800.html' title='Multiple defined in 20 places.'>Reset</a>( <a href='../Y/3095.html' title='Multiple used in 40 places.'>RESET_REASON</a> <a href='../Y/5860.html' title='Multiple used in 54 places.'>aReason</a> ) <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a>;
+<a id='L61' name='L61'></a>  61 
+<a id='L62' name='L62'></a>  62     <em class='comment'>///&gt; The possible drawing modes of DRAWING_TOOL</em>
+<a id='L63' name='L63'></a>  63     <strong class='reserved'>enum</strong> <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../Y/2516.html' title='Multiple used in 29 places.'>MODE</a>
+<a id='L64' name='L64'></a>  64     <em class='brace'>{</em>
+<a id='L65' name='L65'></a>  65         <a href='../S/364.html#L72' title='Defined at 72 in dialogs/panel_setup_rules.cpp.'>NONE</a>,
+<a id='L66' name='L66'></a>  66         <a href='../D/1960.html' title='Multiple defined in 2 places.'>LINE</a>,
+<a id='L67' name='L67'></a>  67         <a href='../Y/3075.html' title='Multiple used in 19 places.'>RECTANGLE</a>,
+<a id='L68' name='L68'></a>  68         <a href='../Y/356.html' title='Multiple used in 25 places.'>CIRCLE</a>,
+<a id='L69' name='L69'></a>  69         <a href='../Y/73.html' title='Multiple used in 86 places.'>ARC</a>,
+<a id='L70' name='L70'></a>  70         <a href='../Y/4079.html' title='Multiple used in 4 places.'>TEXT</a>,
+<a id='L71' name='L71'></a>  71         <a href='../S/772.html#L106' title='Defined at 106 in tools/grid_helper.h.'>ANCHOR</a>,
+<a id='L72' name='L72'></a>  72         <a href='../S/487.html#L44' title='Defined at 44 in import_gfx/graphics_import_mgr.h.'>DXF</a>,
+<a id='L73' name='L73'></a>  73         <a href='../S/60.html#L53' title='Defined at 53 in class_dimension.cpp.'>DIMENSION</a>,
+<a id='L74' name='L74'></a>  74         <a href='../Y/2231.html' title='Multiple used in 20 places.'>KEEPOUT</a>,
+<a id='L75' name='L75'></a>  75         <a href='../Y/4916.html' title='Multiple used in 5 places.'>ZONE</a>,
+<a id='L76' name='L76'></a>  76         <a href='../Y/1184.html' title='Multiple used in 9 places.'>GRAPHIC_POLYGON</a>,
+<a id='L77' name='L77'></a>  77         <a href='../D/3347.html' title='Multiple defined in 2 places.'>VIA</a>
+<a id='L78' name='L78'></a>  78     <em class='brace'>}</em>;
+<a id='L79' name='L79'></a>  79 
+<a id='L80' name='L80'></a>  80     <em class='comment'>/**</em>
+<a id='L81' name='L81'></a>  81 <em class='comment'>     * Function GetDrawingMode</em>
+<a id='L82' name='L82'></a>  82 <em class='comment'>     *</em>
+<a id='L83' name='L83'></a>  83 <em class='comment'>     * Returns the current drawing mode of the DRAWING_TOOL, or</em>
+<a id='L84' name='L84'></a>  84 <em class='comment'>     * MODE::NONE if not currently in any drawing mode</em>
+<a id='L85' name='L85'></a>  85 <em class='comment'>     */</em>
+<a id='L86' name='L86'></a>  86     <a href='../Y/2516.html' title='Multiple used in 29 places.'>MODE</a> <a href='../S/763.html#L132' title='Defined at 132 in tools/drawing_tool.cpp.'>GetDrawingMode</a>() <strong class='reserved'>const</strong>;
+<a id='L87' name='L87'></a>  87 
+<a id='L88' name='L88'></a>  88     <em class='comment'>/**</em>
+<a id='L89' name='L89'></a>  89 <em class='comment'>     * Function DrawLine()</em>
+<a id='L90' name='L90'></a>  90 <em class='comment'>     * Starts interactively drawing a line. After invoking the function it expects the user</em>
+<a id='L91' name='L91'></a>  91 <em class='comment'>     * to click at least two times to determine the origin and the end for a line. If there are</em>
+<a id='L92' name='L92'></a>  92 <em class='comment'>     * more clicks, the line is drawn as a continous polyline.</em>
+<a id='L93' name='L93'></a>  93 <em class='comment'>     */</em>
+<a id='L94' name='L94'></a>  94     <strong class='reserved'>int</strong> <a href='../S/763.html#L138' title='Defined at 138 in tools/drawing_tool.cpp.'>DrawLine</a>( <strong class='reserved'>const</strong> <a href='../Y/4100.html' title='Multiple used in 418 places.'>TOOL_EVENT</a>&amp; <a href='../Y/5276.html' title='Multiple used in 837 places.'>aEvent</a> );
+<a id='L95' name='L95'></a>  95 
+<a id='L96' name='L96'></a>  96     <em class='comment'>/**</em>
+<a id='L97' name='L97'></a>  97 <em class='comment'>     * Function DrawRectangle()</em>
+<a id='L98' name='L98'></a>  98 <em class='comment'>     * Starts interactively drawing a rectangle. After invoking the function it expects the user</em>
+<a id='L99' name='L99'></a>  99 <em class='comment'>     * to first click on a point that is going to be used as the top-left of the rectangle. The</em>
+<a id='L100' name='L100'></a> 100 <em class='comment'>     * second click determines the bottom-right.</em>
+<a id='L101' name='L101'></a> 101 <em class='comment'>     */</em>
+<a id='L102' name='L102'></a> 102     <strong class='reserved'>int</strong> <a href='../S/763.html#L182' title='Defined at 182 in tools/drawing_tool.cpp.'>DrawRectangle</a>( <strong class='reserved'>const</strong> <a href='../Y/4100.html' title='Multiple used in 418 places.'>TOOL_EVENT</a>&amp; <a href='../Y/5276.html' title='Multiple used in 837 places.'>aEvent</a> );
+<a id='L103' name='L103'></a> 103 
+<a id='L104' name='L104'></a> 104     <em class='comment'>/**</em>
+<a id='L105' name='L105'></a> 105 <em class='comment'>     * Function DrawCircle()</em>
+<a id='L106' name='L106'></a> 106 <em class='comment'>     * Starts interactively drawing a circle. After invoking the function it expects the user</em>
+<a id='L107' name='L107'></a> 107 <em class='comment'>     * to first click on a point that is going to be used as the center of the circle. The second</em>
+<a id='L108' name='L108'></a> 108 <em class='comment'>     * click determines the circle radius.</em>
+<a id='L109' name='L109'></a> 109 <em class='comment'>     */</em>
+<a id='L110' name='L110'></a> 110     <strong class='reserved'>int</strong> <a href='../S/763.html#L224' title='Defined at 224 in tools/drawing_tool.cpp.'>DrawCircle</a>( <strong class='reserved'>const</strong> <a href='../Y/4100.html' title='Multiple used in 418 places.'>TOOL_EVENT</a>&amp; <a href='../Y/5276.html' title='Multiple used in 837 places.'>aEvent</a> );
+<a id='L111' name='L111'></a> 111 
+<a id='L112' name='L112'></a> 112     <em class='comment'>/**</em>
+<a id='L113' name='L113'></a> 113 <em class='comment'>     * Function DrawArc()</em>
+<a id='L114' name='L114'></a> 114 <em class='comment'>     * Starts interactively drawing an arc. After invoking the function it expects the user</em>
+<a id='L115' name='L115'></a> 115 <em class='comment'>     * to first click on a point that is going to be used as the center of the arc. The second</em>
+<a id='L116' name='L116'></a> 116 <em class='comment'>     * click determines the origin and radius, the third one - the angle.</em>
+<a id='L117' name='L117'></a> 117 <em class='comment'>     */</em>
+<a id='L118' name='L118'></a> 118     <strong class='reserved'>int</strong> <a href='../S/763.html#L266' title='Defined at 266 in tools/drawing_tool.cpp.'>DrawArc</a>( <strong class='reserved'>const</strong> <a href='../Y/4100.html' title='Multiple used in 418 places.'>TOOL_EVENT</a>&amp; <a href='../Y/5276.html' title='Multiple used in 837 places.'>aEvent</a> );
+<a id='L119' name='L119'></a> 119 
+<a id='L120' name='L120'></a> 120     <em class='comment'>/**</em>
+<a id='L121' name='L121'></a> 121 <em class='comment'>     * Function PlaceText()</em>
+<a id='L122' name='L122'></a> 122 <em class='comment'>     * Displays a dialog that allows one to input text and its settings and then</em>
+<a id='L123' name='L123'></a> 123 <em class='comment'>     * lets the user decide where to place the text in editor.</em>
+<a id='L124' name='L124'></a> 124 <em class='comment'>     */</em>
+<a id='L125' name='L125'></a> 125     <strong class='reserved'>int</strong> <a href='../S/763.html#L305' title='Defined at 305 in tools/drawing_tool.cpp.'>PlaceText</a>( <strong class='reserved'>const</strong> <a href='../Y/4100.html' title='Multiple used in 418 places.'>TOOL_EVENT</a>&amp; <a href='../Y/5276.html' title='Multiple used in 837 places.'>aEvent</a> );
+<a id='L126' name='L126'></a> 126 
+<a id='L127' name='L127'></a> 127     <em class='comment'>/**</em>
+<a id='L128' name='L128'></a> 128 <em class='comment'>     * Function DrawDimension()</em>
+<a id='L129' name='L129'></a> 129 <em class='comment'>     * Starts interactively drawing a dimension. After invoking the function it expects the user</em>
+<a id='L130' name='L130'></a> 130 <em class='comment'>     * to first click on a point that is going to be used as the origin of the dimension.</em>
+<a id='L131' name='L131'></a> 131 <em class='comment'>     * The second click determines the end and the third click modifies its height.</em>
+<a id='L132' name='L132'></a> 132 <em class='comment'>     */</em>
+<a id='L133' name='L133'></a> 133     <strong class='reserved'>int</strong> <a href='../S/763.html#L510' title='Defined at 510 in tools/drawing_tool.cpp.'>DrawDimension</a>( <strong class='reserved'>const</strong> <a href='../Y/4100.html' title='Multiple used in 418 places.'>TOOL_EVENT</a>&amp; <a href='../Y/5276.html' title='Multiple used in 837 places.'>aEvent</a> );
+<a id='L134' name='L134'></a> 134 
+<a id='L135' name='L135'></a> 135     <em class='comment'>/**</em>
+<a id='L136' name='L136'></a> 136 <em class='comment'>     * Function DrawZone()</em>
+<a id='L137' name='L137'></a> 137 <em class='comment'>     * Starts interactively drawing a zone. After invoking the function a zone settings dialog</em>
+<a id='L138' name='L138'></a> 138 <em class='comment'>     * is displayed. After confirmation it allows the user to set points that are going to be used</em>
+<a id='L139' name='L139'></a> 139 <em class='comment'>     * as a boundary polygon of the zone. Double click or clicking on the origin of the boundary</em>
+<a id='L140' name='L140'></a> 140 <em class='comment'>     * polyline finishes the drawing.</em>
+<a id='L141' name='L141'></a> 141 <em class='comment'>     *</em>
+<a id='L142' name='L142'></a> 142 <em class='comment'>     * The event parameter indicates which type of zone to draw:</em>
+<a id='L143' name='L143'></a> 143 <em class='comment'>     *  ADD      add a new zone/keepout with fresh settings</em>
+<a id='L144' name='L144'></a> 144 <em class='comment'>     *  CUTOUT   add a cutout to an existing zone</em>
+<a id='L145' name='L145'></a> 145 <em class='comment'>     *  SIMILAR  add a new zone with the same settings as an existing one</em>
+<a id='L146' name='L146'></a> 146 <em class='comment'>     */</em>
+<a id='L147' name='L147'></a> 147     <strong class='reserved'>int</strong> <a href='../S/763.html#L1475' title='Defined at 1475 in tools/drawing_tool.cpp.'>DrawZone</a>(  <strong class='reserved'>const</strong> <a href='../Y/4100.html' title='Multiple used in 418 places.'>TOOL_EVENT</a>&amp; <a href='../Y/5276.html' title='Multiple used in 837 places.'>aEvent</a> );
+<a id='L148' name='L148'></a> 148 
+<a id='L149' name='L149'></a> 149     <strong class='reserved'>int</strong> <a href='../S/763.html#L1672' title='Defined at 1672 in tools/drawing_tool.cpp.'>DrawVia</a>( <strong class='reserved'>const</strong> <a href='../Y/4100.html' title='Multiple used in 418 places.'>TOOL_EVENT</a>&amp; <a href='../Y/5276.html' title='Multiple used in 837 places.'>aEvent</a> );
+<a id='L150' name='L150'></a> 150 
+<a id='L151' name='L151'></a> 151     <em class='comment'>/**</em>
+<a id='L152' name='L152'></a> 152 <em class='comment'>     * Function PlaceImportedGraphics()</em>
+<a id='L153' name='L153'></a> 153 <em class='comment'>     * Places a drawing imported from a DXF or SVG file in module editor.</em>
+<a id='L154' name='L154'></a> 154 <em class='comment'>     */</em>
+<a id='L155' name='L155'></a> 155     <strong class='reserved'>int</strong> <a href='../S/763.html#L750' title='Defined at 750 in tools/drawing_tool.cpp.'>PlaceImportedGraphics</a>( <strong class='reserved'>const</strong> <a href='../Y/4100.html' title='Multiple used in 418 places.'>TOOL_EVENT</a>&amp; <a href='../Y/5276.html' title='Multiple used in 837 places.'>aEvent</a> );
+<a id='L156' name='L156'></a> 156 
+<a id='L157' name='L157'></a> 157     <em class='comment'>/**</em>
+<a id='L158' name='L158'></a> 158 <em class='comment'>     * Function SetAnchor()</em>
+<a id='L159' name='L159'></a> 159 <em class='comment'>     * Places the footprint anchor (only in module editor).</em>
+<a id='L160' name='L160'></a> 160 <em class='comment'>     */</em>
+<a id='L161' name='L161'></a> 161     <strong class='reserved'>int</strong> <a href='../S/763.html#L892' title='Defined at 892 in tools/drawing_tool.cpp.'>SetAnchor</a>( <strong class='reserved'>const</strong> <a href='../Y/4100.html' title='Multiple used in 418 places.'>TOOL_EVENT</a>&amp; <a href='../Y/5276.html' title='Multiple used in 837 places.'>aEvent</a> );
+<a id='L162' name='L162'></a> 162 
+<a id='L163' name='L163'></a> 163     <em class='comment'>///&gt; Sets up handlers for various events.</em>
+<a id='L164' name='L164'></a> 164     <strong class='reserved'>void</strong> <a href='../D/4590.html' title='Multiple defined in 21 places.'>setTransitions</a>() <a href='../Y/13241.html' title='Multiple used in 1472 places.'>override</a>;
+<a id='L165' name='L165'></a> 165 
+<a id='L166' name='L166'></a> 166 <a href='../Y/13721.html' title='Multiple used in 310 places.'>private</a>:
+<a id='L167' name='L167'></a> 167 
+<a id='L168' name='L168'></a> 168     <em class='comment'>/**</em>
+<a id='L169' name='L169'></a> 169 <em class='comment'>     * Starts drawing a selected shape (i.e. DRAWSEGMENT).</em>
+<a id='L170' name='L170'></a> 170 <em class='comment'>     * @param aShape is the type of created shape (@see STROKE_T).</em>
+<a id='L171' name='L171'></a> 171 <em class='comment'>     * @param aGraphic is an object that is going to be used by the tool for drawing. Must be</em>
+<a id='L172' name='L172'></a> 172 <em class='comment'>     *                 already created. The tool deletes the object if it is not added to a BOARD.</em>
+<a id='L173' name='L173'></a> 173 <em class='comment'>     * @param aStartingPoint is a starting point for this new DRAWSEGMENT. If it exists the new</em>
+<a id='L174' name='L174'></a> 174 <em class='comment'>     *                       item has its start point set to aStartingPoint, and its settings</em>
+<a id='L175' name='L175'></a> 175 <em class='comment'>     *                       (width, layer) set to the current default values.</em>
+<a id='L176' name='L176'></a> 176 <em class='comment'>     * @return False if the tool was cancelled before the origin was set or origin and end are</em>
+<a id='L177' name='L177'></a> 177 <em class='comment'>     *         the same point.</em>
+<a id='L178' name='L178'></a> 178 <em class='comment'>     */</em>
+<a id='L179' name='L179'></a> 179     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../S/763.html#L972' title='Defined at 972 in tools/drawing_tool.cpp.'>drawSegment</a>( <strong class='reserved'>const</strong> <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../D/4641.html' title='Multiple defined in 2 places.'>string</a>&amp; <a href='../Y/6070.html' title='Multiple used in 28 places.'>aTool</a>, <strong class='reserved'>int</strong> <a href='../Y/5948.html' title='Multiple used in 98 places.'>aShape</a>, <a href='../D/717.html' title='Multiple defined in 2 places.'>DRAWSEGMENT</a>** <a href='../Y/5365.html' title='Multiple used in 11 places.'>aGraphic</a>,
+<a id='L180' name='L180'></a> 180                       <a href='../Y/2699.html' title='Multiple used in 30 places.'>OPT</a>&lt;<a href='../Y/4787.html' title='Multiple used in 296 places.'>VECTOR2D</a>&gt; <a href='../Y/6010.html' title='Multiple used in 6 places.'>aStartingPoint</a> );
+<a id='L181' name='L181'></a> 181 
+<a id='L182' name='L182'></a> 182     <em class='comment'>/**</em>
+<a id='L183' name='L183'></a> 183 <em class='comment'>     * Starts drawing an arc.</em>
+<a id='L184' name='L184'></a> 184 <em class='comment'>     * @param aGraphic is an object that is going to be used by the tool for drawing. Must be</em>
+<a id='L185' name='L185'></a> 185 <em class='comment'>     *                 already created. The tool deletes the object if it is not added to a BOARD.</em>
+<a id='L186' name='L186'></a> 186 <em class='comment'>     * @return False if the tool was cancelled before the origin was set or origin and end are</em>
+<a id='L187' name='L187'></a> 187 <em class='comment'>     *         the same point.</em>
+<a id='L188' name='L188'></a> 188 <em class='comment'>     */</em>
+<a id='L189' name='L189'></a> 189     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../S/763.html#L1264' title='Defined at 1264 in tools/drawing_tool.cpp.'>drawArc</a>( <strong class='reserved'>const</strong> <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../D/4641.html' title='Multiple defined in 2 places.'>string</a>&amp; <a href='../Y/6070.html' title='Multiple used in 28 places.'>aTool</a>, <a href='../D/717.html' title='Multiple defined in 2 places.'>DRAWSEGMENT</a>** <a href='../Y/5365.html' title='Multiple used in 11 places.'>aGraphic</a>, <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../Y/5398.html' title='Multiple used in 3 places.'>aImmediateMode</a> );
+<a id='L190' name='L190'></a> 190 
+<a id='L191' name='L191'></a> 191     <em class='comment'>/**</em>
+<a id='L192' name='L192'></a> 192 <em class='comment'>     * Draws a polygon, that is added as a zone or a keepout area.</em>
+<a id='L193' name='L193'></a> 193 <em class='comment'>     *</em>
+<a id='L194' name='L194'></a> 194 <em class='comment'>     * @param aKeepout dictates if the drawn polygon is a zone or a</em>
+<a id='L195' name='L195'></a> 195 <em class='comment'>     * keepout area.</em>
+<a id='L196' name='L196'></a> 196 <em class='comment'>     * @param aMode dictates the mode of the zone tool:</em>
+<a id='L197' name='L197'></a> 197 <em class='comment'>     *  ADD      add a new zone/keepout with fresh settings</em>
+<a id='L198' name='L198'></a> 198 <em class='comment'>     *  CUTOUT   add a cutout to an existing zone</em>
+<a id='L199' name='L199'></a> 199 <em class='comment'>     *  SIMILAR  add a new zone with the same settings as an existing one</em>
+<a id='L200' name='L200'></a> 200 <em class='comment'>     */</em>
+<a id='L201' name='L201'></a> 201 
+<a id='L202' name='L202'></a> 202     <em class='comment'>/**</em>
+<a id='L203' name='L203'></a> 203 <em class='comment'>     * Function getSourceZoneForAction()</em>
+<a id='L204' name='L204'></a> 204 <em class='comment'>     *</em>
+<a id='L205' name='L205'></a> 205 <em class='comment'>     * Gets a source zone item for an action that takes an existing zone</em>
+<a id='L206' name='L206'></a> 206 <em class='comment'>     * into account (for example a cutout of an existing zone). The source</em>
+<a id='L207' name='L207'></a> 207 <em class='comment'>     * zone is taken from the current selection</em>
+<a id='L208' name='L208'></a> 208 <em class='comment'>     *</em>
+<a id='L209' name='L209'></a> 209 <em class='comment'>     * @param aMode mode of the zone tool</em>
+<a id='L210' name='L210'></a> 210 <em class='comment'>     * @param aZone updated pointer to a suitable source zone,</em>
+<a id='L211' name='L211'></a> 211 <em class='comment'>     * or nullptr if none found, or the action doesn't need a source</em>
+<a id='L212' name='L212'></a> 212 <em class='comment'>     * @return true if a suitable zone was found, or the action doesn't</em>
+<a id='L213' name='L213'></a> 213 <em class='comment'>     * need a zone. False if the action needs a zone but none was found.</em>
+<a id='L214' name='L214'></a> 214 <em class='comment'>     */</em>
+<a id='L215' name='L215'></a> 215     <a href='../Y/6719.html' title='Multiple used in 1615 places.'>bool</a> <a href='../S/763.html#L1441' title='Defined at 1441 in tools/drawing_tool.cpp.'>getSourceZoneForAction</a>( <a href='../Y/4921.html' title='Multiple used in 18 places.'>ZONE_MODE</a> <a href='../Y/5593.html' title='Multiple used in 64 places.'>aMode</a>, <a href='../S/80.html#L93' title='Defined at 93 in class_zone.cpp.'>ZONE_CONTAINER</a>** <a href='../Y/6194.html' title='Multiple used in 262 places.'>aZone</a> );
+<a id='L216' name='L216'></a> 216 
+<a id='L217' name='L217'></a> 217     <em class='comment'>/**</em>
+<a id='L218' name='L218'></a> 218 <em class='comment'>     * Function constrainDimension()</em>
+<a id='L219' name='L219'></a> 219 <em class='comment'>     * Forces the dimension lime to be drawn on multiple of 45 degrees</em>
+<a id='L220' name='L220'></a> 220 <em class='comment'>     * @param aDimension is the dimension element currently being drawn</em>
+<a id='L221' name='L221'></a> 221 <em class='comment'>     */</em>
+<a id='L222' name='L222'></a> 222     <strong class='reserved'>void</strong> <a href='../S/763.html#L501' title='Defined at 501 in tools/drawing_tool.cpp.'>constrainDimension</a>( <a href='../S/60.html#L53' title='Defined at 53 in class_dimension.cpp.'>DIMENSION</a>* <a href='../Y/5200.html' title='Multiple used in 24 places.'>aDim</a> );
+<a id='L223' name='L223'></a> 223 
+<a id='L224' name='L224'></a> 224     <em class='comment'>///&gt; Returns the appropriate width for a segment depending on the settings.</em>
+<a id='L225' name='L225'></a> 225     <strong class='reserved'>int</strong> <a href='../S/763.html#L1987' title='Defined at 1987 in tools/drawing_tool.cpp.'>getSegmentWidth</a>( <a href='../S/423.html#L118' title='Defined at 118 in exporters/gendrill_file_writer_base.h.'>PCB_LAYER_ID</a> <a href='../Y/5477.html' title='Multiple used in 585 places.'>aLayer</a> ) <strong class='reserved'>const</strong>;
+<a id='L226' name='L226'></a> 226 
+<a id='L227' name='L227'></a> 227     <a href='../D/1894.html' title='Multiple defined in 2 places.'>KIGFX</a>::<a href='../Y/4798.html' title='Multiple used in 92 places.'>VIEW</a>* <a href='../Y/12369.html' title='Multiple used in 136 places.'>m_view</a>;
+<a id='L228' name='L228'></a> 228     <a href='../D/1894.html' title='Multiple defined in 2 places.'>KIGFX</a>::<a href='../Y/4801.html' title='Multiple used in 18 places.'>VIEW_CONTROLS</a>* <a href='../Y/10570.html' title='Multiple used in 79 places.'>m_controls</a>;
+<a id='L229' name='L229'></a> 229     <a href='../S/57.html#L104' title='Defined at 104 in class_board.cpp.'>BOARD</a>* <a href='../D/4144.html' title='Multiple defined in 3 places.'>m_board</a>;
+<a id='L230' name='L230'></a> 230     <a href='../S/579.html#L54' title='Defined at 54 in pcb_base_edit_frame.cpp.'>PCB_BASE_EDIT_FRAME</a>* <a href='../D/4159.html' title='Multiple defined in 14 places.'>m_frame</a>;
+<a id='L231' name='L231'></a> 231     <a href='../Y/2516.html' title='Multiple used in 29 places.'>MODE</a> <a href='../S/260.html#L42' title='Defined at 42 in dialogs/dialog_pns_length_tuning_settings.cpp.'>m_mode</a>;
+<a id='L232' name='L232'></a> 232 
+<a id='L233' name='L233'></a> 233     <strong class='reserved'>unsigned</strong> <strong class='reserved'>int</strong> <a href='../D/4178.html' title='Multiple defined in 2 places.'>m_lineWidth</a>;               <em class='comment'>// Current line width for multi-segment drawing</em>
+<a id='L234' name='L234'></a> 234     <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <strong class='reserved'>unsigned</strong> <strong class='reserved'>int</strong> <a href='../Y/4837.html' title='Multiple used in 16 places.'>WIDTH_STEP</a>;   <em class='comment'>// Amount of width change with one -/+ key press</em>
+<a id='L235' name='L235'></a> 235 
+<a id='L236' name='L236'></a> 236     <em class='comment'>// give internal access to drawing helper classes</em>
+<a id='L237' name='L237'></a> 237     <a href='../Y/8129.html' title='Multiple used in 73 places.'>friend</a> <a href='../Y/6905.html' title='Multiple used in 1257 places.'>class</a> <a href='../S/805.html#L44' title='Defined at 44 in tools/zone_create_helper.cpp.'>ZONE_CREATE_HELPER</a>;
+<a id='L238' name='L238'></a> 238 <em class='brace'>}</em>;
+<a id='L239' name='L239'></a> 239 
+<a id='L240' name='L240'></a> 240 <em class='sharp'>#endif</em> <em class='comment'>/* __DRAWING_TOOL_H */</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;][^][v]<a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

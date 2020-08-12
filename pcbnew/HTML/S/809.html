@@ -1,0 +1,537 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>tracks_cleaner.cpp</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/tracks_cleaner.cpp</h2>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L42'>[^]</a><a href='#L494'>[v]</a>[top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L42' title='Defined at 42.'>m_itemsList</a></li>
+<li><a href='#L53' title='Defined at 53.'>CleanupBoard</a></li>
+<li><a href='#L99' title='Defined at 99.'>removeBadTrackSegments</a></li>
+<li><a href='#L137' title='Defined at 137.'>cleanupVias</a></li>
+<li><a href='#L204' title='Defined at 204.'>testTrackEndpointIsNode</a></li>
+<li><a href='#L237' title='Defined at 237.'>deleteDanglingTracks</a></li>
+<li><a href='#L288' title='Defined at 288.'>deleteNullSegments</a></li>
+<li><a href='#L309' title='Defined at 309.'>deleteTracksInPads</a></li>
+<li><a href='#L338' title='Defined at 338.'>cleanupSegments</a></li>
+<li><a href='#L421' title='Defined at 421.'>mergeCollinearSegments</a></li>
+<li><a href='#L494' title='Defined at 494.'>removeItems</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * This program source code file is part of KiCad, a free EDA CAD application.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 2004-2018 Jean-Pierre Charras, jp.charras at wanadoo.fr</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> * Copyright (C) 2011 Wayne Stambaugh &lt;stambaughw@verizon.net&gt;</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> * Copyright (C) 1992-2020 KiCad Developers, see AUTHORS.txt for contributors.</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> *</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * This program is free software; you can redistribute it and/or</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * modify it under the terms of the GNU General Public License</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> * as published by the Free Software Foundation; either version 2</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> * of the License, or (at your option) any later version.</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> *</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * This program is distributed in the hope that it will be useful,</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> * GNU General Public License for more details.</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> *</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * You should have received a copy of the GNU General Public License</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> * along with this program; if not, you may find one here:</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'> * or you may search the http://www.gnu.org website for the version 2 license,</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'> * or you may write to the Free Software Foundation, Inc.,</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'> * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA</em>
+<a id='L24' name='L24'></a>  24 <em class='comment'> */</em>
+<a id='L25' name='L25'></a>  25 
+<a id='L26' name='L26'></a>  26 <em class='sharp'>#include</em> &lt;fctsys.h&gt;
+<a id='L27' name='L27'></a>  27 <em class='sharp'>#include</em> &lt;reporter.h&gt;
+<a id='L28' name='L28'></a>  28 <em class='sharp'>#include</em> &lt;<a href='32.html'>board_commit.h</a>&gt;
+<a id='L29' name='L29'></a>  29 <em class='sharp'>#include</em> &lt;<a href='83.html'>cleanup_item.h</a>&gt;
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#include</em> &lt;<a href='89.html'>connectivity/connectivity_algo.h</a>&gt;
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#include</em> &lt;<a href='91.html'>connectivity/connectivity_data.h</a>&gt;
+<a id='L32' name='L32'></a>  32 <em class='sharp'>#include</em> &lt;tool/tool_manager.h&gt;
+<a id='L33' name='L33'></a>  33 <em class='sharp'>#include</em> &lt;<a href='782.html'>tools/pcb_actions.h</a>&gt;
+<a id='L34' name='L34'></a>  34 <em class='sharp'>#include</em> &lt;<a href='770.html'>tools/global_edit_tool.h</a>&gt;
+<a id='L35' name='L35'></a>  35 <em class='sharp'>#include</em> &lt;<a href='810.html'>tracks_cleaner.h</a>&gt;
+<a id='L36' name='L36'></a>  36 
+<a id='L37' name='L37'></a>  37 
+<a id='L38' name='L38'></a>  38 <a href='../Y/4120.html' title='Multiple used in 14 places.'>TRACKS_CLEANER</a>::<a href='../Y/4120.html' title='Multiple used in 14 places.'>TRACKS_CLEANER</a>( <a href='../S/57.html#L104' title='Defined at 104 in class_board.cpp.'>BOARD</a>* <a href='../Y/5769.html' title='Multiple used in 107 places.'>aPcb</a>, <a href='../D/203.html' title='Multiple defined in 3 places.'>BOARD_COMMIT</a>&amp; <a href='../Y/5102.html' title='Multiple used in 106 places.'>aCommit</a> ) :
+<a id='L39' name='L39'></a>  39         <a href='../Y/10345.html' title='Multiple used in 71 places.'>m_brd</a>( <a href='../Y/5769.html' title='Multiple used in 107 places.'>aPcb</a> ),
+<a id='L40' name='L40'></a>  40         <a href='../Y/10545.html' title='Multiple used in 96 places.'>m_commit</a>( <a href='../Y/5102.html' title='Multiple used in 106 places.'>aCommit</a> ),
+<a id='L41' name='L41'></a>  41         <a href='../Y/10748.html' title='Multiple used in 16 places.'>m_dryRun</a>( <strong class='reserved'>true</strong> ),
+<a id='L42' name='L42'></a>  42         <a href='../R/4020.html' title='Multiple referred from 16 places.'>m_itemsList</a>( <a href='../Y/13059.html' title='Multiple used in 610 places.'>nullptr</a> )
+<a id='L43' name='L43'></a>  43 <em class='brace'>{</em>
+<a id='L44' name='L44'></a>  44 <em class='brace'>}</em>
+<a id='L45' name='L45'></a>  45 
+<a id='L46' name='L46'></a>  46 
+<a id='L47' name='L47'></a>  47 <em class='comment'>/* Main cleaning function.</em>
+<a id='L48' name='L48'></a>  48 <em class='comment'> *  Delete</em>
+<a id='L49' name='L49'></a>  49 <em class='comment'> * - Redundant points on tracks (merge aligned segments)</em>
+<a id='L50' name='L50'></a>  50 <em class='comment'> * - vias on pad</em>
+<a id='L51' name='L51'></a>  51 <em class='comment'> * - null length segments</em>
+<a id='L52' name='L52'></a>  52 <em class='comment'> */</em>
+<a id='L53' name='L53'></a>  53 <strong class='reserved'>void</strong> <a href='../Y/4120.html' title='Multiple used in 14 places.'>TRACKS_CLEANER</a>::<a href='../R/408.html' title='Multiple referred from 4 places.'>CleanupBoard</a>( <strong class='reserved'>bool</strong> <a href='../Y/5228.html' title='Multiple used in 24 places.'>aDryRun</a>, <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/15301.html' title='Multiple used in 606 places.'>vector</a>&lt;<a href='../S/82.html#L30' title='Defined at 30 in cleanup_item.cpp.'>CLEANUP_ITEM</a>*&gt;* <a href='../Y/5447.html' title='Multiple used in 12 places.'>aItemsList</a>,
+<a id='L54' name='L54'></a>  54                                    <strong class='reserved'>bool</strong> <a href='../Y/5883.html' title='Multiple used in 4 places.'>aRemoveMisConnected</a>, <strong class='reserved'>bool</strong> <a href='../Y/5083.html' title='Multiple used in 3 places.'>aCleanVias</a>, <strong class='reserved'>bool</strong> <a href='../Y/5562.html' title='Multiple used in 4 places.'>aMergeSegments</a>,
+<a id='L55' name='L55'></a>  55                                    <strong class='reserved'>bool</strong> <a href='../Y/5187.html' title='Multiple used in 3 places.'>aDeleteUnconnected</a>, <strong class='reserved'>bool</strong> <a href='../Y/5186.html' title='Multiple used in 3 places.'>aDeleteTracksinPad</a> )
+<a id='L56' name='L56'></a>  56 <em class='brace'>{</em>
+<a id='L57' name='L57'></a>  57     <a href='../Y/10748.html' title='Multiple used in 16 places.'>m_dryRun</a> = <a href='../Y/5228.html' title='Multiple used in 24 places.'>aDryRun</a>;
+<a id='L58' name='L58'></a>  58     <a href='../D/4172.html' title='Multiple defined in 2 places.'>m_itemsList</a> = <a href='../Y/5447.html' title='Multiple used in 12 places.'>aItemsList</a>;
+<a id='L59' name='L59'></a>  59 
+<a id='L60' name='L60'></a>  60     <em class='comment'>// Clear the flag used to mark some segments as deleted, in dry run:</em>
+<a id='L61' name='L61'></a>  61     <strong class='reserved'>for</strong>( <a href='../S/78.html#L38' title='Defined at 38 in class_track.cpp.'>TRACK</a>* <a href='../Y/14298.html' title='Multiple used in 185 places.'>segment</a> : <a href='../Y/10345.html' title='Multiple used in 71 places.'>m_brd</a>-&gt;<a href='../Y/4679.html' title='Multiple used in 78 places.'>Tracks</a>() )
+<a id='L62' name='L62'></a>  62         <a href='../Y/14298.html' title='Multiple used in 185 places.'>segment</a>-&gt;<a href='../Y/492.html' title='Multiple used in 24 places.'>ClearFlags</a>( <a href='../Y/1990.html' title='Multiple used in 20 places.'>IS_DELETED</a> );
+<a id='L63' name='L63'></a>  63 
+<a id='L64' name='L64'></a>  64     <em class='comment'>// delete redundant vias</em>
+<a id='L65' name='L65'></a>  65     <strong class='reserved'>if</strong>( <a href='../Y/5083.html' title='Multiple used in 3 places.'>aCleanVias</a> )
+<a id='L66' name='L66'></a>  66         <a href='../S/809.html#L137' title='Defined at 137 in tracks_cleaner.cpp.'>cleanupVias</a>();
+<a id='L67' name='L67'></a>  67 
+<a id='L68' name='L68'></a>  68     <em class='comment'>// Remove null segments and intermediate points on aligned segments</em>
+<a id='L69' name='L69'></a>  69     <em class='comment'>// If not asked, remove null segments only if remove misconnected is asked</em>
+<a id='L70' name='L70'></a>  70     <strong class='reserved'>if</strong>( <a href='../Y/5562.html' title='Multiple used in 4 places.'>aMergeSegments</a> )
+<a id='L71' name='L71'></a>  71         <a href='../D/3669.html' title='Multiple defined in 2 places.'>cleanupSegments</a>();
+<a id='L72' name='L72'></a>  72     <strong class='reserved'>else</strong> <strong class='reserved'>if</strong>( <a href='../Y/5883.html' title='Multiple used in 4 places.'>aRemoveMisConnected</a> )
+<a id='L73' name='L73'></a>  73         <a href='../S/809.html#L288' title='Defined at 288 in tracks_cleaner.cpp.'>deleteNullSegments</a>( <a href='../Y/10345.html' title='Multiple used in 71 places.'>m_brd</a>-&gt;<a href='../Y/4679.html' title='Multiple used in 78 places.'>Tracks</a>() );
+<a id='L74' name='L74'></a>  74 
+<a id='L75' name='L75'></a>  75     <strong class='reserved'>if</strong>( <a href='../Y/5883.html' title='Multiple used in 4 places.'>aRemoveMisConnected</a> )
+<a id='L76' name='L76'></a>  76         <a href='../S/809.html#L99' title='Defined at 99 in tracks_cleaner.cpp.'>removeBadTrackSegments</a>();
+<a id='L77' name='L77'></a>  77 
+<a id='L78' name='L78'></a>  78     <strong class='reserved'>if</strong>( <a href='../Y/5186.html' title='Multiple used in 3 places.'>aDeleteTracksinPad</a> )
+<a id='L79' name='L79'></a>  79         <a href='../S/809.html#L309' title='Defined at 309 in tracks_cleaner.cpp.'>deleteTracksInPads</a>();
+<a id='L80' name='L80'></a>  80 
+<a id='L81' name='L81'></a>  81     <em class='comment'>// Delete dangling tracks</em>
+<a id='L82' name='L82'></a>  82     <strong class='reserved'>if</strong>( <a href='../Y/5187.html' title='Multiple used in 3 places.'>aDeleteUnconnected</a> )
+<a id='L83' name='L83'></a>  83     <em class='brace'>{</em>
+<a id='L84' name='L84'></a>  84         <strong class='reserved'>if</strong>( <a href='../S/809.html#L237' title='Defined at 237 in tracks_cleaner.cpp.'>deleteDanglingTracks</a>() )
+<a id='L85' name='L85'></a>  85         <em class='brace'>{</em>
+<a id='L86' name='L86'></a>  86             <em class='comment'>// Removed tracks can leave aligned segments</em>
+<a id='L87' name='L87'></a>  87             <em class='comment'>// (when a T was formed by tracks and the "vertical" segment is removed)</em>
+<a id='L88' name='L88'></a>  88             <strong class='reserved'>if</strong>( <a href='../Y/5562.html' title='Multiple used in 4 places.'>aMergeSegments</a> )
+<a id='L89' name='L89'></a>  89                 <a href='../D/3669.html' title='Multiple defined in 2 places.'>cleanupSegments</a>();
+<a id='L90' name='L90'></a>  90         <em class='brace'>}</em>
+<a id='L91' name='L91'></a>  91     <em class='brace'>}</em>
+<a id='L92' name='L92'></a>  92 
+<a id='L93' name='L93'></a>  93     <em class='comment'>// Clear the flag used to mark some segments:</em>
+<a id='L94' name='L94'></a>  94     <strong class='reserved'>for</strong>( <a href='../S/78.html#L38' title='Defined at 38 in class_track.cpp.'>TRACK</a>* <a href='../Y/14298.html' title='Multiple used in 185 places.'>segment</a> : <a href='../Y/10345.html' title='Multiple used in 71 places.'>m_brd</a>-&gt;<a href='../Y/4679.html' title='Multiple used in 78 places.'>Tracks</a>() )
+<a id='L95' name='L95'></a>  95         <a href='../Y/14298.html' title='Multiple used in 185 places.'>segment</a>-&gt;<a href='../Y/492.html' title='Multiple used in 24 places.'>ClearFlags</a>( <a href='../Y/1990.html' title='Multiple used in 20 places.'>IS_DELETED</a> );
+<a id='L96' name='L96'></a>  96 <em class='brace'>}</em>
+<a id='L97' name='L97'></a>  97 
+<a id='L98' name='L98'></a>  98 
+<a id='L99' name='L99'></a>  99 <strong class='reserved'>void</strong> <a href='../Y/4120.html' title='Multiple used in 14 places.'>TRACKS_CLEANER</a>::<a href='../R/4356.html' title='Multiple referred from 2 places.'>removeBadTrackSegments</a>()
+<a id='L100' name='L100'></a> 100 <em class='brace'>{</em>
+<a id='L101' name='L101'></a> 101     <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/14405.html' title='Multiple used in 81 places.'>shared_ptr</a>&lt;<a href='../D/375.html' title='Multiple defined in 3 places.'>CONNECTIVITY_DATA</a>&gt; <a href='../Y/7055.html' title='Multiple used in 65 places.'>connectivity</a> = <a href='../Y/10345.html' title='Multiple used in 71 places.'>m_brd</a>-&gt;<a href='../Y/1307.html' title='Multiple used in 44 places.'>GetConnectivity</a>();
+<a id='L102' name='L102'></a> 102 
+<a id='L103' name='L103'></a> 103     <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/14361.html' title='Multiple used in 188 places.'>set</a>&lt;<a href='../Y/253.html' title='Multiple used in 610 places.'>BOARD_ITEM</a> *&gt; <a href='../Y/14979.html' title='Multiple used in 17 places.'>toRemove</a>;
+<a id='L104' name='L104'></a> 104 
+<a id='L105' name='L105'></a> 105     <strong class='reserved'>for</strong>( <a href='../S/78.html#L38' title='Defined at 38 in class_track.cpp.'>TRACK</a>* <a href='../Y/14298.html' title='Multiple used in 185 places.'>segment</a> : <a href='../Y/10345.html' title='Multiple used in 71 places.'>m_brd</a>-&gt;<a href='../Y/4679.html' title='Multiple used in 78 places.'>Tracks</a>() )
+<a id='L106' name='L106'></a> 106     <em class='brace'>{</em>
+<a id='L107' name='L107'></a> 107         <strong class='reserved'>for</strong>( <a href='../D/777.html' title='Multiple defined in 2 places.'>D_PAD</a>* <a href='../Y/14845.html' title='Multiple used in 2 places.'>testedPad</a> : <a href='../Y/7055.html' title='Multiple used in 65 places.'>connectivity</a>-&gt;<a href='../D/1141.html' title='Multiple defined in 2 places.'>GetConnectedPads</a>( <a href='../Y/14298.html' title='Multiple used in 185 places.'>segment</a> ) )
+<a id='L108' name='L108'></a> 108         <em class='brace'>{</em>
+<a id='L109' name='L109'></a> 109             <strong class='reserved'>if</strong>( <a href='../Y/14298.html' title='Multiple used in 185 places.'>segment</a>-&gt;<a href='../D/1256.html' title='Multiple defined in 2 places.'>GetNetCode</a>() != <a href='../Y/14845.html' title='Multiple used in 2 places.'>testedPad</a>-&gt;<a href='../D/1256.html' title='Multiple defined in 2 places.'>GetNetCode</a>() )
+<a id='L110' name='L110'></a> 110             <em class='brace'>{</em>
+<a id='L111' name='L111'></a> 111                 <a href='../S/82.html#L30' title='Defined at 30 in cleanup_item.cpp.'>CLEANUP_ITEM</a>* <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a> = <strong class='reserved'>new</strong> <a href='../S/82.html#L30' title='Defined at 30 in cleanup_item.cpp.'>CLEANUP_ITEM</a>( <a href='../S/83.html#L35' title='Defined at 35 in cleanup_item.h.'>CLEANUP_SHORT</a> );
+<a id='L112' name='L112'></a> 112                 <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a>-&gt;<a href='../Y/3622.html' title='Multiple used in 64 places.'>SetItems</a>( <a href='../Y/14298.html' title='Multiple used in 185 places.'>segment</a> );
+<a id='L113' name='L113'></a> 113                 <a href='../D/4172.html' title='Multiple defined in 2 places.'>m_itemsList</a>-&gt;<a href='../S/330.html#L228' title='Defined at 228 in dialogs/panel_fp_lib_table.cpp.'>push_back</a>( <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a> );
+<a id='L114' name='L114'></a> 114 
+<a id='L115' name='L115'></a> 115                 <a href='../Y/14979.html' title='Multiple used in 17 places.'>toRemove</a>.<a href='../S/330.html#L223' title='Defined at 223 in dialogs/panel_fp_lib_table.cpp.'>insert</a>( <a href='../Y/14298.html' title='Multiple used in 185 places.'>segment</a> );
+<a id='L116' name='L116'></a> 116             <em class='brace'>}</em>
+<a id='L117' name='L117'></a> 117         <em class='brace'>}</em>
+<a id='L118' name='L118'></a> 118 
+<a id='L119' name='L119'></a> 119         <strong class='reserved'>for</strong>( <a href='../S/78.html#L38' title='Defined at 38 in class_track.cpp.'>TRACK</a>* <a href='../Y/14847.html' title='Multiple used in 2 places.'>testedTrack</a> : <a href='../Y/7055.html' title='Multiple used in 65 places.'>connectivity</a>-&gt;<a href='../S/90.html#L437' title='Defined at 437 in connectivity/connectivity_data.cpp.'>GetConnectedTracks</a>( <a href='../Y/14298.html' title='Multiple used in 185 places.'>segment</a> ) )
+<a id='L120' name='L120'></a> 120         <em class='brace'>{</em>
+<a id='L121' name='L121'></a> 121             <strong class='reserved'>if</strong>( <a href='../Y/14298.html' title='Multiple used in 185 places.'>segment</a>-&gt;<a href='../D/1256.html' title='Multiple defined in 2 places.'>GetNetCode</a>() != <a href='../Y/14847.html' title='Multiple used in 2 places.'>testedTrack</a>-&gt;<a href='../D/1256.html' title='Multiple defined in 2 places.'>GetNetCode</a>() )
+<a id='L122' name='L122'></a> 122             <em class='brace'>{</em>
+<a id='L123' name='L123'></a> 123                 <a href='../S/82.html#L30' title='Defined at 30 in cleanup_item.cpp.'>CLEANUP_ITEM</a>* <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a> = <strong class='reserved'>new</strong> <a href='../S/82.html#L30' title='Defined at 30 in cleanup_item.cpp.'>CLEANUP_ITEM</a>( <a href='../S/83.html#L35' title='Defined at 35 in cleanup_item.h.'>CLEANUP_SHORT</a> );
+<a id='L124' name='L124'></a> 124                 <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a>-&gt;<a href='../Y/3622.html' title='Multiple used in 64 places.'>SetItems</a>( <a href='../Y/14298.html' title='Multiple used in 185 places.'>segment</a> );
+<a id='L125' name='L125'></a> 125                 <a href='../D/4172.html' title='Multiple defined in 2 places.'>m_itemsList</a>-&gt;<a href='../S/330.html#L228' title='Defined at 228 in dialogs/panel_fp_lib_table.cpp.'>push_back</a>( <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a> );
+<a id='L126' name='L126'></a> 126 
+<a id='L127' name='L127'></a> 127                 <a href='../Y/14979.html' title='Multiple used in 17 places.'>toRemove</a>.<a href='../S/330.html#L223' title='Defined at 223 in dialogs/panel_fp_lib_table.cpp.'>insert</a>( <a href='../Y/14298.html' title='Multiple used in 185 places.'>segment</a> );
+<a id='L128' name='L128'></a> 128             <em class='brace'>}</em>
+<a id='L129' name='L129'></a> 129         <em class='brace'>}</em>
+<a id='L130' name='L130'></a> 130     <em class='brace'>}</em>
+<a id='L131' name='L131'></a> 131 
+<a id='L132' name='L132'></a> 132     <strong class='reserved'>if</strong>( !<a href='../Y/10748.html' title='Multiple used in 16 places.'>m_dryRun</a> )
+<a id='L133' name='L133'></a> 133         <a href='../S/809.html#L494' title='Defined at 494 in tracks_cleaner.cpp.'>removeItems</a>( <a href='../Y/14979.html' title='Multiple used in 17 places.'>toRemove</a> );
+<a id='L134' name='L134'></a> 134 <em class='brace'>}</em>
+<a id='L135' name='L135'></a> 135 
+<a id='L136' name='L136'></a> 136 
+<a id='L137' name='L137'></a> 137 <strong class='reserved'>void</strong> <a href='../Y/4120.html' title='Multiple used in 14 places.'>TRACKS_CLEANER</a>::<a href='../R/3529.html' title='Multiple referred from 2 places.'>cleanupVias</a>()
+<a id='L138' name='L138'></a> 138 <em class='brace'>{</em>
+<a id='L139' name='L139'></a> 139     <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/14361.html' title='Multiple used in 188 places.'>set</a>&lt;<a href='../Y/253.html' title='Multiple used in 610 places.'>BOARD_ITEM</a>*&gt; <a href='../Y/14979.html' title='Multiple used in 17 places.'>toRemove</a>;
+<a id='L140' name='L140'></a> 140     <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/15301.html' title='Multiple used in 606 places.'>vector</a>&lt;<a href='../D/3347.html' title='Multiple defined in 2 places.'>VIA</a>*&gt;     <a href='../Y/15371.html' title='Multiple used in 37 places.'>vias</a>;
+<a id='L141' name='L141'></a> 141 
+<a id='L142' name='L142'></a> 142     <strong class='reserved'>for</strong>( <a href='../S/78.html#L38' title='Defined at 38 in class_track.cpp.'>TRACK</a>* <a href='../Y/15074.html' title='Multiple used in 311 places.'>track</a> : <a href='../Y/10345.html' title='Multiple used in 71 places.'>m_brd</a>-&gt;<a href='../Y/4679.html' title='Multiple used in 78 places.'>Tracks</a>() )
+<a id='L143' name='L143'></a> 143     <em class='brace'>{</em>
+<a id='L144' name='L144'></a> 144         <strong class='reserved'>if</strong>( <strong class='reserved'>auto</strong> <a href='../Y/15314.html' title='Multiple used in 342 places.'>via</a> = <a href='../Y/7638.html' title='Multiple used in 74 places.'>dyn_cast</a>&lt;<a href='../D/3347.html' title='Multiple defined in 2 places.'>VIA</a>*&gt;( <a href='../Y/15074.html' title='Multiple used in 311 places.'>track</a> ) )
+<a id='L145' name='L145'></a> 145             <a href='../Y/15371.html' title='Multiple used in 37 places.'>vias</a>.<a href='../S/330.html#L228' title='Defined at 228 in dialogs/panel_fp_lib_table.cpp.'>push_back</a>( <a href='../Y/15314.html' title='Multiple used in 342 places.'>via</a> );
+<a id='L146' name='L146'></a> 146     <em class='brace'>}</em>
+<a id='L147' name='L147'></a> 147 
+<a id='L148' name='L148'></a> 148     <strong class='reserved'>for</strong>( <strong class='reserved'>auto</strong> <a href='../Y/15316.html' title='Multiple used in 3 places.'>via1_it</a> = <a href='../Y/15371.html' title='Multiple used in 37 places.'>vias</a>.<a href='../S/330.html#L221' title='Defined at 221 in dialogs/panel_fp_lib_table.cpp.'>begin</a>(); <a href='../Y/15316.html' title='Multiple used in 3 places.'>via1_it</a> != <a href='../Y/15371.html' title='Multiple used in 37 places.'>vias</a>.<a href='../Y/7716.html' title='Multiple used in 512 places.'>end</a>(); <a href='../Y/15316.html' title='Multiple used in 3 places.'>via1_it</a>++ )
+<a id='L149' name='L149'></a> 149     <em class='brace'>{</em>
+<a id='L150' name='L150'></a> 150         <a href='../D/3347.html' title='Multiple defined in 2 places.'>VIA</a>* <a href='../Y/15315.html' title='Multiple used in 10 places.'>via1</a> = *<a href='../Y/15316.html' title='Multiple used in 3 places.'>via1_it</a>;
+<a id='L151' name='L151'></a> 151 
+<a id='L152' name='L152'></a> 152         <strong class='reserved'>if</strong>( <a href='../Y/15315.html' title='Multiple used in 10 places.'>via1</a>-&gt;<a href='../Y/2151.html' title='Multiple used in 47 places.'>IsLocked</a>() )
+<a id='L153' name='L153'></a> 153             <strong class='reserved'>continue</strong>;
+<a id='L154' name='L154'></a> 154 
+<a id='L155' name='L155'></a> 155         <strong class='reserved'>if</strong>( <a href='../Y/15315.html' title='Multiple used in 10 places.'>via1</a>-&gt;<a href='../Y/1728.html' title='Multiple used in 182 places.'>GetStart</a>() != <a href='../Y/15315.html' title='Multiple used in 10 places.'>via1</a>-&gt;<a href='../Y/1386.html' title='Multiple used in 189 places.'>GetEnd</a>() )
+<a id='L156' name='L156'></a> 156             <a href='../Y/15315.html' title='Multiple used in 10 places.'>via1</a>-&gt;<a href='../S/60.html#L199' title='Defined at 199 in class_dimension.cpp.'>SetEnd</a>( <a href='../Y/15315.html' title='Multiple used in 10 places.'>via1</a>-&gt;<a href='../Y/1728.html' title='Multiple used in 182 places.'>GetStart</a>() );
+<a id='L157' name='L157'></a> 157 
+<a id='L158' name='L158'></a> 158         <em class='comment'>// To delete through Via on THT pads at same location</em>
+<a id='L159' name='L159'></a> 159         <em class='comment'>// Examine the list of connected pads:</em>
+<a id='L160' name='L160'></a> 160         <em class='comment'>// if a through pad is found, the via can be removed</em>
+<a id='L161' name='L161'></a> 161 
+<a id='L162' name='L162'></a> 162         <strong class='reserved'>const</strong> <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/15301.html' title='Multiple used in 606 places.'>vector</a>&lt;<a href='../D/777.html' title='Multiple defined in 2 places.'>D_PAD</a>*&gt; <a href='../Y/13369.html' title='Multiple used in 39 places.'>pads</a> = <a href='../Y/10345.html' title='Multiple used in 71 places.'>m_brd</a>-&gt;<a href='../Y/1307.html' title='Multiple used in 44 places.'>GetConnectivity</a>()-&gt;<a href='../D/1141.html' title='Multiple defined in 2 places.'>GetConnectedPads</a>( <a href='../Y/15315.html' title='Multiple used in 10 places.'>via1</a> );
+<a id='L163' name='L163'></a> 163 
+<a id='L164' name='L164'></a> 164         <strong class='reserved'>for</strong>( <a href='../D/777.html' title='Multiple defined in 2 places.'>D_PAD</a>* <a href='../Y/13288.html' title='Multiple used in 1010 places.'>pad</a> : <a href='../Y/13369.html' title='Multiple used in 39 places.'>pads</a> )
+<a id='L165' name='L165'></a> 165         <em class='brace'>{</em>
+<a id='L166' name='L166'></a> 166             <strong class='reserved'>const</strong> <a href='../Y/2380.html' title='Multiple used in 386 places.'>LSET</a> <a href='../Y/6324.html' title='Multiple used in 8 places.'>all_cu</a> = <a href='../Y/2380.html' title='Multiple used in 386 places.'>LSET</a>::<a href='../Y/157.html' title='Multiple used in 72 places.'>AllCuMask</a>();
+<a id='L167' name='L167'></a> 167 
+<a id='L168' name='L168'></a> 168             <strong class='reserved'>if</strong>( ( <a href='../Y/13288.html' title='Multiple used in 1010 places.'>pad</a>-&gt;<a href='../D/1226.html' title='Multiple defined in 2 places.'>GetLayerSet</a>() &amp; <a href='../Y/6324.html' title='Multiple used in 8 places.'>all_cu</a> ) == <a href='../Y/6324.html' title='Multiple used in 8 places.'>all_cu</a> )
+<a id='L169' name='L169'></a> 169             <em class='brace'>{</em>
+<a id='L170' name='L170'></a> 170                 <a href='../S/82.html#L30' title='Defined at 30 in cleanup_item.cpp.'>CLEANUP_ITEM</a>* <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a> = <strong class='reserved'>new</strong> <a href='../S/82.html#L30' title='Defined at 30 in cleanup_item.cpp.'>CLEANUP_ITEM</a>( <a href='../S/83.html#L36' title='Defined at 36 in cleanup_item.h.'>CLEANUP_REDUNDANT_VIA</a> );
+<a id='L171' name='L171'></a> 171                 <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a>-&gt;<a href='../Y/3622.html' title='Multiple used in 64 places.'>SetItems</a>( <a href='../Y/15315.html' title='Multiple used in 10 places.'>via1</a>, <a href='../Y/13288.html' title='Multiple used in 1010 places.'>pad</a> );
+<a id='L172' name='L172'></a> 172                 <a href='../D/4172.html' title='Multiple defined in 2 places.'>m_itemsList</a>-&gt;<a href='../S/330.html#L228' title='Defined at 228 in dialogs/panel_fp_lib_table.cpp.'>push_back</a>( <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a> );
+<a id='L173' name='L173'></a> 173 
+<a id='L174' name='L174'></a> 174                 <em class='comment'>// redundant: delete the via</em>
+<a id='L175' name='L175'></a> 175                 <a href='../Y/14979.html' title='Multiple used in 17 places.'>toRemove</a>.<a href='../S/330.html#L223' title='Defined at 223 in dialogs/panel_fp_lib_table.cpp.'>insert</a>( <a href='../Y/15315.html' title='Multiple used in 10 places.'>via1</a> );
+<a id='L176' name='L176'></a> 176                 <strong class='reserved'>break</strong>;
+<a id='L177' name='L177'></a> 177             <em class='brace'>}</em>
+<a id='L178' name='L178'></a> 178         <em class='brace'>}</em>
+<a id='L179' name='L179'></a> 179 
+<a id='L180' name='L180'></a> 180         <strong class='reserved'>for</strong>( <strong class='reserved'>auto</strong> <a href='../Y/15318.html' title='Multiple used in 2 places.'>via2_it</a> = <a href='../Y/15316.html' title='Multiple used in 3 places.'>via1_it</a> + 1; <a href='../Y/15318.html' title='Multiple used in 2 places.'>via2_it</a> != <a href='../Y/15371.html' title='Multiple used in 37 places.'>vias</a>.<a href='../Y/7716.html' title='Multiple used in 512 places.'>end</a>(); <a href='../Y/15318.html' title='Multiple used in 2 places.'>via2_it</a>++ )
+<a id='L181' name='L181'></a> 181         <em class='brace'>{</em>
+<a id='L182' name='L182'></a> 182             <a href='../D/3347.html' title='Multiple defined in 2 places.'>VIA</a>* <a href='../Y/15317.html' title='Multiple used in 5 places.'>via2</a> = *<a href='../Y/15318.html' title='Multiple used in 2 places.'>via2_it</a>;
+<a id='L183' name='L183'></a> 183 
+<a id='L184' name='L184'></a> 184             <strong class='reserved'>if</strong>( <a href='../Y/15315.html' title='Multiple used in 10 places.'>via1</a>-&gt;<a href='../D/1302.html' title='Multiple defined in 5 places.'>GetPosition</a>() != <a href='../Y/15317.html' title='Multiple used in 5 places.'>via2</a>-&gt;<a href='../D/1302.html' title='Multiple defined in 5 places.'>GetPosition</a>() || <a href='../Y/15317.html' title='Multiple used in 5 places.'>via2</a>-&gt;<a href='../Y/2151.html' title='Multiple used in 47 places.'>IsLocked</a>() )
+<a id='L185' name='L185'></a> 185                 <strong class='reserved'>continue</strong>;
+<a id='L186' name='L186'></a> 186 
+<a id='L187' name='L187'></a> 187             <strong class='reserved'>if</strong>( <a href='../Y/15315.html' title='Multiple used in 10 places.'>via1</a>-&gt;<a href='../Y/1801.html' title='Multiple used in 38 places.'>GetViaType</a>() == <a href='../Y/15317.html' title='Multiple used in 5 places.'>via2</a>-&gt;<a href='../Y/1801.html' title='Multiple used in 38 places.'>GetViaType</a>() )
+<a id='L188' name='L188'></a> 188             <em class='brace'>{</em>
+<a id='L189' name='L189'></a> 189                 <a href='../S/82.html#L30' title='Defined at 30 in cleanup_item.cpp.'>CLEANUP_ITEM</a>* <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a> = <strong class='reserved'>new</strong> <a href='../S/82.html#L30' title='Defined at 30 in cleanup_item.cpp.'>CLEANUP_ITEM</a>( <a href='../S/83.html#L36' title='Defined at 36 in cleanup_item.h.'>CLEANUP_REDUNDANT_VIA</a> );
+<a id='L190' name='L190'></a> 190                 <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a>-&gt;<a href='../Y/3622.html' title='Multiple used in 64 places.'>SetItems</a>( <a href='../Y/15315.html' title='Multiple used in 10 places.'>via1</a>, <a href='../Y/15317.html' title='Multiple used in 5 places.'>via2</a> );
+<a id='L191' name='L191'></a> 191                 <a href='../D/4172.html' title='Multiple defined in 2 places.'>m_itemsList</a>-&gt;<a href='../S/330.html#L228' title='Defined at 228 in dialogs/panel_fp_lib_table.cpp.'>push_back</a>( <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a> );
+<a id='L192' name='L192'></a> 192 
+<a id='L193' name='L193'></a> 193                 <a href='../Y/14979.html' title='Multiple used in 17 places.'>toRemove</a>.<a href='../S/330.html#L223' title='Defined at 223 in dialogs/panel_fp_lib_table.cpp.'>insert</a>( <a href='../Y/15317.html' title='Multiple used in 5 places.'>via2</a> );
+<a id='L194' name='L194'></a> 194                 <strong class='reserved'>break</strong>;
+<a id='L195' name='L195'></a> 195             <em class='brace'>}</em>
+<a id='L196' name='L196'></a> 196         <em class='brace'>}</em>
+<a id='L197' name='L197'></a> 197     <em class='brace'>}</em>
+<a id='L198' name='L198'></a> 198 
+<a id='L199' name='L199'></a> 199     <strong class='reserved'>if</strong>( !<a href='../Y/10748.html' title='Multiple used in 16 places.'>m_dryRun</a> )
+<a id='L200' name='L200'></a> 200         <a href='../S/809.html#L494' title='Defined at 494 in tracks_cleaner.cpp.'>removeItems</a>( <a href='../Y/14979.html' title='Multiple used in 17 places.'>toRemove</a> );
+<a id='L201' name='L201'></a> 201 <em class='brace'>}</em>
+<a id='L202' name='L202'></a> 202 
+<a id='L203' name='L203'></a> 203 
+<a id='L204' name='L204'></a> 204 <strong class='reserved'>bool</strong> <a href='../Y/4120.html' title='Multiple used in 14 places.'>TRACKS_CLEANER</a>::<a href='../R/4515.html' title='Multiple referred from 3 places.'>testTrackEndpointIsNode</a>( <a href='../S/78.html#L38' title='Defined at 38 in class_track.cpp.'>TRACK</a>* <a href='../Y/6080.html' title='Multiple used in 58 places.'>aTrack</a>, <strong class='reserved'>bool</strong> <a href='../Y/6090.html' title='Multiple used in 3 places.'>aTstStart</a> )
+<a id='L205' name='L205'></a> 205 <em class='brace'>{</em>
+<a id='L206' name='L206'></a> 206     <em class='comment'>// A node is a point where more than 2 items are connected.</em>
+<a id='L207' name='L207'></a> 207 
+<a id='L208' name='L208'></a> 208     <strong class='reserved'>auto</strong> <a href='../Y/7055.html' title='Multiple used in 65 places.'>connectivity</a> = <a href='../Y/10345.html' title='Multiple used in 71 places.'>m_brd</a>-&gt;<a href='../Y/1307.html' title='Multiple used in 44 places.'>GetConnectivity</a>();
+<a id='L209' name='L209'></a> 209     <strong class='reserved'>auto</strong> <a href='../Y/8739.html' title='Multiple used in 91 places.'>items</a> = <a href='../Y/7055.html' title='Multiple used in 65 places.'>connectivity</a>-&gt;<a href='../Y/1308.html' title='Multiple used in 5 places.'>GetConnectivityAlgo</a>()-&gt;<a href='../Y/2212.html' title='Multiple used in 8 places.'>ItemEntry</a>( <a href='../Y/6080.html' title='Multiple used in 58 places.'>aTrack</a> ).<a href='../Y/1493.html' title='Multiple used in 16 places.'>GetItems</a>();
+<a id='L210' name='L210'></a> 210 
+<a id='L211' name='L211'></a> 211     <strong class='reserved'>if</strong>( <a href='../Y/8739.html' title='Multiple used in 91 places.'>items</a>.<a href='../Y/7690.html' title='Multiple used in 167 places.'>empty</a>() )
+<a id='L212' name='L212'></a> 212         <strong class='reserved'>return</strong> <strong class='reserved'>false</strong>;
+<a id='L213' name='L213'></a> 213 
+<a id='L214' name='L214'></a> 214     <strong class='reserved'>auto</strong> <a href='../Y/6899.html' title='Multiple used in 17 places.'>citem</a> = <a href='../Y/8739.html' title='Multiple used in 91 places.'>items</a>.<a href='../Y/8139.html' title='Multiple used in 34 places.'>front</a>();
+<a id='L215' name='L215'></a> 215 
+<a id='L216' name='L216'></a> 216     <strong class='reserved'>if</strong>( !<a href='../Y/6899.html' title='Multiple used in 17 places.'>citem</a>-&gt;<a href='../S/92.html#L332' title='Defined at 332 in connectivity/connectivity_items.cpp.'>Valid</a>() )
+<a id='L217' name='L217'></a> 217         <strong class='reserved'>return</strong> <strong class='reserved'>false</strong>;
+<a id='L218' name='L218'></a> 218 
+<a id='L219' name='L219'></a> 219     <strong class='reserved'>auto</strong> <a href='../Y/6363.html' title='Multiple used in 28 places.'>anchors</a> = <a href='../Y/6899.html' title='Multiple used in 17 places.'>citem</a>-&gt;<a href='../Y/174.html' title='Multiple used in 7 places.'>Anchors</a>();
+<a id='L220' name='L220'></a> 220 
+<a id='L221' name='L221'></a> 221     <a href='../Y/4788.html' title='Multiple used in 795 places.'>VECTOR2I</a> <a href='../Y/13932.html' title='Multiple used in 2 places.'>refpoint</a> = <a href='../Y/6090.html' title='Multiple used in 3 places.'>aTstStart</a> ? <a href='../Y/6080.html' title='Multiple used in 58 places.'>aTrack</a>-&gt;<a href='../Y/1728.html' title='Multiple used in 182 places.'>GetStart</a>() : <a href='../Y/6080.html' title='Multiple used in 58 places.'>aTrack</a>-&gt;<a href='../Y/1386.html' title='Multiple used in 189 places.'>GetEnd</a>();
+<a id='L222' name='L222'></a> 222 
+<a id='L223' name='L223'></a> 223     <strong class='reserved'>for</strong>( <strong class='reserved'>const</strong> <strong class='reserved'>auto</strong>&amp; <a href='../Y/6356.html' title='Multiple used in 38 places.'>anchor</a> : <a href='../Y/6363.html' title='Multiple used in 28 places.'>anchors</a> )
+<a id='L224' name='L224'></a> 224     <em class='brace'>{</em>
+<a id='L225' name='L225'></a> 225         <strong class='reserved'>if</strong>( <a href='../Y/6356.html' title='Multiple used in 38 places.'>anchor</a>-&gt;<a href='../Y/2973.html' title='Multiple used in 71 places.'>Pos</a>() != <a href='../Y/13932.html' title='Multiple used in 2 places.'>refpoint</a> )
+<a id='L226' name='L226'></a> 226             <strong class='reserved'>continue</strong>;
+<a id='L227' name='L227'></a> 227 
+<a id='L228' name='L228'></a> 228         <em class='comment'>// The right anchor point is found: if more than one other item</em>
+<a id='L229' name='L229'></a> 229         <em class='comment'>// (pad, via, track...) is connected, it is a node:</em>
+<a id='L230' name='L230'></a> 230         <strong class='reserved'>return</strong> <a href='../Y/6356.html' title='Multiple used in 38 places.'>anchor</a>-&gt;<a href='../S/92.html#L379' title='Defined at 379 in connectivity/connectivity_items.cpp.'>ConnectedItemsCount</a>() &gt; 1;
+<a id='L231' name='L231'></a> 231     <em class='brace'>}</em>
+<a id='L232' name='L232'></a> 232 
+<a id='L233' name='L233'></a> 233     <strong class='reserved'>return</strong> <strong class='reserved'>false</strong>;
+<a id='L234' name='L234'></a> 234 <em class='brace'>}</em>
+<a id='L235' name='L235'></a> 235 
+<a id='L236' name='L236'></a> 236 
+<a id='L237' name='L237'></a> 237 <strong class='reserved'>bool</strong> <a href='../Y/4120.html' title='Multiple used in 14 places.'>TRACKS_CLEANER</a>::<a href='../R/3599.html' title='Multiple referred from 2 places.'>deleteDanglingTracks</a>()
+<a id='L238' name='L238'></a> 238 <em class='brace'>{</em>
+<a id='L239' name='L239'></a> 239     <strong class='reserved'>bool</strong> <a href='../Y/8730.html' title='Multiple used in 4 places.'>item_erased</a> = <strong class='reserved'>false</strong>;
+<a id='L240' name='L240'></a> 240     <strong class='reserved'>bool</strong> <a href='../Y/12683.html' title='Multiple used in 20 places.'>modified</a> = <strong class='reserved'>false</strong>;
+<a id='L241' name='L241'></a> 241 
+<a id='L242' name='L242'></a> 242     <strong class='reserved'>do</strong> <em class='comment'>// Iterate when at least one track is deleted</em>
+<a id='L243' name='L243'></a> 243     <em class='brace'>{</em>
+<a id='L244' name='L244'></a> 244         <a href='../Y/8730.html' title='Multiple used in 4 places.'>item_erased</a> = <strong class='reserved'>false</strong>;
+<a id='L245' name='L245'></a> 245         <em class='comment'>// Ensure the connectivity is up to date, especially after removind a dangling segment</em>
+<a id='L246' name='L246'></a> 246         <a href='../Y/10345.html' title='Multiple used in 71 places.'>m_brd</a>-&gt;<a href='../S/57.html#L139' title='Defined at 139 in class_board.cpp.'>BuildConnectivity</a>();
+<a id='L247' name='L247'></a> 247 
+<a id='L248' name='L248'></a> 248         <em class='comment'>// Keep a duplicate deque to all deleting in the primary</em>
+<a id='L249' name='L249'></a> 249         <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/7363.html' title='Multiple used in 22 places.'>deque</a>&lt;<a href='../S/78.html#L38' title='Defined at 38 in class_track.cpp.'>TRACK</a>*&gt; <a href='../Y/14827.html' title='Multiple used in 2 places.'>temp_tracks</a>( <a href='../Y/10345.html' title='Multiple used in 71 places.'>m_brd</a>-&gt;<a href='../Y/4679.html' title='Multiple used in 78 places.'>Tracks</a>() );
+<a id='L250' name='L250'></a> 250 
+<a id='L251' name='L251'></a> 251         <strong class='reserved'>for</strong>( <a href='../S/78.html#L38' title='Defined at 38 in class_track.cpp.'>TRACK</a>* <a href='../Y/15074.html' title='Multiple used in 311 places.'>track</a> : <a href='../Y/14827.html' title='Multiple used in 2 places.'>temp_tracks</a> )
+<a id='L252' name='L252'></a> 252         <em class='brace'>{</em>
+<a id='L253' name='L253'></a> 253             <strong class='reserved'>bool</strong>    <a href='../Y/8005.html' title='Multiple used in 3 places.'>flag_erase</a> = <strong class='reserved'>false</strong>; <em class='comment'>// Start without a good reason to erase it</em>
+<a id='L254' name='L254'></a> 254             <a href='../Y/15871.html' title='Multiple used in 1252 places.'>wxPoint</a> <a href='../Y/13632.html' title='Multiple used in 260 places.'>pos</a>;
+<a id='L255' name='L255'></a> 255 
+<a id='L256' name='L256'></a> 256             <em class='comment'>// Tst if a track (or a via) endpoint is not connected to another track or to a zone.</em>
+<a id='L257' name='L257'></a> 257             <strong class='reserved'>if</strong>( <a href='../Y/10345.html' title='Multiple used in 71 places.'>m_brd</a>-&gt;<a href='../Y/1307.html' title='Multiple used in 44 places.'>GetConnectivity</a>()-&gt;<a href='../S/90.html#L543' title='Defined at 543 in connectivity/connectivity_data.cpp.'>TestTrackEndpointDangling</a>( <a href='../Y/15074.html' title='Multiple used in 311 places.'>track</a>, &amp;<a href='../Y/13632.html' title='Multiple used in 260 places.'>pos</a> ) )
+<a id='L258' name='L258'></a> 258                 <a href='../Y/8005.html' title='Multiple used in 3 places.'>flag_erase</a> = <strong class='reserved'>true</strong>;
+<a id='L259' name='L259'></a> 259 
+<a id='L260' name='L260'></a> 260             <strong class='reserved'>if</strong>( <a href='../Y/8005.html' title='Multiple used in 3 places.'>flag_erase</a> )
+<a id='L261' name='L261'></a> 261             <em class='brace'>{</em>
+<a id='L262' name='L262'></a> 262                 <strong class='reserved'>int</strong> <a href='../Y/7775.html' title='Multiple used in 9 places.'>errorCode</a> = <a href='../Y/15074.html' title='Multiple used in 311 places.'>track</a>-&gt;IsTrack() ? <a href='../S/83.html#L39' title='Defined at 39 in cleanup_item.h.'>CLEANUP_DANGLING_TRACK</a> : <a href='../S/83.html#L40' title='Defined at 40 in cleanup_item.h.'>CLEANUP_DANGLING_VIA</a>;
+<a id='L263' name='L263'></a> 263                 <a href='../S/82.html#L30' title='Defined at 30 in cleanup_item.cpp.'>CLEANUP_ITEM</a>* <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a> = <strong class='reserved'>new</strong> <a href='../S/82.html#L30' title='Defined at 30 in cleanup_item.cpp.'>CLEANUP_ITEM</a>( <a href='../Y/7775.html' title='Multiple used in 9 places.'>errorCode</a> );
+<a id='L264' name='L264'></a> 264                 <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a>-&gt;<a href='../Y/3622.html' title='Multiple used in 64 places.'>SetItems</a>( <a href='../Y/15074.html' title='Multiple used in 311 places.'>track</a> );
+<a id='L265' name='L265'></a> 265                 <a href='../D/4172.html' title='Multiple defined in 2 places.'>m_itemsList</a>-&gt;<a href='../S/330.html#L228' title='Defined at 228 in dialogs/panel_fp_lib_table.cpp.'>push_back</a>( <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a> );
+<a id='L266' name='L266'></a> 266 
+<a id='L267' name='L267'></a> 267                 <strong class='reserved'>if</strong>( !<a href='../Y/10748.html' title='Multiple used in 16 places.'>m_dryRun</a> )
+<a id='L268' name='L268'></a> 268                 <em class='brace'>{</em>
+<a id='L269' name='L269'></a> 269                     <a href='../Y/10345.html' title='Multiple used in 71 places.'>m_brd</a>-&gt;<a href='../D/2784.html' title='Multiple defined in 16 places.'>Remove</a>( <a href='../Y/15074.html' title='Multiple used in 311 places.'>track</a> );
+<a id='L270' name='L270'></a> 270                     <a href='../Y/10545.html' title='Multiple used in 96 places.'>m_commit</a>.<a href='../Y/3167.html' title='Multiple used in 6 places.'>Removed</a>( <a href='../Y/15074.html' title='Multiple used in 311 places.'>track</a> );
+<a id='L271' name='L271'></a> 271 
+<a id='L272' name='L272'></a> 272                     <em class='comment'>/* keep iterating, because a track connected to the deleted track</em>
+<a id='L273' name='L273'></a> 273 <em class='comment'>                     * now perhaps is not connected and should be deleted */</em>
+<a id='L274' name='L274'></a> 274                     <a href='../Y/8730.html' title='Multiple used in 4 places.'>item_erased</a> = <strong class='reserved'>true</strong>;
+<a id='L275' name='L275'></a> 275                     <a href='../Y/12683.html' title='Multiple used in 20 places.'>modified</a> = <strong class='reserved'>true</strong>;
+<a id='L276' name='L276'></a> 276                 <em class='brace'>}</em>
+<a id='L277' name='L277'></a> 277                 <em class='comment'>// Fix me: In dry run we should disable the track to erase and retry with this disabled track</em>
+<a id='L278' name='L278'></a> 278                 <em class='comment'>// However the connectivity algo does not handle disabled items.</em>
+<a id='L279' name='L279'></a> 279             <em class='brace'>}</em>
+<a id='L280' name='L280'></a> 280         <em class='brace'>}</em>
+<a id='L281' name='L281'></a> 281     <em class='brace'>}</em> <strong class='reserved'>while</strong>( <a href='../Y/8730.html' title='Multiple used in 4 places.'>item_erased</a> ); <em class='comment'>// A segment was erased: test for some new dangling segments</em>
+<a id='L282' name='L282'></a> 282 
+<a id='L283' name='L283'></a> 283     <strong class='reserved'>return</strong> <a href='../Y/12683.html' title='Multiple used in 20 places.'>modified</a>;
+<a id='L284' name='L284'></a> 284 <em class='brace'>}</em>
+<a id='L285' name='L285'></a> 285 
+<a id='L286' name='L286'></a> 286 
+<a id='L287' name='L287'></a> 287 <em class='comment'>// Delete null length track segments</em>
+<a id='L288' name='L288'></a> 288 <strong class='reserved'>void</strong> <a href='../Y/4120.html' title='Multiple used in 14 places.'>TRACKS_CLEANER</a>::<a href='../R/3601.html' title='Multiple referred from 3 places.'>deleteNullSegments</a>( <a href='../Y/4118.html' title='Multiple used in 14 places.'>TRACKS</a>&amp; <a href='../Y/6083.html' title='Multiple used in 3 places.'>aTracks</a> )
+<a id='L289' name='L289'></a> 289 <em class='brace'>{</em>
+<a id='L290' name='L290'></a> 290     <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/14361.html' title='Multiple used in 188 places.'>set</a>&lt;<a href='../Y/253.html' title='Multiple used in 610 places.'>BOARD_ITEM</a> *&gt; <a href='../Y/14979.html' title='Multiple used in 17 places.'>toRemove</a>;
+<a id='L291' name='L291'></a> 291 
+<a id='L292' name='L292'></a> 292     <strong class='reserved'>for</strong>( <a href='../S/78.html#L38' title='Defined at 38 in class_track.cpp.'>TRACK</a>* <a href='../Y/14298.html' title='Multiple used in 185 places.'>segment</a> : <a href='../Y/6083.html' title='Multiple used in 3 places.'>aTracks</a> )
+<a id='L293' name='L293'></a> 293     <em class='brace'>{</em>
+<a id='L294' name='L294'></a> 294         <strong class='reserved'>if</strong>( <a href='../Y/14298.html' title='Multiple used in 185 places.'>segment</a>-&gt;<a href='../Y/2168.html' title='Multiple used in 2 places.'>IsNull</a>() &amp;&amp; <a href='../Y/14298.html' title='Multiple used in 185 places.'>segment</a>-&gt;<a href='../Y/4696.html' title='Multiple used in 393 places.'>Type</a>() == <a href='../Y/2859.html' title='Multiple used in 83 places.'>PCB_TRACE_T</a> &amp;&amp; !<a href='../Y/14298.html' title='Multiple used in 185 places.'>segment</a>-&gt;<a href='../Y/2151.html' title='Multiple used in 47 places.'>IsLocked</a>() )
+<a id='L295' name='L295'></a> 295         <em class='brace'>{</em>
+<a id='L296' name='L296'></a> 296             <a href='../S/82.html#L30' title='Defined at 30 in cleanup_item.cpp.'>CLEANUP_ITEM</a>* <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a> = <strong class='reserved'>new</strong> <a href='../S/82.html#L30' title='Defined at 30 in cleanup_item.cpp.'>CLEANUP_ITEM</a>( <a href='../S/83.html#L41' title='Defined at 41 in cleanup_item.h.'>CLEANUP_ZERO_LENGTH_TRACK</a> );
+<a id='L297' name='L297'></a> 297             <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a>-&gt;<a href='../Y/3622.html' title='Multiple used in 64 places.'>SetItems</a>( <a href='../Y/14298.html' title='Multiple used in 185 places.'>segment</a> );
+<a id='L298' name='L298'></a> 298             <a href='../D/4172.html' title='Multiple defined in 2 places.'>m_itemsList</a>-&gt;<a href='../S/330.html#L228' title='Defined at 228 in dialogs/panel_fp_lib_table.cpp.'>push_back</a>( <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a> );
+<a id='L299' name='L299'></a> 299 
+<a id='L300' name='L300'></a> 300             <a href='../Y/14979.html' title='Multiple used in 17 places.'>toRemove</a>.<a href='../S/330.html#L223' title='Defined at 223 in dialogs/panel_fp_lib_table.cpp.'>insert</a>( <a href='../Y/14298.html' title='Multiple used in 185 places.'>segment</a> );
+<a id='L301' name='L301'></a> 301         <em class='brace'>}</em>
+<a id='L302' name='L302'></a> 302     <em class='brace'>}</em>
+<a id='L303' name='L303'></a> 303 
+<a id='L304' name='L304'></a> 304     <strong class='reserved'>if</strong>( !<a href='../Y/10748.html' title='Multiple used in 16 places.'>m_dryRun</a> )
+<a id='L305' name='L305'></a> 305         <a href='../S/809.html#L494' title='Defined at 494 in tracks_cleaner.cpp.'>removeItems</a>( <a href='../Y/14979.html' title='Multiple used in 17 places.'>toRemove</a> );
+<a id='L306' name='L306'></a> 306 <em class='brace'>}</em>
+<a id='L307' name='L307'></a> 307 
+<a id='L308' name='L308'></a> 308 
+<a id='L309' name='L309'></a> 309 <strong class='reserved'>void</strong> <a href='../Y/4120.html' title='Multiple used in 14 places.'>TRACKS_CLEANER</a>::<a href='../R/3607.html' title='Multiple referred from 2 places.'>deleteTracksInPads</a>()
+<a id='L310' name='L310'></a> 310 <em class='brace'>{</em>
+<a id='L311' name='L311'></a> 311     <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/14361.html' title='Multiple used in 188 places.'>set</a>&lt;<a href='../Y/253.html' title='Multiple used in 610 places.'>BOARD_ITEM</a>*&gt; <a href='../Y/14979.html' title='Multiple used in 17 places.'>toRemove</a>;
+<a id='L312' name='L312'></a> 312 
+<a id='L313' name='L313'></a> 313     <em class='comment'>// Delete tracks that start and end on the same pad</em>
+<a id='L314' name='L314'></a> 314     <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/14405.html' title='Multiple used in 81 places.'>shared_ptr</a>&lt;<a href='../D/375.html' title='Multiple defined in 3 places.'>CONNECTIVITY_DATA</a>&gt; <a href='../Y/7055.html' title='Multiple used in 65 places.'>connectivity</a> = <a href='../Y/10345.html' title='Multiple used in 71 places.'>m_brd</a>-&gt;<a href='../Y/1307.html' title='Multiple used in 44 places.'>GetConnectivity</a>();
+<a id='L315' name='L315'></a> 315 
+<a id='L316' name='L316'></a> 316     <strong class='reserved'>for</strong>( <a href='../S/78.html#L38' title='Defined at 38 in class_track.cpp.'>TRACK</a>* <a href='../Y/15074.html' title='Multiple used in 311 places.'>track</a> : <a href='../Y/10345.html' title='Multiple used in 71 places.'>m_brd</a>-&gt;<a href='../Y/4679.html' title='Multiple used in 78 places.'>Tracks</a>() )
+<a id='L317' name='L317'></a> 317     <em class='brace'>{</em>
+<a id='L318' name='L318'></a> 318         <em class='comment'>// Mark track if connected to pads</em>
+<a id='L319' name='L319'></a> 319         <strong class='reserved'>for</strong>( <a href='../D/777.html' title='Multiple defined in 2 places.'>D_PAD</a>* <a href='../Y/13288.html' title='Multiple used in 1010 places.'>pad</a> : <a href='../Y/7055.html' title='Multiple used in 65 places.'>connectivity</a>-&gt;<a href='../D/1141.html' title='Multiple defined in 2 places.'>GetConnectedPads</a>( <a href='../Y/15074.html' title='Multiple used in 311 places.'>track</a> ) )
+<a id='L320' name='L320'></a> 320         <em class='brace'>{</em>
+<a id='L321' name='L321'></a> 321             <strong class='reserved'>if</strong>( <a href='../Y/13288.html' title='Multiple used in 1010 places.'>pad</a>-&gt;<a href='../D/1448.html' title='Multiple defined in 19 places.'>HitTest</a>( <a href='../Y/15074.html' title='Multiple used in 311 places.'>track</a>-&gt;<a href='../Y/1728.html' title='Multiple used in 182 places.'>GetStart</a>() ) &amp;&amp; <a href='../Y/13288.html' title='Multiple used in 1010 places.'>pad</a>-&gt;<a href='../D/1448.html' title='Multiple defined in 19 places.'>HitTest</a>( <a href='../Y/15074.html' title='Multiple used in 311 places.'>track</a>-&gt;<a href='../Y/1386.html' title='Multiple used in 189 places.'>GetEnd</a>() ) )
+<a id='L322' name='L322'></a> 322             <em class='brace'>{</em>
+<a id='L323' name='L323'></a> 323                 <a href='../S/82.html#L30' title='Defined at 30 in cleanup_item.cpp.'>CLEANUP_ITEM</a>* <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a> = <strong class='reserved'>new</strong> <a href='../S/82.html#L30' title='Defined at 30 in cleanup_item.cpp.'>CLEANUP_ITEM</a>( <a href='../S/83.html#L42' title='Defined at 42 in cleanup_item.h.'>CLEANUP_TRACK_IN_PAD</a> );
+<a id='L324' name='L324'></a> 324                 <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a>-&gt;<a href='../Y/3622.html' title='Multiple used in 64 places.'>SetItems</a>( <a href='../Y/15074.html' title='Multiple used in 311 places.'>track</a> );
+<a id='L325' name='L325'></a> 325                 <a href='../D/4172.html' title='Multiple defined in 2 places.'>m_itemsList</a>-&gt;<a href='../S/330.html#L228' title='Defined at 228 in dialogs/panel_fp_lib_table.cpp.'>push_back</a>( <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a> );
+<a id='L326' name='L326'></a> 326 
+<a id='L327' name='L327'></a> 327                 <a href='../Y/14979.html' title='Multiple used in 17 places.'>toRemove</a>.<a href='../S/330.html#L223' title='Defined at 223 in dialogs/panel_fp_lib_table.cpp.'>insert</a>( <a href='../Y/15074.html' title='Multiple used in 311 places.'>track</a> );
+<a id='L328' name='L328'></a> 328             <em class='brace'>}</em>
+<a id='L329' name='L329'></a> 329         <em class='brace'>}</em>
+<a id='L330' name='L330'></a> 330     <em class='brace'>}</em>
+<a id='L331' name='L331'></a> 331 
+<a id='L332' name='L332'></a> 332     <strong class='reserved'>if</strong>( !<a href='../Y/10748.html' title='Multiple used in 16 places.'>m_dryRun</a> )
+<a id='L333' name='L333'></a> 333         <a href='../S/809.html#L494' title='Defined at 494 in tracks_cleaner.cpp.'>removeItems</a>( <a href='../Y/14979.html' title='Multiple used in 17 places.'>toRemove</a> );
+<a id='L334' name='L334'></a> 334 <em class='brace'>}</em>
+<a id='L335' name='L335'></a> 335 
+<a id='L336' name='L336'></a> 336 
+<a id='L337' name='L337'></a> 337 <em class='comment'>// Delete null length segments, and intermediate points ..</em>
+<a id='L338' name='L338'></a> 338 <strong class='reserved'>void</strong> <a href='../Y/4120.html' title='Multiple used in 14 places.'>TRACKS_CLEANER</a>::<a href='../R/3528.html' title='Multiple referred from 5 places.'>cleanupSegments</a>()
+<a id='L339' name='L339'></a> 339 <em class='brace'>{</em>
+<a id='L340' name='L340'></a> 340     <em class='comment'>// Easy things first</em>
+<a id='L341' name='L341'></a> 341     <a href='../S/809.html#L288' title='Defined at 288 in tracks_cleaner.cpp.'>deleteNullSegments</a>( <a href='../Y/10345.html' title='Multiple used in 71 places.'>m_brd</a>-&gt;<a href='../Y/4679.html' title='Multiple used in 78 places.'>Tracks</a>() );
+<a id='L342' name='L342'></a> 342 
+<a id='L343' name='L343'></a> 343     <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/14361.html' title='Multiple used in 188 places.'>set</a>&lt;<a href='../Y/253.html' title='Multiple used in 610 places.'>BOARD_ITEM</a>*&gt; <a href='../Y/14979.html' title='Multiple used in 17 places.'>toRemove</a>;
+<a id='L344' name='L344'></a> 344 
+<a id='L345' name='L345'></a> 345     <em class='comment'>// Remove duplicate segments (2 superimposed identical segments):</em>
+<a id='L346' name='L346'></a> 346     <strong class='reserved'>for</strong>( <strong class='reserved'>auto</strong> <a href='../Y/8702.html' title='Multiple used in 290 places.'>it</a> = <a href='../Y/10345.html' title='Multiple used in 71 places.'>m_brd</a>-&gt;<a href='../Y/4679.html' title='Multiple used in 78 places.'>Tracks</a>().<a href='../S/330.html#L221' title='Defined at 221 in dialogs/panel_fp_lib_table.cpp.'>begin</a>(); <a href='../Y/8702.html' title='Multiple used in 290 places.'>it</a> != <a href='../Y/10345.html' title='Multiple used in 71 places.'>m_brd</a>-&gt;<a href='../Y/4679.html' title='Multiple used in 78 places.'>Tracks</a>().<a href='../Y/7716.html' title='Multiple used in 512 places.'>end</a>(); <a href='../Y/8702.html' title='Multiple used in 290 places.'>it</a>++ )
+<a id='L347' name='L347'></a> 347     <em class='brace'>{</em>
+<a id='L348' name='L348'></a> 348         <a href='../S/78.html#L38' title='Defined at 38 in class_track.cpp.'>TRACK</a>* <a href='../Y/15075.html' title='Multiple used in 6 places.'>track1</a> = *<a href='../Y/8702.html' title='Multiple used in 290 places.'>it</a>;
+<a id='L349' name='L349'></a> 349 
+<a id='L350' name='L350'></a> 350         <strong class='reserved'>if</strong>( <a href='../Y/15075.html' title='Multiple used in 6 places.'>track1</a>-&gt;<a href='../Y/4696.html' title='Multiple used in 393 places.'>Type</a>() != <a href='../Y/2859.html' title='Multiple used in 83 places.'>PCB_TRACE_T</a> || <a href='../Y/15075.html' title='Multiple used in 6 places.'>track1</a>-&gt;<a href='../Y/1863.html' title='Multiple used in 18 places.'>HasFlag</a>( <a href='../Y/1990.html' title='Multiple used in 20 places.'>IS_DELETED</a> ) || <a href='../Y/15075.html' title='Multiple used in 6 places.'>track1</a>-&gt;<a href='../Y/2151.html' title='Multiple used in 47 places.'>IsLocked</a>() )
+<a id='L351' name='L351'></a> 351             <strong class='reserved'>continue</strong>;
+<a id='L352' name='L352'></a> 352 
+<a id='L353' name='L353'></a> 353         <strong class='reserved'>for</strong>( <strong class='reserved'>auto</strong> <a href='../Y/8704.html' title='Multiple used in 6 places.'>it2</a> = <a href='../Y/8702.html' title='Multiple used in 290 places.'>it</a> + 1; <a href='../Y/8704.html' title='Multiple used in 6 places.'>it2</a> != <a href='../Y/10345.html' title='Multiple used in 71 places.'>m_brd</a>-&gt;<a href='../Y/4679.html' title='Multiple used in 78 places.'>Tracks</a>().<a href='../Y/7716.html' title='Multiple used in 512 places.'>end</a>(); <a href='../Y/8704.html' title='Multiple used in 6 places.'>it2</a>++ )
+<a id='L354' name='L354'></a> 354         <em class='brace'>{</em>
+<a id='L355' name='L355'></a> 355             <a href='../S/78.html#L38' title='Defined at 38 in class_track.cpp.'>TRACK</a>* <a href='../Y/15076.html' title='Multiple used in 9 places.'>track2</a> = *<a href='../Y/8704.html' title='Multiple used in 6 places.'>it2</a>;
+<a id='L356' name='L356'></a> 356 
+<a id='L357' name='L357'></a> 357             <strong class='reserved'>if</strong>( <a href='../Y/15076.html' title='Multiple used in 9 places.'>track2</a>-&gt;<a href='../Y/1863.html' title='Multiple used in 18 places.'>HasFlag</a>( <a href='../Y/1990.html' title='Multiple used in 20 places.'>IS_DELETED</a> ) )
+<a id='L358' name='L358'></a> 358                 <strong class='reserved'>continue</strong>;
+<a id='L359' name='L359'></a> 359 
+<a id='L360' name='L360'></a> 360             <strong class='reserved'>if</strong>( <a href='../Y/15075.html' title='Multiple used in 6 places.'>track1</a>-&gt;<a href='../S/78.html#L199' title='Defined at 199 in class_track.cpp.'>IsPointOnEnds</a>( <a href='../Y/15076.html' title='Multiple used in 9 places.'>track2</a>-&gt;<a href='../Y/1728.html' title='Multiple used in 182 places.'>GetStart</a>() )
+<a id='L361' name='L361'></a> 361                     &amp;&amp; <a href='../Y/15075.html' title='Multiple used in 6 places.'>track1</a>-&gt;<a href='../S/78.html#L199' title='Defined at 199 in class_track.cpp.'>IsPointOnEnds</a>( <a href='../Y/15076.html' title='Multiple used in 9 places.'>track2</a>-&gt;<a href='../Y/1386.html' title='Multiple used in 189 places.'>GetEnd</a>() )
+<a id='L362' name='L362'></a> 362                     &amp;&amp; <a href='../Y/15075.html' title='Multiple used in 6 places.'>track1</a>-&gt;<a href='../Y/1809.html' title='Multiple used in 240 places.'>GetWidth</a>() == <a href='../Y/15076.html' title='Multiple used in 9 places.'>track2</a>-&gt;<a href='../Y/1809.html' title='Multiple used in 240 places.'>GetWidth</a>()
+<a id='L363' name='L363'></a> 363                     &amp;&amp; <a href='../Y/15075.html' title='Multiple used in 6 places.'>track1</a>-&gt;<a href='../D/1216.html' title='Multiple defined in 2 places.'>GetLayer</a>() == <a href='../Y/15076.html' title='Multiple used in 9 places.'>track2</a>-&gt;<a href='../D/1216.html' title='Multiple defined in 2 places.'>GetLayer</a>() )
+<a id='L364' name='L364'></a> 364             <em class='brace'>{</em>
+<a id='L365' name='L365'></a> 365                 <a href='../S/82.html#L30' title='Defined at 30 in cleanup_item.cpp.'>CLEANUP_ITEM</a>* <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a> = <strong class='reserved'>new</strong> <a href='../S/82.html#L30' title='Defined at 30 in cleanup_item.cpp.'>CLEANUP_ITEM</a>( <a href='../S/83.html#L37' title='Defined at 37 in cleanup_item.h.'>CLEANUP_DUPLICATE_TRACK</a> );
+<a id='L366' name='L366'></a> 366                 <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a>-&gt;<a href='../Y/3622.html' title='Multiple used in 64 places.'>SetItems</a>( <a href='../Y/15076.html' title='Multiple used in 9 places.'>track2</a> );
+<a id='L367' name='L367'></a> 367                 <a href='../D/4172.html' title='Multiple defined in 2 places.'>m_itemsList</a>-&gt;<a href='../S/330.html#L228' title='Defined at 228 in dialogs/panel_fp_lib_table.cpp.'>push_back</a>( <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a> );
+<a id='L368' name='L368'></a> 368 
+<a id='L369' name='L369'></a> 369                 <a href='../Y/15076.html' title='Multiple used in 9 places.'>track2</a>-&gt;<a href='../Y/3527.html' title='Multiple used in 30 places.'>SetFlags</a>( <a href='../Y/1990.html' title='Multiple used in 20 places.'>IS_DELETED</a> );
+<a id='L370' name='L370'></a> 370                 <a href='../Y/14979.html' title='Multiple used in 17 places.'>toRemove</a>.<a href='../S/330.html#L223' title='Defined at 223 in dialogs/panel_fp_lib_table.cpp.'>insert</a>( <a href='../Y/15076.html' title='Multiple used in 9 places.'>track2</a> );
+<a id='L371' name='L371'></a> 371             <em class='brace'>}</em>
+<a id='L372' name='L372'></a> 372         <em class='brace'>}</em>
+<a id='L373' name='L373'></a> 373     <em class='brace'>}</em>
+<a id='L374' name='L374'></a> 374 
+<a id='L375' name='L375'></a> 375     <strong class='reserved'>if</strong>( !<a href='../Y/10748.html' title='Multiple used in 16 places.'>m_dryRun</a> )
+<a id='L376' name='L376'></a> 376         <a href='../S/809.html#L494' title='Defined at 494 in tracks_cleaner.cpp.'>removeItems</a>( <a href='../Y/14979.html' title='Multiple used in 17 places.'>toRemove</a> );
+<a id='L377' name='L377'></a> 377 
+<a id='L378' name='L378'></a> 378     <em class='comment'>// Keep a duplicate deque to all deleting in the primary</em>
+<a id='L379' name='L379'></a> 379     <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/7363.html' title='Multiple used in 22 places.'>deque</a>&lt;<a href='../S/78.html#L38' title='Defined at 38 in class_track.cpp.'>TRACK</a>*&gt; <a href='../Y/14826.html' title='Multiple used in 2 places.'>temp_segments</a>( <a href='../Y/10345.html' title='Multiple used in 71 places.'>m_brd</a>-&gt;<a href='../Y/4679.html' title='Multiple used in 78 places.'>Tracks</a>() );
+<a id='L380' name='L380'></a> 380 
+<a id='L381' name='L381'></a> 381     <em class='comment'>// merge collinear segments:</em>
+<a id='L382' name='L382'></a> 382     <strong class='reserved'>for</strong>( <a href='../S/78.html#L38' title='Defined at 38 in class_track.cpp.'>TRACK</a>* <a href='../Y/14298.html' title='Multiple used in 185 places.'>segment</a> : <a href='../Y/14826.html' title='Multiple used in 2 places.'>temp_segments</a> )
+<a id='L383' name='L383'></a> 383     <em class='brace'>{</em>
+<a id='L384' name='L384'></a> 384         <strong class='reserved'>if</strong>( <a href='../Y/14298.html' title='Multiple used in 185 places.'>segment</a>-&gt;<a href='../Y/4696.html' title='Multiple used in 393 places.'>Type</a>() != <a href='../Y/2859.html' title='Multiple used in 83 places.'>PCB_TRACE_T</a> )    <em class='comment'>// one can merge only track collinear segments, not vias.</em>
+<a id='L385' name='L385'></a> 385             <strong class='reserved'>continue</strong>;
+<a id='L386' name='L386'></a> 386 
+<a id='L387' name='L387'></a> 387         <strong class='reserved'>if</strong>( <a href='../Y/14298.html' title='Multiple used in 185 places.'>segment</a>-&gt;<a href='../Y/1863.html' title='Multiple used in 18 places.'>HasFlag</a>( <a href='../Y/1990.html' title='Multiple used in 20 places.'>IS_DELETED</a> ) )  <em class='comment'>// already taken in account</em>
+<a id='L388' name='L388'></a> 388             <strong class='reserved'>continue</strong>;
+<a id='L389' name='L389'></a> 389 
+<a id='L390' name='L390'></a> 390         <strong class='reserved'>auto</strong> <a href='../Y/7055.html' title='Multiple used in 65 places.'>connectivity</a> = <a href='../Y/10345.html' title='Multiple used in 71 places.'>m_brd</a>-&gt;<a href='../Y/1307.html' title='Multiple used in 44 places.'>GetConnectivity</a>();
+<a id='L391' name='L391'></a> 391 
+<a id='L392' name='L392'></a> 392         <strong class='reserved'>auto</strong>&amp; <a href='../Y/7749.html' title='Multiple used in 62 places.'>entry</a> = <a href='../Y/7055.html' title='Multiple used in 65 places.'>connectivity</a>-&gt;<a href='../Y/1308.html' title='Multiple used in 5 places.'>GetConnectivityAlgo</a>()-&gt;<a href='../Y/2212.html' title='Multiple used in 8 places.'>ItemEntry</a>( <a href='../Y/14298.html' title='Multiple used in 185 places.'>segment</a> );
+<a id='L393' name='L393'></a> 393 
+<a id='L394' name='L394'></a> 394         <strong class='reserved'>for</strong>( <a href='../Y/383.html' title='Multiple used in 78 places.'>CN_ITEM</a>* <a href='../Y/6899.html' title='Multiple used in 17 places.'>citem</a> : <a href='../Y/7749.html' title='Multiple used in 62 places.'>entry</a>.<a href='../Y/1493.html' title='Multiple used in 16 places.'>GetItems</a>() )
+<a id='L395' name='L395'></a> 395         <em class='brace'>{</em>
+<a id='L396' name='L396'></a> 396             <strong class='reserved'>for</strong>( <a href='../Y/383.html' title='Multiple used in 78 places.'>CN_ITEM</a>* <a href='../Y/7050.html' title='Multiple used in 12 places.'>connected</a> : <a href='../Y/6899.html' title='Multiple used in 17 places.'>citem</a>-&gt;<a href='../D/481.html' title='Multiple defined in 2 places.'>ConnectedItems</a>() )
+<a id='L397' name='L397'></a> 397             <em class='brace'>{</em>
+<a id='L398' name='L398'></a> 398                 <strong class='reserved'>if</strong>( !<a href='../Y/7050.html' title='Multiple used in 12 places.'>connected</a>-&gt;<a href='../S/92.html#L332' title='Defined at 332 in connectivity/connectivity_items.cpp.'>Valid</a>() )
+<a id='L399' name='L399'></a> 399                     <strong class='reserved'>continue</strong>;
+<a id='L400' name='L400'></a> 400 
+<a id='L401' name='L401'></a> 401                 <a href='../Y/249.html' title='Multiple used in 141 places.'>BOARD_CONNECTED_ITEM</a>* <a href='../Y/6816.html' title='Multiple used in 3 places.'>candidateItem</a> = <a href='../Y/7050.html' title='Multiple used in 12 places.'>connected</a>-&gt;<a href='../S/92.html#L325' title='Defined at 325 in connectivity/connectivity_items.cpp.'>Parent</a>();
+<a id='L402' name='L402'></a> 402 
+<a id='L403' name='L403'></a> 403                 <strong class='reserved'>if</strong>( <a href='../Y/6816.html' title='Multiple used in 3 places.'>candidateItem</a>-&gt;<a href='../Y/4696.html' title='Multiple used in 393 places.'>Type</a>() == <a href='../Y/2859.html' title='Multiple used in 83 places.'>PCB_TRACE_T</a> &amp;&amp; !<a href='../Y/6816.html' title='Multiple used in 3 places.'>candidateItem</a>-&gt;<a href='../Y/1863.html' title='Multiple used in 18 places.'>HasFlag</a>( <a href='../Y/1990.html' title='Multiple used in 20 places.'>IS_DELETED</a> ) )
+<a id='L404' name='L404'></a> 404                 <em class='brace'>{</em>
+<a id='L405' name='L405'></a> 405                     <a href='../S/78.html#L38' title='Defined at 38 in class_track.cpp.'>TRACK</a>* <a href='../Y/6817.html' title='Multiple used in 4 places.'>candidateSegment</a> = <strong class='reserved'>static_cast</strong>&lt;<a href='../S/78.html#L38' title='Defined at 38 in class_track.cpp.'>TRACK</a>*&gt;( <a href='../Y/6816.html' title='Multiple used in 3 places.'>candidateItem</a> );
+<a id='L406' name='L406'></a> 406 
+<a id='L407' name='L407'></a> 407                     <em class='comment'>// Do not merge segments having different widths: it is a frequent case</em>
+<a id='L408' name='L408'></a> 408                     <em class='comment'>// to draw a track between 2 pads:</em>
+<a id='L409' name='L409'></a> 409                     <strong class='reserved'>if</strong>( <a href='../Y/6817.html' title='Multiple used in 4 places.'>candidateSegment</a>-&gt;<a href='../Y/1809.html' title='Multiple used in 240 places.'>GetWidth</a>() != <a href='../Y/14298.html' title='Multiple used in 185 places.'>segment</a>-&gt;<a href='../Y/1809.html' title='Multiple used in 240 places.'>GetWidth</a>() )
+<a id='L410' name='L410'></a> 410                         <strong class='reserved'>continue</strong>;
+<a id='L411' name='L411'></a> 411 
+<a id='L412' name='L412'></a> 412                     <strong class='reserved'>if</strong>( <a href='../Y/14298.html' title='Multiple used in 185 places.'>segment</a>-&gt;<a href='../Y/201.html' title='Multiple used in 3 places.'>ApproxCollinear</a>( *<a href='../Y/6817.html' title='Multiple used in 4 places.'>candidateSegment</a> ) )
+<a id='L413' name='L413'></a> 413                         <a href='../S/809.html#L421' title='Defined at 421 in tracks_cleaner.cpp.'>mergeCollinearSegments</a>( <a href='../Y/14298.html' title='Multiple used in 185 places.'>segment</a>, <a href='../Y/6817.html' title='Multiple used in 4 places.'>candidateSegment</a> );
+<a id='L414' name='L414'></a> 414                 <em class='brace'>}</em>
+<a id='L415' name='L415'></a> 415             <em class='brace'>}</em>
+<a id='L416' name='L416'></a> 416         <em class='brace'>}</em>
+<a id='L417' name='L417'></a> 417     <em class='brace'>}</em>
+<a id='L418' name='L418'></a> 418 <em class='brace'>}</em>
+<a id='L419' name='L419'></a> 419 
+<a id='L420' name='L420'></a> 420 
+<a id='L421' name='L421'></a> 421 <strong class='reserved'>void</strong> <a href='../Y/4120.html' title='Multiple used in 14 places.'>TRACKS_CLEANER</a>::<a href='../R/4097.html' title='Multiple referred from 2 places.'>mergeCollinearSegments</a>( <a href='../S/78.html#L38' title='Defined at 38 in class_track.cpp.'>TRACK</a>* <a href='../Y/5927.html' title='Multiple used in 25 places.'>aSeg1</a>, <a href='../S/78.html#L38' title='Defined at 38 in class_track.cpp.'>TRACK</a>* <a href='../Y/5928.html' title='Multiple used in 11 places.'>aSeg2</a> )
+<a id='L422' name='L422'></a> 422 <em class='brace'>{</em>
+<a id='L423' name='L423'></a> 423     <strong class='reserved'>if</strong>( <a href='../Y/5927.html' title='Multiple used in 25 places.'>aSeg1</a>-&gt;<a href='../Y/2151.html' title='Multiple used in 47 places.'>IsLocked</a>() || <a href='../Y/5928.html' title='Multiple used in 11 places.'>aSeg2</a>-&gt;<a href='../Y/2151.html' title='Multiple used in 47 places.'>IsLocked</a>() )
+<a id='L424' name='L424'></a> 424         <strong class='reserved'>return</strong>;
+<a id='L425' name='L425'></a> 425 
+<a id='L426' name='L426'></a> 426     <strong class='reserved'>auto</strong> <a href='../Y/7055.html' title='Multiple used in 65 places.'>connectivity</a> = <a href='../Y/10345.html' title='Multiple used in 71 places.'>m_brd</a>-&gt;<a href='../Y/1307.html' title='Multiple used in 44 places.'>GetConnectivity</a>();
+<a id='L427' name='L427'></a> 427 
+<a id='L428' name='L428'></a> 428     <em class='comment'>// Verify the removed point after merging is not a node.</em>
+<a id='L429' name='L429'></a> 429     <em class='comment'>// If it is a node (i.e. if more than one other item is connected, the segments cannot be merged</em>
+<a id='L430' name='L430'></a> 430     <a href='../S/78.html#L38' title='Defined at 38 in class_track.cpp.'>TRACK</a> <a href='../Y/7608.html' title='Multiple used in 8 places.'>dummy_seg</a>( *<a href='../Y/5927.html' title='Multiple used in 25 places.'>aSeg1</a> );
+<a id='L431' name='L431'></a> 431 
+<a id='L432' name='L432'></a> 432     <em class='comment'>// Calculate the new ends of the segment to merge, and store them to dummy_seg:</em>
+<a id='L433' name='L433'></a> 433     <strong class='reserved'>int</strong> <a href='../Y/12615.html' title='Multiple used in 8 places.'>min_x</a> = <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/12575.html' title='Multiple used in 115 places.'>min</a>( <a href='../Y/5927.html' title='Multiple used in 25 places.'>aSeg1</a>-&gt;<a href='../Y/1728.html' title='Multiple used in 182 places.'>GetStart</a>().<a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a>,
+<a id='L434' name='L434'></a> 434             <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/12575.html' title='Multiple used in 115 places.'>min</a>( <a href='../Y/5927.html' title='Multiple used in 25 places.'>aSeg1</a>-&gt;<a href='../Y/1386.html' title='Multiple used in 189 places.'>GetEnd</a>().<a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a>, <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/12575.html' title='Multiple used in 115 places.'>min</a>( <a href='../Y/5928.html' title='Multiple used in 11 places.'>aSeg2</a>-&gt;<a href='../Y/1728.html' title='Multiple used in 182 places.'>GetStart</a>().<a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a>, <a href='../Y/5928.html' title='Multiple used in 11 places.'>aSeg2</a>-&gt;<a href='../Y/1386.html' title='Multiple used in 189 places.'>GetEnd</a>().<a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a> ) ) );
+<a id='L435' name='L435'></a> 435     <strong class='reserved'>int</strong> <a href='../Y/12616.html' title='Multiple used in 8 places.'>min_y</a> = <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/12575.html' title='Multiple used in 115 places.'>min</a>( <a href='../Y/5927.html' title='Multiple used in 25 places.'>aSeg1</a>-&gt;<a href='../Y/1728.html' title='Multiple used in 182 places.'>GetStart</a>().<a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a>,
+<a id='L436' name='L436'></a> 436             <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/12575.html' title='Multiple used in 115 places.'>min</a>( <a href='../Y/5927.html' title='Multiple used in 25 places.'>aSeg1</a>-&gt;<a href='../Y/1386.html' title='Multiple used in 189 places.'>GetEnd</a>().<a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a>, <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/12575.html' title='Multiple used in 115 places.'>min</a>( <a href='../Y/5928.html' title='Multiple used in 11 places.'>aSeg2</a>-&gt;<a href='../Y/1728.html' title='Multiple used in 182 places.'>GetStart</a>().<a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a>, <a href='../Y/5928.html' title='Multiple used in 11 places.'>aSeg2</a>-&gt;<a href='../Y/1386.html' title='Multiple used in 189 places.'>GetEnd</a>().<a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a> ) ) );
+<a id='L437' name='L437'></a> 437     <strong class='reserved'>int</strong> <a href='../Y/12516.html' title='Multiple used in 8 places.'>max_x</a> = <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/12483.html' title='Multiple used in 216 places.'>max</a>( <a href='../Y/5927.html' title='Multiple used in 25 places.'>aSeg1</a>-&gt;<a href='../Y/1728.html' title='Multiple used in 182 places.'>GetStart</a>().<a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a>,
+<a id='L438' name='L438'></a> 438             <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/12483.html' title='Multiple used in 216 places.'>max</a>( <a href='../Y/5927.html' title='Multiple used in 25 places.'>aSeg1</a>-&gt;<a href='../Y/1386.html' title='Multiple used in 189 places.'>GetEnd</a>().<a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a>, <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/12483.html' title='Multiple used in 216 places.'>max</a>( <a href='../Y/5928.html' title='Multiple used in 11 places.'>aSeg2</a>-&gt;<a href='../Y/1728.html' title='Multiple used in 182 places.'>GetStart</a>().<a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a>, <a href='../Y/5928.html' title='Multiple used in 11 places.'>aSeg2</a>-&gt;<a href='../Y/1386.html' title='Multiple used in 189 places.'>GetEnd</a>().<a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a> ) ) );
+<a id='L439' name='L439'></a> 439     <strong class='reserved'>int</strong> <a href='../Y/12517.html' title='Multiple used in 8 places.'>max_y</a> = <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/12483.html' title='Multiple used in 216 places.'>max</a>( <a href='../Y/5927.html' title='Multiple used in 25 places.'>aSeg1</a>-&gt;<a href='../Y/1728.html' title='Multiple used in 182 places.'>GetStart</a>().<a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a>,
+<a id='L440' name='L440'></a> 440             <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/12483.html' title='Multiple used in 216 places.'>max</a>( <a href='../Y/5927.html' title='Multiple used in 25 places.'>aSeg1</a>-&gt;<a href='../Y/1386.html' title='Multiple used in 189 places.'>GetEnd</a>().<a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a>, <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/12483.html' title='Multiple used in 216 places.'>max</a>( <a href='../Y/5928.html' title='Multiple used in 11 places.'>aSeg2</a>-&gt;<a href='../Y/1728.html' title='Multiple used in 182 places.'>GetStart</a>().<a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a>, <a href='../Y/5928.html' title='Multiple used in 11 places.'>aSeg2</a>-&gt;<a href='../Y/1386.html' title='Multiple used in 189 places.'>GetEnd</a>().<a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a> ) ) );
+<a id='L441' name='L441'></a> 441 
+<a id='L442' name='L442'></a> 442     <strong class='reserved'>if</strong>( ( <a href='../Y/5927.html' title='Multiple used in 25 places.'>aSeg1</a>-&gt;<a href='../Y/1728.html' title='Multiple used in 182 places.'>GetStart</a>().<a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a> &gt; <a href='../Y/5927.html' title='Multiple used in 25 places.'>aSeg1</a>-&gt;<a href='../Y/1386.html' title='Multiple used in 189 places.'>GetEnd</a>().<a href='../Y/16019.html' title='Multiple used in 1351 places.'>x</a> )
+<a id='L443' name='L443'></a> 443             == ( <a href='../Y/5927.html' title='Multiple used in 25 places.'>aSeg1</a>-&gt;<a href='../Y/1728.html' title='Multiple used in 182 places.'>GetStart</a>().<a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a> &gt; <a href='../Y/5927.html' title='Multiple used in 25 places.'>aSeg1</a>-&gt;<a href='../Y/1386.html' title='Multiple used in 189 places.'>GetEnd</a>().<a href='../Y/16050.html' title='Multiple used in 1246 places.'>y</a> ) )
+<a id='L444' name='L444'></a> 444     <em class='brace'>{</em>
+<a id='L445' name='L445'></a> 445         <a href='../Y/7608.html' title='Multiple used in 8 places.'>dummy_seg</a>.<a href='../Y/3868.html' title='Multiple used in 67 places.'>SetStart</a>( <a href='../Y/15871.html' title='Multiple used in 1252 places.'>wxPoint</a>( <a href='../Y/12615.html' title='Multiple used in 8 places.'>min_x</a>, <a href='../Y/12616.html' title='Multiple used in 8 places.'>min_y</a> ) );
+<a id='L446' name='L446'></a> 446         <a href='../Y/7608.html' title='Multiple used in 8 places.'>dummy_seg</a>.<a href='../S/60.html#L199' title='Defined at 199 in class_dimension.cpp.'>SetEnd</a>( <a href='../Y/15871.html' title='Multiple used in 1252 places.'>wxPoint</a>( <a href='../Y/12516.html' title='Multiple used in 8 places.'>max_x</a>, <a href='../Y/12517.html' title='Multiple used in 8 places.'>max_y</a> ) );
+<a id='L447' name='L447'></a> 447     <em class='brace'>}</em>
+<a id='L448' name='L448'></a> 448     <strong class='reserved'>else</strong>
+<a id='L449' name='L449'></a> 449     <em class='brace'>{</em>
+<a id='L450' name='L450'></a> 450         <a href='../Y/7608.html' title='Multiple used in 8 places.'>dummy_seg</a>.<a href='../Y/3868.html' title='Multiple used in 67 places.'>SetStart</a>( <a href='../Y/15871.html' title='Multiple used in 1252 places.'>wxPoint</a>( <a href='../Y/12615.html' title='Multiple used in 8 places.'>min_x</a>, <a href='../Y/12517.html' title='Multiple used in 8 places.'>max_y</a> ) );
+<a id='L451' name='L451'></a> 451         <a href='../Y/7608.html' title='Multiple used in 8 places.'>dummy_seg</a>.<a href='../S/60.html#L199' title='Defined at 199 in class_dimension.cpp.'>SetEnd</a>( <a href='../Y/15871.html' title='Multiple used in 1252 places.'>wxPoint</a>( <a href='../Y/12516.html' title='Multiple used in 8 places.'>max_x</a>, <a href='../Y/12616.html' title='Multiple used in 8 places.'>min_y</a> ) );
+<a id='L452' name='L452'></a> 452     <em class='brace'>}</em>
+<a id='L453' name='L453'></a> 453 
+<a id='L454' name='L454'></a> 454     <em class='comment'>// Now find the removed end(s) and stop merging if it is a node:</em>
+<a id='L455' name='L455'></a> 455     <strong class='reserved'>if</strong>( <a href='../Y/5927.html' title='Multiple used in 25 places.'>aSeg1</a>-&gt;<a href='../Y/1728.html' title='Multiple used in 182 places.'>GetStart</a>() != <a href='../Y/7608.html' title='Multiple used in 8 places.'>dummy_seg</a>.<a href='../Y/1728.html' title='Multiple used in 182 places.'>GetStart</a>() &amp;&amp; <a href='../Y/5927.html' title='Multiple used in 25 places.'>aSeg1</a>-&gt;<a href='../Y/1728.html' title='Multiple used in 182 places.'>GetStart</a>() != <a href='../Y/7608.html' title='Multiple used in 8 places.'>dummy_seg</a>.<a href='../Y/1386.html' title='Multiple used in 189 places.'>GetEnd</a>() )
+<a id='L456' name='L456'></a> 456     <em class='brace'>{</em>
+<a id='L457' name='L457'></a> 457         <strong class='reserved'>if</strong>( <a href='../S/809.html#L204' title='Defined at 204 in tracks_cleaner.cpp.'>testTrackEndpointIsNode</a>( <a href='../Y/5927.html' title='Multiple used in 25 places.'>aSeg1</a>, <strong class='reserved'>true</strong> ) )
+<a id='L458' name='L458'></a> 458             <strong class='reserved'>return</strong>;
+<a id='L459' name='L459'></a> 459     <em class='brace'>}</em>
+<a id='L460' name='L460'></a> 460 
+<a id='L461' name='L461'></a> 461     <strong class='reserved'>if</strong>( <a href='../Y/5927.html' title='Multiple used in 25 places.'>aSeg1</a>-&gt;<a href='../Y/1386.html' title='Multiple used in 189 places.'>GetEnd</a>() != <a href='../Y/7608.html' title='Multiple used in 8 places.'>dummy_seg</a>.<a href='../Y/1728.html' title='Multiple used in 182 places.'>GetStart</a>() &amp;&amp; <a href='../Y/5927.html' title='Multiple used in 25 places.'>aSeg1</a>-&gt;<a href='../Y/1386.html' title='Multiple used in 189 places.'>GetEnd</a>() != <a href='../Y/7608.html' title='Multiple used in 8 places.'>dummy_seg</a>.<a href='../Y/1386.html' title='Multiple used in 189 places.'>GetEnd</a>() )
+<a id='L462' name='L462'></a> 462     <em class='brace'>{</em>
+<a id='L463' name='L463'></a> 463         <strong class='reserved'>if</strong>( <a href='../S/809.html#L204' title='Defined at 204 in tracks_cleaner.cpp.'>testTrackEndpointIsNode</a>( <a href='../Y/5927.html' title='Multiple used in 25 places.'>aSeg1</a>, <strong class='reserved'>false</strong> ) )
+<a id='L464' name='L464'></a> 464             <strong class='reserved'>return</strong>;
+<a id='L465' name='L465'></a> 465     <em class='brace'>}</em>
+<a id='L466' name='L466'></a> 466 
+<a id='L467' name='L467'></a> 467     <a href='../S/82.html#L30' title='Defined at 30 in cleanup_item.cpp.'>CLEANUP_ITEM</a>* <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a> = <strong class='reserved'>new</strong> <a href='../S/82.html#L30' title='Defined at 30 in cleanup_item.cpp.'>CLEANUP_ITEM</a>( <a href='../S/83.html#L38' title='Defined at 38 in cleanup_item.h.'>CLEANUP_MERGE_TRACKS</a> );
+<a id='L468' name='L468'></a> 468     <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a>-&gt;<a href='../Y/3622.html' title='Multiple used in 64 places.'>SetItems</a>( <a href='../Y/5927.html' title='Multiple used in 25 places.'>aSeg1</a>, <a href='../Y/5928.html' title='Multiple used in 11 places.'>aSeg2</a> );
+<a id='L469' name='L469'></a> 469     <a href='../D/4172.html' title='Multiple defined in 2 places.'>m_itemsList</a>-&gt;<a href='../S/330.html#L228' title='Defined at 228 in dialogs/panel_fp_lib_table.cpp.'>push_back</a>( <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a> );
+<a id='L470' name='L470'></a> 470 
+<a id='L471' name='L471'></a> 471     <a href='../Y/5928.html' title='Multiple used in 11 places.'>aSeg2</a>-&gt;<a href='../Y/3527.html' title='Multiple used in 30 places.'>SetFlags</a>( <a href='../Y/1990.html' title='Multiple used in 20 places.'>IS_DELETED</a> );
+<a id='L472' name='L472'></a> 472 
+<a id='L473' name='L473'></a> 473     <strong class='reserved'>if</strong>( !<a href='../Y/10748.html' title='Multiple used in 16 places.'>m_dryRun</a> )
+<a id='L474' name='L474'></a> 474     <em class='brace'>{</em>
+<a id='L475' name='L475'></a> 475         <a href='../Y/10545.html' title='Multiple used in 96 places.'>m_commit</a>.<a href='../Y/2585.html' title='Multiple used in 58 places.'>Modify</a>( <a href='../Y/5927.html' title='Multiple used in 25 places.'>aSeg1</a> );
+<a id='L476' name='L476'></a> 476         *<a href='../Y/5927.html' title='Multiple used in 25 places.'>aSeg1</a> = <a href='../Y/7608.html' title='Multiple used in 8 places.'>dummy_seg</a>;
+<a id='L477' name='L477'></a> 477 
+<a id='L478' name='L478'></a> 478         <a href='../Y/7055.html' title='Multiple used in 65 places.'>connectivity</a>-&gt;<a href='../D/3313.html' title='Multiple defined in 6 places.'>Update</a>( <a href='../Y/5927.html' title='Multiple used in 25 places.'>aSeg1</a> );
+<a id='L479' name='L479'></a> 479 
+<a id='L480' name='L480'></a> 480         <em class='comment'>// Clear the status flags here after update.</em>
+<a id='L481' name='L481'></a> 481         <strong class='reserved'>for</strong>( <strong class='reserved'>auto</strong> <a href='../Y/13288.html' title='Multiple used in 1010 places.'>pad</a> : <a href='../Y/7055.html' title='Multiple used in 65 places.'>connectivity</a>-&gt;<a href='../D/1141.html' title='Multiple defined in 2 places.'>GetConnectedPads</a>( <a href='../Y/5927.html' title='Multiple used in 25 places.'>aSeg1</a> ) )
+<a id='L482' name='L482'></a> 482         <em class='brace'>{</em>
+<a id='L483' name='L483'></a> 483             <a href='../Y/5927.html' title='Multiple used in 25 places.'>aSeg1</a>-&gt;<a href='../Y/3873.html' title='Multiple used in 7 places.'>SetState</a>( <a href='../Y/234.html' title='Multiple used in 2 places.'>BEGIN_ONPAD</a>, <a href='../Y/13288.html' title='Multiple used in 1010 places.'>pad</a>-&gt;<a href='../D/1448.html' title='Multiple defined in 19 places.'>HitTest</a>( <a href='../Y/5927.html' title='Multiple used in 25 places.'>aSeg1</a>-&gt;<a href='../Y/1728.html' title='Multiple used in 182 places.'>GetStart</a>() ) );
+<a id='L484' name='L484'></a> 484             <a href='../Y/5927.html' title='Multiple used in 25 places.'>aSeg1</a>-&gt;<a href='../Y/3873.html' title='Multiple used in 7 places.'>SetState</a>( <a href='../Y/869.html' title='Multiple used in 2 places.'>END_ONPAD</a>, <a href='../Y/13288.html' title='Multiple used in 1010 places.'>pad</a>-&gt;<a href='../D/1448.html' title='Multiple defined in 19 places.'>HitTest</a>( <a href='../Y/5927.html' title='Multiple used in 25 places.'>aSeg1</a>-&gt;<a href='../Y/1386.html' title='Multiple used in 189 places.'>GetEnd</a>() ) );
+<a id='L485' name='L485'></a> 485         <em class='brace'>}</em>
+<a id='L486' name='L486'></a> 486 
+<a id='L487' name='L487'></a> 487         <em class='comment'>// Merge succesful, seg2 has to go away</em>
+<a id='L488' name='L488'></a> 488         <a href='../Y/10345.html' title='Multiple used in 71 places.'>m_brd</a>-&gt;<a href='../D/2784.html' title='Multiple defined in 16 places.'>Remove</a>( <a href='../Y/5928.html' title='Multiple used in 11 places.'>aSeg2</a> );
+<a id='L489' name='L489'></a> 489         <a href='../Y/10545.html' title='Multiple used in 96 places.'>m_commit</a>.<a href='../Y/3167.html' title='Multiple used in 6 places.'>Removed</a>( <a href='../Y/5928.html' title='Multiple used in 11 places.'>aSeg2</a> );
+<a id='L490' name='L490'></a> 490     <em class='brace'>}</em>
+<a id='L491' name='L491'></a> 491 <em class='brace'>}</em>
+<a id='L492' name='L492'></a> 492 
+<a id='L493' name='L493'></a> 493 
+<a id='L494' name='L494'></a> 494 <strong class='reserved'>void</strong> <a href='../Y/4120.html' title='Multiple used in 14 places.'>TRACKS_CLEANER</a>::<a href='../R/4360.html' title='Multiple referred from 6 places.'>removeItems</a>( <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/14361.html' title='Multiple used in 188 places.'>set</a>&lt;<a href='../Y/253.html' title='Multiple used in 610 places.'>BOARD_ITEM</a>*&gt;&amp; <a href='../Y/5446.html' title='Multiple used in 54 places.'>aItems</a> )
+<a id='L495' name='L495'></a> 495 <em class='brace'>{</em>
+<a id='L496' name='L496'></a> 496     <strong class='reserved'>for</strong>( <strong class='reserved'>auto</strong> <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a> : <a href='../Y/5446.html' title='Multiple used in 54 places.'>aItems</a> )
+<a id='L497' name='L497'></a> 497     <em class='brace'>{</em>
+<a id='L498' name='L498'></a> 498         <a href='../Y/10345.html' title='Multiple used in 71 places.'>m_brd</a>-&gt;<a href='../D/2784.html' title='Multiple defined in 16 places.'>Remove</a>( <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a> );
+<a id='L499' name='L499'></a> 499         <a href='../Y/10545.html' title='Multiple used in 96 places.'>m_commit</a>.<a href='../Y/3167.html' title='Multiple used in 6 places.'>Removed</a>( <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a> );
+<a id='L500' name='L500'></a> 500     <em class='brace'>}</em>
+<a id='L501' name='L501'></a> 501 <em class='brace'>}</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L42'>[^]</a><a href='#L494'>[v]</a><a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

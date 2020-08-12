@@ -1,0 +1,152 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>pcb_view.cpp</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/pcb_view.cpp</h2>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L58'>[^]</a><a href='#L115'>[v]</a>[top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L58' title='Defined at 58.'>Add</a></li>
+<li><a href='#L74' title='Defined at 74.'>Remove</a></li>
+<li><a href='#L91' title='Defined at 91.'>Update</a></li>
+<li><a href='#L109' title='Defined at 109.'>Update</a></li>
+<li><a href='#L115' title='Defined at 115.'>UpdateDisplayOptions</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * This program source code file is part of KiCad, a free EDA CAD application.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 2013-2017 CERN</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> * @author Tomasz Wlostowski &lt;tomasz.wlostowski@cern.ch&gt;</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> * @author Maciej Suminski &lt;maciej.suminski@cern.ch&gt;</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> *</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * This program is free software; you can redistribute it and/or</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * modify it under the terms of the GNU General Public License</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> * as published by the Free Software Foundation; either version 2</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> * of the License, or (at your option) any later version.</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> *</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * This program is distributed in the hope that it will be useful,</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> * GNU General Public License for more details.</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> *</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * You should have received a copy of the GNU General Public License</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> * along with this program; if not, you may find one here:</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'> * or you may search the http://www.gnu.org website for the version 2 license,</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'> * or you may write to the Free Software Foundation, Inc.,</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'> * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA</em>
+<a id='L24' name='L24'></a>  24 <em class='comment'> */</em>
+<a id='L25' name='L25'></a>  25 
+<a id='L26' name='L26'></a>  26 
+<a id='L27' name='L27'></a>  27 <em class='sharp'>#include</em> &lt;functional&gt;
+<a id='L28' name='L28'></a>  28 <strong class='reserved'>using</strong> <strong class='reserved'>namespace</strong> <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/13533.html' title='Multiple used in 25 places.'>placeholders</a>;
+<a id='L29' name='L29'></a>  29 
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#include</em> &lt;<a href='602.html'>pcb_view.h</a>&gt;
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#include</em> &lt;pcb_display_options.h&gt;
+<a id='L32' name='L32'></a>  32 <em class='sharp'>#include</em> &lt;<a href='594.html'>pcb_painter.h</a>&gt;
+<a id='L33' name='L33'></a>  33 
+<a id='L34' name='L34'></a>  34 <em class='sharp'>#include</em> &lt;<a href='69.html'>class_module.h</a>&gt;
+<a id='L35' name='L35'></a>  35 
+<a id='L36' name='L36'></a>  36 <strong class='reserved'>namespace</strong> <a href='../R/1825.html' title='Multiple referred from 300 places.'>KIGFX</a> <em class='brace'>{</em>
+<a id='L37' name='L37'></a>  37 <a href='../R/2429.html' title='Multiple referred from 21 places.'>PCB_VIEW</a>::<a href='../D/2538.html' title='Multiple defined in 2 places.'>PCB_VIEW</a>( <strong class='reserved'>bool</strong> <a href='../Y/5427.html' title='Multiple used in 3 places.'>aIsDynamic</a> ) :
+<a id='L38' name='L38'></a>  38     <a href='../Y/4798.html' title='Multiple used in 92 places.'>VIEW</a>( <a href='../Y/5427.html' title='Multiple used in 3 places.'>aIsDynamic</a> )
+<a id='L39' name='L39'></a>  39 <em class='brace'>{</em>
+<a id='L40' name='L40'></a>  40     <em class='comment'>// Set m_boundary to define the max area size. The default value</em>
+<a id='L41' name='L41'></a>  41     <em class='comment'>// is acceptable for Pcbnew and Gerbview.</em>
+<a id='L42' name='L42'></a>  42     <em class='comment'>// However, ensure this area has the right size (max size allowed by integer coordinates)</em>
+<a id='L43' name='L43'></a>  43     <em class='comment'>// in case of the default value is changed.</em>
+<a id='L44' name='L44'></a>  44     <em class='comment'>// Could be a size depending on the worksheet size.</em>
+<a id='L45' name='L45'></a>  45     <strong class='reserved'>typedef</strong> <a href='../Y/14678.html' title='Multiple used in 2272 places.'>std</a>::<a href='../Y/13074.html' title='Multiple used in 38 places.'>numeric_limits</a>&lt;<strong class='reserved'>int</strong>&gt; <a href='../R/3565.html' title='Multiple referred from 2 places.'>coord_limits</a>;
+<a id='L46' name='L46'></a>  46     <strong class='reserved'>double</strong> <a href='../Y/13632.html' title='Multiple used in 260 places.'>pos</a> = <a href='../S/601.html#L45' title='Defined at 45 in pcb_view.cpp.'>coord_limits</a>::lowest() / 2 + <a href='../S/601.html#L45' title='Defined at 45 in pcb_view.cpp.'>coord_limits</a>::<a href='../Y/7761.html' title='Multiple used in 18 places.'>epsilon</a>();
+<a id='L47' name='L47'></a>  47     <strong class='reserved'>double</strong> <a href='../S/330.html#L214' title='Defined at 214 in dialogs/panel_fp_lib_table.cpp.'>size</a> = <a href='../S/601.html#L45' title='Defined at 45 in pcb_view.cpp.'>coord_limits</a>::<a href='../Y/12483.html' title='Multiple used in 216 places.'>max</a>() - <a href='../S/601.html#L45' title='Defined at 45 in pcb_view.cpp.'>coord_limits</a>::<a href='../Y/7761.html' title='Multiple used in 18 places.'>epsilon</a>();
+<a id='L48' name='L48'></a>  48     <a href='../Y/10340.html' title='Multiple used in 2 places.'>m_boundary</a>.<a href='../S/60.html#L191' title='Defined at 191 in class_dimension.cpp.'>SetOrigin</a>( <a href='../Y/13632.html' title='Multiple used in 260 places.'>pos</a>, <a href='../Y/13632.html' title='Multiple used in 260 places.'>pos</a> );
+<a id='L49' name='L49'></a>  49     <a href='../Y/10340.html' title='Multiple used in 2 places.'>m_boundary</a>.<a href='../S/469.html#L113' title='Defined at 113 in grid_layer_box_helpers.cpp.'>SetSize</a>( <a href='../S/330.html#L214' title='Defined at 214 in dialogs/panel_fp_lib_table.cpp.'>size</a>, <a href='../S/330.html#L214' title='Defined at 214 in dialogs/panel_fp_lib_table.cpp.'>size</a> );
+<a id='L50' name='L50'></a>  50 <em class='brace'>}</em>
+<a id='L51' name='L51'></a>  51 
+<a id='L52' name='L52'></a>  52 
+<a id='L53' name='L53'></a>  53 <a href='../R/2429.html' title='Multiple referred from 21 places.'>PCB_VIEW</a>::~<a href='../D/2538.html' title='Multiple defined in 2 places.'>PCB_VIEW</a>()
+<a id='L54' name='L54'></a>  54 <em class='brace'>{</em>
+<a id='L55' name='L55'></a>  55 <em class='brace'>}</em>
+<a id='L56' name='L56'></a>  56 
+<a id='L57' name='L57'></a>  57 
+<a id='L58' name='L58'></a>  58 <strong class='reserved'>void</strong> <a href='../D/2538.html' title='Multiple defined in 2 places.'>PCB_VIEW</a>::<a href='../R/88.html' title='Multiple referred from 2835 places.'>Add</a>( <a href='../D/1894.html' title='Multiple defined in 2 places.'>KIGFX</a>::<a href='../Y/4803.html' title='Multiple used in 13 places.'>VIEW_ITEM</a>* <a href='../Y/5437.html' title='Multiple used in 845 places.'>aItem</a>, <strong class='reserved'>int</strong> <a href='../Y/5220.html' title='Multiple used in 3 places.'>aDrawPriority</a> )
+<a id='L59' name='L59'></a>  59 <em class='brace'>{</em>
+<a id='L60' name='L60'></a>  60     <strong class='reserved'>auto</strong> <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a> = <strong class='reserved'>static_cast</strong>&lt;<a href='../Y/253.html' title='Multiple used in 610 places.'>BOARD_ITEM</a>*&gt;( <a href='../Y/5437.html' title='Multiple used in 845 places.'>aItem</a> );
+<a id='L61' name='L61'></a>  61 
+<a id='L62' name='L62'></a>  62     <strong class='reserved'>if</strong>( <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a>-&gt;<a href='../Y/4696.html' title='Multiple used in 393 places.'>Type</a>() == <a href='../Y/2843.html' title='Multiple used in 98 places.'>PCB_MODULE_T</a> )
+<a id='L63' name='L63'></a>  63     <em class='brace'>{</em>
+<a id='L64' name='L64'></a>  64         <strong class='reserved'>auto</strong> <a href='../Y/12656.html' title='Multiple used in 136 places.'>mod</a> = <strong class='reserved'>static_cast</strong>&lt;<a href='../D/2056.html' title='Multiple defined in 3 places.'>MODULE</a>*&gt;( <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a> );
+<a id='L65' name='L65'></a>  65         <a href='../Y/12656.html' title='Multiple used in 136 places.'>mod</a>-&gt;<a href='../S/68.html#L970' title='Defined at 970 in class_module.cpp.'>RunOnChildren</a>([<strong class='reserved'>this</strong>] ( <a href='../Y/253.html' title='Multiple used in 610 places.'>BOARD_ITEM</a>* <a href='../Y/5592.html' title='Multiple used in 6 places.'>aModItem</a> ) <em class='brace'>{</em>
+<a id='L66' name='L66'></a>  66                 <a href='../Y/4798.html' title='Multiple used in 92 places.'>VIEW</a>::<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../Y/5592.html' title='Multiple used in 6 places.'>aModItem</a> );
+<a id='L67' name='L67'></a>  67             <em class='brace'>}</em> );
+<a id='L68' name='L68'></a>  68     <em class='brace'>}</em>
+<a id='L69' name='L69'></a>  69 
+<a id='L70' name='L70'></a>  70     <a href='../Y/4798.html' title='Multiple used in 92 places.'>VIEW</a>::<a href='../D/94.html' title='Multiple defined in 20 places.'>Add</a>( <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a>, <a href='../Y/5220.html' title='Multiple used in 3 places.'>aDrawPriority</a> );
+<a id='L71' name='L71'></a>  71 <em class='brace'>}</em>
+<a id='L72' name='L72'></a>  72 
+<a id='L73' name='L73'></a>  73 
+<a id='L74' name='L74'></a>  74 <strong class='reserved'>void</strong> <a href='../D/2538.html' title='Multiple defined in 2 places.'>PCB_VIEW</a>::<a href='../R/2667.html' title='Multiple referred from 178 places.'>Remove</a>( <a href='../D/1894.html' title='Multiple defined in 2 places.'>KIGFX</a>::<a href='../Y/4803.html' title='Multiple used in 13 places.'>VIEW_ITEM</a>* <a href='../Y/5437.html' title='Multiple used in 845 places.'>aItem</a> )
+<a id='L75' name='L75'></a>  75 <em class='brace'>{</em>
+<a id='L76' name='L76'></a>  76     <strong class='reserved'>auto</strong> <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a> = <strong class='reserved'>static_cast</strong>&lt;<a href='../Y/253.html' title='Multiple used in 610 places.'>BOARD_ITEM</a>*&gt;( <a href='../Y/5437.html' title='Multiple used in 845 places.'>aItem</a> );
+<a id='L77' name='L77'></a>  77 
+<a id='L78' name='L78'></a>  78 
+<a id='L79' name='L79'></a>  79     <strong class='reserved'>if</strong>( <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a>-&gt;<a href='../Y/4696.html' title='Multiple used in 393 places.'>Type</a>() == <a href='../Y/2843.html' title='Multiple used in 98 places.'>PCB_MODULE_T</a> )
+<a id='L80' name='L80'></a>  80     <em class='brace'>{</em>
+<a id='L81' name='L81'></a>  81         <strong class='reserved'>auto</strong> <a href='../Y/12656.html' title='Multiple used in 136 places.'>mod</a> = <strong class='reserved'>static_cast</strong>&lt;<a href='../D/2056.html' title='Multiple defined in 3 places.'>MODULE</a>*&gt;( <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a> );
+<a id='L82' name='L82'></a>  82         <a href='../Y/12656.html' title='Multiple used in 136 places.'>mod</a>-&gt;<a href='../S/68.html#L970' title='Defined at 970 in class_module.cpp.'>RunOnChildren</a>([<strong class='reserved'>this</strong>] ( <a href='../Y/253.html' title='Multiple used in 610 places.'>BOARD_ITEM</a>* <a href='../Y/5592.html' title='Multiple used in 6 places.'>aModItem</a> ) <em class='brace'>{</em>
+<a id='L83' name='L83'></a>  83                 <a href='../Y/4798.html' title='Multiple used in 92 places.'>VIEW</a>::<a href='../D/2784.html' title='Multiple defined in 16 places.'>Remove</a>( <a href='../Y/5592.html' title='Multiple used in 6 places.'>aModItem</a> );
+<a id='L84' name='L84'></a>  84             <em class='brace'>}</em> );
+<a id='L85' name='L85'></a>  85     <em class='brace'>}</em>
+<a id='L86' name='L86'></a>  86 
+<a id='L87' name='L87'></a>  87     <a href='../Y/4798.html' title='Multiple used in 92 places.'>VIEW</a>::<a href='../D/2784.html' title='Multiple defined in 16 places.'>Remove</a>( <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a> );
+<a id='L88' name='L88'></a>  88 <em class='brace'>}</em>
+<a id='L89' name='L89'></a>  89 
+<a id='L90' name='L90'></a>  90 
+<a id='L91' name='L91'></a>  91 <strong class='reserved'>void</strong> <a href='../D/2538.html' title='Multiple defined in 2 places.'>PCB_VIEW</a>::<a href='../R/3181.html' title='Multiple referred from 136 places.'>Update</a>( <a href='../D/1894.html' title='Multiple defined in 2 places.'>KIGFX</a>::<a href='../Y/4803.html' title='Multiple used in 13 places.'>VIEW_ITEM</a>* <a href='../Y/5437.html' title='Multiple used in 845 places.'>aItem</a>, <strong class='reserved'>int</strong> <a href='../Y/6106.html' title='Multiple used in 5 places.'>aUpdateFlags</a> )
+<a id='L92' name='L92'></a>  92 <em class='brace'>{</em>
+<a id='L93' name='L93'></a>  93     <a href='../Y/253.html' title='Multiple used in 610 places.'>BOARD_ITEM</a>* <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a> = <strong class='reserved'>static_cast</strong>&lt;<a href='../Y/253.html' title='Multiple used in 610 places.'>BOARD_ITEM</a>*&gt;( <a href='../Y/5437.html' title='Multiple used in 845 places.'>aItem</a> );
+<a id='L94' name='L94'></a>  94 
+<a id='L95' name='L95'></a>  95     <strong class='reserved'>if</strong>( <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a>-&gt;<a href='../Y/4696.html' title='Multiple used in 393 places.'>Type</a>() == <a href='../Y/2843.html' title='Multiple used in 98 places.'>PCB_MODULE_T</a> )
+<a id='L96' name='L96'></a>  96     <em class='brace'>{</em>
+<a id='L97' name='L97'></a>  97         <a href='../D/2056.html' title='Multiple defined in 3 places.'>MODULE</a>* <a href='../Y/12656.html' title='Multiple used in 136 places.'>mod</a> = <strong class='reserved'>static_cast</strong>&lt;<a href='../D/2056.html' title='Multiple defined in 3 places.'>MODULE</a>*&gt;( <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a> );
+<a id='L98' name='L98'></a>  98 
+<a id='L99' name='L99'></a>  99         <a href='../Y/12656.html' title='Multiple used in 136 places.'>mod</a>-&gt;<a href='../S/68.html#L970' title='Defined at 970 in class_module.cpp.'>RunOnChildren</a>( [<strong class='reserved'>this</strong>, <a href='../Y/6106.html' title='Multiple used in 5 places.'>aUpdateFlags</a>] ( <a href='../Y/253.html' title='Multiple used in 610 places.'>BOARD_ITEM</a>* <a href='../Y/5592.html' title='Multiple used in 6 places.'>aModItem</a> )
+<a id='L100' name='L100'></a> 100                             <em class='brace'>{</em>
+<a id='L101' name='L101'></a> 101                                 <a href='../Y/4798.html' title='Multiple used in 92 places.'>VIEW</a>::<a href='../D/3313.html' title='Multiple defined in 6 places.'>Update</a>( <a href='../Y/5592.html' title='Multiple used in 6 places.'>aModItem</a>, <a href='../Y/6106.html' title='Multiple used in 5 places.'>aUpdateFlags</a> );
+<a id='L102' name='L102'></a> 102                             <em class='brace'>}</em> );
+<a id='L103' name='L103'></a> 103     <em class='brace'>}</em>
+<a id='L104' name='L104'></a> 104 
+<a id='L105' name='L105'></a> 105     <a href='../Y/4798.html' title='Multiple used in 92 places.'>VIEW</a>::<a href='../D/3313.html' title='Multiple defined in 6 places.'>Update</a>( <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a>, <a href='../Y/6106.html' title='Multiple used in 5 places.'>aUpdateFlags</a> );
+<a id='L106' name='L106'></a> 106 <em class='brace'>}</em>
+<a id='L107' name='L107'></a> 107 
+<a id='L108' name='L108'></a> 108 
+<a id='L109' name='L109'></a> 109 <strong class='reserved'>void</strong> <a href='../D/2538.html' title='Multiple defined in 2 places.'>PCB_VIEW</a>::<a href='../R/3181.html' title='Multiple referred from 136 places.'>Update</a>( <a href='../D/1894.html' title='Multiple defined in 2 places.'>KIGFX</a>::<a href='../Y/4803.html' title='Multiple used in 13 places.'>VIEW_ITEM</a>* <a href='../Y/5437.html' title='Multiple used in 845 places.'>aItem</a> )
+<a id='L110' name='L110'></a> 110 <em class='brace'>{</em>
+<a id='L111' name='L111'></a> 111     <a href='../D/2538.html' title='Multiple defined in 2 places.'>PCB_VIEW</a>::<a href='../D/3313.html' title='Multiple defined in 6 places.'>Update</a>( <a href='../Y/5437.html' title='Multiple used in 845 places.'>aItem</a>, <a href='../D/1894.html' title='Multiple defined in 2 places.'>KIGFX</a>::<a href='../Y/36.html' title='Multiple used in 6 places.'>ALL</a> );
+<a id='L112' name='L112'></a> 112 <em class='brace'>}</em>
+<a id='L113' name='L113'></a> 113 
+<a id='L114' name='L114'></a> 114 
+<a id='L115' name='L115'></a> 115 <strong class='reserved'>void</strong> <a href='../D/2538.html' title='Multiple defined in 2 places.'>PCB_VIEW</a>::<a href='../R/3187.html' title='Multiple referred from 13 places.'>UpdateDisplayOptions</a>( <strong class='reserved'>const</strong> <a href='../S/582.html#L34' title='Defined at 34 in pcb_display_options.cpp.'>PCB_DISPLAY_OPTIONS</a>&amp; <a href='../Y/5686.html' title='Multiple used in 73 places.'>aOptions</a> )
+<a id='L116' name='L116'></a> 116 <em class='brace'>{</em>
+<a id='L117' name='L117'></a> 117     <strong class='reserved'>auto</strong>    <a href='../Y/13394.html' title='Multiple used in 22 places.'>painter</a>     = <strong class='reserved'>static_cast</strong>&lt;<a href='../D/1894.html' title='Multiple defined in 2 places.'>KIGFX</a>::<a href='../S/593.html#L336' title='Defined at 336 in pcb_painter.cpp.'>PCB_PAINTER</a>*&gt;( <a href='../Y/1603.html' title='Multiple used in 32 places.'>GetPainter</a>() );
+<a id='L118' name='L118'></a> 118     <strong class='reserved'>auto</strong>    <a href='../S/275.html#L48' title='Defined at 48 in dialogs/dialog_print_pcbnew.cpp.'>settings</a>    = <strong class='reserved'>static_cast</strong>&lt;<a href='../D/1894.html' title='Multiple defined in 2 places.'>KIGFX</a>::<a href='../S/593.html#L52' title='Defined at 52 in pcb_painter.cpp.'>PCB_RENDER_SETTINGS</a>*&gt;( <a href='../Y/13394.html' title='Multiple used in 22 places.'>painter</a>-&gt;<a href='../S/435.html#L417' title='Defined at 417 in footprint_edit_frame.cpp.'>GetSettings</a>() );
+<a id='L119' name='L119'></a> 119 
+<a id='L120' name='L120'></a> 120     <a href='../S/275.html#L48' title='Defined at 48 in dialogs/dialog_print_pcbnew.cpp.'>settings</a>-&gt;<a href='../S/593.html#L130' title='Defined at 130 in pcb_painter.cpp.'>LoadDisplayOptions</a>( <a href='../Y/5686.html' title='Multiple used in 73 places.'>aOptions</a>, <a href='../S/275.html#L48' title='Defined at 48 in dialogs/dialog_print_pcbnew.cpp.'>settings</a>-&gt;GetShowPageLimits() );
+<a id='L121' name='L121'></a> 121 <em class='brace'>}</em>
+<a id='L122' name='L122'></a> 122 <em class='brace'>}</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L58'>[^]</a><a href='#L115'>[v]</a><a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

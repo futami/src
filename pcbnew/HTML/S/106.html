@@ -1,0 +1,181 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>dialogs/dialog_cleanup_graphics.cpp</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/831.html'>dialogs</a>/dialog_cleanup_graphics.cpp</h2>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L34'>[^]</a><a href='#L138'>[v]</a>[top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L34' title='Defined at 34.'>m_isModEdit</a></li>
+<li><a href='#L60' title='Defined at 60.'>OnCheckBox</a></li>
+<li><a href='#L66' title='Defined at 66.'>TransferDataToWindow</a></li>
+<li><a href='#L74' title='Defined at 74.'>TransferDataFromWindow</a></li>
+<li><a href='#L82' title='Defined at 82.'>doCleanup</a></li>
+<li><a href='#L125' title='Defined at 125.'>OnSelectItem</a></li>
+<li><a href='#L138' title='Defined at 138.'>OnLeftDClickItem</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * This program source code file is part of KiCad, a free EDA CAD application.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 2020 KiCad Developers, see AUTHORS.txt for contributors.</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> *</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> * This program is free software; you can redistribute it and/or</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> * modify it under the terms of the GNU General Public License</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * as published by the Free Software Foundation; either version 2</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * of the License, or (at your option) any later version.</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> *</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> * This program is distributed in the hope that it will be useful,</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> * but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * GNU General Public License for more details.</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> *</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> * You should have received a copy of the GNU General Public License</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> * along with this program; if not, you may find one here:</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> * or you may search the http://www.gnu.org website for the version 2 license,</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> * or you may write to the Free Software Foundation, Inc.,</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'> * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'> */</em>
+<a id='L23' name='L23'></a>  23 
+<a id='L24' name='L24'></a>  24 <em class='sharp'>#include</em> &lt;wx/wx.h&gt;
+<a id='L25' name='L25'></a>  25 <em class='sharp'>#include</em> &lt;<a href='107.html'>dialog_cleanup_graphics.h</a>&gt;
+<a id='L26' name='L26'></a>  26 <em class='sharp'>#include</em> &lt;tool/tool_manager.h&gt;
+<a id='L27' name='L27'></a>  27 <em class='sharp'>#include</em> &lt;<a href='782.html'>tools/pcb_actions.h</a>&gt;
+<a id='L28' name='L28'></a>  28 <em class='sharp'>#include</em> &lt;<a href='468.html'>graphics_cleaner.h</a>&gt;
+<a id='L29' name='L29'></a>  29 
+<a id='L30' name='L30'></a>  30 
+<a id='L31' name='L31'></a>  31 <a href='../S/106.html#L51' title='Defined at 51 in dialogs/dialog_cleanup_graphics.cpp.'>DIALOG_CLEANUP_GRAPHICS</a>::<a href='../S/106.html#L51' title='Defined at 51 in dialogs/dialog_cleanup_graphics.cpp.'>DIALOG_CLEANUP_GRAPHICS</a>( <a href='../S/581.html#L68' title='Defined at 68 in pcb_base_frame.cpp.'>PCB_BASE_FRAME</a>* <a href='../Y/5754.html' title='Multiple used in 610 places.'>aParent</a>, <strong class='reserved'>bool</strong> <a href='../Y/8645.html' title='Multiple used in 4 places.'>isModEdit</a> ) :
+<a id='L32' name='L32'></a>  32         <a href='../D/553.html' title='Multiple defined in 2 places.'>DIALOG_CLEANUP_GRAPHICS_BASE</a>( <a href='../Y/5754.html' title='Multiple used in 610 places.'>aParent</a> ),
+<a id='L33' name='L33'></a>  33         <a href='../S/111.html#L36' title='Defined at 36 in dialogs/dialog_cleanup_tracks_and_vias.cpp.'>m_parentFrame</a>( <a href='../Y/5754.html' title='Multiple used in 610 places.'>aParent</a> ),
+<a id='L34' name='L34'></a>  34         <a href='../R/4016.html' title='Multiple referred from 2 places.'>m_isModEdit</a>( <a href='../Y/8645.html' title='Multiple used in 4 places.'>isModEdit</a> )
+<a id='L35' name='L35'></a>  35 <em class='brace'>{</em>
+<a id='L36' name='L36'></a>  36     <a href='../Y/10465.html' title='Multiple used in 14 places.'>m_changesTreeModel</a> = <strong class='reserved'>new</strong> <a href='../Y/3072.html' title='Multiple used in 20 places.'>RC_TREE_MODEL</a>( <a href='../S/111.html#L36' title='Defined at 36 in dialogs/dialog_cleanup_tracks_and_vias.cpp.'>m_parentFrame</a>, <a href='../Y/10464.html' title='Multiple used in 20 places.'>m_changesDataView</a> );
+<a id='L37' name='L37'></a>  37     <a href='../Y/10464.html' title='Multiple used in 20 places.'>m_changesDataView</a>-&gt;<a href='../Y/217.html' title='Multiple used in 5 places.'>AssociateModel</a>( <a href='../Y/10465.html' title='Multiple used in 14 places.'>m_changesTreeModel</a> );
+<a id='L38' name='L38'></a>  38 
+<a id='L39' name='L39'></a>  39     <a href='../Y/10465.html' title='Multiple used in 14 places.'>m_changesTreeModel</a>-&gt;<a href='../Y/3833.html' title='Multiple used in 11 places.'>SetSeverities</a>( <a href='../Y/3107.html' title='Multiple used in 24 places.'>RPT_SEVERITY_ACTION</a> );
+<a id='L40' name='L40'></a>  40 
+<a id='L41' name='L41'></a>  41     <em class='comment'>// We use a sdbSizer to get platform-dependent ordering of the action buttons, but</em>
+<a id='L42' name='L42'></a>  42     <em class='comment'>// that requires us to correct the button labels here.</em>
+<a id='L43' name='L43'></a>  43     <a href='../Y/11836.html' title='Multiple used in 101 places.'>m_sdbSizerOK</a>-&gt;<a href='../Y/3630.html' title='Multiple used in 102 places.'>SetLabel</a>( <a href='../Y/8645.html' title='Multiple used in 4 places.'>isModEdit</a> ? <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Update Footprint" ) : <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Update PCB" ) );
+<a id='L44' name='L44'></a>  44 
+<a id='L45' name='L45'></a>  45     <a href='../Y/11836.html' title='Multiple used in 101 places.'>m_sdbSizerOK</a>-&gt;<a href='../Y/3441.html' title='Multiple used in 47 places.'>SetDefault</a>();
+<a id='L46' name='L46'></a>  46     <a href='../Y/1712.html' title='Multiple used in 28 places.'>GetSizer</a>()-&gt;<a href='../Y/3847.html' title='Multiple used in 78 places.'>SetSizeHints</a>(<strong class='reserved'>this</strong>);
+<a id='L47' name='L47'></a>  47     <a href='../Y/467.html' title='Multiple used in 60 places.'>Centre</a>();
+<a id='L48' name='L48'></a>  48 <em class='brace'>}</em>
+<a id='L49' name='L49'></a>  49 
+<a id='L50' name='L50'></a>  50 
+<a id='L51' name='L51'></a>  51 <a href='../R/527.html' title='Multiple referred from 13 places.'>DIALOG_CLEANUP_GRAPHICS</a>::~<a href='../S/106.html#L51' title='Defined at 51 in dialogs/dialog_cleanup_graphics.cpp.'>DIALOG_CLEANUP_GRAPHICS</a>()
+<a id='L52' name='L52'></a>  52 <em class='brace'>{</em>
+<a id='L53' name='L53'></a>  53     <strong class='reserved'>for</strong>( <a href='../S/82.html#L30' title='Defined at 30 in cleanup_item.cpp.'>CLEANUP_ITEM</a>* <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a> : <a href='../S/658.html#L417' title='Defined at 417 in router/pns_kicad_iface.cpp.'>m_items</a> )
+<a id='L54' name='L54'></a>  54         <strong class='reserved'>delete</strong> <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a>;
+<a id='L55' name='L55'></a>  55 
+<a id='L56' name='L56'></a>  56     <a href='../Y/10465.html' title='Multiple used in 14 places.'>m_changesTreeModel</a>-&gt;<a href='../Y/746.html' title='Multiple used in 8 places.'>DecRef</a>();
+<a id='L57' name='L57'></a>  57 <em class='brace'>}</em>
+<a id='L58' name='L58'></a>  58 
+<a id='L59' name='L59'></a>  59 
+<a id='L60' name='L60'></a>  60 <strong class='reserved'>void</strong> <a href='../S/106.html#L51' title='Defined at 51 in dialogs/dialog_cleanup_graphics.cpp.'>DIALOG_CLEANUP_GRAPHICS</a>::<a href='../R/2121.html' title='Multiple referred from 46 places.'>OnCheckBox</a>( <a href='../Y/15577.html' title='Multiple used in 712 places.'>wxCommandEvent</a>&amp; <a href='../Y/6353.html' title='Multiple used in 4 places.'>anEvent</a> )
+<a id='L61' name='L61'></a>  61 <em class='brace'>{</em>
+<a id='L62' name='L62'></a>  62     <a href='../D/3779.html' title='Multiple defined in 2 places.'>doCleanup</a>( <strong class='reserved'>true</strong> );
+<a id='L63' name='L63'></a>  63 <em class='brace'>}</em>
+<a id='L64' name='L64'></a>  64 
+<a id='L65' name='L65'></a>  65 
+<a id='L66' name='L66'></a>  66 <strong class='reserved'>bool</strong> <a href='../S/106.html#L51' title='Defined at 51 in dialogs/dialog_cleanup_graphics.cpp.'>DIALOG_CLEANUP_GRAPHICS</a>::<a href='../R/3145.html' title='Multiple referred from 65 places.'>TransferDataToWindow</a>()
+<a id='L67' name='L67'></a>  67 <em class='brace'>{</em>
+<a id='L68' name='L68'></a>  68     <a href='../D/3779.html' title='Multiple defined in 2 places.'>doCleanup</a>( <strong class='reserved'>true</strong> );
+<a id='L69' name='L69'></a>  69 
+<a id='L70' name='L70'></a>  70     <strong class='reserved'>return</strong> <strong class='reserved'>true</strong>;
+<a id='L71' name='L71'></a>  71 <em class='brace'>}</em>
+<a id='L72' name='L72'></a>  72 
+<a id='L73' name='L73'></a>  73 
+<a id='L74' name='L74'></a>  74 <strong class='reserved'>bool</strong> <a href='../S/106.html#L51' title='Defined at 51 in dialogs/dialog_cleanup_graphics.cpp.'>DIALOG_CLEANUP_GRAPHICS</a>::<a href='../R/3144.html' title='Multiple referred from 63 places.'>TransferDataFromWindow</a>()
+<a id='L75' name='L75'></a>  75 <em class='brace'>{</em>
+<a id='L76' name='L76'></a>  76     <a href='../D/3779.html' title='Multiple defined in 2 places.'>doCleanup</a>( <strong class='reserved'>false</strong> );
+<a id='L77' name='L77'></a>  77 
+<a id='L78' name='L78'></a>  78     <strong class='reserved'>return</strong> <strong class='reserved'>true</strong>;
+<a id='L79' name='L79'></a>  79 <em class='brace'>}</em>
+<a id='L80' name='L80'></a>  80 
+<a id='L81' name='L81'></a>  81 
+<a id='L82' name='L82'></a>  82 <strong class='reserved'>void</strong> <a href='../S/106.html#L51' title='Defined at 51 in dialogs/dialog_cleanup_graphics.cpp.'>DIALOG_CLEANUP_GRAPHICS</a>::<a href='../R/3636.html' title='Multiple referred from 8 places.'>doCleanup</a>( <strong class='reserved'>bool</strong> <a href='../Y/5228.html' title='Multiple used in 24 places.'>aDryRun</a> )
+<a id='L83' name='L83'></a>  83 <em class='brace'>{</em>
+<a id='L84' name='L84'></a>  84     <a href='../Y/15541.html' title='Multiple used in 11 places.'>wxBusyCursor</a> <a href='../Y/6781.html' title='Multiple used in 3 places.'>busy</a>;
+<a id='L85' name='L85'></a>  85 
+<a id='L86' name='L86'></a>  86     <a href='../D/203.html' title='Multiple defined in 3 places.'>BOARD_COMMIT</a>     <a href='../Y/7008.html' title='Multiple used in 225 places.'>commit</a>( <a href='../S/111.html#L36' title='Defined at 36 in dialogs/dialog_cleanup_tracks_and_vias.cpp.'>m_parentFrame</a> );
+<a id='L87' name='L87'></a>  87     <a href='../S/57.html#L104' title='Defined at 104 in class_board.cpp.'>BOARD</a>*           <a href='../Y/6700.html' title='Multiple used in 309 places.'>board</a> = <a href='../S/111.html#L36' title='Defined at 36 in dialogs/dialog_cleanup_tracks_and_vias.cpp.'>m_parentFrame</a>-&gt;<a href='../D/1112.html' title='Multiple defined in 2 places.'>GetBoard</a>();
+<a id='L88' name='L88'></a>  88     <a href='../D/2056.html' title='Multiple defined in 3 places.'>MODULE</a>*          <a href='../Y/8077.html' title='Multiple used in 75 places.'>fp</a> = <a href='../S/106.html#L34' title='Defined at 34 in dialogs/dialog_cleanup_graphics.cpp.'>m_isModEdit</a> ? <a href='../Y/6700.html' title='Multiple used in 309 places.'>board</a>-&gt;<a href='../Y/1423.html' title='Multiple used in 58 places.'>GetFirstModule</a>() : <a href='../Y/13059.html' title='Multiple used in 610 places.'>nullptr</a>;
+<a id='L89' name='L89'></a>  89     <a href='../Y/1179.html' title='Multiple used in 9 places.'>GRAPHICS_CLEANER</a> <a href='../Y/6912.html' title='Multiple used in 4 places.'>cleaner</a>( <a href='../Y/8077.html' title='Multiple used in 75 places.'>fp</a> ? <a href='../Y/8077.html' title='Multiple used in 75 places.'>fp</a>-&gt;<a href='../Y/1827.html' title='Multiple used in 42 places.'>GraphicalItems</a>() : <a href='../Y/6700.html' title='Multiple used in 309 places.'>board</a>-&gt;<a href='../Y/811.html' title='Multiple used in 35 places.'>Drawings</a>(), <a href='../Y/8077.html' title='Multiple used in 75 places.'>fp</a>, <a href='../Y/7008.html' title='Multiple used in 225 places.'>commit</a> );
+<a id='L90' name='L90'></a>  90 
+<a id='L91' name='L91'></a>  91     <strong class='reserved'>if</strong>( !<a href='../Y/5228.html' title='Multiple used in 24 places.'>aDryRun</a> )
+<a id='L92' name='L92'></a>  92     <em class='brace'>{</em>
+<a id='L93' name='L93'></a>  93         <em class='comment'>// Clear current selection list to avoid selection of deleted items</em>
+<a id='L94' name='L94'></a>  94         <a href='../S/111.html#L36' title='Defined at 36 in dialogs/dialog_cleanup_tracks_and_vias.cpp.'>m_parentFrame</a>-&gt;<a href='../Y/1769.html' title='Multiple used in 41 places.'>GetToolManager</a>()-&gt;<a href='../Y/3195.html' title='Multiple used in 158 places.'>RunAction</a>( <a href='../Y/2808.html' title='Multiple used in 1029 places.'>PCB_ACTIONS</a>::<a href='../Y/14341.html' title='Multiple used in 60 places.'>selectionClear</a>, <strong class='reserved'>true</strong> );
+<a id='L95' name='L95'></a>  95 
+<a id='L96' name='L96'></a>  96         <em class='comment'>// ... and to keep the treeModel from trying to refresh a deleted item</em>
+<a id='L97' name='L97'></a>  97         <a href='../Y/10465.html' title='Multiple used in 14 places.'>m_changesTreeModel</a>-&gt;<a href='../Y/3782.html' title='Multiple used in 13 places.'>SetProvider</a>( <a href='../Y/13059.html' title='Multiple used in 610 places.'>nullptr</a> );
+<a id='L98' name='L98'></a>  98     <em class='brace'>}</em>
+<a id='L99' name='L99'></a>  99 
+<a id='L100' name='L100'></a> 100     <strong class='reserved'>for</strong>( <a href='../S/82.html#L30' title='Defined at 30 in cleanup_item.cpp.'>CLEANUP_ITEM</a>* <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a> : <a href='../S/658.html#L417' title='Defined at 417 in router/pns_kicad_iface.cpp.'>m_items</a> )
+<a id='L101' name='L101'></a> 101         <strong class='reserved'>delete</strong> <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a>;
+<a id='L102' name='L102'></a> 102 
+<a id='L103' name='L103'></a> 103     <a href='../S/658.html#L417' title='Defined at 417 in router/pns_kicad_iface.cpp.'>m_items</a>.<a href='../S/513.html#L53' title='Defined at 53 in netinfo_list.cpp.'>clear</a>();
+<a id='L104' name='L104'></a> 104 
+<a id='L105' name='L105'></a> 105     <em class='comment'>// Old model has to be refreshed, GAL normally does not keep updating it</em>
+<a id='L106' name='L106'></a> 106     <a href='../S/111.html#L36' title='Defined at 36 in dialogs/dialog_cleanup_tracks_and_vias.cpp.'>m_parentFrame</a>-&gt;<a href='../S/627.html#L44' title='Defined at 44 in ratsnest/ratsnest.cpp.'>Compile_Ratsnest</a>( <strong class='reserved'>false</strong> );
+<a id='L107' name='L107'></a> 107 
+<a id='L108' name='L108'></a> 108     <a href='../Y/6912.html' title='Multiple used in 4 places.'>cleaner</a>.<a href='../D/431.html' title='Multiple defined in 2 places.'>CleanupBoard</a>( <a href='../Y/5228.html' title='Multiple used in 24 places.'>aDryRun</a>, &amp;<a href='../S/658.html#L417' title='Defined at 417 in router/pns_kicad_iface.cpp.'>m_items</a>, <a href='../Y/10597.html' title='Multiple used in 7 places.'>m_createRectanglesOpt</a>-&gt;<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>(),
+<a id='L109' name='L109'></a> 109                                              <a href='../Y/10674.html' title='Multiple used in 4 places.'>m_deleteRedundantOpt</a>-&gt;<a href='../D/1379.html' title='Multiple defined in 6 places.'>GetValue</a>() );
+<a id='L110' name='L110'></a> 110 
+<a id='L111' name='L111'></a> 111     <strong class='reserved'>if</strong>( <a href='../Y/5228.html' title='Multiple used in 24 places.'>aDryRun</a> )
+<a id='L112' name='L112'></a> 112     <em class='brace'>{</em>
+<a id='L113' name='L113'></a> 113         <a href='../Y/3071.html' title='Multiple used in 14 places.'>RC_ITEMS_PROVIDER</a>* <a href='../Y/13763.html' title='Multiple used in 4 places.'>provider</a> = <strong class='reserved'>new</strong> <a href='../Y/4789.html' title='Multiple used in 4 places.'>VECTOR_CLEANUP_ITEMS_PROVIDER</a>( &amp;<a href='../S/658.html#L417' title='Defined at 417 in router/pns_kicad_iface.cpp.'>m_items</a> );
+<a id='L114' name='L114'></a> 114         <a href='../Y/10465.html' title='Multiple used in 14 places.'>m_changesTreeModel</a>-&gt;<a href='../Y/3782.html' title='Multiple used in 13 places.'>SetProvider</a>( <a href='../Y/13763.html' title='Multiple used in 4 places.'>provider</a> );
+<a id='L115' name='L115'></a> 115     <em class='brace'>}</em>
+<a id='L116' name='L116'></a> 116     <strong class='reserved'>else</strong> <strong class='reserved'>if</strong>( !<a href='../Y/7008.html' title='Multiple used in 225 places.'>commit</a>.<a href='../Y/916.html' title='Multiple used in 64 places.'>Empty</a>() )
+<a id='L117' name='L117'></a> 117     <em class='brace'>{</em>
+<a id='L118' name='L118'></a> 118         <em class='comment'>// Clear undo and redo lists to avoid inconsistencies between lists</em>
+<a id='L119' name='L119'></a> 119         <a href='../Y/7008.html' title='Multiple used in 225 places.'>commit</a>.<a href='../S/31.html#L84' title='Defined at 84 in board_commit.cpp.'>Push</a>( <a href='../D/3431.html' title='Multiple defined in 12 places.'>_</a>( "Graphics cleanup" ) );
+<a id='L120' name='L120'></a> 120         <a href='../S/111.html#L36' title='Defined at 36 in dialogs/dialog_cleanup_tracks_and_vias.cpp.'>m_parentFrame</a>-&gt;<a href='../S/581.html#L712' title='Defined at 712 in pcb_base_frame.cpp.'>GetCanvas</a>()-&gt;<a href='../S/738.html#L259' title='Defined at 259 in swig/pcbnew_scripting_helpers.cpp.'>Refresh</a>( <strong class='reserved'>true</strong> );
+<a id='L121' name='L121'></a> 121     <em class='brace'>}</em>
+<a id='L122' name='L122'></a> 122 <em class='brace'>}</em>
+<a id='L123' name='L123'></a> 123 
+<a id='L124' name='L124'></a> 124 
+<a id='L125' name='L125'></a> 125 <strong class='reserved'>void</strong> <a href='../S/106.html#L51' title='Defined at 51 in dialogs/dialog_cleanup_graphics.cpp.'>DIALOG_CLEANUP_GRAPHICS</a>::<a href='../R/2247.html' title='Multiple referred from 8 places.'>OnSelectItem</a>( <a href='../Y/15602.html' title='Multiple used in 27 places.'>wxDataViewEvent</a>&amp; <a href='../Y/5276.html' title='Multiple used in 837 places.'>aEvent</a> )
+<a id='L126' name='L126'></a> 126 <em class='brace'>{</em>
+<a id='L127' name='L127'></a> 127     <strong class='reserved'>const</strong> <a href='../Y/2255.html' title='Multiple used in 48 places.'>KIID</a>&amp;   <a href='../Y/8721.html' title='Multiple used in 6 places.'>itemID</a> = <a href='../Y/3072.html' title='Multiple used in 20 places.'>RC_TREE_MODEL</a>::<a href='../Y/4668.html' title='Multiple used in 3 places.'>ToUUID</a>( <a href='../Y/5276.html' title='Multiple used in 837 places.'>aEvent</a>.<a href='../D/1209.html' title='Multiple defined in 2 places.'>GetItem</a>() );
+<a id='L128' name='L128'></a> 128     <a href='../Y/253.html' title='Multiple used in 610 places.'>BOARD_ITEM</a>*   <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a> = <a href='../S/111.html#L36' title='Defined at 36 in dialogs/dialog_cleanup_tracks_and_vias.cpp.'>m_parentFrame</a>-&gt;<a href='../D/1112.html' title='Multiple defined in 2 places.'>GetBoard</a>()-&gt;<a href='../D/1209.html' title='Multiple defined in 2 places.'>GetItem</a>( <a href='../Y/8721.html' title='Multiple used in 6 places.'>itemID</a> );
+<a id='L129' name='L129'></a> 129     <a href='../Y/4840.html' title='Multiple used in 4 places.'>WINDOW_THAWER</a> <a href='../Y/14911.html' title='Multiple used in 4 places.'>thawer</a>( <a href='../S/111.html#L36' title='Defined at 36 in dialogs/dialog_cleanup_tracks_and_vias.cpp.'>m_parentFrame</a> );
+<a id='L130' name='L130'></a> 130 
+<a id='L131' name='L131'></a> 131     <a href='../S/111.html#L36' title='Defined at 36 in dialogs/dialog_cleanup_tracks_and_vias.cpp.'>m_parentFrame</a>-&gt;<a href='../S/581.html#L173' title='Defined at 173 in pcb_base_frame.cpp.'>FocusOnItem</a>( <a href='../Y/8710.html' title='Multiple used in 1728 places.'>item</a> );
+<a id='L132' name='L132'></a> 132     <a href='../S/111.html#L36' title='Defined at 36 in dialogs/dialog_cleanup_tracks_and_vias.cpp.'>m_parentFrame</a>-&gt;<a href='../S/581.html#L712' title='Defined at 712 in pcb_base_frame.cpp.'>GetCanvas</a>()-&gt;<a href='../S/738.html#L259' title='Defined at 259 in swig/pcbnew_scripting_helpers.cpp.'>Refresh</a>();
+<a id='L133' name='L133'></a> 133 
+<a id='L134' name='L134'></a> 134     <a href='../Y/5276.html' title='Multiple used in 837 places.'>aEvent</a>.<a href='../Y/4011.html' title='Multiple used in 349 places.'>Skip</a>();
+<a id='L135' name='L135'></a> 135 <em class='brace'>}</em>
+<a id='L136' name='L136'></a> 136 
+<a id='L137' name='L137'></a> 137 
+<a id='L138' name='L138'></a> 138 <strong class='reserved'>void</strong> <a href='../S/106.html#L51' title='Defined at 51 in dialogs/dialog_cleanup_graphics.cpp.'>DIALOG_CLEANUP_GRAPHICS</a>::<a href='../R/2186.html' title='Multiple referred from 8 places.'>OnLeftDClickItem</a>( <a href='../Y/15841.html' title='Multiple used in 31 places.'>wxMouseEvent</a>&amp; <a href='../Y/7792.html' title='Multiple used in 867 places.'>event</a> )
+<a id='L139' name='L139'></a> 139 <em class='brace'>{</em>
+<a id='L140' name='L140'></a> 140     <a href='../Y/7792.html' title='Multiple used in 867 places.'>event</a>.<a href='../Y/4011.html' title='Multiple used in 349 places.'>Skip</a>();
+<a id='L141' name='L141'></a> 141 
+<a id='L142' name='L142'></a> 142     <strong class='reserved'>if</strong>( <a href='../Y/10464.html' title='Multiple used in 20 places.'>m_changesDataView</a>-&gt;<a href='../Y/1323.html' title='Multiple used in 2 places.'>GetCurrentItem</a>().<a href='../Y/2173.html' title='Multiple used in 23 places.'>IsOk</a>() )
+<a id='L143' name='L143'></a> 143     <em class='brace'>{</em>
+<a id='L144' name='L144'></a> 144         <strong class='reserved'>if</strong>( !<a href='../Y/2154.html' title='Multiple used in 7 places.'>IsModal</a>() )
+<a id='L145' name='L145'></a> 145             <a href='../D/3117.html' title='Multiple defined in 3 places.'>Show</a>( <strong class='reserved'>false</strong> );
+<a id='L146' name='L146'></a> 146     <em class='brace'>}</em>
+<a id='L147' name='L147'></a> 147 <em class='brace'>}</em>
+<a id='L148' name='L148'></a> 148 
+<a id='L149' name='L149'></a> 149 
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L34'>[^]</a><a href='#L138'>[v]</a><a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>
