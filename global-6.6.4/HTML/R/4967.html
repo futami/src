@@ -1,0 +1,68 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>pcache1</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/185.html#L39337'>pcache1</a>          39337 libdb/sqlite3.c   if( pcache1.isInit ){</span>
+<span class='curline'><a href='../S/185.html#L39340'>pcache1</a>          39340 libdb/sqlite3.c     pcache1.szSlot = sz;</span>
+<span class='curline'><a href='../S/185.html#L39341'>pcache1</a>          39341 libdb/sqlite3.c     pcache1.nSlot = pcache1.nFreeSlot = n;</span>
+<span class='curline'><a href='../S/185.html#L39342'>pcache1</a>          39342 libdb/sqlite3.c     pcache1.nReserve = n&gt;90 ? 10 : (n/10 + 1);</span>
+<span class='curline'><a href='../S/185.html#L39343'>pcache1</a>          39343 libdb/sqlite3.c     pcache1.pStart = pBuf;</span>
+<span class='curline'><a href='../S/185.html#L39344'>pcache1</a>          39344 libdb/sqlite3.c     pcache1.pFree = 0;</span>
+<span class='curline'><a href='../S/185.html#L39345'>pcache1</a>          39345 libdb/sqlite3.c     pcache1.bUnderPressure = 0;</span>
+<span class='curline'><a href='../S/185.html#L39348'>pcache1</a>          39348 libdb/sqlite3.c       p-&gt;pNext = pcache1.pFree;</span>
+<span class='curline'><a href='../S/185.html#L39349'>pcache1</a>          39349 libdb/sqlite3.c       pcache1.pFree = p;</span>
+<span class='curline'><a href='../S/185.html#L39352'>pcache1</a>          39352 libdb/sqlite3.c     pcache1.pEnd = pBuf;</span>
+<span class='curline'><a href='../S/185.html#L39367'>pcache1</a>          39367 libdb/sqlite3.c   assert( sqlite3_mutex_notheld(pcache1.grp.mutex) );</span>
+<span class='curline'><a href='../S/185.html#L39369'>pcache1</a>          39369 libdb/sqlite3.c   if( nByte&lt;=pcache1.szSlot ){</span>
+<span class='curline'><a href='../S/185.html#L39370'>pcache1</a>          39370 libdb/sqlite3.c     sqlite3_mutex_enter(pcache1.mutex);</span>
+<span class='curline'><a href='../S/185.html#L39371'>pcache1</a>          39371 libdb/sqlite3.c     p = (PgHdr1 *)pcache1.pFree;</span>
+<span class='curline'><a href='../S/185.html#L39373'>pcache1</a>          39373 libdb/sqlite3.c       pcache1.pFree = pcache1.pFree-&gt;pNext;</span>
+<span class='curline'><a href='../S/185.html#L39374'>pcache1</a>          39374 libdb/sqlite3.c       pcache1.nFreeSlot--;</span>
+<span class='curline'><a href='../S/185.html#L39375'>pcache1</a>          39375 libdb/sqlite3.c       pcache1.bUnderPressure = pcache1.nFreeSlot&lt;pcache1.nReserve;</span>
+<span class='curline'><a href='../S/185.html#L39376'>pcache1</a>          39376 libdb/sqlite3.c       assert( pcache1.nFreeSlot&gt;=0 );</span>
+<span class='curline'><a href='../S/185.html#L39379'>pcache1</a>          39379 libdb/sqlite3.c     sqlite3_mutex_leave(pcache1.mutex);</span>
+<span class='curline'><a href='../S/185.html#L39389'>pcache1</a>          39389 libdb/sqlite3.c       sqlite3_mutex_enter(pcache1.mutex);</span>
+<span class='curline'><a href='../S/185.html#L39391'>pcache1</a>          39391 libdb/sqlite3.c       sqlite3_mutex_leave(pcache1.mutex);</span>
+<span class='curline'><a href='../S/185.html#L39405'>pcache1</a>          39405 libdb/sqlite3.c   if( p&gt;=pcache1.pStart &amp;&amp; p&lt;pcache1.pEnd ){</span>
+<span class='curline'><a href='../S/185.html#L39407'>pcache1</a>          39407 libdb/sqlite3.c     sqlite3_mutex_enter(pcache1.mutex);</span>
+<span class='curline'><a href='../S/185.html#L39410'>pcache1</a>          39410 libdb/sqlite3.c     pSlot-&gt;pNext = pcache1.pFree;</span>
+<span class='curline'><a href='../S/185.html#L39411'>pcache1</a>          39411 libdb/sqlite3.c     pcache1.pFree = pSlot;</span>
+<span class='curline'><a href='../S/185.html#L39412'>pcache1</a>          39412 libdb/sqlite3.c     pcache1.nFreeSlot++;</span>
+<span class='curline'><a href='../S/185.html#L39413'>pcache1</a>          39413 libdb/sqlite3.c     pcache1.bUnderPressure = pcache1.nFreeSlot&lt;pcache1.nReserve;</span>
+<span class='curline'><a href='../S/185.html#L39414'>pcache1</a>          39414 libdb/sqlite3.c     assert( pcache1.nFreeSlot&lt;=pcache1.nSlot );</span>
+<span class='curline'><a href='../S/185.html#L39415'>pcache1</a>          39415 libdb/sqlite3.c     sqlite3_mutex_leave(pcache1.mutex);</span>
+<span class='curline'><a href='../S/185.html#L39421'>pcache1</a>          39421 libdb/sqlite3.c     sqlite3_mutex_enter(pcache1.mutex);</span>
+<span class='curline'><a href='../S/185.html#L39423'>pcache1</a>          39423 libdb/sqlite3.c     sqlite3_mutex_leave(pcache1.mutex);</span>
+<span class='curline'><a href='../S/185.html#L39435'>pcache1</a>          39435 libdb/sqlite3.c   if( p&gt;=pcache1.pStart &amp;&amp; p&lt;pcache1.pEnd ){</span>
+<span class='curline'><a href='../S/185.html#L39436'>pcache1</a>          39436 libdb/sqlite3.c     return pcache1.szSlot;</span>
+<span class='curline'><a href='../S/185.html#L39540'>pcache1</a>          39540 libdb/sqlite3.c   if( pcache1.nSlot &amp;&amp; (pCache-&gt;szPage+pCache-&gt;szExtra)&lt;=pcache1.szSlot ){</span>
+<span class='curline'><a href='../S/185.html#L39541'>pcache1</a>          39541 libdb/sqlite3.c     return pcache1.bUnderPressure;</span>
+<span class='curline'><a href='../S/185.html#L39700'>pcache1</a>          39700 libdb/sqlite3.c   assert( pcache1.isInit==0 );</span>
+<span class='curline'><a href='../S/185.html#L39701'>pcache1</a>          39701 libdb/sqlite3.c   memset(&amp;pcache1, 0, sizeof(pcache1));</span>
+<span class='curline'><a href='../S/185.html#L39703'>pcache1</a>          39703 libdb/sqlite3.c     pcache1.grp.mutex = sqlite3_mutex_alloc(SQLITE_MUTEX_STATIC_LRU);</span>
+<span class='curline'><a href='../S/185.html#L39704'>pcache1</a>          39704 libdb/sqlite3.c     pcache1.mutex = sqlite3_mutex_alloc(SQLITE_MUTEX_STATIC_PMEM);</span>
+<span class='curline'><a href='../S/185.html#L39706'>pcache1</a>          39706 libdb/sqlite3.c   pcache1.grp.mxPinned = 10;</span>
+<span class='curline'><a href='../S/185.html#L39707'>pcache1</a>          39707 libdb/sqlite3.c   pcache1.isInit = 1;</span>
+<span class='curline'><a href='../S/185.html#L39718'>pcache1</a>          39718 libdb/sqlite3.c   assert( pcache1.isInit!=0 );</span>
+<span class='curline'><a href='../S/185.html#L39719'>pcache1</a>          39719 libdb/sqlite3.c   memset(&amp;pcache1, 0, sizeof(pcache1));</span>
+<span class='curline'><a href='../S/185.html#L39763'>pcache1</a>          39763 libdb/sqlite3.c       pGroup = &amp;pcache1.grp;</span>
+<span class='curline'><a href='../S/185.html#L40166'>pcache1</a>          40166 libdb/sqlite3.c   assert( sqlite3_mutex_notheld(pcache1.grp.mutex) );</span>
+<span class='curline'><a href='../S/185.html#L40167'>pcache1</a>          40167 libdb/sqlite3.c   assert( sqlite3_mutex_notheld(pcache1.mutex) );</span>
+<span class='curline'><a href='../S/185.html#L40168'>pcache1</a>          40168 libdb/sqlite3.c   if( pcache1.pStart==0 ){</span>
+<span class='curline'><a href='../S/185.html#L40170'>pcache1</a>          40170 libdb/sqlite3.c     pcache1EnterMutex(&amp;pcache1.grp);</span>
+<span class='curline'><a href='../S/185.html#L40171'>pcache1</a>          40171 libdb/sqlite3.c     while( (nReq&lt;0 || nFree&lt;nReq) &amp;&amp; ((p=pcache1.grp.pLruTail)!=0) ){</span>
+<span class='curline'><a href='../S/185.html#L40181'>pcache1</a>          40181 libdb/sqlite3.c     pcache1LeaveMutex(&amp;pcache1.grp);</span>
+<span class='curline'><a href='../S/185.html#L40200'>pcache1</a>          40200 libdb/sqlite3.c   for(p=pcache1.grp.pLruHead; p; p=p-&gt;pLruNext){</span>
+<span class='curline'><a href='../S/185.html#L40204'>pcache1</a>          40204 libdb/sqlite3.c   *pnCurrent = pcache1.grp.nCurrentPage;</span>
+<span class='curline'><a href='../S/185.html#L40205'>pcache1</a>          40205 libdb/sqlite3.c   *pnMax = (int)pcache1.grp.nMaxPage;</span>
+<span class='curline'><a href='../S/185.html#L40206'>pcache1</a>          40206 libdb/sqlite3.c   *pnMin = (int)pcache1.grp.nMinPage;</span>
+</pre>
+</body>
+</html>

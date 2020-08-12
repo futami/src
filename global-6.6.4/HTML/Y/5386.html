@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>pLevel</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/185.html#L115138'>pLevel</a>           115138 libdb/sqlite3.c   WhereLevel *pLevel          /* Write new index here */</span>
+<span class='curline'><a href='../S/185.html#L115170'>pLevel</a>           115170 libdb/sqlite3.c   pLoop = pLevel-&gt;pWLoop;</span>
+<span class='curline'><a href='../S/185.html#L115263'>pLevel</a>           115263 libdb/sqlite3.c   assert( pLevel-&gt;iIdxCur&gt;=0 );</span>
+<span class='curline'><a href='../S/185.html#L115264'>pLevel</a>           115264 libdb/sqlite3.c   pLevel-&gt;iIdxCur = pParse-&gt;nTab++;</span>
+<span class='curline'><a href='../S/185.html#L115265'>pLevel</a>           115265 libdb/sqlite3.c   sqlite3VdbeAddOp2(v, OP_OpenAutoindex, pLevel-&gt;iIdxCur, nKeyCol+1);</span>
+<span class='curline'><a href='../S/185.html#L115270'>pLevel</a>           115270 libdb/sqlite3.c   addrTop = sqlite3VdbeAddOp1(v, OP_Rewind, pLevel-&gt;iTabCur); VdbeCoverage(v);</span>
+<span class='curline'><a href='../S/185.html#L115272'>pLevel</a>           115272 libdb/sqlite3.c   sqlite3GenerateIndexKey(pParse, pIdx, pLevel-&gt;iTabCur, regRecord, 0, 0, 0, 0);</span>
+<span class='curline'><a href='../S/185.html#L115273'>pLevel</a>           115273 libdb/sqlite3.c   sqlite3VdbeAddOp2(v, OP_IdxInsert, pLevel-&gt;iIdxCur, regRecord);</span>
+<span class='curline'><a href='../S/185.html#L115275'>pLevel</a>           115275 libdb/sqlite3.c   sqlite3VdbeAddOp2(v, OP_Next, pLevel-&gt;iTabCur, addrTop+1); VdbeCoverage(v);</span>
+<span class='curline'><a href='../S/185.html#L115998'>pLevel</a>           115998 libdb/sqlite3.c static void disableTerm(WhereLevel *pLevel, WhereTerm *pTerm){</span>
+<span class='curline'><a href='../S/185.html#L116001'>pLevel</a>           116001 libdb/sqlite3.c       &amp;&amp; (pLevel-&gt;iLeftJoin==0 || ExprHasProperty(pTerm-&gt;pExpr, EP_FromJoin))</span>
+<span class='curline'><a href='../S/185.html#L116002'>pLevel</a>           116002 libdb/sqlite3.c       &amp;&amp; (pLevel-&gt;notReady &amp; pTerm-&gt;prereqAll)==0</span>
+<span class='curline'><a href='../S/185.html#L116008'>pLevel</a>           116008 libdb/sqlite3.c         disableTerm(pLevel, pOther);</span>
+<span class='curline'><a href='../S/185.html#L116068'>pLevel</a>           116068 libdb/sqlite3.c   WhereLevel *pLevel, /* The level of the FROM clause we are working on */</span>
+<span class='curline'><a href='../S/185.html#L116088'>pLevel</a>           116088 libdb/sqlite3.c     WhereLoop *pLoop = pLevel-&gt;pWLoop;</span>
+<span class='curline'><a href='../S/185.html#L116111'>pLevel</a>           116111 libdb/sqlite3.c     if( pLevel-&gt;u.in.nIn==0 ){</span>
+<span class='curline'><a href='../S/185.html#L116112'>pLevel</a>           116112 libdb/sqlite3.c       pLevel-&gt;addrNxt = sqlite3VdbeMakeLabel(v);</span>
+<span class='curline'><a href='../S/185.html#L116114'>pLevel</a>           116114 libdb/sqlite3.c     pLevel-&gt;u.in.nIn++;</span>
+<span class='curline'><a href='../S/185.html#L116115'>pLevel</a>           116115 libdb/sqlite3.c     pLevel-&gt;u.in.aInLoop =</span>
+<span class='curline'><a href='../S/185.html#L116116'>pLevel</a>           116116 libdb/sqlite3.c        sqlite3DbReallocOrFree(pParse-&gt;db, pLevel-&gt;u.in.aInLoop,</span>
+<span class='curline'><a href='../S/185.html#L116117'>pLevel</a>           116117 libdb/sqlite3.c                               sizeof(pLevel-&gt;u.in.aInLoop[0])*pLevel-&gt;u.in.nIn);</span>
+<span class='curline'><a href='../S/185.html#L116118'>pLevel</a>           116118 libdb/sqlite3.c     pIn = pLevel-&gt;u.in.aInLoop;</span>
+<span class='curline'><a href='../S/185.html#L116120'>pLevel</a>           116120 libdb/sqlite3.c       pIn += pLevel-&gt;u.in.nIn - 1;</span>
+<span class='curline'><a href='../S/185.html#L116130'>pLevel</a>           116130 libdb/sqlite3.c       pLevel-&gt;u.in.nIn = 0;</span>
+<span class='curline'><a href='../S/185.html#L116134'>pLevel</a>           116134 libdb/sqlite3.c   disableTerm(pLevel, pTerm);</span>
+<span class='curline'><a href='../S/185.html#L116185'>pLevel</a>           116185 libdb/sqlite3.c   WhereLevel *pLevel,   /* Which nested loop of the FROM we are coding */</span>
+<span class='curline'><a href='../S/185.html#L116202'>pLevel</a>           116202 libdb/sqlite3.c   pLoop = pLevel-&gt;pWLoop;</span>
+<span class='curline'><a href='../S/185.html#L116221'>pLevel</a>           116221 libdb/sqlite3.c     int iIdxCur = pLevel-&gt;iIdxCur;</span>
+<span class='curline'><a href='../S/185.html#L116227'>pLevel</a>           116227 libdb/sqlite3.c     pLevel-&gt;addrSkip = sqlite3VdbeAddOp4Int(v, (bRev?OP_SeekLT:OP_SeekGT),</span>
+<span class='curline'><a href='../S/185.html#L116250'>pLevel</a>           116250 libdb/sqlite3.c     r1 = codeEqualityTerm(pParse, pTerm, pLevel, j, bRev, regBase+j);</span>
+<span class='curline'><a href='../S/185.html#L116264'>pLevel</a>           116264 libdb/sqlite3.c         sqlite3VdbeAddOp2(v, OP_IsNull, regBase+j, pLevel-&gt;addrBrk);</span>
+<span class='curline'><a href='../S/185.html#L116357'>pLevel</a>           116357 libdb/sqlite3.c   WhereLevel *pLevel,             /* Scan to write OP_Explain opcode for */</span>
+<span class='curline'><a href='../S/185.html#L116366'>pLevel</a>           116366 libdb/sqlite3.c     struct SrcList_item *pItem = &amp;pTabList-&gt;a[pLevel-&gt;iFrom];</span>
+<span class='curline'><a href='../S/185.html#L116377'>pLevel</a>           116377 libdb/sqlite3.c     pLoop = pLevel-&gt;pWLoop;</span>
+<span class='curline'><a href='../S/185.html#L116471'>pLevel</a>           116471 libdb/sqlite3.c   WhereLevel *pLevel;  /* The where level to be coded */</span>
+<span class='curline'><a href='../S/185.html#L116488'>pLevel</a>           116488 libdb/sqlite3.c   pLevel = &amp;pWInfo-&gt;a[iLevel];</span>
+<span class='curline'><a href='../S/185.html#L116489'>pLevel</a>           116489 libdb/sqlite3.c   pLoop = pLevel-&gt;pWLoop;</span>
+<span class='curline'><a href='../S/185.html#L116490'>pLevel</a>           116490 libdb/sqlite3.c   pTabItem = &amp;pWInfo-&gt;pTabList-&gt;a[pLevel-&gt;iFrom];</span>
+<span class='curline'><a href='../S/185.html#L116492'>pLevel</a>           116492 libdb/sqlite3.c   pLevel-&gt;notReady = notReady &amp; ~getMask(&amp;pWInfo-&gt;sMaskSet, iCur);</span>
+<span class='curline'><a href='../S/185.html#L116508'>pLevel</a>           116508 libdb/sqlite3.c   addrBrk = pLevel-&gt;addrBrk = pLevel-&gt;addrNxt = sqlite3VdbeMakeLabel(v);</span>
+<span class='curline'><a href='../S/185.html#L116509'>pLevel</a>           116509 libdb/sqlite3.c   addrCont = pLevel-&gt;addrCont = sqlite3VdbeMakeLabel(v);</span>
+<span class='curline'><a href='../S/185.html#L116515'>pLevel</a>           116515 libdb/sqlite3.c   if( pLevel-&gt;iFrom&gt;0 &amp;&amp; (pTabItem[0].jointype &amp; JT_LEFT)!=0 ){</span>
+<span class='curline'><a href='../S/185.html#L116516'>pLevel</a>           116516 libdb/sqlite3.c     pLevel-&gt;iLeftJoin = ++pParse-&gt;nMem;</span>
+<span class='curline'><a href='../S/185.html#L116517'>pLevel</a>           116517 libdb/sqlite3.c     sqlite3VdbeAddOp2(v, OP_Integer, 0, pLevel-&gt;iLeftJoin);</span>
+<span class='curline'><a href='../S/185.html#L116525'>pLevel</a>           116525 libdb/sqlite3.c     pLevel-&gt;p2 =  sqlite3VdbeAddOp2(v, OP_Yield, regYield, addrBrk);</span>
+<span class='curline'><a href='../S/185.html#L116528'>pLevel</a>           116528 libdb/sqlite3.c     pLevel-&gt;op = OP_Goto;</span>
+<span class='curline'><a href='../S/185.html#L116542'>pLevel</a>           116542 libdb/sqlite3.c     addrNotFound = pLevel-&gt;addrBrk;</span>
+<span class='curline'><a href='../S/185.html#L116548'>pLevel</a>           116548 libdb/sqlite3.c         codeEqualityTerm(pParse, pTerm, pLevel, j, bRev, iTarget);</span>
+<span class='curline'><a href='../S/185.html#L116549'>pLevel</a>           116549 libdb/sqlite3.c         addrNotFound = pLevel-&gt;addrNxt;</span>
+<span class='curline'><a href='../S/185.html#L116563'>pLevel</a>           116563 libdb/sqlite3.c         disableTerm(pLevel, pLoop-&gt;aLTerm[j]);</span>
+<span class='curline'><a href='../S/185.html#L116566'>pLevel</a>           116566 libdb/sqlite3.c     pLevel-&gt;op = OP_VNext;</span>
+<span class='curline'><a href='../S/185.html#L116567'>pLevel</a>           116567 libdb/sqlite3.c     pLevel-&gt;p1 = iCur;</span>
+<span class='curline'><a href='../S/185.html#L116568'>pLevel</a>           116568 libdb/sqlite3.c     pLevel-&gt;p2 = sqlite3VdbeCurrentAddr(v);</span>
+<span class='curline'><a href='../S/185.html#L116589'>pLevel</a>           116589 libdb/sqlite3.c     iRowidReg = codeEqualityTerm(pParse, pTerm, pLevel, 0, bRev, iReleaseReg);</span>
+<span class='curline'><a href='../S/185.html#L116591'>pLevel</a>           116591 libdb/sqlite3.c     addrNxt = pLevel-&gt;addrNxt;</span>
+<span class='curline'><a href='../S/185.html#L116598'>pLevel</a>           116598 libdb/sqlite3.c     pLevel-&gt;op = OP_Noop;</span>
+<span class='curline'><a href='../S/185.html#L116651'>pLevel</a>           116651 libdb/sqlite3.c       disableTerm(pLevel, pStart);</span>
+<span class='curline'><a href='../S/185.html#L116671'>pLevel</a>           116671 libdb/sqlite3.c       disableTerm(pLevel, pEnd);</span>
+<span class='curline'><a href='../S/185.html#L116674'>pLevel</a>           116674 libdb/sqlite3.c     pLevel-&gt;op = bRev ? OP_Prev : OP_Next;</span>
+<span class='curline'><a href='../S/185.html#L116675'>pLevel</a>           116675 libdb/sqlite3.c     pLevel-&gt;p1 = iCur;</span>
+<span class='curline'><a href='../S/185.html#L116676'>pLevel</a>           116676 libdb/sqlite3.c     pLevel-&gt;p2 = start;</span>
+<span class='curline'><a href='../S/185.html#L116677'>pLevel</a>           116677 libdb/sqlite3.c     assert( pLevel-&gt;p5==0 );</span>
+<span class='curline'><a href='../S/185.html#L116755'>pLevel</a>           116755 libdb/sqlite3.c     iIdxCur = pLevel-&gt;iIdxCur;</span>
+<span class='curline'><a href='../S/185.html#L116802'>pLevel</a>           116802 libdb/sqlite3.c     regBase = codeAllEqualityTerms(pParse,pLevel,bRev,nExtraReg,&amp;zStartAff);</span>
+<span class='curline'><a href='../S/185.html#L116805'>pLevel</a>           116805 libdb/sqlite3.c     addrNxt = pLevel-&gt;addrNxt;</span>
+<span class='curline'><a href='../S/185.html#L116897'>pLevel</a>           116897 libdb/sqlite3.c     pLevel-&gt;p2 = sqlite3VdbeCurrentAddr(v);</span>
+<span class='curline'><a href='../S/185.html#L116910'>pLevel</a>           116910 libdb/sqlite3.c     disableTerm(pLevel, pRangeStart);</span>
+<span class='curline'><a href='../S/185.html#L116911'>pLevel</a>           116911 libdb/sqlite3.c     disableTerm(pLevel, pRangeEnd);</span>
+<span class='curline'><a href='../S/185.html#L116934'>pLevel</a>           116934 libdb/sqlite3.c       pLevel-&gt;op = OP_Noop;</span>
+<span class='curline'><a href='../S/185.html#L116936'>pLevel</a>           116936 libdb/sqlite3.c       pLevel-&gt;op = OP_Prev;</span>
+<span class='curline'><a href='../S/185.html#L116938'>pLevel</a>           116938 libdb/sqlite3.c       pLevel-&gt;op = OP_Next;</span>
+<span class='curline'><a href='../S/185.html#L116940'>pLevel</a>           116940 libdb/sqlite3.c     pLevel-&gt;p1 = iIdxCur;</span>
+<span class='curline'><a href='../S/185.html#L116941'>pLevel</a>           116941 libdb/sqlite3.c     pLevel-&gt;p3 = (pLoop-&gt;wsFlags&amp;WHERE_UNQ_WANTED)!=0 ? 1:0;</span>
+<span class='curline'><a href='../S/185.html#L116943'>pLevel</a>           116943 libdb/sqlite3.c       pLevel-&gt;p5 = SQLITE_STMTSTATUS_FULLSCAN_STEP;</span>
+<span class='curline'><a href='../S/185.html#L116945'>pLevel</a>           116945 libdb/sqlite3.c       assert( pLevel-&gt;p5==0 );</span>
+<span class='curline'><a href='../S/185.html#L117015'>pLevel</a>           117015 libdb/sqlite3.c     pLevel-&gt;op = OP_Return;</span>
+<span class='curline'><a href='../S/185.html#L117016'>pLevel</a>           117016 libdb/sqlite3.c     pLevel-&gt;p1 = regReturn;</span>
+<span class='curline'><a href='../S/185.html#L117034'>pLevel</a>           117034 libdb/sqlite3.c         memcpy(&amp;pOrTab-&gt;a[k], &amp;origSrc[pLevel[k].iFrom], sizeof(pOrTab-&gt;a[k]));</span>
+<span class='curline'><a href='../S/185.html#L117123'>pLevel</a>           117123 libdb/sqlite3.c               pParse, pOrTab, &amp;pSubWInfo-&gt;a[0], iLevel, pLevel-&gt;iFrom, 0</span>
+<span class='curline'><a href='../S/185.html#L117219'>pLevel</a>           117219 libdb/sqlite3.c     pLevel-&gt;u.pCovidx = pCov;</span>
+<span class='curline'><a href='../S/185.html#L117220'>pLevel</a>           117220 libdb/sqlite3.c     if( pCov ) pLevel-&gt;iIdxCur = iCovCur;</span>
+<span class='curline'><a href='../S/185.html#L117226'>pLevel</a>           117226 libdb/sqlite3.c     sqlite3VdbeAddOp2(v, OP_Goto, 0, pLevel-&gt;addrBrk);</span>
+<span class='curline'><a href='../S/185.html#L117230'>pLevel</a>           117230 libdb/sqlite3.c     if( !untestedTerms ) disableTerm(pLevel, pTerm);</span>
+<span class='curline'><a href='../S/185.html#L117244'>pLevel</a>           117244 libdb/sqlite3.c       pLevel-&gt;op = OP_Noop;</span>
+<span class='curline'><a href='../S/185.html#L117246'>pLevel</a>           117246 libdb/sqlite3.c       pLevel-&gt;op = aStep[bRev];</span>
+<span class='curline'><a href='../S/185.html#L117247'>pLevel</a>           117247 libdb/sqlite3.c       pLevel-&gt;p1 = iCur;</span>
+<span class='curline'><a href='../S/185.html#L117248'>pLevel</a>           117248 libdb/sqlite3.c       pLevel-&gt;p2 = 1 + sqlite3VdbeAddOp2(v, aStart[bRev], iCur, addrBrk);</span>
+<span class='curline'><a href='../S/185.html#L117251'>pLevel</a>           117251 libdb/sqlite3.c       pLevel-&gt;p5 = SQLITE_STMTSTATUS_FULLSCAN_STEP;</span>
+<span class='curline'><a href='../S/185.html#L117263'>pLevel</a>           117263 libdb/sqlite3.c     if( (pTerm-&gt;prereqAll &amp; pLevel-&gt;notReady)!=0 ){</span>
+<span class='curline'><a href='../S/185.html#L117271'>pLevel</a>           117271 libdb/sqlite3.c     if( pLevel-&gt;iLeftJoin &amp;&amp; !ExprHasProperty(pE, EP_FromJoin) ){</span>
+<span class='curline'><a href='../S/185.html#L117292'>pLevel</a>           117292 libdb/sqlite3.c     if( pLevel-&gt;iLeftJoin ) continue;</span>
+<span class='curline'><a href='../S/185.html#L117295'>pLevel</a>           117295 libdb/sqlite3.c     assert( (pTerm-&gt;prereqRight &amp; pLevel-&gt;notReady)!=0 );</span>
+<span class='curline'><a href='../S/185.html#L117314'>pLevel</a>           117314 libdb/sqlite3.c   if( pLevel-&gt;iLeftJoin ){</span>
+<span class='curline'><a href='../S/185.html#L117315'>pLevel</a>           117315 libdb/sqlite3.c     pLevel-&gt;addrFirst = sqlite3VdbeCurrentAddr(v);</span>
+<span class='curline'><a href='../S/185.html#L117316'>pLevel</a>           117316 libdb/sqlite3.c     sqlite3VdbeAddOp2(v, OP_Integer, 1, pLevel-&gt;iLeftJoin);</span>
+<span class='curline'><a href='../S/185.html#L117323'>pLevel</a>           117323 libdb/sqlite3.c       if( (pTerm-&gt;prereqAll &amp; pLevel-&gt;notReady)!=0 ){</span>
+<span class='curline'><a href='../S/185.html#L117333'>pLevel</a>           117333 libdb/sqlite3.c   return pLevel-&gt;notReady;</span>
+<span class='curline'><a href='../S/185.html#L119362'>pLevel</a>           119362 libdb/sqlite3.c     WhereLevel *pLevel = pWInfo-&gt;a + iLoop;</span>
+<span class='curline'><a href='../S/185.html#L119363'>pLevel</a>           119363 libdb/sqlite3.c     pLevel-&gt;pWLoop = pWLoop = pFrom-&gt;aLoop[iLoop];</span>
+<span class='curline'><a href='../S/185.html#L119364'>pLevel</a>           119364 libdb/sqlite3.c     pLevel-&gt;iFrom = pWLoop-&gt;iTab;</span>
+<span class='curline'><a href='../S/185.html#L119365'>pLevel</a>           119365 libdb/sqlite3.c     pLevel-&gt;iTabCur = pWInfo-&gt;pTabList-&gt;a[pLevel-&gt;iFrom].iCursor;</span>
+<span class='curline'><a href='../S/185.html#L119602'>pLevel</a>           119602 libdb/sqlite3.c   WhereLevel *pLevel;        /* A single level in pWInfo-&gt;a[] */</span>
+<span class='curline'><a href='../S/185.html#L119873'>pLevel</a>           119873 libdb/sqlite3.c   for(ii=0, pLevel=pWInfo-&gt;a; ii&lt;nTabList; ii++, pLevel++){</span>
+<span class='curline'><a href='../S/185.html#L119878'>pLevel</a>           119878 libdb/sqlite3.c     pTabItem = &amp;pTabList-&gt;a[pLevel-&gt;iFrom];</span>
+<span class='curline'><a href='../S/185.html#L119881'>pLevel</a>           119881 libdb/sqlite3.c     pLoop = pLevel-&gt;pWLoop;</span>
+<span class='curline'><a href='../S/185.html#L119902'>pLevel</a>           119902 libdb/sqlite3.c       assert( pTabItem-&gt;iCursor==pLevel-&gt;iTabCur );</span>
+<span class='curline'><a href='../S/185.html#L119927'>pLevel</a>           119927 libdb/sqlite3.c         iIndexCur = pLevel-&gt;iTabCur;</span>
+<span class='curline'><a href='../S/185.html#L119945'>pLevel</a>           119945 libdb/sqlite3.c       pLevel-&gt;iIdxCur = iIndexCur;</span>
+<span class='curline'><a href='../S/185.html#L119966'>pLevel</a>           119966 libdb/sqlite3.c     pLevel = &amp;pWInfo-&gt;a[ii];</span>
+<span class='curline'><a href='../S/185.html#L119968'>pLevel</a>           119968 libdb/sqlite3.c     if( (pLevel-&gt;pWLoop-&gt;wsFlags &amp; WHERE_AUTO_INDEX)!=0 ){</span>
+<span class='curline'><a href='../S/185.html#L119970'>pLevel</a>           119970 libdb/sqlite3.c                 &amp;pTabList-&gt;a[pLevel-&gt;iFrom], notReady, pLevel);</span>
+<span class='curline'><a href='../S/185.html#L119974'>pLevel</a>           119974 libdb/sqlite3.c     explainOneScan(pParse, pTabList, pLevel, ii, pLevel-&gt;iFrom, wctrlFlags);</span>
+<span class='curline'><a href='../S/185.html#L119975'>pLevel</a>           119975 libdb/sqlite3.c     pLevel-&gt;addrBody = sqlite3VdbeCurrentAddr(v);</span>
+<span class='curline'><a href='../S/185.html#L119977'>pLevel</a>           119977 libdb/sqlite3.c     pWInfo-&gt;iContinue = pLevel-&gt;addrCont;</span>
+<span class='curline'><a href='../S/185.html#L120001'>pLevel</a>           120001 libdb/sqlite3.c   WhereLevel *pLevel;</span>
+<span class='curline'><a href='../S/185.html#L120012'>pLevel</a>           120012 libdb/sqlite3.c     pLevel = &amp;pWInfo-&gt;a[i];</span>
+<span class='curline'><a href='../S/185.html#L120013'>pLevel</a>           120013 libdb/sqlite3.c     pLoop = pLevel-&gt;pWLoop;</span>
+<span class='curline'><a href='../S/185.html#L120014'>pLevel</a>           120014 libdb/sqlite3.c     sqlite3VdbeResolveLabel(v, pLevel-&gt;addrCont);</span>
+<span class='curline'><a href='../S/185.html#L120015'>pLevel</a>           120015 libdb/sqlite3.c     if( pLevel-&gt;op!=OP_Noop ){</span>
+<span class='curline'><a href='../S/185.html#L120016'>pLevel</a>           120016 libdb/sqlite3.c       sqlite3VdbeAddOp3(v, pLevel-&gt;op, pLevel-&gt;p1, pLevel-&gt;p2, pLevel-&gt;p3);</span>
+<span class='curline'><a href='../S/185.html#L120017'>pLevel</a>           120017 libdb/sqlite3.c       sqlite3VdbeChangeP5(v, pLevel-&gt;p5);</span>
+<span class='curline'><a href='../S/185.html#L120019'>pLevel</a>           120019 libdb/sqlite3.c       VdbeCoverageIf(v, pLevel-&gt;op==OP_Next);</span>
+<span class='curline'><a href='../S/185.html#L120020'>pLevel</a>           120020 libdb/sqlite3.c       VdbeCoverageIf(v, pLevel-&gt;op==OP_Prev);</span>
+<span class='curline'><a href='../S/185.html#L120021'>pLevel</a>           120021 libdb/sqlite3.c       VdbeCoverageIf(v, pLevel-&gt;op==OP_VNext);</span>
+<span class='curline'><a href='../S/185.html#L120023'>pLevel</a>           120023 libdb/sqlite3.c     if( pLoop-&gt;wsFlags &amp; WHERE_IN_ABLE &amp;&amp; pLevel-&gt;u.in.nIn&gt;0 ){</span>
+<span class='curline'><a href='../S/185.html#L120026'>pLevel</a>           120026 libdb/sqlite3.c       sqlite3VdbeResolveLabel(v, pLevel-&gt;addrNxt);</span>
+<span class='curline'><a href='../S/185.html#L120027'>pLevel</a>           120027 libdb/sqlite3.c       for(j=pLevel-&gt;u.in.nIn, pIn=&amp;pLevel-&gt;u.in.aInLoop[j-1]; j&gt;0; j--, pIn--){</span>
+<span class='curline'><a href='../S/185.html#L120035'>pLevel</a>           120035 libdb/sqlite3.c       sqlite3DbFree(db, pLevel-&gt;u.in.aInLoop);</span>
+<span class='curline'><a href='../S/185.html#L120037'>pLevel</a>           120037 libdb/sqlite3.c     sqlite3VdbeResolveLabel(v, pLevel-&gt;addrBrk);</span>
+<span class='curline'><a href='../S/185.html#L120038'>pLevel</a>           120038 libdb/sqlite3.c     if( pLevel-&gt;addrSkip ){</span>
+<span class='curline'><a href='../S/185.html#L120039'>pLevel</a>           120039 libdb/sqlite3.c       sqlite3VdbeAddOp2(v, OP_Goto, 0, pLevel-&gt;addrSkip);</span>
+<span class='curline'><a href='../S/185.html#L120041'>pLevel</a>           120041 libdb/sqlite3.c       sqlite3VdbeJumpHere(v, pLevel-&gt;addrSkip);</span>
+<span class='curline'><a href='../S/185.html#L120042'>pLevel</a>           120042 libdb/sqlite3.c       sqlite3VdbeJumpHere(v, pLevel-&gt;addrSkip-2);</span>
+<span class='curline'><a href='../S/185.html#L120044'>pLevel</a>           120044 libdb/sqlite3.c     if( pLevel-&gt;iLeftJoin ){</span>
+<span class='curline'><a href='../S/185.html#L120045'>pLevel</a>           120045 libdb/sqlite3.c       addr = sqlite3VdbeAddOp1(v, OP_IfPos, pLevel-&gt;iLeftJoin); VdbeCoverage(v);</span>
+<span class='curline'><a href='../S/185.html#L120052'>pLevel</a>           120052 libdb/sqlite3.c         sqlite3VdbeAddOp1(v, OP_NullRow, pLevel-&gt;iIdxCur);</span>
+<span class='curline'><a href='../S/185.html#L120054'>pLevel</a>           120054 libdb/sqlite3.c       if( pLevel-&gt;op==OP_Return ){</span>
+<span class='curline'><a href='../S/185.html#L120055'>pLevel</a>           120055 libdb/sqlite3.c         sqlite3VdbeAddOp2(v, OP_Gosub, pLevel-&gt;p1, pLevel-&gt;addrFirst);</span>
+<span class='curline'><a href='../S/185.html#L120057'>pLevel</a>           120057 libdb/sqlite3.c         sqlite3VdbeAddOp2(v, OP_Goto, 0, pLevel-&gt;addrFirst);</span>
+<span class='curline'><a href='../S/185.html#L120062'>pLevel</a>           120062 libdb/sqlite3.c                      pWInfo-&gt;pTabList-&gt;a[pLevel-&gt;iFrom].pTab-&gt;zName));</span>
+<span class='curline'><a href='../S/185.html#L120071'>pLevel</a>           120071 libdb/sqlite3.c   for(i=0, pLevel=pWInfo-&gt;a; i&lt;pWInfo-&gt;nLevel; i++, pLevel++){</span>
+<span class='curline'><a href='../S/185.html#L120075'>pLevel</a>           120075 libdb/sqlite3.c     struct SrcList_item *pTabItem = &amp;pTabList-&gt;a[pLevel-&gt;iFrom];</span>
+<span class='curline'><a href='../S/185.html#L120078'>pLevel</a>           120078 libdb/sqlite3.c     pLoop = pLevel-&gt;pWLoop;</span>
+<span class='curline'><a href='../S/185.html#L120086'>pLevel</a>           120086 libdb/sqlite3.c       k = pLevel-&gt;addrBody;</span>
+<span class='curline'><a href='../S/185.html#L120089'>pLevel</a>           120089 libdb/sqlite3.c         if( pOp-&gt;p1!=pLevel-&gt;iTabCur ) continue;</span>
+<span class='curline'><a href='../S/185.html#L120119'>pLevel</a>           120119 libdb/sqlite3.c        &amp;&amp; pLevel-&gt;iIdxCur!=pWInfo-&gt;aiCurOnePass[1]</span>
+<span class='curline'><a href='../S/185.html#L120121'>pLevel</a>           120121 libdb/sqlite3.c         sqlite3VdbeAddOp1(v, OP_Close, pLevel-&gt;iIdxCur);</span>
+<span class='curline'><a href='../S/185.html#L120139'>pLevel</a>           120139 libdb/sqlite3.c       pIdx = pLevel-&gt;u.pCovidx;</span>
+<span class='curline'><a href='../S/185.html#L120143'>pLevel</a>           120143 libdb/sqlite3.c       k = pLevel-&gt;addrBody;</span>
+<span class='curline'><a href='../S/185.html#L120146'>pLevel</a>           120146 libdb/sqlite3.c         if( pOp-&gt;p1!=pLevel-&gt;iTabCur ) continue;</span>
+<span class='curline'><a href='../S/185.html#L120157'>pLevel</a>           120157 libdb/sqlite3.c             pOp-&gt;p1 = pLevel-&gt;iIdxCur;</span>
+<span class='curline'><a href='../S/185.html#L120161'>pLevel</a>           120161 libdb/sqlite3.c           pOp-&gt;p1 = pLevel-&gt;iIdxCur;</span>
+</pre>
+</body>
+</html>

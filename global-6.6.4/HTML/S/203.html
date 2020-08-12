@@ -1,0 +1,113 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>libltdl/libltdl/lt_dlloader.h</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/402.html'>libltdl</a>/<a href='../files/403.html'>libltdl</a>/lt_dlloader.h</h2>
+<em class='comment'>/* [&lt;][&gt;][^][v][top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'><a href='../J/99.html' title='Multiple included from 10 places.'>INCLUDED FROM</a></h2>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/* lt_dlloader.h -- dynamic library loader interface</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'></em>
+<a id='L3' name='L3'></a>   3 <em class='comment'>   Copyright (C) 2004, 2007-2008, 2011-2015 Free Software Foundation,</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'>   Inc.</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'>   Written by Gary V. Vaughan, 2004</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'></em>
+<a id='L7' name='L7'></a>   7 <em class='comment'>   NOTE: The canonical source of this file is maintained with the</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'>   GNU Libtool package.  Report bugs to bug-libtool@gnu.org.</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'></em>
+<a id='L10' name='L10'></a>  10 <em class='comment'>GNU Libltdl is free software; you can redistribute it and/or</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'>modify it under the terms of the GNU Lesser General Public</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'>License as published by the Free Software Foundation; either</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'>version 2 of the License, or (at your option) any later version.</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'></em>
+<a id='L15' name='L15'></a>  15 <em class='comment'>As a special exception to the GNU Lesser General Public License,</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'>if you distribute this file as part of a program or library that</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'>is built using GNU Libtool, you may include this file under the</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'>same distribution terms that you use for the rest of that program.</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'></em>
+<a id='L20' name='L20'></a>  20 <em class='comment'>GNU Libltdl is distributed in the hope that it will be useful,</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'>but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'>MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'>GNU Lesser General Public License for more details.</em>
+<a id='L24' name='L24'></a>  24 <em class='comment'></em>
+<a id='L25' name='L25'></a>  25 <em class='comment'>You should have received a copy of the GNU Lesser General Public</em>
+<a id='L26' name='L26'></a>  26 <em class='comment'>License along with GNU Libltdl; see the file COPYING.LIB.  If not, a</em>
+<a id='L27' name='L27'></a>  27 <em class='comment'>copy can be downloaded from  http://www.gnu.org/licenses/lgpl.html,</em>
+<a id='L28' name='L28'></a>  28 <em class='comment'>or obtained by writing to the Free Software Foundation, Inc.,</em>
+<a id='L29' name='L29'></a>  29 <em class='comment'>51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.</em>
+<a id='L30' name='L30'></a>  30 <em class='comment'>*/</em>
+<a id='L31' name='L31'></a>  31 
+<a id='L32' name='L32'></a>  32 <em class='sharp'>#if</em> !<strong class='reserved'>defined</strong> <a href='../S/203.html#L33' title='Defined at 33 in libltdl/libltdl/lt_dlloader.h.'>LT_DLLOADER_H</a>
+<a id='L33' name='L33'></a>  33 <em class='sharp'>#define</em> <a href='../S/203.html#L32' title='Referred from 32 in libltdl/libltdl/lt_dlloader.h.'>LT_DLLOADER_H</a> 1
+<a id='L34' name='L34'></a>  34 
+<a id='L35' name='L35'></a>  35 <em class='sharp'>#include</em> &lt;<a href='205.html'>libltdl/lt_system.h</a>&gt;
+<a id='L36' name='L36'></a>  36 
+<a id='L37' name='L37'></a>  37 <a href='../D/912.html' title='Multiple defined in 2 places.'>LT_BEGIN_C_DECLS</a>
+<a id='L38' name='L38'></a>  38 
+<a id='L39' name='L39'></a>  39 <strong class='reserved'>typedef</strong> <strong class='reserved'>void</strong> *  <a href='../R/4534.html' title='Multiple referred from 10 places.'>lt_dlloader</a>;
+<a id='L40' name='L40'></a>  40 <strong class='reserved'>typedef</strong> <strong class='reserved'>void</strong> *  <a href='../R/4561.html' title='Multiple referred from 59 places.'>lt_module</a>;
+<a id='L41' name='L41'></a>  41 <strong class='reserved'>typedef</strong> <strong class='reserved'>void</strong> *  <a href='../R/4567.html' title='Multiple referred from 86 places.'>lt_user_data</a>;
+<a id='L42' name='L42'></a>  42 <strong class='reserved'>typedef</strong> <strong class='reserved'>struct</strong> <a href='../S/210.html#L122' title='Defined at 122 in libltdl/libltdl/lt__private.h.'>lt__advise</a> * <a href='../R/4505.html' title='Multiple referred from 43 places.'>lt_dladvise</a>;
+<a id='L43' name='L43'></a>  43 
+<a id='L44' name='L44'></a>  44 <em class='comment'>/* Function pointer types for module loader vtable entries:  */</em>
+<a id='L45' name='L45'></a>  45 <strong class='reserved'>typedef</strong> <a href='../S/203.html#L40' title='Defined at 40 in libltdl/libltdl/lt_dlloader.h.'>lt_module</a>   <a href='../S/203.html#L65' title='Referred from 65 in libltdl/libltdl/lt_dlloader.h.'>lt_module_open</a>  (<a href='../S/203.html#L41' title='Defined at 41 in libltdl/libltdl/lt_dlloader.h.'>lt_user_data</a> <a href='../S/126.html#L24' title='Defined at 24 in htags/incop.h.'>data</a>,
+<a id='L46' name='L46'></a>  46                      <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/2835.html' title='Multiple used in 174 places.'>filename</a>,
+<a id='L47' name='L47'></a>  47                      <a href='../S/203.html#L42' title='Defined at 42 in libltdl/libltdl/lt_dlloader.h.'>lt_dladvise</a> <a href='../Y/1431.html' title='Multiple used in 75 places.'>advise</a>);
+<a id='L48' name='L48'></a>  48 <strong class='reserved'>typedef</strong> <strong class='reserved'>int</strong>     <a href='../S/203.html#L66' title='Referred from 66 in libltdl/libltdl/lt_dlloader.h.'>lt_module_close</a> (<a href='../S/203.html#L41' title='Defined at 41 in libltdl/libltdl/lt_dlloader.h.'>lt_user_data</a> <a href='../S/126.html#L24' title='Defined at 24 in htags/incop.h.'>data</a>,
+<a id='L49' name='L49'></a>  49                      <a href='../S/203.html#L40' title='Defined at 40 in libltdl/libltdl/lt_dlloader.h.'>lt_module</a> <a href='../Y/4271.html' title='Multiple used in 106 places.'>module</a>);
+<a id='L50' name='L50'></a>  50 <strong class='reserved'>typedef</strong> <strong class='reserved'>void</strong> *      <a href='../S/203.html#L67' title='Referred from 67 in libltdl/libltdl/lt_dlloader.h.'>lt_find_sym</a>     (<a href='../S/203.html#L41' title='Defined at 41 in libltdl/libltdl/lt_dlloader.h.'>lt_user_data</a> <a href='../S/126.html#L24' title='Defined at 24 in htags/incop.h.'>data</a>, <a href='../S/203.html#L40' title='Defined at 40 in libltdl/libltdl/lt_dlloader.h.'>lt_module</a> <a href='../Y/4271.html' title='Multiple used in 106 places.'>module</a>,
+<a id='L51' name='L51'></a>  51                      <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/7035.html' title='Multiple used in 8 places.'>symbolname</a>);
+<a id='L52' name='L52'></a>  52 <strong class='reserved'>typedef</strong> <strong class='reserved'>int</strong>     <a href='../S/203.html#L68' title='Referred from 68 in libltdl/libltdl/lt_dlloader.h.'>lt_dlloader_init</a>    (<a href='../S/203.html#L41' title='Defined at 41 in libltdl/libltdl/lt_dlloader.h.'>lt_user_data</a> <a href='../S/126.html#L24' title='Defined at 24 in htags/incop.h.'>data</a>);
+<a id='L53' name='L53'></a>  53 <strong class='reserved'>typedef</strong> <strong class='reserved'>int</strong>     <a href='../S/203.html#L69' title='Referred from 69 in libltdl/libltdl/lt_dlloader.h.'>lt_dlloader_exit</a>    (<a href='../S/203.html#L41' title='Defined at 41 in libltdl/libltdl/lt_dlloader.h.'>lt_user_data</a> <a href='../S/126.html#L24' title='Defined at 24 in htags/incop.h.'>data</a>);
+<a id='L54' name='L54'></a>  54 
+<a id='L55' name='L55'></a>  55 <em class='comment'>/* Default priority is LT_DLLOADER_PREPEND if none is explicitly given.  */</em>
+<a id='L56' name='L56'></a>  56 <strong class='reserved'>typedef</strong> <strong class='reserved'>enum</strong> <em class='brace'>{</em>
+<a id='L57' name='L57'></a>  57   <a href='../R/874.html' title='Multiple referred from 4 places.'>LT_DLLOADER_PREPEND</a> = 0, <a href='../R/872.html' title='Multiple referred from 7 places.'>LT_DLLOADER_APPEND</a>
+<a id='L58' name='L58'></a>  58 <em class='brace'>}</em> <a href='../S/203.html#L71' title='Referred from 71 in libltdl/libltdl/lt_dlloader.h.'>lt_dlloader_priority</a>;
+<a id='L59' name='L59'></a>  59 
+<a id='L60' name='L60'></a>  60 <em class='comment'>/* This structure defines a module loader, as populated by the get_vtable</em>
+<a id='L61' name='L61'></a>  61 <em class='comment'>   entry point of each loader.  */</em>
+<a id='L62' name='L62'></a>  62 <strong class='reserved'>typedef</strong> <strong class='reserved'>struct</strong> <em class='brace'>{</em>
+<a id='L63' name='L63'></a>  63   <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *      <a href='../D/5090.html' title='Multiple defined in 7 places.'>name</a>;
+<a id='L64' name='L64'></a>  64   <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *      <a href='../Y/7032.html' title='Multiple used in 9 places.'>sym_prefix</a>;
+<a id='L65' name='L65'></a>  65   <a href='../S/203.html#L45' title='Defined at 45 in libltdl/libltdl/lt_dlloader.h.'>lt_module_open</a> *  <a href='../Y/4275.html' title='Multiple used in 10 places.'>module_open</a>;
+<a id='L66' name='L66'></a>  66   <a href='../S/203.html#L48' title='Defined at 48 in libltdl/libltdl/lt_dlloader.h.'>lt_module_close</a> * <a href='../Y/4272.html' title='Multiple used in 10 places.'>module_close</a>;
+<a id='L67' name='L67'></a>  67   <a href='../S/203.html#L50' title='Defined at 50 in libltdl/libltdl/lt_dlloader.h.'>lt_find_sym</a> *     <a href='../Y/2856.html' title='Multiple used in 11 places.'>find_sym</a>;
+<a id='L68' name='L68'></a>  68   <a href='../S/203.html#L52' title='Defined at 52 in libltdl/libltdl/lt_dlloader.h.'>lt_dlloader_init</a> *    <a href='../Y/2490.html' title='Multiple used in 5 places.'>dlloader_init</a>;
+<a id='L69' name='L69'></a>  69   <a href='../S/203.html#L53' title='Defined at 53 in libltdl/libltdl/lt_dlloader.h.'>lt_dlloader_exit</a> *    <a href='../Y/2489.html' title='Multiple used in 10 places.'>dlloader_exit</a>;
+<a id='L70' name='L70'></a>  70   <a href='../S/203.html#L41' title='Defined at 41 in libltdl/libltdl/lt_dlloader.h.'>lt_user_data</a>      <a href='../Y/2488.html' title='Multiple used in 20 places.'>dlloader_data</a>;
+<a id='L71' name='L71'></a>  71   <a href='../S/203.html#L58' title='Defined at 58 in libltdl/libltdl/lt_dlloader.h.'>lt_dlloader_priority</a>  <a href='../Y/6174.html' title='Multiple used in 12 places.'>priority</a>;
+<a id='L72' name='L72'></a>  72 <em class='brace'>}</em> <a href='../R/4557.html' title='Multiple referred from 47 places.'>lt_dlvtable</a>;
+<a id='L73' name='L73'></a>  73 
+<a id='L74' name='L74'></a>  74 <a href='../D/939.html' title='Multiple defined in 7 places.'>LT_SCOPE</a> <strong class='reserved'>int</strong>        <a href='../S/222.html#L63' title='Defined at 63 in libltdl/lt_dlloader.c.'>lt_dlloader_add</a>    (<strong class='reserved'>const</strong> <a href='../S/203.html#L72' title='Defined at 72 in libltdl/libltdl/lt_dlloader.h.'>lt_dlvtable</a> *<a href='../Y/7447.html' title='Multiple used in 156 places.'>vtable</a>);
+<a id='L75' name='L75'></a>  75 <a href='../D/939.html' title='Multiple defined in 7 places.'>LT_SCOPE</a> <a href='../S/203.html#L39' title='Defined at 39 in libltdl/libltdl/lt_dlloader.h.'>lt_dlloader</a>    <a href='../S/222.html#L132' title='Defined at 132 in libltdl/lt_dlloader.c.'>lt_dlloader_next</a>   (<strong class='reserved'>const</strong> <a href='../S/203.html#L39' title='Defined at 39 in libltdl/libltdl/lt_dlloader.h.'>lt_dlloader</a> <a href='../Y/4035.html' title='Multiple used in 15 places.'>loader</a>);
+<a id='L76' name='L76'></a>  76 
+<a id='L77' name='L77'></a>  77 <a href='../D/939.html' title='Multiple defined in 7 places.'>LT_SCOPE</a> <a href='../S/203.html#L72' title='Defined at 72 in libltdl/libltdl/lt_dlloader.h.'>lt_dlvtable</a> *  <a href='../S/222.html#L154' title='Defined at 154 in libltdl/lt_dlloader.c.'>lt_dlloader_remove</a>  (<strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../D/5090.html' title='Multiple defined in 7 places.'>name</a>);
+<a id='L78' name='L78'></a>  78 <a href='../D/939.html' title='Multiple defined in 7 places.'>LT_SCOPE</a> <strong class='reserved'>const</strong> <a href='../S/203.html#L72' title='Defined at 72 in libltdl/libltdl/lt_dlloader.h.'>lt_dlvtable</a> *<a href='../S/222.html#L208' title='Defined at 208 in libltdl/lt_dlloader.c.'>lt_dlloader_find</a>    (<strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../D/5090.html' title='Multiple defined in 7 places.'>name</a>);
+<a id='L79' name='L79'></a>  79 <a href='../D/939.html' title='Multiple defined in 7 places.'>LT_SCOPE</a> <strong class='reserved'>const</strong> <a href='../S/203.html#L72' title='Defined at 72 in libltdl/libltdl/lt_dlloader.h.'>lt_dlvtable</a> *<a href='../S/222.html#L141' title='Defined at 141 in libltdl/lt_dlloader.c.'>lt_dlloader_get</a> (<a href='../S/203.html#L39' title='Defined at 39 in libltdl/libltdl/lt_dlloader.h.'>lt_dlloader</a> <a href='../Y/4035.html' title='Multiple used in 15 places.'>loader</a>);
+<a id='L80' name='L80'></a>  80 
+<a id='L81' name='L81'></a>  81 
+<a id='L82' name='L82'></a>  82 <em class='comment'>/* Type of a function to get a loader's vtable:  */</em>
+<a id='L83' name='L83'></a>  83 <strong class='reserved'>typedef</strong>  <strong class='reserved'>const</strong> <a href='../S/203.html#L72' title='Defined at 72 in libltdl/libltdl/lt_dlloader.h.'>lt_dlvtable</a> *<a href='../R/4559.html' title='Multiple referred from 3 places.'>lt_get_vtable</a>   (<a href='../S/203.html#L41' title='Defined at 41 in libltdl/libltdl/lt_dlloader.h.'>lt_user_data</a> <a href='../S/126.html#L24' title='Defined at 24 in htags/incop.h.'>data</a>);
+<a id='L84' name='L84'></a>  84 
+<a id='L85' name='L85'></a>  85 <em class='sharp'>#ifdef</em> <a href='../Y/408.html' title='Multiple used in 7 places.'>LT_DEBUG_LOADERS</a>
+<a id='L86' name='L86'></a>  86 <a href='../D/939.html' title='Multiple defined in 7 places.'>LT_SCOPE</a> <strong class='reserved'>void</strong>       <a href='../S/222.html#L111' title='Defined at 111 in libltdl/lt_dlloader.c.'>lt_dlloader_dump</a>    (<strong class='reserved'>void</strong>);
+<a id='L87' name='L87'></a>  87 <em class='sharp'>#endif</em>
+<a id='L88' name='L88'></a>  88 
+<a id='L89' name='L89'></a>  89 <a href='../D/924.html' title='Multiple defined in 2 places.'>LT_END_C_DECLS</a>
+<a id='L90' name='L90'></a>  90 
+<a id='L91' name='L91'></a>  91 <em class='sharp'>#endif</em> <em class='comment'>/*!defined LT_DLLOADER_H*/</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;][^][v]<a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

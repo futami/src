@@ -1,0 +1,172 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>pInode</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/185.html#L24777'>pInode</a>           24777 libdb/sqlite3.c   unixInodeInfo *pInode;              /* Info about locks on this inode */</span>
+<span class='curline'><a href='../S/185.html#L25986'>pInode</a>           25986 libdb/sqlite3.c   unixInodeInfo *pInode = pFile-&gt;pInode;</span>
+<span class='curline'><a href='../S/185.html#L25989'>pInode</a>           25989 libdb/sqlite3.c   for(p=pInode-&gt;pUnused; p; p=pNext){</span>
+<span class='curline'><a href='../S/185.html#L25994'>pInode</a>           25994 libdb/sqlite3.c   pInode-&gt;pUnused = 0;</span>
+<span class='curline'><a href='../S/185.html#L26004'>pInode</a>           26004 libdb/sqlite3.c   unixInodeInfo *pInode = pFile-&gt;pInode;</span>
+<span class='curline'><a href='../S/185.html#L26006'>pInode</a>           26006 libdb/sqlite3.c   if( ALWAYS(pInode) ){</span>
+<span class='curline'><a href='../S/185.html#L26007'>pInode</a>           26007 libdb/sqlite3.c     pInode-&gt;nRef--;</span>
+<span class='curline'><a href='../S/185.html#L26008'>pInode</a>           26008 libdb/sqlite3.c     if( pInode-&gt;nRef==0 ){</span>
+<span class='curline'><a href='../S/185.html#L26009'>pInode</a>           26009 libdb/sqlite3.c       assert( pInode-&gt;pShmNode==0 );</span>
+<span class='curline'><a href='../S/185.html#L26011'>pInode</a>           26011 libdb/sqlite3.c       if( pInode-&gt;pPrev ){</span>
+<span class='curline'><a href='../S/185.html#L26012'>pInode</a>           26012 libdb/sqlite3.c         assert( pInode-&gt;pPrev-&gt;pNext==pInode );</span>
+<span class='curline'><a href='../S/185.html#L26013'>pInode</a>           26013 libdb/sqlite3.c         pInode-&gt;pPrev-&gt;pNext = pInode-&gt;pNext;</span>
+<span class='curline'><a href='../S/185.html#L26015'>pInode</a>           26015 libdb/sqlite3.c         assert( inodeList==pInode );</span>
+<span class='curline'><a href='../S/185.html#L26016'>pInode</a>           26016 libdb/sqlite3.c         inodeList = pInode-&gt;pNext;</span>
+<span class='curline'><a href='../S/185.html#L26018'>pInode</a>           26018 libdb/sqlite3.c       if( pInode-&gt;pNext ){</span>
+<span class='curline'><a href='../S/185.html#L26019'>pInode</a>           26019 libdb/sqlite3.c         assert( pInode-&gt;pNext-&gt;pPrev==pInode );</span>
+<span class='curline'><a href='../S/185.html#L26020'>pInode</a>           26020 libdb/sqlite3.c         pInode-&gt;pNext-&gt;pPrev = pInode-&gt;pPrev;</span>
+<span class='curline'><a href='../S/185.html#L26022'>pInode</a>           26022 libdb/sqlite3.c       sqlite3_free(pInode);</span>
+<span class='curline'><a href='../S/185.html#L26045'>pInode</a>           26045 libdb/sqlite3.c   unixInodeInfo *pInode = 0;     /* Candidate unixInodeInfo object */</span>
+<span class='curline'><a href='../S/185.html#L26094'>pInode</a>           26094 libdb/sqlite3.c   pInode = inodeList;</span>
+<span class='curline'><a href='../S/185.html#L26095'>pInode</a>           26095 libdb/sqlite3.c   while( pInode &amp;&amp; memcmp(&amp;fileId, &amp;pInode-&gt;fileId, sizeof(fileId)) ){</span>
+<span class='curline'><a href='../S/185.html#L26096'>pInode</a>           26096 libdb/sqlite3.c     pInode = pInode-&gt;pNext;</span>
+<span class='curline'><a href='../S/185.html#L26098'>pInode</a>           26098 libdb/sqlite3.c   if( pInode==0 ){</span>
+<span class='curline'><a href='../S/185.html#L26099'>pInode</a>           26099 libdb/sqlite3.c     pInode = sqlite3_malloc( sizeof(*pInode) );</span>
+<span class='curline'><a href='../S/185.html#L26100'>pInode</a>           26100 libdb/sqlite3.c     if( pInode==0 ){</span>
+<span class='curline'><a href='../S/185.html#L26103'>pInode</a>           26103 libdb/sqlite3.c     memset(pInode, 0, sizeof(*pInode));</span>
+<span class='curline'><a href='../S/185.html#L26104'>pInode</a>           26104 libdb/sqlite3.c     memcpy(&amp;pInode-&gt;fileId, &amp;fileId, sizeof(fileId));</span>
+<span class='curline'><a href='../S/185.html#L26105'>pInode</a>           26105 libdb/sqlite3.c     pInode-&gt;nRef = 1;</span>
+<span class='curline'><a href='../S/185.html#L26106'>pInode</a>           26106 libdb/sqlite3.c     pInode-&gt;pNext = inodeList;</span>
+<span class='curline'><a href='../S/185.html#L26107'>pInode</a>           26107 libdb/sqlite3.c     pInode-&gt;pPrev = 0;</span>
+<span class='curline'><a href='../S/185.html#L26108'>pInode</a>           26108 libdb/sqlite3.c     if( inodeList ) inodeList-&gt;pPrev = pInode;</span>
+<span class='curline'><a href='../S/185.html#L26109'>pInode</a>           26109 libdb/sqlite3.c     inodeList = pInode;</span>
+<span class='curline'><a href='../S/185.html#L26111'>pInode</a>           26111 libdb/sqlite3.c     pInode-&gt;nRef++;</span>
+<span class='curline'><a href='../S/185.html#L26113'>pInode</a>           26113 libdb/sqlite3.c   *ppInode = pInode;</span>
+<span class='curline'><a href='../S/185.html#L26122'>pInode</a>           26122 libdb/sqlite3.c   return pFile-&gt;pInode!=0 &amp;&amp; pFile-&gt;pId!=pFile-&gt;pInode-&gt;fileId.pId;</span>
+<span class='curline'><a href='../S/185.html#L26125'>pInode</a>           26125 libdb/sqlite3.c   return pFile-&gt;pInode!=0 &amp;&amp;</span>
+<span class='curline'><a href='../S/185.html#L26126'>pInode</a>           26126 libdb/sqlite3.c       (osStat(pFile-&gt;zPath, &amp;buf)!=0 || buf.st_ino!=pFile-&gt;pInode-&gt;fileId.ino);</span>
+<span class='curline'><a href='../S/185.html#L26189'>pInode</a>           26189 libdb/sqlite3.c   if( pFile-&gt;pInode-&gt;eFileLock&gt;SHARED_LOCK ){</span>
+<span class='curline'><a href='../S/185.html#L26196'>pInode</a>           26196 libdb/sqlite3.c   if( !reserved &amp;&amp; !pFile-&gt;pInode-&gt;bProcessLock ){</span>
+<span class='curline'><a href='../S/185.html#L26239'>pInode</a>           26239 libdb/sqlite3.c   unixInodeInfo *pInode = pFile-&gt;pInode;</span>
+<span class='curline'><a href='../S/185.html#L26241'>pInode</a>           26241 libdb/sqlite3.c   assert( pInode!=0 );</span>
+<span class='curline'><a href='../S/185.html#L26242'>pInode</a>           26242 libdb/sqlite3.c   if( ((pFile-&gt;ctrlFlags &amp; UNIXFILE_EXCL)!=0 || pInode-&gt;bProcessLock)</span>
+<span class='curline'><a href='../S/185.html#L26245'>pInode</a>           26245 libdb/sqlite3.c     if( pInode-&gt;bProcessLock==0 ){</span>
+<span class='curline'><a href='../S/185.html#L26247'>pInode</a>           26247 libdb/sqlite3.c       assert( pInode-&gt;nLock==0 );</span>
+<span class='curline'><a href='../S/185.html#L26254'>pInode</a>           26254 libdb/sqlite3.c       pInode-&gt;bProcessLock = 1;</span>
+<span class='curline'><a href='../S/185.html#L26255'>pInode</a>           26255 libdb/sqlite3.c       pInode-&gt;nLock++;</span>
+<span class='curline'><a href='../S/185.html#L26330'>pInode</a>           26330 libdb/sqlite3.c   unixInodeInfo *pInode;</span>
+<span class='curline'><a href='../S/185.html#L26337'>pInode</a>           26337 libdb/sqlite3.c       azFileLock(pFile-&gt;pInode-&gt;eFileLock), pFile-&gt;pInode-&gt;nShared , getpid()));</span>
+<span class='curline'><a href='../S/185.html#L26361'>pInode</a>           26361 libdb/sqlite3.c   pInode = pFile-&gt;pInode;</span>
+<span class='curline'><a href='../S/185.html#L26366'>pInode</a>           26366 libdb/sqlite3.c   if( (pFile-&gt;eFileLock!=pInode-&gt;eFileLock &amp;&amp; </span>
+<span class='curline'><a href='../S/185.html#L26367'>pInode</a>           26367 libdb/sqlite3.c           (pInode-&gt;eFileLock&gt;=PENDING_LOCK || eFileLock&gt;SHARED_LOCK))</span>
+<span class='curline'><a href='../S/185.html#L26378'>pInode</a>           26378 libdb/sqlite3.c       (pInode-&gt;eFileLock==SHARED_LOCK || pInode-&gt;eFileLock==RESERVED_LOCK) ){</span>
+<span class='curline'><a href='../S/185.html#L26381'>pInode</a>           26381 libdb/sqlite3.c     assert( pInode-&gt;nShared&gt;0 );</span>
+<span class='curline'><a href='../S/185.html#L26383'>pInode</a>           26383 libdb/sqlite3.c     pInode-&gt;nShared++;</span>
+<span class='curline'><a href='../S/185.html#L26384'>pInode</a>           26384 libdb/sqlite3.c     pInode-&gt;nLock++;</span>
+<span class='curline'><a href='../S/185.html#L26415'>pInode</a>           26415 libdb/sqlite3.c     assert( pInode-&gt;nShared==0 );</span>
+<span class='curline'><a href='../S/185.html#L26416'>pInode</a>           26416 libdb/sqlite3.c     assert( pInode-&gt;eFileLock==0 );</span>
+<span class='curline'><a href='../S/185.html#L26444'>pInode</a>           26444 libdb/sqlite3.c       pInode-&gt;nLock++;</span>
+<span class='curline'><a href='../S/185.html#L26445'>pInode</a>           26445 libdb/sqlite3.c       pInode-&gt;nShared = 1;</span>
+<span class='curline'><a href='../S/185.html#L26447'>pInode</a>           26447 libdb/sqlite3.c   }else if( eFileLock==EXCLUSIVE_LOCK &amp;&amp; pInode-&gt;nShared&gt;1 ){</span>
+<span class='curline'><a href='../S/185.html#L26497'>pInode</a>           26497 libdb/sqlite3.c     pInode-&gt;eFileLock = eFileLock;</span>
+<span class='curline'><a href='../S/185.html#L26500'>pInode</a>           26500 libdb/sqlite3.c     pInode-&gt;eFileLock = PENDING_LOCK;</span>
+<span class='curline'><a href='../S/185.html#L26515'>pInode</a>           26515 libdb/sqlite3.c   unixInodeInfo *pInode = pFile-&gt;pInode;</span>
+<span class='curline'><a href='../S/185.html#L26517'>pInode</a>           26517 libdb/sqlite3.c   p-&gt;pNext = pInode-&gt;pUnused;</span>
+<span class='curline'><a href='../S/185.html#L26518'>pInode</a>           26518 libdb/sqlite3.c   pInode-&gt;pUnused = p;</span>
+<span class='curline'><a href='../S/185.html#L26538'>pInode</a>           26538 libdb/sqlite3.c   unixInodeInfo *pInode;</span>
+<span class='curline'><a href='../S/185.html#L26544'>pInode</a>           26544 libdb/sqlite3.c       pFile-&gt;eFileLock, pFile-&gt;pInode-&gt;eFileLock, pFile-&gt;pInode-&gt;nShared,</span>
+<span class='curline'><a href='../S/185.html#L26552'>pInode</a>           26552 libdb/sqlite3.c   pInode = pFile-&gt;pInode;</span>
+<span class='curline'><a href='../S/185.html#L26553'>pInode</a>           26553 libdb/sqlite3.c   assert( pInode-&gt;nShared!=0 );</span>
+<span class='curline'><a href='../S/185.html#L26555'>pInode</a>           26555 libdb/sqlite3.c     assert( pInode-&gt;eFileLock==pFile-&gt;eFileLock );</span>
+<span class='curline'><a href='../S/185.html#L26650'>pInode</a>           26650 libdb/sqlite3.c       pInode-&gt;eFileLock = SHARED_LOCK;</span>
+<span class='curline'><a href='../S/185.html#L26662'>pInode</a>           26662 libdb/sqlite3.c     pInode-&gt;nShared--;</span>
+<span class='curline'><a href='../S/185.html#L26663'>pInode</a>           26663 libdb/sqlite3.c     if( pInode-&gt;nShared==0 ){</span>
+<span class='curline'><a href='../S/185.html#L26668'>pInode</a>           26668 libdb/sqlite3.c         pInode-&gt;eFileLock = NO_LOCK;</span>
+<span class='curline'><a href='../S/185.html#L26672'>pInode</a>           26672 libdb/sqlite3.c         pInode-&gt;eFileLock = NO_LOCK;</span>
+<span class='curline'><a href='../S/185.html#L26681'>pInode</a>           26681 libdb/sqlite3.c     pInode-&gt;nLock--;</span>
+<span class='curline'><a href='../S/185.html#L26682'>pInode</a>           26682 libdb/sqlite3.c     assert( pInode-&gt;nLock&gt;=0 );</span>
+<span class='curline'><a href='../S/185.html#L26683'>pInode</a>           26683 libdb/sqlite3.c     if( pInode-&gt;nLock==0 ){</span>
+<span class='curline'><a href='../S/185.html#L26768'>pInode</a>           26768 libdb/sqlite3.c   assert( pFile-&gt;pInode-&gt;nLock&gt;0 || pFile-&gt;pInode-&gt;bProcessLock==0 );</span>
+<span class='curline'><a href='../S/185.html#L26769'>pInode</a>           26769 libdb/sqlite3.c   if( ALWAYS(pFile-&gt;pInode) &amp;&amp; pFile-&gt;pInode-&gt;nLock ){</span>
+<span class='curline'><a href='../S/185.html#L27269'>pInode</a>           27269 libdb/sqlite3.c     sem_t *pSem = pFile-&gt;pInode-&gt;pSem;</span>
+<span class='curline'><a href='../S/185.html#L27322'>pInode</a>           27322 libdb/sqlite3.c   sem_t *pSem = pFile-&gt;pInode-&gt;pSem;</span>
+<span class='curline'><a href='../S/185.html#L27355'>pInode</a>           27355 libdb/sqlite3.c   sem_t *pSem = pFile-&gt;pInode-&gt;pSem;</span>
+<span class='curline'><a href='../S/185.html#L27512'>pInode</a>           27512 libdb/sqlite3.c   if( pFile-&gt;pInode-&gt;eFileLock&gt;SHARED_LOCK ){</span>
+<span class='curline'><a href='../S/185.html#L27568'>pInode</a>           27568 libdb/sqlite3.c   unixInodeInfo *pInode = pFile-&gt;pInode;</span>
+<span class='curline'><a href='../S/185.html#L27574'>pInode</a>           27574 libdb/sqlite3.c            azFileLock(pInode-&gt;eFileLock), pInode-&gt;nShared , getpid()));</span>
+<span class='curline'><a href='../S/185.html#L27598'>pInode</a>           27598 libdb/sqlite3.c   pInode = pFile-&gt;pInode;</span>
+<span class='curline'><a href='../S/185.html#L27603'>pInode</a>           27603 libdb/sqlite3.c   if( (pFile-&gt;eFileLock!=pInode-&gt;eFileLock &amp;&amp; </span>
+<span class='curline'><a href='../S/185.html#L27604'>pInode</a>           27604 libdb/sqlite3.c        (pInode-&gt;eFileLock&gt;=PENDING_LOCK || eFileLock&gt;SHARED_LOCK))</span>
+<span class='curline'><a href='../S/185.html#L27615'>pInode</a>           27615 libdb/sqlite3.c      (pInode-&gt;eFileLock==SHARED_LOCK || pInode-&gt;eFileLock==RESERVED_LOCK) ){</span>
+<span class='curline'><a href='../S/185.html#L27618'>pInode</a>           27618 libdb/sqlite3.c     assert( pInode-&gt;nShared&gt;0 );</span>
+<span class='curline'><a href='../S/185.html#L27620'>pInode</a>           27620 libdb/sqlite3.c     pInode-&gt;nShared++;</span>
+<span class='curline'><a href='../S/185.html#L27621'>pInode</a>           27621 libdb/sqlite3.c     pInode-&gt;nLock++;</span>
+<span class='curline'><a href='../S/185.html#L27647'>pInode</a>           27647 libdb/sqlite3.c     assert( pInode-&gt;nShared==0 );</span>
+<span class='curline'><a href='../S/185.html#L27648'>pInode</a>           27648 libdb/sqlite3.c     assert( pInode-&gt;eFileLock==0 );</span>
+<span class='curline'><a href='../S/185.html#L27654'>pInode</a>           27654 libdb/sqlite3.c     pInode-&gt;sharedByte = (lk &amp; mask)%(SHARED_SIZE - 1);</span>
+<span class='curline'><a href='../S/185.html#L27656'>pInode</a>           27656 libdb/sqlite3.c           SHARED_FIRST+pInode-&gt;sharedByte, 1, 1);</span>
+<span class='curline'><a href='../S/185.html#L27674'>pInode</a>           27674 libdb/sqlite3.c       pInode-&gt;nLock++;</span>
+<span class='curline'><a href='../S/185.html#L27675'>pInode</a>           27675 libdb/sqlite3.c       pInode-&gt;nShared = 1;</span>
+<span class='curline'><a href='../S/185.html#L27677'>pInode</a>           27677 libdb/sqlite3.c   }else if( eFileLock==EXCLUSIVE_LOCK &amp;&amp; pInode-&gt;nShared&gt;1 ){</span>
+<span class='curline'><a href='../S/185.html#L27702'>pInode</a>           27702 libdb/sqlite3.c                          pInode-&gt;sharedByte, 1, 0)) ){</span>
+<span class='curline'><a href='../S/185.html#L27708'>pInode</a>           27708 libdb/sqlite3.c                        SHARED_FIRST + pInode-&gt;sharedByte, 1, 1)) ){</span>
+<span class='curline'><a href='../S/185.html#L27727'>pInode</a>           27727 libdb/sqlite3.c     pInode-&gt;eFileLock = eFileLock;</span>
+<span class='curline'><a href='../S/185.html#L27730'>pInode</a>           27730 libdb/sqlite3.c     pInode-&gt;eFileLock = PENDING_LOCK;</span>
+<span class='curline'><a href='../S/185.html#L27750'>pInode</a>           27750 libdb/sqlite3.c   unixInodeInfo *pInode;</span>
+<span class='curline'><a href='../S/185.html#L27759'>pInode</a>           27759 libdb/sqlite3.c            pFile-&gt;eFileLock, pFile-&gt;pInode-&gt;eFileLock, pFile-&gt;pInode-&gt;nShared,</span>
+<span class='curline'><a href='../S/185.html#L27767'>pInode</a>           27767 libdb/sqlite3.c   pInode = pFile-&gt;pInode;</span>
+<span class='curline'><a href='../S/185.html#L27768'>pInode</a>           27768 libdb/sqlite3.c   assert( pInode-&gt;nShared!=0 );</span>
+<span class='curline'><a href='../S/185.html#L27770'>pInode</a>           27770 libdb/sqlite3.c     assert( pInode-&gt;eFileLock==pFile-&gt;eFileLock );</span>
+<span class='curline'><a href='../S/185.html#L27792'>pInode</a>           27792 libdb/sqlite3.c       if( rc==SQLITE_OK &amp;&amp; (eFileLock==SHARED_LOCK || pInode-&gt;nShared&gt;1) ){</span>
+<span class='curline'><a href='../S/185.html#L27794'>pInode</a>           27794 libdb/sqlite3.c         int sharedLockByte = SHARED_FIRST+pInode-&gt;sharedByte;</span>
+<span class='curline'><a href='../S/185.html#L27809'>pInode</a>           27809 libdb/sqlite3.c     if( rc==SQLITE_OK &amp;&amp; (eFileLock==SHARED_LOCK || pInode-&gt;nShared&gt;1)){</span>
+<span class='curline'><a href='../S/185.html#L27810'>pInode</a>           27810 libdb/sqlite3.c       pInode-&gt;eFileLock = SHARED_LOCK;</span>
+<span class='curline'><a href='../S/185.html#L27819'>pInode</a>           27819 libdb/sqlite3.c     unsigned long long sharedLockByte = SHARED_FIRST+pInode-&gt;sharedByte;</span>
+<span class='curline'><a href='../S/185.html#L27820'>pInode</a>           27820 libdb/sqlite3.c     pInode-&gt;nShared--;</span>
+<span class='curline'><a href='../S/185.html#L27821'>pInode</a>           27821 libdb/sqlite3.c     if( pInode-&gt;nShared==0 ){</span>
+<span class='curline'><a href='../S/185.html#L27829'>pInode</a>           27829 libdb/sqlite3.c         pInode-&gt;eFileLock = NO_LOCK;</span>
+<span class='curline'><a href='../S/185.html#L27834'>pInode</a>           27834 libdb/sqlite3.c       pInode-&gt;nLock--;</span>
+<span class='curline'><a href='../S/185.html#L27835'>pInode</a>           27835 libdb/sqlite3.c       assert( pInode-&gt;nLock&gt;=0 );</span>
+<span class='curline'><a href='../S/185.html#L27836'>pInode</a>           27836 libdb/sqlite3.c       if( pInode-&gt;nLock==0 ){</span>
+<span class='curline'><a href='../S/185.html#L27856'>pInode</a>           27856 libdb/sqlite3.c     if( pFile-&gt;pInode &amp;&amp; pFile-&gt;pInode-&gt;nLock ){</span>
+<span class='curline'><a href='../S/185.html#L28834'>pInode</a>           28834 libdb/sqlite3.c   unixInodeInfo *pInode;     /* unixInodeInfo that owns this SHM node */</span>
+<span class='curline'><a href='../S/185.html#L28977'>pInode</a>           28977 libdb/sqlite3.c   unixShmNode *p = pFd-&gt;pInode-&gt;pShmNode;</span>
+<span class='curline'><a href='../S/185.html#L28982'>pInode</a>           28982 libdb/sqlite3.c     assert( p-&gt;pInode==pFd-&gt;pInode );</span>
+<span class='curline'><a href='../S/185.html#L28996'>pInode</a>           28996 libdb/sqlite3.c     p-&gt;pInode-&gt;pShmNode = 0;</span>
+<span class='curline'><a href='../S/185.html#L29040'>pInode</a>           29040 libdb/sqlite3.c   unixInodeInfo *pInode;          /* The inode of fd */</span>
+<span class='curline'><a href='../S/185.html#L29054'>pInode</a>           29054 libdb/sqlite3.c   pInode = pDbFd-&gt;pInode;</span>
+<span class='curline'><a href='../S/185.html#L29055'>pInode</a>           29055 libdb/sqlite3.c   pShmNode = pInode-&gt;pShmNode;</span>
+<span class='curline'><a href='../S/185.html#L29063'>pInode</a>           29063 libdb/sqlite3.c     if( osFstat(pDbFd-&gt;h, &amp;sStat) &amp;&amp; pInode-&gt;bProcessLock==0 ){</span>
+<span class='curline'><a href='../S/185.html#L29089'>pInode</a>           29089 libdb/sqlite3.c     pDbFd-&gt;pInode-&gt;pShmNode = pShmNode;</span>
+<span class='curline'><a href='../S/185.html#L29090'>pInode</a>           29090 libdb/sqlite3.c     pShmNode-&gt;pInode = pDbFd-&gt;pInode;</span>
+<span class='curline'><a href='../S/185.html#L29097'>pInode</a>           29097 libdb/sqlite3.c     if( pInode-&gt;bProcessLock==0 ){</span>
+<span class='curline'><a href='../S/185.html#L29204'>pInode</a>           29204 libdb/sqlite3.c   assert( pShmNode-&gt;pInode==pDbFd-&gt;pInode );</span>
+<span class='curline'><a href='../S/185.html#L29205'>pInode</a>           29205 libdb/sqlite3.c   assert( pShmNode-&gt;h&gt;=0 || pDbFd-&gt;pInode-&gt;bProcessLock==1 );</span>
+<span class='curline'><a href='../S/185.html#L29206'>pInode</a>           29206 libdb/sqlite3.c   assert( pShmNode-&gt;h&lt;0 || pDbFd-&gt;pInode-&gt;bProcessLock==0 );</span>
+<span class='curline'><a href='../S/185.html#L29330'>pInode</a>           29330 libdb/sqlite3.c   assert( pShmNode==pDbFd-&gt;pInode-&gt;pShmNode );</span>
+<span class='curline'><a href='../S/185.html#L29331'>pInode</a>           29331 libdb/sqlite3.c   assert( pShmNode-&gt;pInode==pDbFd-&gt;pInode );</span>
+<span class='curline'><a href='../S/185.html#L29339'>pInode</a>           29339 libdb/sqlite3.c   assert( pShmNode-&gt;h&gt;=0 || pDbFd-&gt;pInode-&gt;bProcessLock==1 );</span>
+<span class='curline'><a href='../S/185.html#L29340'>pInode</a>           29340 libdb/sqlite3.c   assert( pShmNode-&gt;h&lt;0 || pDbFd-&gt;pInode-&gt;bProcessLock==0 );</span>
+<span class='curline'><a href='../S/185.html#L29458'>pInode</a>           29458 libdb/sqlite3.c   assert( pShmNode==pDbFd-&gt;pInode-&gt;pShmNode );</span>
+<span class='curline'><a href='../S/185.html#L29459'>pInode</a>           29459 libdb/sqlite3.c   assert( pShmNode-&gt;pInode==pDbFd-&gt;pInode );</span>
+<span class='curline'><a href='../S/185.html#L30030'>pInode</a>           30030 libdb/sqlite3.c   assert( pNew-&gt;pInode==NULL );</span>
+<span class='curline'><a href='../S/185.html#L30088'>pInode</a>           30088 libdb/sqlite3.c     rc = findInodeInfo(pNew, &amp;pNew-&gt;pInode);</span>
+<span class='curline'><a href='../S/185.html#L30131'>pInode</a>           30131 libdb/sqlite3.c       rc = findInodeInfo(pNew, &amp;pNew-&gt;pInode);</span>
+<span class='curline'><a href='../S/185.html#L30165'>pInode</a>           30165 libdb/sqlite3.c     rc = findInodeInfo(pNew, &amp;pNew-&gt;pInode);</span>
+<span class='curline'><a href='../S/185.html#L30166'>pInode</a>           30166 libdb/sqlite3.c     if( (rc==SQLITE_OK) &amp;&amp; (pNew-&gt;pInode-&gt;pSem==NULL) ){</span>
+<span class='curline'><a href='../S/185.html#L30167'>pInode</a>           30167 libdb/sqlite3.c       char *zSemName = pNew-&gt;pInode-&gt;aSemName;</span>
+<span class='curline'><a href='../S/185.html#L30173'>pInode</a>           30173 libdb/sqlite3.c       pNew-&gt;pInode-&gt;pSem = sem_open(zSemName, O_CREAT, 0666, 1);</span>
+<span class='curline'><a href='../S/185.html#L30174'>pInode</a>           30174 libdb/sqlite3.c       if( pNew-&gt;pInode-&gt;pSem == SEM_FAILED ){</span>
+<span class='curline'><a href='../S/185.html#L30176'>pInode</a>           30176 libdb/sqlite3.c         pNew-&gt;pInode-&gt;aSemName[0] = '\0';</span>
+<span class='curline'><a href='../S/185.html#L30320'>pInode</a>           30320 libdb/sqlite3.c     unixInodeInfo *pInode;</span>
+<span class='curline'><a href='../S/185.html#L30323'>pInode</a>           30323 libdb/sqlite3.c     pInode = inodeList;</span>
+<span class='curline'><a href='../S/185.html#L30324'>pInode</a>           30324 libdb/sqlite3.c     while( pInode &amp;&amp; (pInode-&gt;fileId.dev!=sStat.st_dev</span>
+<span class='curline'><a href='../S/185.html#L30325'>pInode</a>           30325 libdb/sqlite3.c                      || pInode-&gt;fileId.ino!=sStat.st_ino) ){</span>
+<span class='curline'><a href='../S/185.html#L30326'>pInode</a>           30326 libdb/sqlite3.c        pInode = pInode-&gt;pNext;</span>
+<span class='curline'><a href='../S/185.html#L30328'>pInode</a>           30328 libdb/sqlite3.c     if( pInode ){</span>
+<span class='curline'><a href='../S/185.html#L30330'>pInode</a>           30330 libdb/sqlite3.c       for(pp=&amp;pInode-&gt;pUnused; *pp &amp;&amp; (*pp)-&gt;flags!=flags; pp=&amp;((*pp)-&gt;pNext));</span>
+<span class='curline'><a href='../S/185.html#L31678'>pInode</a>           31678 libdb/sqlite3.c         if( conchFile-&gt;pInode &amp;&amp; conchFile-&gt;pInode-&gt;nShared&gt;1 ){</span>
+</pre>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>pWriter</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/185.html#L51663'>pWriter</a>          51663 libdb/sqlite3.c   Btree *pWriter;       /* Btree with currently open write transaction */</span>
+<span class='curline'><a href='../S/185.html#L52438'>pWriter</a>          52438 libdb/sqlite3.c   assert( eLock==READ_LOCK || (p==pBt-&gt;pWriter &amp;&amp; p-&gt;inTrans==TRANS_WRITE) );</span>
+<span class='curline'><a href='../S/185.html#L52449'>pWriter</a>          52449 libdb/sqlite3.c   if( pBt-&gt;pWriter!=p &amp;&amp; (pBt-&gt;btsFlags &amp; BTS_EXCLUSIVE)!=0 ){</span>
+<span class='curline'><a href='../S/185.html#L52450'>pWriter</a>          52450 libdb/sqlite3.c     sqlite3ConnectionBlocked(p-&gt;db, pBt-&gt;pWriter-&gt;db);</span>
+<span class='curline'><a href='../S/185.html#L52469'>pWriter</a>          52469 libdb/sqlite3.c         assert( p==pBt-&gt;pWriter );</span>
+<span class='curline'><a href='../S/185.html#L52571'>pWriter</a>          52571 libdb/sqlite3.c     assert( (pBt-&gt;btsFlags &amp; BTS_EXCLUSIVE)==0 || pBt-&gt;pWriter==pLock-&gt;pBtree );</span>
+<span class='curline'><a href='../S/185.html#L52584'>pWriter</a>          52584 libdb/sqlite3.c   assert( (pBt-&gt;btsFlags &amp; BTS_PENDING)==0 || pBt-&gt;pWriter );</span>
+<span class='curline'><a href='../S/185.html#L52585'>pWriter</a>          52585 libdb/sqlite3.c   if( pBt-&gt;pWriter==p ){</span>
+<span class='curline'><a href='../S/185.html#L52586'>pWriter</a>          52586 libdb/sqlite3.c     pBt-&gt;pWriter = 0;</span>
+<span class='curline'><a href='../S/185.html#L52607'>pWriter</a>          52607 libdb/sqlite3.c   if( pBt-&gt;pWriter==p ){</span>
+<span class='curline'><a href='../S/185.html#L52609'>pWriter</a>          52609 libdb/sqlite3.c     pBt-&gt;pWriter = 0;</span>
+<span class='curline'><a href='../S/185.html#L54958'>pWriter</a>          54958 libdb/sqlite3.c     pBlock = pBt-&gt;pWriter-&gt;db;</span>
+<span class='curline'><a href='../S/185.html#L55029'>pWriter</a>          55029 libdb/sqlite3.c       assert( !pBt-&gt;pWriter );</span>
+<span class='curline'><a href='../S/185.html#L55030'>pWriter</a>          55030 libdb/sqlite3.c       pBt-&gt;pWriter = p;</span>
+<span class='curline'><a href='../S/185.html#L141652'>pWriter</a>          141652 libdb/sqlite3.c   SegmentWriter *pWriter = *ppWriter;</span>
+<span class='curline'><a href='../S/185.html#L141654'>pWriter</a>          141654 libdb/sqlite3.c   if( !pWriter ){</span>
+<span class='curline'><a href='../S/185.html#L141659'>pWriter</a>          141659 libdb/sqlite3.c     pWriter = (SegmentWriter *)sqlite3_malloc(sizeof(SegmentWriter));</span>
+<span class='curline'><a href='../S/185.html#L141660'>pWriter</a>          141660 libdb/sqlite3.c     if( !pWriter ) return SQLITE_NOMEM;</span>
+<span class='curline'><a href='../S/185.html#L141661'>pWriter</a>          141661 libdb/sqlite3.c     memset(pWriter, 0, sizeof(SegmentWriter));</span>
+<span class='curline'><a href='../S/185.html#L141662'>pWriter</a>          141662 libdb/sqlite3.c     *ppWriter = pWriter;</span>
+<span class='curline'><a href='../S/185.html#L141665'>pWriter</a>          141665 libdb/sqlite3.c     pWriter-&gt;aData = (char *)sqlite3_malloc(p-&gt;nNodeSize);</span>
+<span class='curline'><a href='../S/185.html#L141666'>pWriter</a>          141666 libdb/sqlite3.c     if( !pWriter-&gt;aData ) return SQLITE_NOMEM;</span>
+<span class='curline'><a href='../S/185.html#L141667'>pWriter</a>          141667 libdb/sqlite3.c     pWriter-&gt;nSize = p-&gt;nNodeSize;</span>
+<span class='curline'><a href='../S/185.html#L141673'>pWriter</a>          141673 libdb/sqlite3.c       pWriter-&gt;iFree = sqlite3_column_int64(pStmt, 0);</span>
+<span class='curline'><a href='../S/185.html#L141674'>pWriter</a>          141674 libdb/sqlite3.c       pWriter-&gt;iFirst = pWriter-&gt;iFree;</span>
+<span class='curline'><a href='../S/185.html#L141679'>pWriter</a>          141679 libdb/sqlite3.c   nData = pWriter-&gt;nData;</span>
+<span class='curline'><a href='../S/185.html#L141681'>pWriter</a>          141681 libdb/sqlite3.c   nPrefix = fts3PrefixCompress(pWriter-&gt;zTerm, pWriter-&gt;nTerm, zTerm, nTerm);</span>
+<span class='curline'><a href='../S/185.html#L141695'>pWriter</a>          141695 libdb/sqlite3.c     rc = fts3WriteSegment(p, pWriter-&gt;iFree++, pWriter-&gt;aData, nData);</span>
+<span class='curline'><a href='../S/185.html#L141712'>pWriter</a>          141712 libdb/sqlite3.c     rc = fts3NodeAddTerm(p, &amp;pWriter-&gt;pTree, isCopyTerm, zTerm, nPrefix+1);</span>
+<span class='curline'><a href='../S/185.html#L141716'>pWriter</a>          141716 libdb/sqlite3.c     pWriter-&gt;nTerm = 0;</span>
+<span class='curline'><a href='../S/185.html#L141728'>pWriter</a>          141728 libdb/sqlite3.c   pWriter-&gt;nLeafData += nReq;</span>
+<span class='curline'><a href='../S/185.html#L141733'>pWriter</a>          141733 libdb/sqlite3.c   if( nReq&gt;pWriter-&gt;nSize ){</span>
+<span class='curline'><a href='../S/185.html#L141734'>pWriter</a>          141734 libdb/sqlite3.c     char *aNew = sqlite3_realloc(pWriter-&gt;aData, nReq);</span>
+<span class='curline'><a href='../S/185.html#L141736'>pWriter</a>          141736 libdb/sqlite3.c     pWriter-&gt;aData = aNew;</span>
+<span class='curline'><a href='../S/185.html#L141737'>pWriter</a>          141737 libdb/sqlite3.c     pWriter-&gt;nSize = nReq;</span>
+<span class='curline'><a href='../S/185.html#L141739'>pWriter</a>          141739 libdb/sqlite3.c   assert( nData+nReq&lt;=pWriter-&gt;nSize );</span>
+<span class='curline'><a href='../S/185.html#L141742'>pWriter</a>          141742 libdb/sqlite3.c   nData += sqlite3Fts3PutVarint(&amp;pWriter-&gt;aData[nData], nPrefix);</span>
+<span class='curline'><a href='../S/185.html#L141743'>pWriter</a>          141743 libdb/sqlite3.c   nData += sqlite3Fts3PutVarint(&amp;pWriter-&gt;aData[nData], nSuffix);</span>
+<span class='curline'><a href='../S/185.html#L141744'>pWriter</a>          141744 libdb/sqlite3.c   memcpy(&amp;pWriter-&gt;aData[nData], &amp;zTerm[nPrefix], nSuffix);</span>
+<span class='curline'><a href='../S/185.html#L141746'>pWriter</a>          141746 libdb/sqlite3.c   nData += sqlite3Fts3PutVarint(&amp;pWriter-&gt;aData[nData], nDoclist);</span>
+<span class='curline'><a href='../S/185.html#L141747'>pWriter</a>          141747 libdb/sqlite3.c   memcpy(&amp;pWriter-&gt;aData[nData], aDoclist, nDoclist);</span>
+<span class='curline'><a href='../S/185.html#L141748'>pWriter</a>          141748 libdb/sqlite3.c   pWriter-&gt;nData = nData + nDoclist;</span>
+<span class='curline'><a href='../S/185.html#L141756'>pWriter</a>          141756 libdb/sqlite3.c     if( nTerm&gt;pWriter-&gt;nMalloc ){</span>
+<span class='curline'><a href='../S/185.html#L141757'>pWriter</a>          141757 libdb/sqlite3.c       char *zNew = sqlite3_realloc(pWriter-&gt;zMalloc, nTerm*2);</span>
+<span class='curline'><a href='../S/185.html#L141761'>pWriter</a>          141761 libdb/sqlite3.c       pWriter-&gt;nMalloc = nTerm*2;</span>
+<span class='curline'><a href='../S/185.html#L141762'>pWriter</a>          141762 libdb/sqlite3.c       pWriter-&gt;zMalloc = zNew;</span>
+<span class='curline'><a href='../S/185.html#L141763'>pWriter</a>          141763 libdb/sqlite3.c       pWriter-&gt;zTerm = zNew;</span>
+<span class='curline'><a href='../S/185.html#L141765'>pWriter</a>          141765 libdb/sqlite3.c     assert( pWriter-&gt;zTerm==pWriter-&gt;zMalloc );</span>
+<span class='curline'><a href='../S/185.html#L141766'>pWriter</a>          141766 libdb/sqlite3.c     memcpy(pWriter-&gt;zTerm, zTerm, nTerm);</span>
+<span class='curline'><a href='../S/185.html#L141768'>pWriter</a>          141768 libdb/sqlite3.c     pWriter-&gt;zTerm = (char *)zTerm;</span>
+<span class='curline'><a href='../S/185.html#L141770'>pWriter</a>          141770 libdb/sqlite3.c   pWriter-&gt;nTerm = nTerm;</span>
+<span class='curline'><a href='../S/185.html#L141783'>pWriter</a>          141783 libdb/sqlite3.c   SegmentWriter *pWriter,         /* SegmentWriter to flush to the db */</span>
+<span class='curline'><a href='../S/185.html#L141788'>pWriter</a>          141788 libdb/sqlite3.c   if( pWriter-&gt;pTree ){</span>
+<span class='curline'><a href='../S/185.html#L141794'>pWriter</a>          141794 libdb/sqlite3.c     iLastLeaf = pWriter-&gt;iFree;</span>
+<span class='curline'><a href='../S/185.html#L141795'>pWriter</a>          141795 libdb/sqlite3.c     rc = fts3WriteSegment(p, pWriter-&gt;iFree++, pWriter-&gt;aData, pWriter-&gt;nData);</span>
+<span class='curline'><a href='../S/185.html#L141797'>pWriter</a>          141797 libdb/sqlite3.c       rc = fts3NodeWrite(p, pWriter-&gt;pTree, 1,</span>
+<span class='curline'><a href='../S/185.html#L141798'>pWriter</a>          141798 libdb/sqlite3.c           pWriter-&gt;iFirst, pWriter-&gt;iFree, &amp;iLast, &amp;zRoot, &amp;nRoot);</span>
+<span class='curline'><a href='../S/185.html#L141802'>pWriter</a>          141802 libdb/sqlite3.c           pWriter-&gt;iFirst, iLastLeaf, iLast, pWriter-&gt;nLeafData, zRoot, nRoot);</span>
+<span class='curline'><a href='../S/185.html#L141807'>pWriter</a>          141807 libdb/sqlite3.c         0, 0, 0, pWriter-&gt;nLeafData, pWriter-&gt;aData, pWriter-&gt;nData);</span>
+<span class='curline'><a href='../S/185.html#L141817'>pWriter</a>          141817 libdb/sqlite3.c static void fts3SegWriterFree(SegmentWriter *pWriter){</span>
+<span class='curline'><a href='../S/185.html#L141818'>pWriter</a>          141818 libdb/sqlite3.c   if( pWriter ){</span>
+<span class='curline'><a href='../S/185.html#L141819'>pWriter</a>          141819 libdb/sqlite3.c     sqlite3_free(pWriter-&gt;aData);</span>
+<span class='curline'><a href='../S/185.html#L141820'>pWriter</a>          141820 libdb/sqlite3.c     sqlite3_free(pWriter-&gt;zMalloc);</span>
+<span class='curline'><a href='../S/185.html#L141821'>pWriter</a>          141821 libdb/sqlite3.c     fts3NodeFree(pWriter-&gt;pTree);</span>
+<span class='curline'><a href='../S/185.html#L141822'>pWriter</a>          141822 libdb/sqlite3.c     sqlite3_free(pWriter);</span>
+<span class='curline'><a href='../S/185.html#L142611'>pWriter</a>          142611 libdb/sqlite3.c   SegmentWriter *pWriter = 0;     /* Used to write the new, merged, segment */</span>
+<span class='curline'><a href='../S/185.html#L142668'>pWriter</a>          142668 libdb/sqlite3.c     rc = fts3SegWriterAdd(p, &amp;pWriter, 1, </span>
+<span class='curline'><a href='../S/185.html#L142672'>pWriter</a>          142672 libdb/sqlite3.c   assert( pWriter || bIgnoreEmpty );</span>
+<span class='curline'><a href='../S/185.html#L142680'>pWriter</a>          142680 libdb/sqlite3.c   if( pWriter ){</span>
+<span class='curline'><a href='../S/185.html#L142681'>pWriter</a>          142681 libdb/sqlite3.c     rc = fts3SegWriterFlush(p, pWriter, iNewLevel, iIdx);</span>
+<span class='curline'><a href='../S/185.html#L142684'>pWriter</a>          142684 libdb/sqlite3.c         rc = fts3PromoteSegments(p, iNewLevel, pWriter-&gt;nLeafData);</span>
+<span class='curline'><a href='../S/185.html#L142690'>pWriter</a>          142690 libdb/sqlite3.c   fts3SegWriterFree(pWriter);</span>
+<span class='curline'><a href='../S/185.html#L143227'>pWriter</a>          143227 libdb/sqlite3.c   IncrmergeWriter *pWriter,       /* Writer object */</span>
+<span class='curline'><a href='../S/185.html#L143231'>pWriter</a>          143231 libdb/sqlite3.c   sqlite3_int64 iPtr = pWriter-&gt;aNodeWriter[0].iBlock;</span>
+<span class='curline'><a href='../S/185.html#L143237'>pWriter</a>          143237 libdb/sqlite3.c     NodeWriter *pNode = &amp;pWriter-&gt;aNodeWriter[iLayer];</span>
+<span class='curline'><a href='../S/185.html#L143378'>pWriter</a>          143378 libdb/sqlite3.c   IncrmergeWriter *pWriter,       /* Writer object */</span>
+<span class='curline'><a href='../S/185.html#L143391'>pWriter</a>          143391 libdb/sqlite3.c   pLeaf = &amp;pWriter-&gt;aNodeWriter[0];</span>
+<span class='curline'><a href='../S/185.html#L143404'>pWriter</a>          143404 libdb/sqlite3.c     pWriter-&gt;nWork++;</span>
+<span class='curline'><a href='../S/185.html#L143419'>pWriter</a>          143419 libdb/sqlite3.c       rc = fts3IncrmergePush(p, pWriter, zTerm, nPrefix+1);</span>
+<span class='curline'><a href='../S/185.html#L143433'>pWriter</a>          143433 libdb/sqlite3.c   pWriter-&gt;nLeafData += nSpace;</span>
+<span class='curline'><a href='../S/185.html#L143463'>pWriter</a>          143463 libdb/sqlite3.c   IncrmergeWriter *pWriter,       /* Merge-writer object */</span>
+<span class='curline'><a href='../S/185.html#L143476'>pWriter</a>          143476 libdb/sqlite3.c     NodeWriter *pNode = &amp;pWriter-&gt;aNodeWriter[iRoot];</span>
+<span class='curline'><a href='../S/185.html#L143503'>pWriter</a>          143503 libdb/sqlite3.c     Blob *pBlock = &amp;pWriter-&gt;aNodeWriter[1].block;</span>
+<span class='curline'><a href='../S/185.html#L143508'>pWriter</a>          143508 libdb/sqlite3.c           &amp;pBlock-&gt;a[1], pWriter-&gt;aNodeWriter[0].iBlock</span>
+<span class='curline'><a href='../S/185.html#L143513'>pWriter</a>          143513 libdb/sqlite3.c   pRoot = &amp;pWriter-&gt;aNodeWriter[iRoot];</span>
+<span class='curline'><a href='../S/185.html#L143517'>pWriter</a>          143517 libdb/sqlite3.c     NodeWriter *pNode = &amp;pWriter-&gt;aNodeWriter[i];</span>
+<span class='curline'><a href='../S/185.html#L143528'>pWriter</a>          143528 libdb/sqlite3.c         pWriter-&gt;iAbsLevel+1,               /* level */</span>
+<span class='curline'><a href='../S/185.html#L143529'>pWriter</a>          143529 libdb/sqlite3.c         pWriter-&gt;iIdx,                      /* idx */</span>
+<span class='curline'><a href='../S/185.html#L143530'>pWriter</a>          143530 libdb/sqlite3.c         pWriter-&gt;iStart,                    /* start_block */</span>
+<span class='curline'><a href='../S/185.html#L143531'>pWriter</a>          143531 libdb/sqlite3.c         pWriter-&gt;aNodeWriter[0].iBlock,     /* leaves_end_block */</span>
+<span class='curline'><a href='../S/185.html#L143532'>pWriter</a>          143532 libdb/sqlite3.c         pWriter-&gt;iEnd,                      /* end_block */</span>
+<span class='curline'><a href='../S/185.html#L143533'>pWriter</a>          143533 libdb/sqlite3.c         (pWriter-&gt;bNoLeafData==0 ? pWriter-&gt;nLeafData : 0),   /* end_block */</span>
+<span class='curline'><a href='../S/185.html#L143614'>pWriter</a>          143614 libdb/sqlite3.c   IncrmergeWriter *pWriter        /* Populate this object */</span>
+<span class='curline'><a href='../S/185.html#L143635'>pWriter</a>          143635 libdb/sqlite3.c       fts3ReadEndBlockField(pSelect, 3, &amp;iEnd, &amp;pWriter-&gt;nLeafData);</span>
+<span class='curline'><a href='../S/185.html#L143636'>pWriter</a>          143636 libdb/sqlite3.c       if( pWriter-&gt;nLeafData&lt;0 ){</span>
+<span class='curline'><a href='../S/185.html#L143637'>pWriter</a>          143637 libdb/sqlite3.c         pWriter-&gt;nLeafData = pWriter-&gt;nLeafData * -1;</span>
+<span class='curline'><a href='../S/185.html#L143639'>pWriter</a>          143639 libdb/sqlite3.c       pWriter-&gt;bNoLeafData = (pWriter-&gt;nLeafData==0);</span>
+<span class='curline'><a href='../S/185.html#L143678'>pWriter</a>          143678 libdb/sqlite3.c       pWriter-&gt;nLeafEst = (int)((iEnd - iStart) + 1)/FTS_MAX_APPENDABLE_HEIGHT;</span>
+<span class='curline'><a href='../S/185.html#L143679'>pWriter</a>          143679 libdb/sqlite3.c       pWriter-&gt;iStart = iStart;</span>
+<span class='curline'><a href='../S/185.html#L143680'>pWriter</a>          143680 libdb/sqlite3.c       pWriter-&gt;iEnd = iEnd;</span>
+<span class='curline'><a href='../S/185.html#L143681'>pWriter</a>          143681 libdb/sqlite3.c       pWriter-&gt;iAbsLevel = iAbsLevel;</span>
+<span class='curline'><a href='../S/185.html#L143682'>pWriter</a>          143682 libdb/sqlite3.c       pWriter-&gt;iIdx = iIdx;</span>
+<span class='curline'><a href='../S/185.html#L143685'>pWriter</a>          143685 libdb/sqlite3.c         pWriter-&gt;aNodeWriter[i].iBlock = pWriter-&gt;iStart + i*pWriter-&gt;nLeafEst;</span>
+<span class='curline'><a href='../S/185.html#L143688'>pWriter</a>          143688 libdb/sqlite3.c       pNode = &amp;pWriter-&gt;aNodeWriter[nHeight];</span>
+<span class='curline'><a href='../S/185.html#L143689'>pWriter</a>          143689 libdb/sqlite3.c       pNode-&gt;iBlock = pWriter-&gt;iStart + pWriter-&gt;nLeafEst*nHeight;</span>
+<span class='curline'><a href='../S/185.html#L143698'>pWriter</a>          143698 libdb/sqlite3.c         pNode = &amp;pWriter-&gt;aNodeWriter[i];</span>
+<span class='curline'><a href='../S/185.html#L143709'>pWriter</a>          143709 libdb/sqlite3.c             pNode = &amp;pWriter-&gt;aNodeWriter[i-1];</span>
+<span class='curline'><a href='../S/185.html#L143790'>pWriter</a>          143790 libdb/sqlite3.c   IncrmergeWriter *pWriter        /* Populate this object */</span>
+<span class='curline'><a href='../S/185.html#L143814'>pWriter</a>          143814 libdb/sqlite3.c       pWriter-&gt;iStart = sqlite3_column_int64(pFirstBlock, 0);</span>
+<span class='curline'><a href='../S/185.html#L143815'>pWriter</a>          143815 libdb/sqlite3.c       pWriter-&gt;iEnd = pWriter-&gt;iStart - 1;</span>
+<span class='curline'><a href='../S/185.html#L143816'>pWriter</a>          143816 libdb/sqlite3.c       pWriter-&gt;iEnd += nLeafEst * FTS_MAX_APPENDABLE_HEIGHT;</span>
+<span class='curline'><a href='../S/185.html#L143825'>pWriter</a>          143825 libdb/sqlite3.c   rc = fts3WriteSegment(p, pWriter-&gt;iEnd, 0, 0);</span>
+<span class='curline'><a href='../S/185.html#L143828'>pWriter</a>          143828 libdb/sqlite3.c   pWriter-&gt;iAbsLevel = iAbsLevel;</span>
+<span class='curline'><a href='../S/185.html#L143829'>pWriter</a>          143829 libdb/sqlite3.c   pWriter-&gt;nLeafEst = nLeafEst;</span>
+<span class='curline'><a href='../S/185.html#L143830'>pWriter</a>          143830 libdb/sqlite3.c   pWriter-&gt;iIdx = iIdx;</span>
+<span class='curline'><a href='../S/185.html#L143834'>pWriter</a>          143834 libdb/sqlite3.c     pWriter-&gt;aNodeWriter[i].iBlock = pWriter-&gt;iStart + i*pWriter-&gt;nLeafEst;</span>
+<span class='curline'><a href='../S/185.html#L144251'>pWriter</a>          144251 libdb/sqlite3.c   IncrmergeWriter *pWriter;       /* Writer object */</span>
+<span class='curline'><a href='../S/185.html#L144258'>pWriter</a>          144258 libdb/sqlite3.c   const int nAlloc = sizeof(*pCsr) + sizeof(*pFilter) + sizeof(*pWriter);</span>
+<span class='curline'><a href='../S/185.html#L144259'>pWriter</a>          144259 libdb/sqlite3.c   pWriter = (IncrmergeWriter *)sqlite3_malloc(nAlloc);</span>
+<span class='curline'><a href='../S/185.html#L144260'>pWriter</a>          144260 libdb/sqlite3.c   if( !pWriter ) return SQLITE_NOMEM;</span>
+<span class='curline'><a href='../S/185.html#L144261'>pWriter</a>          144261 libdb/sqlite3.c   pFilter = (Fts3SegFilter *)&amp;pWriter[1];</span>
+<span class='curline'><a href='../S/185.html#L144321'>pWriter</a>          144321 libdb/sqlite3.c     memset(pWriter, 0, nAlloc);</span>
+<span class='curline'><a href='../S/185.html#L144346'>pWriter</a>          144346 libdb/sqlite3.c         rc = fts3IncrmergeLoad(p, iAbsLevel, iIdx-1, zKey, nKey, pWriter);</span>
+<span class='curline'><a href='../S/185.html#L144348'>pWriter</a>          144348 libdb/sqlite3.c         rc = fts3IncrmergeWriter(p, iAbsLevel, iIdx, pCsr, pWriter);</span>
+<span class='curline'><a href='../S/185.html#L144351'>pWriter</a>          144351 libdb/sqlite3.c       if( rc==SQLITE_OK &amp;&amp; pWriter-&gt;nLeafEst ){</span>
+<span class='curline'><a href='../S/185.html#L144354'>pWriter</a>          144354 libdb/sqlite3.c           rc = fts3IncrmergeAppend(p, pWriter, pCsr);</span>
+<span class='curline'><a href='../S/185.html#L144356'>pWriter</a>          144356 libdb/sqlite3.c           if( pWriter-&gt;nWork&gt;=nRem &amp;&amp; rc==SQLITE_ROW ) rc = SQLITE_OK;</span>
+<span class='curline'><a href='../S/185.html#L144361'>pWriter</a>          144361 libdb/sqlite3.c           nRem -= (1 + pWriter-&gt;nWork);</span>
+<span class='curline'><a href='../S/185.html#L144371'>pWriter</a>          144371 libdb/sqlite3.c         pWriter-&gt;nLeafData = pWriter-&gt;nLeafData * -1;</span>
+<span class='curline'><a href='../S/185.html#L144373'>pWriter</a>          144373 libdb/sqlite3.c       fts3IncrmergeRelease(p, pWriter, &amp;rc);</span>
+<span class='curline'><a href='../S/185.html#L144374'>pWriter</a>          144374 libdb/sqlite3.c       if( nSeg==0 &amp;&amp; pWriter-&gt;bNoLeafData==0 ){</span>
+<span class='curline'><a href='../S/185.html#L144375'>pWriter</a>          144375 libdb/sqlite3.c         fts3PromoteSegments(p, iAbsLevel+1, pWriter-&gt;nLeafData);</span>
+<span class='curline'><a href='../S/185.html#L144387'>pWriter</a>          144387 libdb/sqlite3.c   sqlite3_free(pWriter);</span>
+</pre>
+</body>
+</html>

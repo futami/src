@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>sAggInfo</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/185.html#L108653'>sAggInfo</a>         108653 libdb/sqlite3.c   AggInfo sAggInfo;      /* Information used by aggregate queries */</span>
+<span class='curline'><a href='../S/185.html#L108667'>sAggInfo</a>         108667 libdb/sqlite3.c   memset(&amp;sAggInfo, 0, sizeof(sAggInfo));</span>
+<span class='curline'><a href='../S/185.html#L109011'>sAggInfo</a>         109011 libdb/sqlite3.c     sNC.pAggInfo = &amp;sAggInfo;</span>
+<span class='curline'><a href='../S/185.html#L109012'>sAggInfo</a>         109012 libdb/sqlite3.c     sAggInfo.mnReg = pParse-&gt;nMem+1;</span>
+<span class='curline'><a href='../S/185.html#L109013'>sAggInfo</a>         109013 libdb/sqlite3.c     sAggInfo.nSortingColumn = pGroupBy ? pGroupBy-&gt;nExpr : 0;</span>
+<span class='curline'><a href='../S/185.html#L109014'>sAggInfo</a>         109014 libdb/sqlite3.c     sAggInfo.pGroupBy = pGroupBy;</span>
+<span class='curline'><a href='../S/185.html#L109020'>sAggInfo</a>         109020 libdb/sqlite3.c     sAggInfo.nAccumulator = sAggInfo.nColumn;</span>
+<span class='curline'><a href='../S/185.html#L109021'>sAggInfo</a>         109021 libdb/sqlite3.c     for(i=0; i&lt;sAggInfo.nFunc; i++){</span>
+<span class='curline'><a href='../S/185.html#L109022'>sAggInfo</a>         109022 libdb/sqlite3.c       assert( !ExprHasProperty(sAggInfo.aFunc[i].pExpr, EP_xIsSelect) );</span>
+<span class='curline'><a href='../S/185.html#L109024'>sAggInfo</a>         109024 libdb/sqlite3.c       sqlite3ExprAnalyzeAggList(&amp;sNC, sAggInfo.aFunc[i].pExpr-&gt;x.pList);</span>
+<span class='curline'><a href='../S/185.html#L109027'>sAggInfo</a>         109027 libdb/sqlite3.c     sAggInfo.mxReg = pParse-&gt;nMem;</span>
+<span class='curline'><a href='../S/185.html#L109049'>sAggInfo</a>         109049 libdb/sqlite3.c       sAggInfo.sortingIdx = pParse-&gt;nTab++;</span>
+<span class='curline'><a href='../S/185.html#L109052'>sAggInfo</a>         109052 libdb/sqlite3.c           sAggInfo.sortingIdx, sAggInfo.nSortingColumn, </span>
+<span class='curline'><a href='../S/185.html#L109108'>sAggInfo</a>         109108 libdb/sqlite3.c         for(i=0; i&lt;sAggInfo.nColumn; i++){</span>
+<span class='curline'><a href='../S/185.html#L109109'>sAggInfo</a>         109109 libdb/sqlite3.c           if( sAggInfo.aCol[i].iSorterColumn&gt;=j ){</span>
+<span class='curline'><a href='../S/185.html#L109118'>sAggInfo</a>         109118 libdb/sqlite3.c         for(i=0; i&lt;sAggInfo.nColumn; i++){</span>
+<span class='curline'><a href='../S/185.html#L109119'>sAggInfo</a>         109119 libdb/sqlite3.c           struct AggInfo_col *pCol = &amp;sAggInfo.aCol[i];</span>
+<span class='curline'><a href='../S/185.html#L109134'>sAggInfo</a>         109134 libdb/sqlite3.c         sqlite3VdbeAddOp2(v, OP_SorterInsert, sAggInfo.sortingIdx, regRecord);</span>
+<span class='curline'><a href='../S/185.html#L109138'>sAggInfo</a>         109138 libdb/sqlite3.c         sAggInfo.sortingIdxPTab = sortPTab = pParse-&gt;nTab++;</span>
+<span class='curline'><a href='../S/185.html#L109141'>sAggInfo</a>         109141 libdb/sqlite3.c         sqlite3VdbeAddOp2(v, OP_SorterSort, sAggInfo.sortingIdx, addrEnd);</span>
+<span class='curline'><a href='../S/185.html#L109143'>sAggInfo</a>         109143 libdb/sqlite3.c         sAggInfo.useSortingIdx = 1;</span>
+<span class='curline'><a href='../S/185.html#L109170'>sAggInfo</a>         109170 libdb/sqlite3.c         sqlite3VdbeAddOp3(v, OP_SorterData, sAggInfo.sortingIdx, sortOut,sortPTab);</span>
+<span class='curline'><a href='../S/185.html#L109176'>sAggInfo</a>         109176 libdb/sqlite3.c           sAggInfo.directMode = 1;</span>
+<span class='curline'><a href='../S/185.html#L109206'>sAggInfo</a>         109206 libdb/sqlite3.c       updateAccumulator(pParse, &amp;sAggInfo);</span>
+<span class='curline'><a href='../S/185.html#L109213'>sAggInfo</a>         109213 libdb/sqlite3.c         sqlite3VdbeAddOp2(v, OP_SorterNext, sAggInfo.sortingIdx, addrTopOfLoop);</span>
+<span class='curline'><a href='../S/185.html#L109245'>sAggInfo</a>         109245 libdb/sqlite3.c       finalizeAggFunctions(pParse, &amp;sAggInfo);</span>
+<span class='curline'><a href='../S/185.html#L109256'>sAggInfo</a>         109256 libdb/sqlite3.c       resetAccumulator(pParse, &amp;sAggInfo);</span>
+<span class='curline'><a href='../S/185.html#L109264'>sAggInfo</a>         109264 libdb/sqlite3.c       if( (pTab = isSimpleCount(p, &amp;sAggInfo))!=0 ){</span>
+<span class='curline'><a href='../S/185.html#L109317'>sAggInfo</a>         109317 libdb/sqlite3.c         sqlite3VdbeAddOp2(v, OP_Count, iCsr, sAggInfo.aFunc[0].iMem);</span>
+<span class='curline'><a href='../S/185.html#L109354'>sAggInfo</a>         109354 libdb/sqlite3.c           flag = minMaxQuery(&amp;sAggInfo, &amp;pMinMax);</span>
+<span class='curline'><a href='../S/185.html#L109371'>sAggInfo</a>         109371 libdb/sqlite3.c         resetAccumulator(pParse, &amp;sAggInfo);</span>
+<span class='curline'><a href='../S/185.html#L109377'>sAggInfo</a>         109377 libdb/sqlite3.c         updateAccumulator(pParse, &amp;sAggInfo);</span>
+<span class='curline'><a href='../S/185.html#L109385'>sAggInfo</a>         109385 libdb/sqlite3.c         finalizeAggFunctions(pParse, &amp;sAggInfo);</span>
+<span class='curline'><a href='../S/185.html#L109431'>sAggInfo</a>         109431 libdb/sqlite3.c   sqlite3DbFree(db, sAggInfo.aCol);</span>
+<span class='curline'><a href='../S/185.html#L109432'>sAggInfo</a>         109432 libdb/sqlite3.c   sqlite3DbFree(db, sAggInfo.aFunc);</span>
+</pre>
+</body>
+</html>

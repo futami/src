@@ -1,0 +1,99 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>pIncr</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/185.html#L76288'>pIncr</a>            76288 libdb/sqlite3.c   IncrMerger *pIncr;          /* Incremental merger */</span>
+<span class='curline'><a href='../S/185.html#L76403'>pIncr</a>            76403 libdb/sqlite3.c   vdbeIncrFree(pReadr-&gt;pIncr);</span>
+<span class='curline'><a href='../S/185.html#L76568'>pIncr</a>            76568 libdb/sqlite3.c   assert( pReadr-&gt;pIncr==0 || pReadr-&gt;pIncr-&gt;bEof==0 );</span>
+<span class='curline'><a href='../S/185.html#L76613'>pIncr</a>            76613 libdb/sqlite3.c     IncrMerger *pIncr = pReadr-&gt;pIncr;</span>
+<span class='curline'><a href='../S/185.html#L76615'>pIncr</a>            76615 libdb/sqlite3.c     if( pIncr ){</span>
+<span class='curline'><a href='../S/185.html#L76616'>pIncr</a>            76616 libdb/sqlite3.c       rc = vdbeIncrSwap(pIncr);</span>
+<span class='curline'><a href='../S/185.html#L76617'>pIncr</a>            76617 libdb/sqlite3.c       if( rc==SQLITE_OK &amp;&amp; pIncr-&gt;bEof==0 ){</span>
+<span class='curline'><a href='../S/185.html#L76619'>pIncr</a>            76619 libdb/sqlite3.c             pIncr-&gt;pTask, pReadr, &amp;pIncr-&gt;aFile[0], pIncr-&gt;iStartOff</span>
+<span class='curline'><a href='../S/185.html#L76998'>pIncr</a>            76998 libdb/sqlite3.c static void vdbeIncrFree(IncrMerger *pIncr){</span>
+<span class='curline'><a href='../S/185.html#L76999'>pIncr</a>            76999 libdb/sqlite3.c   if( pIncr ){</span>
+<span class='curline'><a href='../S/185.html#L77001'>pIncr</a>            77001 libdb/sqlite3.c     if( pIncr-&gt;bUseThread ){</span>
+<span class='curline'><a href='../S/185.html#L77002'>pIncr</a>            77002 libdb/sqlite3.c       vdbeSorterJoinThread(pIncr-&gt;pTask);</span>
+<span class='curline'><a href='../S/185.html#L77003'>pIncr</a>            77003 libdb/sqlite3.c       if( pIncr-&gt;aFile[0].pFd ) sqlite3OsCloseFree(pIncr-&gt;aFile[0].pFd);</span>
+<span class='curline'><a href='../S/185.html#L77004'>pIncr</a>            77004 libdb/sqlite3.c       if( pIncr-&gt;aFile[1].pFd ) sqlite3OsCloseFree(pIncr-&gt;aFile[1].pFd);</span>
+<span class='curline'><a href='../S/185.html#L77007'>pIncr</a>            77007 libdb/sqlite3.c     vdbeMergeEngineFree(pIncr-&gt;pMerger);</span>
+<span class='curline'><a href='../S/185.html#L77008'>pIncr</a>            77008 libdb/sqlite3.c     sqlite3_free(pIncr);</span>
+<span class='curline'><a href='../S/185.html#L77627'>pIncr</a>            77627 libdb/sqlite3.c static int vdbeIncrPopulate(IncrMerger *pIncr){</span>
+<span class='curline'><a href='../S/185.html#L77630'>pIncr</a>            77630 libdb/sqlite3.c   i64 iStart = pIncr-&gt;iStartOff;</span>
+<span class='curline'><a href='../S/185.html#L77631'>pIncr</a>            77631 libdb/sqlite3.c   SorterFile *pOut = &amp;pIncr-&gt;aFile[1];</span>
+<span class='curline'><a href='../S/185.html#L77632'>pIncr</a>            77632 libdb/sqlite3.c   SortSubtask *pTask = pIncr-&gt;pTask;</span>
+<span class='curline'><a href='../S/185.html#L77633'>pIncr</a>            77633 libdb/sqlite3.c   MergeEngine *pMerger = pIncr-&gt;pMerger;</span>
+<span class='curline'><a href='../S/185.html#L77635'>pIncr</a>            77635 libdb/sqlite3.c   assert( pIncr-&gt;bEof==0 );</span>
+<span class='curline'><a href='../S/185.html#L77649'>pIncr</a>            77649 libdb/sqlite3.c     if( (iEof + nKey + sqlite3VarintLen(nKey))&gt;(iStart + pIncr-&gt;mxSz) ) break;</span>
+<span class='curline'><a href='../S/185.html#L77654'>pIncr</a>            77654 libdb/sqlite3.c     assert( pIncr-&gt;pMerger-&gt;pTask==pTask );</span>
+<span class='curline'><a href='../S/185.html#L77655'>pIncr</a>            77655 libdb/sqlite3.c     rc = vdbeMergeEngineStep(pIncr-&gt;pMerger, &amp;dummy);</span>
+<span class='curline'><a href='../S/185.html#L77670'>pIncr</a>            77670 libdb/sqlite3.c   IncrMerger *pIncr = (IncrMerger*)pCtx;</span>
+<span class='curline'><a href='../S/185.html#L77671'>pIncr</a>            77671 libdb/sqlite3.c   void *pRet = SQLITE_INT_TO_PTR( vdbeIncrPopulate(pIncr) );</span>
+<span class='curline'><a href='../S/185.html#L77672'>pIncr</a>            77672 libdb/sqlite3.c   pIncr-&gt;pTask-&gt;bDone = 1;</span>
+<span class='curline'><a href='../S/185.html#L77679'>pIncr</a>            77679 libdb/sqlite3.c static int vdbeIncrBgPopulate(IncrMerger *pIncr){</span>
+<span class='curline'><a href='../S/185.html#L77680'>pIncr</a>            77680 libdb/sqlite3.c   void *p = (void*)pIncr;</span>
+<span class='curline'><a href='../S/185.html#L77681'>pIncr</a>            77681 libdb/sqlite3.c   assert( pIncr-&gt;bUseThread );</span>
+<span class='curline'><a href='../S/185.html#L77682'>pIncr</a>            77682 libdb/sqlite3.c   return vdbeSorterCreateThread(pIncr-&gt;pTask, vdbeIncrPopulateThread, p);</span>
+<span class='curline'><a href='../S/185.html#L77703'>pIncr</a>            77703 libdb/sqlite3.c static int vdbeIncrSwap(IncrMerger *pIncr){</span>
+<span class='curline'><a href='../S/185.html#L77707'>pIncr</a>            77707 libdb/sqlite3.c   if( pIncr-&gt;bUseThread ){</span>
+<span class='curline'><a href='../S/185.html#L77708'>pIncr</a>            77708 libdb/sqlite3.c     rc = vdbeSorterJoinThread(pIncr-&gt;pTask);</span>
+<span class='curline'><a href='../S/185.html#L77711'>pIncr</a>            77711 libdb/sqlite3.c       SorterFile f0 = pIncr-&gt;aFile[0];</span>
+<span class='curline'><a href='../S/185.html#L77712'>pIncr</a>            77712 libdb/sqlite3.c       pIncr-&gt;aFile[0] = pIncr-&gt;aFile[1];</span>
+<span class='curline'><a href='../S/185.html#L77713'>pIncr</a>            77713 libdb/sqlite3.c       pIncr-&gt;aFile[1] = f0;</span>
+<span class='curline'><a href='../S/185.html#L77717'>pIncr</a>            77717 libdb/sqlite3.c       if( pIncr-&gt;aFile[0].iEof==pIncr-&gt;iStartOff ){</span>
+<span class='curline'><a href='../S/185.html#L77718'>pIncr</a>            77718 libdb/sqlite3.c         pIncr-&gt;bEof = 1;</span>
+<span class='curline'><a href='../S/185.html#L77720'>pIncr</a>            77720 libdb/sqlite3.c         rc = vdbeIncrBgPopulate(pIncr);</span>
+<span class='curline'><a href='../S/185.html#L77726'>pIncr</a>            77726 libdb/sqlite3.c     rc = vdbeIncrPopulate(pIncr);</span>
+<span class='curline'><a href='../S/185.html#L77727'>pIncr</a>            77727 libdb/sqlite3.c     pIncr-&gt;aFile[0] = pIncr-&gt;aFile[1];</span>
+<span class='curline'><a href='../S/185.html#L77728'>pIncr</a>            77728 libdb/sqlite3.c     if( pIncr-&gt;aFile[0].iEof==pIncr-&gt;iStartOff ){</span>
+<span class='curline'><a href='../S/185.html#L77729'>pIncr</a>            77729 libdb/sqlite3.c       pIncr-&gt;bEof = 1;</span>
+<span class='curline'><a href='../S/185.html#L77748'>pIncr</a>            77748 libdb/sqlite3.c   IncrMerger *pIncr = *ppOut = (IncrMerger*)</span>
+<span class='curline'><a href='../S/185.html#L77749'>pIncr</a>            77749 libdb/sqlite3.c        (sqlite3FaultSim(100) ? 0 : sqlite3MallocZero(sizeof(*pIncr)));</span>
+<span class='curline'><a href='../S/185.html#L77750'>pIncr</a>            77750 libdb/sqlite3.c   if( pIncr ){</span>
+<span class='curline'><a href='../S/185.html#L77751'>pIncr</a>            77751 libdb/sqlite3.c     pIncr-&gt;pMerger = pMerger;</span>
+<span class='curline'><a href='../S/185.html#L77752'>pIncr</a>            77752 libdb/sqlite3.c     pIncr-&gt;pTask = pTask;</span>
+<span class='curline'><a href='../S/185.html#L77753'>pIncr</a>            77753 libdb/sqlite3.c     pIncr-&gt;mxSz = MAX(pTask-&gt;pSorter-&gt;mxKeysize+9,pTask-&gt;pSorter-&gt;mxPmaSize/2);</span>
+<span class='curline'><a href='../S/185.html#L77754'>pIncr</a>            77754 libdb/sqlite3.c     pTask-&gt;file2.iEof += pIncr-&gt;mxSz;</span>
+<span class='curline'><a href='../S/185.html#L77766'>pIncr</a>            77766 libdb/sqlite3.c static void vdbeIncrMergerSetThreads(IncrMerger *pIncr){</span>
+<span class='curline'><a href='../S/185.html#L77767'>pIncr</a>            77767 libdb/sqlite3.c   pIncr-&gt;bUseThread = 1;</span>
+<span class='curline'><a href='../S/185.html#L77768'>pIncr</a>            77768 libdb/sqlite3.c   pIncr-&gt;pTask-&gt;file2.iEof -= pIncr-&gt;mxSz;</span>
+<span class='curline'><a href='../S/185.html#L77933'>pIncr</a>            77933 libdb/sqlite3.c   IncrMerger *pIncr = pReadr-&gt;pIncr;</span>
+<span class='curline'><a href='../S/185.html#L77938'>pIncr</a>            77938 libdb/sqlite3.c   if( pIncr ){</span>
+<span class='curline'><a href='../S/185.html#L77939'>pIncr</a>            77939 libdb/sqlite3.c     SortSubtask *pTask = pIncr-&gt;pTask;</span>
+<span class='curline'><a href='../S/185.html#L77942'>pIncr</a>            77942 libdb/sqlite3.c     rc = vdbeMergeEngineInit(pTask, pIncr-&gt;pMerger, eMode);</span>
+<span class='curline'><a href='../S/185.html#L77948'>pIncr</a>            77948 libdb/sqlite3.c       int mxSz = pIncr-&gt;mxSz;</span>
+<span class='curline'><a href='../S/185.html#L77950'>pIncr</a>            77950 libdb/sqlite3.c       if( pIncr-&gt;bUseThread ){</span>
+<span class='curline'><a href='../S/185.html#L77951'>pIncr</a>            77951 libdb/sqlite3.c         rc = vdbeSorterOpenTempFile(db, mxSz, &amp;pIncr-&gt;aFile[0].pFd);</span>
+<span class='curline'><a href='../S/185.html#L77953'>pIncr</a>            77953 libdb/sqlite3.c           rc = vdbeSorterOpenTempFile(db, mxSz, &amp;pIncr-&gt;aFile[1].pFd);</span>
+<span class='curline'><a href='../S/185.html#L77964'>pIncr</a>            77964 libdb/sqlite3.c           pIncr-&gt;aFile[1].pFd = pTask-&gt;file2.pFd;</span>
+<span class='curline'><a href='../S/185.html#L77965'>pIncr</a>            77965 libdb/sqlite3.c           pIncr-&gt;iStartOff = pTask-&gt;file2.iEof;</span>
+<span class='curline'><a href='../S/185.html#L77972'>pIncr</a>            77972 libdb/sqlite3.c     if( rc==SQLITE_OK &amp;&amp; pIncr-&gt;bUseThread ){</span>
+<span class='curline'><a href='../S/185.html#L77977'>pIncr</a>            77977 libdb/sqlite3.c       rc = vdbeIncrPopulate(pIncr);</span>
+<span class='curline'><a href='../S/185.html#L78000'>pIncr</a>            78000 libdb/sqlite3.c   pReader-&gt;pIncr-&gt;pTask-&gt;bDone = 1;</span>
+<span class='curline'><a href='../S/185.html#L78014'>pIncr</a>            78014 libdb/sqlite3.c   return vdbeSorterCreateThread(pReadr-&gt;pIncr-&gt;pTask, vdbePmaReaderBgInit, pCtx);</span>
+<span class='curline'><a href='../S/185.html#L78098'>pIncr</a>            78098 libdb/sqlite3.c   IncrMerger *pIncr;</span>
+<span class='curline'><a href='../S/185.html#L78100'>pIncr</a>            78100 libdb/sqlite3.c   rc = vdbeIncrMergerNew(pTask, pLeaf, &amp;pIncr);</span>
+<span class='curline'><a href='../S/185.html#L78110'>pIncr</a>            78110 libdb/sqlite3.c     if( pReadr-&gt;pIncr==0 ){</span>
+<span class='curline'><a href='../S/185.html#L78115'>pIncr</a>            78115 libdb/sqlite3.c         rc = vdbeIncrMergerNew(pTask, pNew, &amp;pReadr-&gt;pIncr);</span>
+<span class='curline'><a href='../S/185.html#L78119'>pIncr</a>            78119 libdb/sqlite3.c       p = pReadr-&gt;pIncr-&gt;pMerger;</span>
+<span class='curline'><a href='../S/185.html#L78125'>pIncr</a>            78125 libdb/sqlite3.c     p-&gt;aReadr[iSeq % SORTER_MAX_MERGE_COUNT].pIncr = pIncr;</span>
+<span class='curline'><a href='../S/185.html#L78127'>pIncr</a>            78127 libdb/sqlite3.c     vdbeIncrFree(pIncr);</span>
+<span class='curline'><a href='../S/185.html#L78192'>pIncr</a>            78192 libdb/sqlite3.c           rc = vdbeIncrMergerNew(pTask, pRoot, &amp;pMain-&gt;aReadr[iTask].pIncr);</span>
+<span class='curline'><a href='../S/185.html#L78245'>pIncr</a>            78245 libdb/sqlite3.c         rc = vdbeIncrMergerNew(pLast, pMain, &amp;pReadr-&gt;pIncr);</span>
+<span class='curline'><a href='../S/185.html#L78247'>pIncr</a>            78247 libdb/sqlite3.c           vdbeIncrMergerSetThreads(pReadr-&gt;pIncr);</span>
+<span class='curline'><a href='../S/185.html#L78249'>pIncr</a>            78249 libdb/sqlite3.c             IncrMerger *pIncr;</span>
+<span class='curline'><a href='../S/185.html#L78250'>pIncr</a>            78250 libdb/sqlite3.c             if( (pIncr = pMain-&gt;aReadr[iTask].pIncr) ){</span>
+<span class='curline'><a href='../S/185.html#L78251'>pIncr</a>            78251 libdb/sqlite3.c               vdbeIncrMergerSetThreads(pIncr);</span>
+<span class='curline'><a href='../S/185.html#L78252'>pIncr</a>            78252 libdb/sqlite3.c               assert( pIncr-&gt;pTask!=pLast );</span>
+<span class='curline'><a href='../S/185.html#L78257'>pIncr</a>            78257 libdb/sqlite3.c             assert( p-&gt;pIncr==0 || p-&gt;pIncr-&gt;pTask==&amp;pSorter-&gt;aTask[iTask] );</span>
+<span class='curline'><a href='../S/185.html#L78258'>pIncr</a>            78258 libdb/sqlite3.c             if( p-&gt;pIncr ){ </span>
+</pre>
+</body>
+</html>

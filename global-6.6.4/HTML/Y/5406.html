@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>pMaskSet</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/185.html#L113840'>pMaskSet</a>         113840 libdb/sqlite3.c static Bitmask getMask(WhereMaskSet *pMaskSet, int iCursor){</span>
+<span class='curline'><a href='../S/185.html#L113842'>pMaskSet</a>         113842 libdb/sqlite3.c   assert( pMaskSet-&gt;n&lt;=(int)sizeof(Bitmask)*8 );</span>
+<span class='curline'><a href='../S/185.html#L113843'>pMaskSet</a>         113843 libdb/sqlite3.c   for(i=0; i&lt;pMaskSet-&gt;n; i++){</span>
+<span class='curline'><a href='../S/185.html#L113844'>pMaskSet</a>         113844 libdb/sqlite3.c     if( pMaskSet-&gt;ix[i]==iCursor ){</span>
+<span class='curline'><a href='../S/185.html#L113859'>pMaskSet</a>         113859 libdb/sqlite3.c static void createMask(WhereMaskSet *pMaskSet, int iCursor){</span>
+<span class='curline'><a href='../S/185.html#L113860'>pMaskSet</a>         113860 libdb/sqlite3.c   assert( pMaskSet-&gt;n &lt; ArraySize(pMaskSet-&gt;ix) );</span>
+<span class='curline'><a href='../S/185.html#L113861'>pMaskSet</a>         113861 libdb/sqlite3.c   pMaskSet-&gt;ix[pMaskSet-&gt;n++] = iCursor;</span>
+<span class='curline'><a href='../S/185.html#L113871'>pMaskSet</a>         113871 libdb/sqlite3.c static Bitmask exprTableUsage(WhereMaskSet *pMaskSet, Expr *p){</span>
+<span class='curline'><a href='../S/185.html#L113875'>pMaskSet</a>         113875 libdb/sqlite3.c     mask = getMask(pMaskSet, p-&gt;iTable);</span>
+<span class='curline'><a href='../S/185.html#L113878'>pMaskSet</a>         113878 libdb/sqlite3.c   mask = exprTableUsage(pMaskSet, p-&gt;pRight);</span>
+<span class='curline'><a href='../S/185.html#L113879'>pMaskSet</a>         113879 libdb/sqlite3.c   mask |= exprTableUsage(pMaskSet, p-&gt;pLeft);</span>
+<span class='curline'><a href='../S/185.html#L113881'>pMaskSet</a>         113881 libdb/sqlite3.c     mask |= exprSelectTableUsage(pMaskSet, p-&gt;x.pSelect);</span>
+<span class='curline'><a href='../S/185.html#L113883'>pMaskSet</a>         113883 libdb/sqlite3.c     mask |= exprListTableUsage(pMaskSet, p-&gt;x.pList);</span>
+<span class='curline'><a href='../S/185.html#L113887'>pMaskSet</a>         113887 libdb/sqlite3.c static Bitmask exprListTableUsage(WhereMaskSet *pMaskSet, ExprList *pList){</span>
+<span class='curline'><a href='../S/185.html#L113892'>pMaskSet</a>         113892 libdb/sqlite3.c       mask |= exprTableUsage(pMaskSet, pList-&gt;a[i].pExpr);</span>
+<span class='curline'><a href='../S/185.html#L113897'>pMaskSet</a>         113897 libdb/sqlite3.c static Bitmask exprSelectTableUsage(WhereMaskSet *pMaskSet, Select *pS){</span>
+<span class='curline'><a href='../S/185.html#L113901'>pMaskSet</a>         113901 libdb/sqlite3.c     mask |= exprListTableUsage(pMaskSet, pS-&gt;pEList);</span>
+<span class='curline'><a href='../S/185.html#L113902'>pMaskSet</a>         113902 libdb/sqlite3.c     mask |= exprListTableUsage(pMaskSet, pS-&gt;pGroupBy);</span>
+<span class='curline'><a href='../S/185.html#L113903'>pMaskSet</a>         113903 libdb/sqlite3.c     mask |= exprListTableUsage(pMaskSet, pS-&gt;pOrderBy);</span>
+<span class='curline'><a href='../S/185.html#L113904'>pMaskSet</a>         113904 libdb/sqlite3.c     mask |= exprTableUsage(pMaskSet, pS-&gt;pWhere);</span>
+<span class='curline'><a href='../S/185.html#L113905'>pMaskSet</a>         113905 libdb/sqlite3.c     mask |= exprTableUsage(pMaskSet, pS-&gt;pHaving);</span>
+<span class='curline'><a href='../S/185.html#L113909'>pMaskSet</a>         113909 libdb/sqlite3.c         mask |= exprSelectTableUsage(pMaskSet, pSrc-&gt;a[i].pSelect);</span>
+<span class='curline'><a href='../S/185.html#L113910'>pMaskSet</a>         113910 libdb/sqlite3.c         mask |= exprTableUsage(pMaskSet, pSrc-&gt;a[i].pOn);</span>
+<span class='curline'><a href='../S/185.html#L114656'>pMaskSet</a>         114656 libdb/sqlite3.c   WhereMaskSet *pMaskSet;          /* Set of table index masks */</span>
+<span class='curline'><a href='../S/185.html#L114672'>pMaskSet</a>         114672 libdb/sqlite3.c   pMaskSet = &amp;pWInfo-&gt;sMaskSet;</span>
+<span class='curline'><a href='../S/185.html#L114675'>pMaskSet</a>         114675 libdb/sqlite3.c   prereqLeft = exprTableUsage(pMaskSet, pExpr-&gt;pLeft);</span>
+<span class='curline'><a href='../S/185.html#L114680'>pMaskSet</a>         114680 libdb/sqlite3.c       pTerm-&gt;prereqRight = exprSelectTableUsage(pMaskSet, pExpr-&gt;x.pSelect);</span>
+<span class='curline'><a href='../S/185.html#L114682'>pMaskSet</a>         114682 libdb/sqlite3.c       pTerm-&gt;prereqRight = exprListTableUsage(pMaskSet, pExpr-&gt;x.pList);</span>
+<span class='curline'><a href='../S/185.html#L114687'>pMaskSet</a>         114687 libdb/sqlite3.c     pTerm-&gt;prereqRight = exprTableUsage(pMaskSet, pExpr-&gt;pRight);</span>
+<span class='curline'><a href='../S/185.html#L114689'>pMaskSet</a>         114689 libdb/sqlite3.c   prereqAll = exprTableUsage(pMaskSet, pExpr);</span>
+<span class='curline'><a href='../S/185.html#L114691'>pMaskSet</a>         114691 libdb/sqlite3.c     Bitmask x = getMask(pMaskSet, pExpr-&gt;iRightJoinTable);</span>
+<span class='curline'><a href='../S/185.html#L114881'>pMaskSet</a>         114881 libdb/sqlite3.c     prereqExpr = exprTableUsage(pMaskSet, pRight);</span>
+<span class='curline'><a href='../S/185.html#L114882'>pMaskSet</a>         114882 libdb/sqlite3.c     prereqColumn = exprTableUsage(pMaskSet, pLeft);</span>
+<span class='curline'><a href='../S/185.html#L119601'>pMaskSet</a>         119601 libdb/sqlite3.c   WhereMaskSet *pMaskSet;    /* The expression mask set */</span>
+<span class='curline'><a href='../S/185.html#L119663'>pMaskSet</a>         119663 libdb/sqlite3.c   pMaskSet = &amp;pWInfo-&gt;sMaskSet;</span>
+<span class='curline'><a href='../S/185.html#L119676'>pMaskSet</a>         119676 libdb/sqlite3.c   initMaskSet(pMaskSet);</span>
+<span class='curline'><a href='../S/185.html#L119717'>pMaskSet</a>         119717 libdb/sqlite3.c     createMask(pMaskSet, pTabList-&gt;a[ii].iCursor);</span>
+<span class='curline'><a href='../S/185.html#L119723'>pMaskSet</a>         119723 libdb/sqlite3.c       Bitmask m = getMask(pMaskSet, pTabList-&gt;a[ii].iCursor);</span>
+<span class='curline'><a href='../S/185.html#L119826'>pMaskSet</a>         119826 libdb/sqlite3.c     Bitmask tabUsed = exprListTableUsage(pMaskSet, pResultSet);</span>
+<span class='curline'><a href='../S/185.html#L119827'>pMaskSet</a>         119827 libdb/sqlite3.c     if( sWLB.pOrderBy ) tabUsed |= exprListTableUsage(pMaskSet, sWLB.pOrderBy);</span>
+</pre>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>szMaster</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/185.html#L17397'>szMaster</a>         17397 libdb/sqlite3.c   u32 szMaster;</span>
+<span class='curline'><a href='../S/185.html#L17539'>szMaster</a>         17539 libdb/sqlite3.c   assert( mem3.szMaster&gt;=nBlock );</span>
+<span class='curline'><a href='../S/185.html#L17540'>szMaster</a>         17540 libdb/sqlite3.c   if( nBlock&gt;=mem3.szMaster-1 ){</span>
+<span class='curline'><a href='../S/185.html#L17542'>szMaster</a>         17542 libdb/sqlite3.c     void *p = memsys3Checkout(mem3.iMaster, mem3.szMaster);</span>
+<span class='curline'><a href='../S/185.html#L17544'>szMaster</a>         17544 libdb/sqlite3.c     mem3.szMaster = 0;</span>
+<span class='curline'><a href='../S/185.html#L17550'>szMaster</a>         17550 libdb/sqlite3.c     newi = mem3.iMaster + mem3.szMaster - nBlock;</span>
+<span class='curline'><a href='../S/185.html#L17552'>szMaster</a>         17552 libdb/sqlite3.c     mem3.aPool[mem3.iMaster+mem3.szMaster-1].u.hdr.prevSize = nBlock;</span>
+<span class='curline'><a href='../S/185.html#L17553'>szMaster</a>         17553 libdb/sqlite3.c     mem3.aPool[mem3.iMaster+mem3.szMaster-1].u.hdr.size4x |= 2;</span>
+<span class='curline'><a href='../S/185.html#L17555'>szMaster</a>         17555 libdb/sqlite3.c     mem3.szMaster -= nBlock;</span>
+<span class='curline'><a href='../S/185.html#L17556'>szMaster</a>         17556 libdb/sqlite3.c     mem3.aPool[newi-1].u.hdr.prevSize = mem3.szMaster;</span>
+<span class='curline'><a href='../S/185.html#L17558'>szMaster</a>         17558 libdb/sqlite3.c     mem3.aPool[mem3.iMaster-1].u.hdr.size4x = mem3.szMaster*4 | x;</span>
+<span class='curline'><a href='../S/185.html#L17559'>szMaster</a>         17559 libdb/sqlite3.c     if( mem3.szMaster &lt; mem3.mnMaster ){</span>
+<span class='curline'><a href='../S/185.html#L17560'>szMaster</a>         17560 libdb/sqlite3.c       mem3.mnMaster = mem3.szMaster;</span>
+<span class='curline'><a href='../S/185.html#L17607'>szMaster</a>         17607 libdb/sqlite3.c     if( size&gt;mem3.szMaster ){</span>
+<span class='curline'><a href='../S/185.html#L17609'>szMaster</a>         17609 libdb/sqlite3.c       mem3.szMaster = size;</span>
+<span class='curline'><a href='../S/185.html#L17660'>szMaster</a>         17660 libdb/sqlite3.c   if( mem3.szMaster&gt;=nBlock ){</span>
+<span class='curline'><a href='../S/185.html#L17677'>szMaster</a>         17677 libdb/sqlite3.c       mem3.szMaster = 0;</span>
+<span class='curline'><a href='../S/185.html#L17685'>szMaster</a>         17685 libdb/sqlite3.c     if( mem3.szMaster ){</span>
+<span class='curline'><a href='../S/185.html#L17687'>szMaster</a>         17687 libdb/sqlite3.c       if( mem3.szMaster&gt;=nBlock ){</span>
+<span class='curline'><a href='../S/185.html#L17723'>szMaster</a>         17723 libdb/sqlite3.c       mem3.szMaster += size;</span>
+<span class='curline'><a href='../S/185.html#L17726'>szMaster</a>         17726 libdb/sqlite3.c       mem3.aPool[mem3.iMaster-1].u.hdr.size4x = mem3.szMaster*4 | x;</span>
+<span class='curline'><a href='../S/185.html#L17727'>szMaster</a>         17727 libdb/sqlite3.c       mem3.aPool[mem3.iMaster+mem3.szMaster-1].u.hdr.prevSize = mem3.szMaster;</span>
+<span class='curline'><a href='../S/185.html#L17730'>szMaster</a>         17730 libdb/sqlite3.c     while( (mem3.aPool[mem3.iMaster+mem3.szMaster-1].u.hdr.size4x&amp;1)==0 ){</span>
+<span class='curline'><a href='../S/185.html#L17731'>szMaster</a>         17731 libdb/sqlite3.c       memsys3Unlink(mem3.iMaster+mem3.szMaster);</span>
+<span class='curline'><a href='../S/185.html#L17732'>szMaster</a>         17732 libdb/sqlite3.c       mem3.szMaster += mem3.aPool[mem3.iMaster+mem3.szMaster-1].u.hdr.size4x/4;</span>
+<span class='curline'><a href='../S/185.html#L17733'>szMaster</a>         17733 libdb/sqlite3.c       mem3.aPool[mem3.iMaster-1].u.hdr.size4x = mem3.szMaster*4 | x;</span>
+<span class='curline'><a href='../S/185.html#L17734'>szMaster</a>         17734 libdb/sqlite3.c       mem3.aPool[mem3.iMaster+mem3.szMaster-1].u.hdr.prevSize = mem3.szMaster;</span>
+<span class='curline'><a href='../S/185.html#L17831'>szMaster</a>         17831 libdb/sqlite3.c   mem3.szMaster = mem3.nPool;</span>
+<span class='curline'><a href='../S/185.html#L17832'>szMaster</a>         17832 libdb/sqlite3.c   mem3.mnMaster = mem3.szMaster;</span>
+<span class='curline'><a href='../S/185.html#L17834'>szMaster</a>         17834 libdb/sqlite3.c   mem3.aPool[0].u.hdr.size4x = (mem3.szMaster&lt;&lt;2) + 2;</span>
+<span class='curline'><a href='../S/185.html#L17916'>szMaster</a>         17916 libdb/sqlite3.c   fprintf(out, "nowUsed=%d\n", mem3.nPool*8 - mem3.szMaster*8);</span>
+</pre>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>pSavepoint</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/185.html#L10655'>pSavepoint</a>       10655 libdb/sqlite3.c   Savepoint *pSavepoint;        /* List of active savepoints */</span>
+<span class='curline'><a href='../S/185.html#L44124'>pSavepoint</a>       44124 libdb/sqlite3.c static int pagerPlaybackSavepoint(Pager *pPager, PagerSavepoint *pSavepoint){</span>
+<span class='curline'><a href='../S/185.html#L44134'>pSavepoint</a>       44134 libdb/sqlite3.c   if( pSavepoint ){</span>
+<span class='curline'><a href='../S/185.html#L44135'>pSavepoint</a>       44135 libdb/sqlite3.c     pDone = sqlite3BitvecCreate(pSavepoint-&gt;nOrig);</span>
+<span class='curline'><a href='../S/185.html#L44144'>pSavepoint</a>       44144 libdb/sqlite3.c   pPager-&gt;dbSize = pSavepoint ? pSavepoint-&gt;nOrig : pPager-&gt;dbOrigSize;</span>
+<span class='curline'><a href='../S/185.html#L44147'>pSavepoint</a>       44147 libdb/sqlite3.c   if( !pSavepoint &amp;&amp; pagerUseWal(pPager) ){</span>
+<span class='curline'><a href='../S/185.html#L44166'>pSavepoint</a>       44166 libdb/sqlite3.c   if( pSavepoint &amp;&amp; !pagerUseWal(pPager) ){</span>
+<span class='curline'><a href='../S/185.html#L44167'>pSavepoint</a>       44167 libdb/sqlite3.c     iHdrOff = pSavepoint-&gt;iHdrOffset ? pSavepoint-&gt;iHdrOffset : szJ;</span>
+<span class='curline'><a href='../S/185.html#L44168'>pSavepoint</a>       44168 libdb/sqlite3.c     pPager-&gt;journalOff = pSavepoint-&gt;iOffset;</span>
+<span class='curline'><a href='../S/185.html#L44210'>pSavepoint</a>       44210 libdb/sqlite3.c   if( pSavepoint ){</span>
+<span class='curline'><a href='../S/185.html#L44212'>pSavepoint</a>       44212 libdb/sqlite3.c     i64 offset = (i64)pSavepoint-&gt;iSubRec*(4+pPager-&gt;pageSize);</span>
+<span class='curline'><a href='../S/185.html#L44215'>pSavepoint</a>       44215 libdb/sqlite3.c       rc = sqlite3WalSavepointUndo(pPager-&gt;pWal, pSavepoint-&gt;aWalData);</span>
+<span class='curline'><a href='../S/185.html#L44217'>pSavepoint</a>       44217 libdb/sqlite3.c     for(ii=pSavepoint-&gt;iSubRec; rc==SQLITE_OK &amp;&amp; ii&lt;pPager-&gt;nSubRec; ii++){</span>
+<span class='curline'><a href='../S/185.html#L47459'>pSavepoint</a>       47459 libdb/sqlite3.c       PagerSavepoint *pSavepoint = (nNew==0)?0:&amp;pPager-&gt;aSavepoint[nNew-1];</span>
+<span class='curline'><a href='../S/185.html#L47460'>pSavepoint</a>       47460 libdb/sqlite3.c       rc = pagerPlaybackSavepoint(pPager, pSavepoint);</span>
+<span class='curline'><a href='../S/185.html#L69517'>pSavepoint</a>       69517 libdb/sqlite3.c   for(p=db-&gt;pSavepoint; p; p=p-&gt;pNext) n++;</span>
+<span class='curline'><a href='../S/185.html#L71726'>pSavepoint</a>       71726 libdb/sqlite3.c   Savepoint *pSavepoint;</span>
+<span class='curline'><a href='../S/185.html#L71737'>pSavepoint</a>       71737 libdb/sqlite3.c   assert( db-&gt;pSavepoint==0 || db-&gt;autoCommit==0 );</span>
+<span class='curline'><a href='../S/185.html#L71739'>pSavepoint</a>       71739 libdb/sqlite3.c   assert( db-&gt;pSavepoint || db-&gt;isTransactionSavepoint==0 );</span>
+<span class='curline'><a href='../S/185.html#L71781'>pSavepoint</a>       71781 libdb/sqlite3.c         pNew-&gt;pNext = db-&gt;pSavepoint;</span>
+<span class='curline'><a href='../S/185.html#L71782'>pSavepoint</a>       71782 libdb/sqlite3.c         db-&gt;pSavepoint = pNew;</span>
+<span class='curline'><a href='../S/185.html#L71793'>pSavepoint</a>       71793 libdb/sqlite3.c       pSavepoint = db-&gt;pSavepoint; </span>
+<span class='curline'><a href='../S/185.html#L71794'>pSavepoint</a>       71794 libdb/sqlite3.c       pSavepoint &amp;&amp; sqlite3StrICmp(pSavepoint-&gt;zName, zName);</span>
+<span class='curline'><a href='../S/185.html#L71795'>pSavepoint</a>       71795 libdb/sqlite3.c       pSavepoint = pSavepoint-&gt;pNext</span>
+<span class='curline'><a href='../S/185.html#L71799'>pSavepoint</a>       71799 libdb/sqlite3.c     if( !pSavepoint ){</span>
+<span class='curline'><a href='../S/185.html#L71816'>pSavepoint</a>       71816 libdb/sqlite3.c       int isTransaction = pSavepoint-&gt;pNext==0 &amp;&amp; db-&gt;isTransactionSavepoint;</span>
+<span class='curline'><a href='../S/185.html#L71852'>pSavepoint</a>       71852 libdb/sqlite3.c       while( db-&gt;pSavepoint!=pSavepoint ){</span>
+<span class='curline'><a href='../S/185.html#L71853'>pSavepoint</a>       71853 libdb/sqlite3.c         pTmp = db-&gt;pSavepoint;</span>
+<span class='curline'><a href='../S/185.html#L71854'>pSavepoint</a>       71854 libdb/sqlite3.c         db-&gt;pSavepoint = pTmp-&gt;pNext;</span>
+<span class='curline'><a href='../S/185.html#L71864'>pSavepoint</a>       71864 libdb/sqlite3.c         assert( pSavepoint==db-&gt;pSavepoint );</span>
+<span class='curline'><a href='../S/185.html#L71865'>pSavepoint</a>       71865 libdb/sqlite3.c         db-&gt;pSavepoint = pSavepoint-&gt;pNext;</span>
+<span class='curline'><a href='../S/185.html#L71866'>pSavepoint</a>       71866 libdb/sqlite3.c         sqlite3DbFree(db, pSavepoint);</span>
+<span class='curline'><a href='../S/185.html#L71871'>pSavepoint</a>       71871 libdb/sqlite3.c         db-&gt;nDeferredCons = pSavepoint-&gt;nDeferredCons;</span>
+<span class='curline'><a href='../S/185.html#L71872'>pSavepoint</a>       71872 libdb/sqlite3.c         db-&gt;nDeferredImmCons = pSavepoint-&gt;nDeferredImmCons;</span>
+<span class='curline'><a href='../S/185.html#L125674'>pSavepoint</a>       125674 libdb/sqlite3.c   while( db-&gt;pSavepoint ){</span>
+<span class='curline'><a href='../S/185.html#L125675'>pSavepoint</a>       125675 libdb/sqlite3.c     Savepoint *pTmp = db-&gt;pSavepoint;</span>
+<span class='curline'><a href='../S/185.html#L125676'>pSavepoint</a>       125676 libdb/sqlite3.c     db-&gt;pSavepoint = pTmp-&gt;pNext;</span>
+</pre>
+</body>
+</html>

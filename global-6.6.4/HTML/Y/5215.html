@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>pDbFd</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/185.html#L29036'>pDbFd</a>            29036 libdb/sqlite3.c static int unixOpenSharedMemory(unixFile *pDbFd){</span>
+<span class='curline'><a href='../S/185.html#L29048'>pDbFd</a>            29048 libdb/sqlite3.c   assert( pDbFd-&gt;pShm==0 );</span>
+<span class='curline'><a href='../S/185.html#L29054'>pDbFd</a>            29054 libdb/sqlite3.c   pInode = pDbFd-&gt;pInode;</span>
+<span class='curline'><a href='../S/185.html#L29063'>pDbFd</a>            29063 libdb/sqlite3.c     if( osFstat(pDbFd-&gt;h, &amp;sStat) &amp;&amp; pInode-&gt;bProcessLock==0 ){</span>
+<span class='curline'><a href='../S/185.html#L29071'>pDbFd</a>            29071 libdb/sqlite3.c     nShmFilename = 6 + (int)strlen(pDbFd-&gt;zPath);</span>
+<span class='curline'><a href='../S/185.html#L29085'>pDbFd</a>            29085 libdb/sqlite3.c     sqlite3_snprintf(nShmFilename, zShmFilename, "%s-shm", pDbFd-&gt;zPath);</span>
+<span class='curline'><a href='../S/185.html#L29086'>pDbFd</a>            29086 libdb/sqlite3.c     sqlite3FileSuffix3(pDbFd-&gt;zPath, zShmFilename);</span>
+<span class='curline'><a href='../S/185.html#L29089'>pDbFd</a>            29089 libdb/sqlite3.c     pDbFd-&gt;pInode-&gt;pShmNode = pShmNode;</span>
+<span class='curline'><a href='../S/185.html#L29090'>pDbFd</a>            29090 libdb/sqlite3.c     pShmNode-&gt;pInode = pDbFd-&gt;pInode;</span>
+<span class='curline'><a href='../S/185.html#L29099'>pDbFd</a>            29099 libdb/sqlite3.c       if( sqlite3_uri_boolean(pDbFd-&gt;zPath, "readonly_shm", 0) ){</span>
+<span class='curline'><a href='../S/185.html#L29137'>pDbFd</a>            29137 libdb/sqlite3.c   pDbFd-&gt;pShm = p;</span>
+<span class='curline'><a href='../S/185.html#L29155'>pDbFd</a>            29155 libdb/sqlite3.c   unixShmPurge(pDbFd);       /* This call frees pShmNode if required */</span>
+<span class='curline'><a href='../S/185.html#L29187'>pDbFd</a>            29187 libdb/sqlite3.c   unixFile *pDbFd = (unixFile*)fd;</span>
+<span class='curline'><a href='../S/185.html#L29195'>pDbFd</a>            29195 libdb/sqlite3.c   if( pDbFd-&gt;pShm==0 ){</span>
+<span class='curline'><a href='../S/185.html#L29196'>pDbFd</a>            29196 libdb/sqlite3.c     rc = unixOpenSharedMemory(pDbFd);</span>
+<span class='curline'><a href='../S/185.html#L29200'>pDbFd</a>            29200 libdb/sqlite3.c   p = pDbFd-&gt;pShm;</span>
+<span class='curline'><a href='../S/185.html#L29204'>pDbFd</a>            29204 libdb/sqlite3.c   assert( pShmNode-&gt;pInode==pDbFd-&gt;pInode );</span>
+<span class='curline'><a href='../S/185.html#L29205'>pDbFd</a>            29205 libdb/sqlite3.c   assert( pShmNode-&gt;h&gt;=0 || pDbFd-&gt;pInode-&gt;bProcessLock==1 );</span>
+<span class='curline'><a href='../S/185.html#L29206'>pDbFd</a>            29206 libdb/sqlite3.c   assert( pShmNode-&gt;h&lt;0 || pDbFd-&gt;pInode-&gt;bProcessLock==0 );</span>
+<span class='curline'><a href='../S/185.html#L29323'>pDbFd</a>            29323 libdb/sqlite3.c   unixFile *pDbFd = (unixFile*)fd;      /* Connection holding shared memory */</span>
+<span class='curline'><a href='../S/185.html#L29324'>pDbFd</a>            29324 libdb/sqlite3.c   unixShm *p = pDbFd-&gt;pShm;             /* The shared memory being locked */</span>
+<span class='curline'><a href='../S/185.html#L29330'>pDbFd</a>            29330 libdb/sqlite3.c   assert( pShmNode==pDbFd-&gt;pInode-&gt;pShmNode );</span>
+<span class='curline'><a href='../S/185.html#L29331'>pDbFd</a>            29331 libdb/sqlite3.c   assert( pShmNode-&gt;pInode==pDbFd-&gt;pInode );</span>
+<span class='curline'><a href='../S/185.html#L29339'>pDbFd</a>            29339 libdb/sqlite3.c   assert( pShmNode-&gt;h&gt;=0 || pDbFd-&gt;pInode-&gt;bProcessLock==1 );</span>
+<span class='curline'><a href='../S/185.html#L29340'>pDbFd</a>            29340 libdb/sqlite3.c   assert( pShmNode-&gt;h&lt;0 || pDbFd-&gt;pInode-&gt;bProcessLock==0 );</span>
+<span class='curline'><a href='../S/185.html#L29451'>pDbFd</a>            29451 libdb/sqlite3.c   unixFile *pDbFd;                /* The underlying database file */</span>
+<span class='curline'><a href='../S/185.html#L29453'>pDbFd</a>            29453 libdb/sqlite3.c   pDbFd = (unixFile*)fd;</span>
+<span class='curline'><a href='../S/185.html#L29454'>pDbFd</a>            29454 libdb/sqlite3.c   p = pDbFd-&gt;pShm;</span>
+<span class='curline'><a href='../S/185.html#L29458'>pDbFd</a>            29458 libdb/sqlite3.c   assert( pShmNode==pDbFd-&gt;pInode-&gt;pShmNode );</span>
+<span class='curline'><a href='../S/185.html#L29459'>pDbFd</a>            29459 libdb/sqlite3.c   assert( pShmNode-&gt;pInode==pDbFd-&gt;pInode );</span>
+<span class='curline'><a href='../S/185.html#L29469'>pDbFd</a>            29469 libdb/sqlite3.c   pDbFd-&gt;pShm = 0;</span>
+<span class='curline'><a href='../S/185.html#L29479'>pDbFd</a>            29479 libdb/sqlite3.c     unixShmPurge(pDbFd);</span>
+<span class='curline'><a href='../S/185.html#L36055'>pDbFd</a>            36055 libdb/sqlite3.c static int winOpenSharedMemory(winFile *pDbFd){</span>
+<span class='curline'><a href='../S/185.html#L36062'>pDbFd</a>            36062 libdb/sqlite3.c   assert( pDbFd-&gt;pShm==0 );    /* Not previously opened */</span>
+<span class='curline'><a href='../S/185.html#L36069'>pDbFd</a>            36069 libdb/sqlite3.c   nName = sqlite3Strlen30(pDbFd-&gt;zPath);</span>
+<span class='curline'><a href='../S/185.html#L36076'>pDbFd</a>            36076 libdb/sqlite3.c   sqlite3_snprintf(nName+15, pNew-&gt;zFilename, "%s-shm", pDbFd-&gt;zPath);</span>
+<span class='curline'><a href='../S/185.html#L36077'>pDbFd</a>            36077 libdb/sqlite3.c   sqlite3FileSuffix3(pDbFd-&gt;zPath, pNew-&gt;zFilename);</span>
+<span class='curline'><a href='../S/185.html#L36104'>pDbFd</a>            36104 libdb/sqlite3.c     rc = winOpen(pDbFd-&gt;pVfs,</span>
+<span class='curline'><a href='../S/185.html#L36120'>pDbFd</a>            36120 libdb/sqlite3.c                          "winOpenShm", pDbFd-&gt;zPath);</span>
+<span class='curline'><a href='../S/185.html#L36136'>pDbFd</a>            36136 libdb/sqlite3.c   pDbFd-&gt;pShm = p;</span>
+<span class='curline'><a href='../S/185.html#L36155'>pDbFd</a>            36155 libdb/sqlite3.c   winShmPurge(pDbFd-&gt;pVfs, 0);      /* This call frees pShmNode if required */</span>
+<span class='curline'><a href='../S/185.html#L36170'>pDbFd</a>            36170 libdb/sqlite3.c   winFile *pDbFd;       /* Database holding shared-memory */</span>
+<span class='curline'><a href='../S/185.html#L36175'>pDbFd</a>            36175 libdb/sqlite3.c   pDbFd = (winFile*)fd;</span>
+<span class='curline'><a href='../S/185.html#L36176'>pDbFd</a>            36176 libdb/sqlite3.c   p = pDbFd-&gt;pShm;</span>
+<span class='curline'><a href='../S/185.html#L36188'>pDbFd</a>            36188 libdb/sqlite3.c   pDbFd-&gt;pShm = 0;</span>
+<span class='curline'><a href='../S/185.html#L36197'>pDbFd</a>            36197 libdb/sqlite3.c     winShmPurge(pDbFd-&gt;pVfs, deleteFlag);</span>
+<span class='curline'><a href='../S/185.html#L36213'>pDbFd</a>            36213 libdb/sqlite3.c   winFile *pDbFd = (winFile*)fd;        /* Connection holding shared memory */</span>
+<span class='curline'><a href='../S/185.html#L36214'>pDbFd</a>            36214 libdb/sqlite3.c   winShm *p = pDbFd-&gt;pShm;              /* The shared memory being locked */</span>
+<span class='curline'><a href='../S/185.html#L36351'>pDbFd</a>            36351 libdb/sqlite3.c   winFile *pDbFd = (winFile*)fd;</span>
+<span class='curline'><a href='../S/185.html#L36352'>pDbFd</a>            36352 libdb/sqlite3.c   winShm *p = pDbFd-&gt;pShm;</span>
+<span class='curline'><a href='../S/185.html#L36357'>pDbFd</a>            36357 libdb/sqlite3.c     rc = winOpenSharedMemory(pDbFd);</span>
+<span class='curline'><a href='../S/185.html#L36359'>pDbFd</a>            36359 libdb/sqlite3.c     p = pDbFd-&gt;pShm;</span>
+<span class='curline'><a href='../S/185.html#L36380'>pDbFd</a>            36380 libdb/sqlite3.c                        "winShmMap1", pDbFd-&gt;zPath);</span>
+<span class='curline'><a href='../S/185.html#L36395'>pDbFd</a>            36395 libdb/sqlite3.c                          "winShmMap2", pDbFd-&gt;zPath);</span>
+<span class='curline'><a href='../S/185.html#L36449'>pDbFd</a>            36449 libdb/sqlite3.c                          "winShmMap3", pDbFd-&gt;zPath);</span>
+<span class='curline'><a href='../S/185.html#L48524'>pDbFd</a>            48524 libdb/sqlite3.c   sqlite3_file *pDbFd;       /* File handle for the database file */</span>
+<span class='curline'><a href='../S/185.html#L48653'>pDbFd</a>            48653 libdb/sqlite3.c       rc = sqlite3OsShmMap(pWal-&gt;pDbFd, iPage, WALINDEX_PGSZ, </span>
+<span class='curline'><a href='../S/185.html#L48745'>pDbFd</a>            48745 libdb/sqlite3.c     sqlite3OsShmBarrier(pWal-&gt;pDbFd);</span>
+<span class='curline'><a href='../S/185.html#L48889'>pDbFd</a>            48889 libdb/sqlite3.c   rc = sqlite3OsShmLock(pWal-&gt;pDbFd, lockIdx, 1,</span>
+<span class='curline'><a href='../S/185.html#L48898'>pDbFd</a>            48898 libdb/sqlite3.c   (void)sqlite3OsShmLock(pWal-&gt;pDbFd, lockIdx, 1,</span>
+<span class='curline'><a href='../S/185.html#L48905'>pDbFd</a>            48905 libdb/sqlite3.c   rc = sqlite3OsShmLock(pWal-&gt;pDbFd, lockIdx, n,</span>
+<span class='curline'><a href='../S/185.html#L48914'>pDbFd</a>            48914 libdb/sqlite3.c   (void)sqlite3OsShmLock(pWal-&gt;pDbFd, lockIdx, n,</span>
+<span class='curline'><a href='../S/185.html#L49345'>pDbFd</a>            49345 libdb/sqlite3.c     sqlite3OsShmUnmap(pWal-&gt;pDbFd, isDelete);</span>
+<span class='curline'><a href='../S/185.html#L49366'>pDbFd</a>            49366 libdb/sqlite3.c   sqlite3_file *pDbFd,            /* The open database file */</span>
+<span class='curline'><a href='../S/185.html#L49377'>pDbFd</a>            49377 libdb/sqlite3.c   assert( pDbFd );</span>
+<span class='curline'><a href='../S/185.html#L49400'>pDbFd</a>            49400 libdb/sqlite3.c   pRet-&gt;pDbFd = pDbFd;</span>
+<span class='curline'><a href='../S/185.html#L49420'>pDbFd</a>            49420 libdb/sqlite3.c     int iDC = sqlite3OsDeviceCharacteristics(pDbFd);</span>
+<span class='curline'><a href='../S/185.html#L49842'>pDbFd</a>            49842 libdb/sqlite3.c       rc = sqlite3OsFileSize(pWal-&gt;pDbFd, &amp;nSize);</span>
+<span class='curline'><a href='../S/185.html#L49844'>pDbFd</a>            49844 libdb/sqlite3.c         sqlite3OsFileControlHint(pWal-&gt;pDbFd, SQLITE_FCNTL_SIZE_HINT, &amp;nReq);</span>
+<span class='curline'><a href='../S/185.html#L49860'>pDbFd</a>            49860 libdb/sqlite3.c       rc = sqlite3OsWrite(pWal-&gt;pDbFd, zBuf, szPage, iOffset);</span>
+<span class='curline'><a href='../S/185.html#L49869'>pDbFd</a>            49869 libdb/sqlite3.c         rc = sqlite3OsTruncate(pWal-&gt;pDbFd, szDb);</span>
+<span class='curline'><a href='../S/185.html#L49871'>pDbFd</a>            49871 libdb/sqlite3.c           rc = sqlite3OsSync(pWal-&gt;pDbFd, sync_flags);</span>
+<span class='curline'><a href='../S/185.html#L49951'>pDbFd</a>            49951 libdb/sqlite3.c     rc = sqlite3OsLock(pWal-&gt;pDbFd, SQLITE_LOCK_EXCLUSIVE);</span>
+<span class='curline'><a href='../S/185.html#L49962'>pDbFd</a>            49962 libdb/sqlite3.c             pWal-&gt;pDbFd, SQLITE_FCNTL_PERSIST_WAL, &amp;bPersist</span>
+<span class='curline'><a href='../S/185.html#L51071'>pDbFd</a>            51071 libdb/sqlite3.c     if( isChanged &amp;&amp; pWal-&gt;pDbFd-&gt;pMethods-&gt;iVersion&gt;=3 ){</span>
+<span class='curline'><a href='../S/185.html#L51072'>pDbFd</a>            51072 libdb/sqlite3.c       sqlite3OsUnfetch(pWal-&gt;pDbFd, 0, 0);</span>
+</pre>
+</body>
+</html>

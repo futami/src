@@ -1,0 +1,187 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>pSorter</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/185.html#L14108'>pSorter</a>          14108 libdb/sqlite3.c   VdbeSorter *pSorter;  /* Sorter object for OP_SorterOpen cursors */</span>
+<span class='curline'><a href='../S/185.html#L69085'>pSorter</a>          69085 libdb/sqlite3.c #define isSorter(x) ((x)-&gt;pSorter!=0)</span>
+<span class='curline'><a href='../S/185.html#L72418'>pSorter</a>          72418 libdb/sqlite3.c   assert( pC-&gt;pSorter );</span>
+<span class='curline'><a href='../S/185.html#L73993'>pSorter</a>          73993 libdb/sqlite3.c   if( pC-&gt;pSorter ){</span>
+<span class='curline'><a href='../S/185.html#L73994'>pSorter</a>          73994 libdb/sqlite3.c     sqlite3VdbeSorterReset(db, pC-&gt;pSorter);</span>
+<span class='curline'><a href='../S/185.html#L76231'>pSorter</a>          76231 libdb/sqlite3.c   VdbeSorter *pSorter;            /* Sorter that owns this sub-task */</span>
+<span class='curline'><a href='../S/185.html#L76545'>pSorter</a>          76545 libdb/sqlite3.c   if( pFile-&gt;iEof&lt;=(i64)(pTask-&gt;pSorter-&gt;db-&gt;nMaxSorterMmap) ){</span>
+<span class='curline'><a href='../S/185.html#L76581'>pSorter</a>          76581 libdb/sqlite3.c     int pgsz = pTask-&gt;pSorter-&gt;pgsz;</span>
+<span class='curline'><a href='../S/185.html#L76703'>pSorter</a>          76703 libdb/sqlite3.c     sqlite3VdbeRecordUnpack(pTask-&gt;pSorter-&gt;pKeyInfo, nKey2, pKey2, r2);</span>
+<span class='curline'><a href='../S/185.html#L76735'>pSorter</a>          76735 libdb/sqlite3.c   VdbeSorter *pSorter;            /* The new sorter */</span>
+<span class='curline'><a href='../S/185.html#L76767'>pSorter</a>          76767 libdb/sqlite3.c   pSorter = (VdbeSorter*)sqlite3DbMallocZero(db, sz + szKeyInfo);</span>
+<span class='curline'><a href='../S/185.html#L76768'>pSorter</a>          76768 libdb/sqlite3.c   pCsr-&gt;pSorter = pSorter;</span>
+<span class='curline'><a href='../S/185.html#L76769'>pSorter</a>          76769 libdb/sqlite3.c   if( pSorter==0 ){</span>
+<span class='curline'><a href='../S/185.html#L76772'>pSorter</a>          76772 libdb/sqlite3.c     pSorter-&gt;pKeyInfo = pKeyInfo = (KeyInfo*)((u8*)pSorter + sz);</span>
+<span class='curline'><a href='../S/185.html#L76776'>pSorter</a>          76776 libdb/sqlite3.c     pSorter-&gt;pgsz = pgsz = sqlite3BtreeGetPageSize(db-&gt;aDb[0].pBt);</span>
+<span class='curline'><a href='../S/185.html#L76777'>pSorter</a>          76777 libdb/sqlite3.c     pSorter-&gt;nTask = nWorker + 1;</span>
+<span class='curline'><a href='../S/185.html#L76778'>pSorter</a>          76778 libdb/sqlite3.c     pSorter-&gt;bUseThreads = (pSorter-&gt;nTask&gt;1);</span>
+<span class='curline'><a href='../S/185.html#L76779'>pSorter</a>          76779 libdb/sqlite3.c     pSorter-&gt;db = db;</span>
+<span class='curline'><a href='../S/185.html#L76780'>pSorter</a>          76780 libdb/sqlite3.c     for(i=0; i&lt;pSorter-&gt;nTask; i++){</span>
+<span class='curline'><a href='../S/185.html#L76781'>pSorter</a>          76781 libdb/sqlite3.c       SortSubtask *pTask = &amp;pSorter-&gt;aTask[i];</span>
+<span class='curline'><a href='../S/185.html#L76782'>pSorter</a>          76782 libdb/sqlite3.c       pTask-&gt;pSorter = pSorter;</span>
+<span class='curline'><a href='../S/185.html#L76786'>pSorter</a>          76786 libdb/sqlite3.c       pSorter-&gt;mnPmaSize = SORTER_MIN_WORKING * pgsz;</span>
+<span class='curline'><a href='../S/185.html#L76789'>pSorter</a>          76789 libdb/sqlite3.c       pSorter-&gt;mxPmaSize = mxCache * pgsz;</span>
+<span class='curline'><a href='../S/185.html#L76798'>pSorter</a>          76798 libdb/sqlite3.c         assert( pSorter-&gt;iMemory==0 );</span>
+<span class='curline'><a href='../S/185.html#L76799'>pSorter</a>          76799 libdb/sqlite3.c         pSorter-&gt;nMemory = pgsz;</span>
+<span class='curline'><a href='../S/185.html#L76800'>pSorter</a>          76800 libdb/sqlite3.c         pSorter-&gt;list.aMemory = (u8*)sqlite3Malloc(pgsz);</span>
+<span class='curline'><a href='../S/185.html#L76801'>pSorter</a>          76801 libdb/sqlite3.c         if( !pSorter-&gt;list.aMemory ) rc = SQLITE_NOMEM;</span>
+<span class='curline'><a href='../S/185.html#L76857'>pSorter</a>          76857 libdb/sqlite3.c   int iTask = (pTask - pTask-&gt;pSorter-&gt;aTask);</span>
+<span class='curline'><a href='../S/185.html#L76858'>pSorter</a>          76858 libdb/sqlite3.c   sqlite3OsCurrentTimeInt64(pTask-&gt;pSorter-&gt;db-&gt;pVfs, &amp;t);</span>
+<span class='curline'><a href='../S/185.html#L76871'>pSorter</a>          76871 libdb/sqlite3.c   int iTask = (pTask - pTask-&gt;pSorter-&gt;aTask);</span>
+<span class='curline'><a href='../S/185.html#L76872'>pSorter</a>          76872 libdb/sqlite3.c   sqlite3OsCurrentTimeInt64(pTask-&gt;pSorter-&gt;db-&gt;pVfs, &amp;t);</span>
+<span class='curline'><a href='../S/185.html#L76882'>pSorter</a>          76882 libdb/sqlite3.c     sqlite3OsCurrentTimeInt64(pTask-&gt;pSorter-&gt;db-&gt;pVfs, &amp;t);</span>
+<span class='curline'><a href='../S/185.html#L76931'>pSorter</a>          76931 libdb/sqlite3.c static int vdbeSorterJoinAll(VdbeSorter *pSorter, int rcin){</span>
+<span class='curline'><a href='../S/185.html#L76942'>pSorter</a>          76942 libdb/sqlite3.c   for(i=pSorter-&gt;nTask-1; i&gt;=0; i--){</span>
+<span class='curline'><a href='../S/185.html#L76943'>pSorter</a>          76943 libdb/sqlite3.c     SortSubtask *pTask = &amp;pSorter-&gt;aTask[i];</span>
+<span class='curline'><a href='../S/185.html#L77015'>pSorter</a>          77015 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3VdbeSorterReset(sqlite3 *db, VdbeSorter *pSorter){</span>
+<span class='curline'><a href='../S/185.html#L77017'>pSorter</a>          77017 libdb/sqlite3.c   (void)vdbeSorterJoinAll(pSorter, SQLITE_OK);</span>
+<span class='curline'><a href='../S/185.html#L77018'>pSorter</a>          77018 libdb/sqlite3.c   assert( pSorter-&gt;bUseThreads || pSorter-&gt;pReader==0 );</span>
+<span class='curline'><a href='../S/185.html#L77020'>pSorter</a>          77020 libdb/sqlite3.c   if( pSorter-&gt;pReader ){</span>
+<span class='curline'><a href='../S/185.html#L77021'>pSorter</a>          77021 libdb/sqlite3.c     vdbePmaReaderClear(pSorter-&gt;pReader);</span>
+<span class='curline'><a href='../S/185.html#L77022'>pSorter</a>          77022 libdb/sqlite3.c     sqlite3DbFree(db, pSorter-&gt;pReader);</span>
+<span class='curline'><a href='../S/185.html#L77023'>pSorter</a>          77023 libdb/sqlite3.c     pSorter-&gt;pReader = 0;</span>
+<span class='curline'><a href='../S/185.html#L77026'>pSorter</a>          77026 libdb/sqlite3.c   vdbeMergeEngineFree(pSorter-&gt;pMerger);</span>
+<span class='curline'><a href='../S/185.html#L77027'>pSorter</a>          77027 libdb/sqlite3.c   pSorter-&gt;pMerger = 0;</span>
+<span class='curline'><a href='../S/185.html#L77028'>pSorter</a>          77028 libdb/sqlite3.c   for(i=0; i&lt;pSorter-&gt;nTask; i++){</span>
+<span class='curline'><a href='../S/185.html#L77029'>pSorter</a>          77029 libdb/sqlite3.c     SortSubtask *pTask = &amp;pSorter-&gt;aTask[i];</span>
+<span class='curline'><a href='../S/185.html#L77032'>pSorter</a>          77032 libdb/sqlite3.c   if( pSorter-&gt;list.aMemory==0 ){</span>
+<span class='curline'><a href='../S/185.html#L77033'>pSorter</a>          77033 libdb/sqlite3.c     vdbeSorterRecordFree(0, pSorter-&gt;list.pList);</span>
+<span class='curline'><a href='../S/185.html#L77035'>pSorter</a>          77035 libdb/sqlite3.c   pSorter-&gt;list.pList = 0;</span>
+<span class='curline'><a href='../S/185.html#L77036'>pSorter</a>          77036 libdb/sqlite3.c   pSorter-&gt;list.szPMA = 0;</span>
+<span class='curline'><a href='../S/185.html#L77037'>pSorter</a>          77037 libdb/sqlite3.c   pSorter-&gt;bUsePMA = 0;</span>
+<span class='curline'><a href='../S/185.html#L77038'>pSorter</a>          77038 libdb/sqlite3.c   pSorter-&gt;iMemory = 0;</span>
+<span class='curline'><a href='../S/185.html#L77039'>pSorter</a>          77039 libdb/sqlite3.c   pSorter-&gt;mxKeysize = 0;</span>
+<span class='curline'><a href='../S/185.html#L77040'>pSorter</a>          77040 libdb/sqlite3.c   sqlite3DbFree(db, pSorter-&gt;pUnpacked);</span>
+<span class='curline'><a href='../S/185.html#L77041'>pSorter</a>          77041 libdb/sqlite3.c   pSorter-&gt;pUnpacked = 0;</span>
+<span class='curline'><a href='../S/185.html#L77048'>pSorter</a>          77048 libdb/sqlite3.c   VdbeSorter *pSorter = pCsr-&gt;pSorter;</span>
+<span class='curline'><a href='../S/185.html#L77049'>pSorter</a>          77049 libdb/sqlite3.c   if( pSorter ){</span>
+<span class='curline'><a href='../S/185.html#L77050'>pSorter</a>          77050 libdb/sqlite3.c     sqlite3VdbeSorterReset(db, pSorter);</span>
+<span class='curline'><a href='../S/185.html#L77051'>pSorter</a>          77051 libdb/sqlite3.c     sqlite3_free(pSorter-&gt;list.aMemory);</span>
+<span class='curline'><a href='../S/185.html#L77052'>pSorter</a>          77052 libdb/sqlite3.c     sqlite3DbFree(db, pSorter);</span>
+<span class='curline'><a href='../S/185.html#L77053'>pSorter</a>          77053 libdb/sqlite3.c     pCsr-&gt;pSorter = 0;</span>
+<span class='curline'><a href='../S/185.html#L77116'>pSorter</a>          77116 libdb/sqlite3.c         pTask-&gt;pSorter-&gt;pKeyInfo, 0, 0, &amp;pFree</span>
+<span class='curline'><a href='../S/185.html#L77120'>pSorter</a>          77120 libdb/sqlite3.c     pTask-&gt;pUnpacked-&gt;nField = pTask-&gt;pSorter-&gt;pKeyInfo-&gt;nField;</span>
+<span class='curline'><a href='../S/185.html#L77315'>pSorter</a>          77315 libdb/sqlite3.c   sqlite3 *db = pTask-&gt;pSorter-&gt;db;</span>
+<span class='curline'><a href='../S/185.html#L77351'>pSorter</a>          77351 libdb/sqlite3.c     vdbePmaWriterInit(pTask-&gt;file.pFd, &amp;writer, pTask-&gt;pSorter-&gt;pgsz,</span>
+<span class='curline'><a href='../S/185.html#L77464'>pSorter</a>          77464 libdb/sqlite3.c static int vdbeSorterFlushPMA(VdbeSorter *pSorter){</span>
+<span class='curline'><a href='../S/185.html#L77466'>pSorter</a>          77466 libdb/sqlite3.c   pSorter-&gt;bUsePMA = 1;</span>
+<span class='curline'><a href='../S/185.html#L77467'>pSorter</a>          77467 libdb/sqlite3.c   return vdbeSorterListToPMA(&amp;pSorter-&gt;aTask[0], &amp;pSorter-&gt;list);</span>
+<span class='curline'><a href='../S/185.html#L77472'>pSorter</a>          77472 libdb/sqlite3.c   int nWorker = (pSorter-&gt;nTask-1);</span>
+<span class='curline'><a href='../S/185.html#L77476'>pSorter</a>          77476 libdb/sqlite3.c   pSorter-&gt;bUsePMA = 1;</span>
+<span class='curline'><a href='../S/185.html#L77487'>pSorter</a>          77487 libdb/sqlite3.c     int iTest = (pSorter-&gt;iPrev + i + 1) % nWorker;</span>
+<span class='curline'><a href='../S/185.html#L77488'>pSorter</a>          77488 libdb/sqlite3.c     pTask = &amp;pSorter-&gt;aTask[iTest];</span>
+<span class='curline'><a href='../S/185.html#L77498'>pSorter</a>          77498 libdb/sqlite3.c       rc = vdbeSorterListToPMA(&amp;pSorter-&gt;aTask[nWorker], &amp;pSorter-&gt;list);</span>
+<span class='curline'><a href='../S/185.html#L77506'>pSorter</a>          77506 libdb/sqlite3.c       assert( pTask-&gt;list.aMemory==0 || pSorter-&gt;list.aMemory!=0 );</span>
+<span class='curline'><a href='../S/185.html#L77508'>pSorter</a>          77508 libdb/sqlite3.c       pSorter-&gt;iPrev = (u8)(pTask - pSorter-&gt;aTask);</span>
+<span class='curline'><a href='../S/185.html#L77509'>pSorter</a>          77509 libdb/sqlite3.c       pTask-&gt;list = pSorter-&gt;list;</span>
+<span class='curline'><a href='../S/185.html#L77510'>pSorter</a>          77510 libdb/sqlite3.c       pSorter-&gt;list.pList = 0;</span>
+<span class='curline'><a href='../S/185.html#L77511'>pSorter</a>          77511 libdb/sqlite3.c       pSorter-&gt;list.szPMA = 0;</span>
+<span class='curline'><a href='../S/185.html#L77513'>pSorter</a>          77513 libdb/sqlite3.c         pSorter-&gt;list.aMemory = aMem;</span>
+<span class='curline'><a href='../S/185.html#L77514'>pSorter</a>          77514 libdb/sqlite3.c         pSorter-&gt;nMemory = sqlite3MallocSize(aMem);</span>
+<span class='curline'><a href='../S/185.html#L77515'>pSorter</a>          77515 libdb/sqlite3.c       }else if( pSorter-&gt;list.aMemory ){</span>
+<span class='curline'><a href='../S/185.html#L77516'>pSorter</a>          77516 libdb/sqlite3.c         pSorter-&gt;list.aMemory = sqlite3Malloc(pSorter-&gt;nMemory);</span>
+<span class='curline'><a href='../S/185.html#L77517'>pSorter</a>          77517 libdb/sqlite3.c         if( !pSorter-&gt;list.aMemory ) return SQLITE_NOMEM;</span>
+<span class='curline'><a href='../S/185.html#L77535'>pSorter</a>          77535 libdb/sqlite3.c   VdbeSorter *pSorter = pCsr-&gt;pSorter;</span>
+<span class='curline'><a href='../S/185.html#L77543'>pSorter</a>          77543 libdb/sqlite3.c   assert( pSorter );</span>
+<span class='curline'><a href='../S/185.html#L77563'>pSorter</a>          77563 libdb/sqlite3.c   if( pSorter-&gt;mxPmaSize ){</span>
+<span class='curline'><a href='../S/185.html#L77564'>pSorter</a>          77564 libdb/sqlite3.c     if( pSorter-&gt;list.aMemory ){</span>
+<span class='curline'><a href='../S/185.html#L77565'>pSorter</a>          77565 libdb/sqlite3.c       bFlush = pSorter-&gt;iMemory &amp;&amp; (pSorter-&gt;iMemory+nReq) &gt; pSorter-&gt;mxPmaSize;</span>
+<span class='curline'><a href='../S/185.html#L77568'>pSorter</a>          77568 libdb/sqlite3.c           (pSorter-&gt;list.szPMA &gt; pSorter-&gt;mxPmaSize)</span>
+<span class='curline'><a href='../S/185.html#L77569'>pSorter</a>          77569 libdb/sqlite3.c        || (pSorter-&gt;list.szPMA &gt; pSorter-&gt;mnPmaSize &amp;&amp; sqlite3HeapNearlyFull())</span>
+<span class='curline'><a href='../S/185.html#L77573'>pSorter</a>          77573 libdb/sqlite3.c       rc = vdbeSorterFlushPMA(pSorter);</span>
+<span class='curline'><a href='../S/185.html#L77574'>pSorter</a>          77574 libdb/sqlite3.c       pSorter-&gt;list.szPMA = 0;</span>
+<span class='curline'><a href='../S/185.html#L77575'>pSorter</a>          77575 libdb/sqlite3.c       pSorter-&gt;iMemory = 0;</span>
+<span class='curline'><a href='../S/185.html#L77576'>pSorter</a>          77576 libdb/sqlite3.c       assert( rc!=SQLITE_OK || pSorter-&gt;list.pList==0 );</span>
+<span class='curline'><a href='../S/185.html#L77580'>pSorter</a>          77580 libdb/sqlite3.c   pSorter-&gt;list.szPMA += nPMA;</span>
+<span class='curline'><a href='../S/185.html#L77581'>pSorter</a>          77581 libdb/sqlite3.c   if( nPMA&gt;pSorter-&gt;mxKeysize ){</span>
+<span class='curline'><a href='../S/185.html#L77582'>pSorter</a>          77582 libdb/sqlite3.c     pSorter-&gt;mxKeysize = nPMA;</span>
+<span class='curline'><a href='../S/185.html#L77585'>pSorter</a>          77585 libdb/sqlite3.c   if( pSorter-&gt;list.aMemory ){</span>
+<span class='curline'><a href='../S/185.html#L77586'>pSorter</a>          77586 libdb/sqlite3.c     int nMin = pSorter-&gt;iMemory + nReq;</span>
+<span class='curline'><a href='../S/185.html#L77588'>pSorter</a>          77588 libdb/sqlite3.c     if( nMin&gt;pSorter-&gt;nMemory ){</span>
+<span class='curline'><a href='../S/185.html#L77590'>pSorter</a>          77590 libdb/sqlite3.c       int nNew = pSorter-&gt;nMemory * 2;</span>
+<span class='curline'><a href='../S/185.html#L77592'>pSorter</a>          77592 libdb/sqlite3.c       if( nNew &gt; pSorter-&gt;mxPmaSize ) nNew = pSorter-&gt;mxPmaSize;</span>
+<span class='curline'><a href='../S/185.html#L77595'>pSorter</a>          77595 libdb/sqlite3.c       aNew = sqlite3Realloc(pSorter-&gt;list.aMemory, nNew);</span>
+<span class='curline'><a href='../S/185.html#L77597'>pSorter</a>          77597 libdb/sqlite3.c       pSorter-&gt;list.pList = (SorterRecord*)(</span>
+<span class='curline'><a href='../S/185.html#L77598'>pSorter</a>          77598 libdb/sqlite3.c           aNew + ((u8*)pSorter-&gt;list.pList - pSorter-&gt;list.aMemory)</span>
+<span class='curline'><a href='../S/185.html#L77600'>pSorter</a>          77600 libdb/sqlite3.c       pSorter-&gt;list.aMemory = aNew;</span>
+<span class='curline'><a href='../S/185.html#L77601'>pSorter</a>          77601 libdb/sqlite3.c       pSorter-&gt;nMemory = nNew;</span>
+<span class='curline'><a href='../S/185.html#L77604'>pSorter</a>          77604 libdb/sqlite3.c     pNew = (SorterRecord*)&amp;pSorter-&gt;list.aMemory[pSorter-&gt;iMemory];</span>
+<span class='curline'><a href='../S/185.html#L77605'>pSorter</a>          77605 libdb/sqlite3.c     pSorter-&gt;iMemory += ROUND8(nReq);</span>
+<span class='curline'><a href='../S/185.html#L77606'>pSorter</a>          77606 libdb/sqlite3.c     pNew-&gt;u.iNext = (int)((u8*)(pSorter-&gt;list.pList) - pSorter-&gt;list.aMemory);</span>
+<span class='curline'><a href='../S/185.html#L77612'>pSorter</a>          77612 libdb/sqlite3.c     pNew-&gt;u.pNext = pSorter-&gt;list.pList;</span>
+<span class='curline'><a href='../S/185.html#L77617'>pSorter</a>          77617 libdb/sqlite3.c   pSorter-&gt;list.pList = pNew;</span>
+<span class='curline'><a href='../S/185.html#L77639'>pSorter</a>          77639 libdb/sqlite3.c   vdbePmaWriterInit(pOut-&gt;pFd, &amp;writer, pTask-&gt;pSorter-&gt;pgsz, iStart);</span>
+<span class='curline'><a href='../S/185.html#L77753'>pSorter</a>          77753 libdb/sqlite3.c     pIncr-&gt;mxSz = MAX(pTask-&gt;pSorter-&gt;mxKeysize+9,pTask-&gt;pSorter-&gt;mxPmaSize/2);</span>
+<span class='curline'><a href='../S/185.html#L77940'>pSorter</a>          77940 libdb/sqlite3.c     sqlite3 *db = pTask-&gt;pSorter-&gt;db;</span>
+<span class='curline'><a href='../S/185.html#L78144'>pSorter</a>          78144 libdb/sqlite3.c   VdbeSorter *pSorter,       /* The VDBE cursor that implements the sort */</span>
+<span class='curline'><a href='../S/185.html#L78155'>pSorter</a>          78155 libdb/sqlite3.c   assert( pSorter-&gt;bUseThreads || pSorter-&gt;nTask==1 );</span>
+<span class='curline'><a href='../S/185.html#L78156'>pSorter</a>          78156 libdb/sqlite3.c   if( pSorter-&gt;nTask&gt;1 ){</span>
+<span class='curline'><a href='../S/185.html#L78157'>pSorter</a>          78157 libdb/sqlite3.c     pMain = vdbeMergeEngineNew(pSorter-&gt;nTask);</span>
+<span class='curline'><a href='../S/185.html#L78162'>pSorter</a>          78162 libdb/sqlite3.c   for(iTask=0; rc==SQLITE_OK &amp;&amp; iTask&lt;pSorter-&gt;nTask; iTask++){</span>
+<span class='curline'><a href='../S/185.html#L78163'>pSorter</a>          78163 libdb/sqlite3.c     SortSubtask *pTask = &amp;pSorter-&gt;aTask[iTask];</span>
+<span class='curline'><a href='../S/185.html#L78222'>pSorter</a>          78222 libdb/sqlite3.c static int vdbeSorterSetupMerge(VdbeSorter *pSorter){</span>
+<span class='curline'><a href='../S/185.html#L78224'>pSorter</a>          78224 libdb/sqlite3.c   SortSubtask *pTask0 = &amp;pSorter-&gt;aTask[0];</span>
+<span class='curline'><a href='../S/185.html#L78227'>pSorter</a>          78227 libdb/sqlite3.c   sqlite3 *db = pTask0-&gt;pSorter-&gt;db;</span>
+<span class='curline'><a href='../S/185.html#L78230'>pSorter</a>          78230 libdb/sqlite3.c   rc = vdbeSorterMergeTreeBuild(pSorter, &amp;pMain);</span>
+<span class='curline'><a href='../S/185.html#L78233'>pSorter</a>          78233 libdb/sqlite3.c     assert( pSorter-&gt;bUseThreads==0 || pSorter-&gt;nTask&gt;1 );</span>
+<span class='curline'><a href='../S/185.html#L78234'>pSorter</a>          78234 libdb/sqlite3.c     if( pSorter-&gt;bUseThreads ){</span>
+<span class='curline'><a href='../S/185.html#L78237'>pSorter</a>          78237 libdb/sqlite3.c       SortSubtask *pLast = &amp;pSorter-&gt;aTask[pSorter-&gt;nTask-1];</span>
+<span class='curline'><a href='../S/185.html#L78241'>pSorter</a>          78241 libdb/sqlite3.c         pSorter-&gt;pReader = pReadr;</span>
+<span class='curline'><a href='../S/185.html#L78248'>pSorter</a>          78248 libdb/sqlite3.c           for(iTask=0; iTask&lt;(pSorter-&gt;nTask-1); iTask++){</span>
+<span class='curline'><a href='../S/185.html#L78255'>pSorter</a>          78255 libdb/sqlite3.c           for(iTask=0; rc==SQLITE_OK &amp;&amp; iTask&lt;pSorter-&gt;nTask; iTask++){</span>
+<span class='curline'><a href='../S/185.html#L78257'>pSorter</a>          78257 libdb/sqlite3.c             assert( p-&gt;pIncr==0 || p-&gt;pIncr-&gt;pTask==&amp;pSorter-&gt;aTask[iTask] );</span>
+<span class='curline'><a href='../S/185.html#L78259'>pSorter</a>          78259 libdb/sqlite3.c               if( iTask==pSorter-&gt;nTask-1 ){</span>
+<span class='curline'><a href='../S/185.html#L78276'>pSorter</a>          78276 libdb/sqlite3.c       pSorter-&gt;pMerger = pMain;</span>
+<span class='curline'><a href='../S/185.html#L78294'>pSorter</a>          78294 libdb/sqlite3.c   VdbeSorter *pSorter = pCsr-&gt;pSorter;</span>
+<span class='curline'><a href='../S/185.html#L78297'>pSorter</a>          78297 libdb/sqlite3.c   assert( pSorter );</span>
+<span class='curline'><a href='../S/185.html#L78302'>pSorter</a>          78302 libdb/sqlite3.c   if( pSorter-&gt;bUsePMA==0 ){</span>
+<span class='curline'><a href='../S/185.html#L78303'>pSorter</a>          78303 libdb/sqlite3.c     if( pSorter-&gt;list.pList ){</span>
+<span class='curline'><a href='../S/185.html#L78305'>pSorter</a>          78305 libdb/sqlite3.c       rc = vdbeSorterSort(&amp;pSorter-&gt;aTask[0], &amp;pSorter-&gt;list);</span>
+<span class='curline'><a href='../S/185.html#L78316'>pSorter</a>          78316 libdb/sqlite3.c   assert( pSorter-&gt;list.pList );</span>
+<span class='curline'><a href='../S/185.html#L78317'>pSorter</a>          78317 libdb/sqlite3.c   rc = vdbeSorterFlushPMA(pSorter);</span>
+<span class='curline'><a href='../S/185.html#L78320'>pSorter</a>          78320 libdb/sqlite3.c   rc = vdbeSorterJoinAll(pSorter, rc);</span>
+<span class='curline'><a href='../S/185.html#L78326'>pSorter</a>          78326 libdb/sqlite3.c   assert( pSorter-&gt;pReader==0 );</span>
+<span class='curline'><a href='../S/185.html#L78328'>pSorter</a>          78328 libdb/sqlite3.c     rc = vdbeSorterSetupMerge(pSorter);</span>
+<span class='curline'><a href='../S/185.html#L78340'>pSorter</a>          78340 libdb/sqlite3.c   VdbeSorter *pSorter = pCsr-&gt;pSorter;</span>
+<span class='curline'><a href='../S/185.html#L78343'>pSorter</a>          78343 libdb/sqlite3.c   assert( pSorter-&gt;bUsePMA || (pSorter-&gt;pReader==0 &amp;&amp; pSorter-&gt;pMerger==0) );</span>
+<span class='curline'><a href='../S/185.html#L78344'>pSorter</a>          78344 libdb/sqlite3.c   if( pSorter-&gt;bUsePMA ){</span>
+<span class='curline'><a href='../S/185.html#L78345'>pSorter</a>          78345 libdb/sqlite3.c     assert( pSorter-&gt;pReader==0 || pSorter-&gt;pMerger==0 );</span>
+<span class='curline'><a href='../S/185.html#L78346'>pSorter</a>          78346 libdb/sqlite3.c     assert( pSorter-&gt;bUseThreads==0 || pSorter-&gt;pReader );</span>
+<span class='curline'><a href='../S/185.html#L78347'>pSorter</a>          78347 libdb/sqlite3.c     assert( pSorter-&gt;bUseThreads==1 || pSorter-&gt;pMerger );</span>
+<span class='curline'><a href='../S/185.html#L78349'>pSorter</a>          78349 libdb/sqlite3.c     if( pSorter-&gt;bUseThreads ){</span>
+<span class='curline'><a href='../S/185.html#L78350'>pSorter</a>          78350 libdb/sqlite3.c       rc = vdbePmaReaderNext(pSorter-&gt;pReader);</span>
+<span class='curline'><a href='../S/185.html#L78351'>pSorter</a>          78351 libdb/sqlite3.c       *pbEof = (pSorter-&gt;pReader-&gt;pFd==0);</span>
+<span class='curline'><a href='../S/185.html#L78355'>pSorter</a>          78355 libdb/sqlite3.c       assert( pSorter-&gt;pMerger-&gt;pTask==(&amp;pSorter-&gt;aTask[0]) );</span>
+<span class='curline'><a href='../S/185.html#L78356'>pSorter</a>          78356 libdb/sqlite3.c       rc = vdbeMergeEngineStep(pSorter-&gt;pMerger, pbEof);</span>
+<span class='curline'><a href='../S/185.html#L78359'>pSorter</a>          78359 libdb/sqlite3.c     SorterRecord *pFree = pSorter-&gt;list.pList;</span>
+<span class='curline'><a href='../S/185.html#L78360'>pSorter</a>          78360 libdb/sqlite3.c     pSorter-&gt;list.pList = pFree-&gt;u.pNext;</span>
+<span class='curline'><a href='../S/185.html#L78362'>pSorter</a>          78362 libdb/sqlite3.c     if( pSorter-&gt;list.aMemory==0 ) vdbeSorterRecordFree(db, pFree);</span>
+<span class='curline'><a href='../S/185.html#L78363'>pSorter</a>          78363 libdb/sqlite3.c     *pbEof = !pSorter-&gt;list.pList;</span>
+<span class='curline'><a href='../S/185.html#L78374'>pSorter</a>          78374 libdb/sqlite3.c   const VdbeSorter *pSorter,      /* Sorter object */</span>
+<span class='curline'><a href='../S/185.html#L78378'>pSorter</a>          78378 libdb/sqlite3.c   if( pSorter-&gt;bUsePMA ){</span>
+<span class='curline'><a href='../S/185.html#L78381'>pSorter</a>          78381 libdb/sqlite3.c     if( pSorter-&gt;bUseThreads ){</span>
+<span class='curline'><a href='../S/185.html#L78382'>pSorter</a>          78382 libdb/sqlite3.c       pReader = pSorter-&gt;pReader;</span>
+<span class='curline'><a href='../S/185.html#L78386'>pSorter</a>          78386 libdb/sqlite3.c       pReader = &amp;pSorter-&gt;pMerger-&gt;aReadr[pSorter-&gt;pMerger-&gt;aTree[1]];</span>
+<span class='curline'><a href='../S/185.html#L78391'>pSorter</a>          78391 libdb/sqlite3.c     *pnKey = pSorter-&gt;list.pList-&gt;nVal;</span>
+<span class='curline'><a href='../S/185.html#L78392'>pSorter</a>          78392 libdb/sqlite3.c     pKey = SRVAL(pSorter-&gt;list.pList);</span>
+<span class='curline'><a href='../S/185.html#L78401'>pSorter</a>          78401 libdb/sqlite3.c   VdbeSorter *pSorter = pCsr-&gt;pSorter;</span>
+<span class='curline'><a href='../S/185.html#L78404'>pSorter</a>          78404 libdb/sqlite3.c   pKey = vdbeSorterRowkey(pSorter, &amp;nKey);</span>
+<span class='curline'><a href='../S/185.html#L78437'>pSorter</a>          78437 libdb/sqlite3.c   VdbeSorter *pSorter = pCsr-&gt;pSorter;</span>
+<span class='curline'><a href='../S/185.html#L78438'>pSorter</a>          78438 libdb/sqlite3.c   UnpackedRecord *r2 = pSorter-&gt;pUnpacked;</span>
+<span class='curline'><a href='../S/185.html#L78445'>pSorter</a>          78445 libdb/sqlite3.c     r2 = pSorter-&gt;pUnpacked = sqlite3VdbeAllocUnpackedRecord(pKeyInfo,0,0,&amp;p);</span>
+<span class='curline'><a href='../S/185.html#L78446'>pSorter</a>          78446 libdb/sqlite3.c     assert( pSorter-&gt;pUnpacked==(UnpackedRecord*)p );</span>
+<span class='curline'><a href='../S/185.html#L78452'>pSorter</a>          78452 libdb/sqlite3.c   pKey = vdbeSorterRowkey(pSorter, &amp;nKey);</span>
+</pre>
+</body>
+</html>

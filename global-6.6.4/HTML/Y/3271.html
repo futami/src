@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>iFrame</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/185.html#L43729'>iFrame</a>           43729 libdb/sqlite3.c static int readDbPage(PgHdr *pPg, u32 iFrame){</span>
+<span class='curline'><a href='../S/185.html#L43739'>iFrame</a>           43739 libdb/sqlite3.c   if( iFrame ){</span>
+<span class='curline'><a href='../S/185.html#L43741'>iFrame</a>           43741 libdb/sqlite3.c     rc = sqlite3WalReadFrame(pPager-&gt;pWal, iFrame, pgsz, pPg-&gt;pData);</span>
+<span class='curline'><a href='../S/185.html#L43829'>iFrame</a>           43829 libdb/sqlite3.c       u32 iFrame = 0;</span>
+<span class='curline'><a href='../S/185.html#L43830'>iFrame</a>           43830 libdb/sqlite3.c       rc = sqlite3WalFindFrame(pPager-&gt;pWal, pPg-&gt;pgno, &amp;iFrame);</span>
+<span class='curline'><a href='../S/185.html#L43832'>iFrame</a>           43832 libdb/sqlite3.c         rc = readDbPage(pPg, iFrame);</span>
+<span class='curline'><a href='../S/185.html#L46135'>iFrame</a>           46135 libdb/sqlite3.c   u32 iFrame = 0;                 /* Frame to read from WAL file */</span>
+<span class='curline'><a href='../S/185.html#L46163'>iFrame</a>           46163 libdb/sqlite3.c       rc = sqlite3WalFindFrame(pPager-&gt;pWal, pgno, &amp;iFrame);</span>
+<span class='curline'><a href='../S/185.html#L46167'>iFrame</a>           46167 libdb/sqlite3.c     if( bMmapOk &amp;&amp; iFrame==0 ){</span>
+<span class='curline'><a href='../S/185.html#L46262'>iFrame</a>           46262 libdb/sqlite3.c         rc = sqlite3WalFindFrame(pPager-&gt;pWal, pgno, &amp;iFrame);</span>
+<span class='curline'><a href='../S/185.html#L46267'>iFrame</a>           46267 libdb/sqlite3.c       rc = readDbPage(pPg, iFrame);</span>
+<span class='curline'><a href='../S/185.html#L48514'>iFrame</a>           48514 libdb/sqlite3.c #define walFrameOffset(iFrame, szPage) (                               \</span>
+<span class='curline'><a href='../S/185.html#L48515'>iFrame</a>           48515 libdb/sqlite3.c   WAL_HDRSIZE + ((iFrame)-1)*(i64)((szPage)+WAL_FRAME_HDRSIZE)         \</span>
+<span class='curline'><a href='../S/185.html#L48986'>iFrame</a>           48986 libdb/sqlite3.c static int walFramePage(u32 iFrame){</span>
+<span class='curline'><a href='../S/185.html#L48987'>iFrame</a>           48987 libdb/sqlite3.c   int iHash = (iFrame+HASHTABLE_NPAGE-HASHTABLE_NPAGE_ONE-1) / HASHTABLE_NPAGE;</span>
+<span class='curline'><a href='../S/185.html#L48988'>iFrame</a>           48988 libdb/sqlite3.c   assert( (iHash==0 || iFrame&gt;HASHTABLE_NPAGE_ONE)</span>
+<span class='curline'><a href='../S/185.html#L48989'>iFrame</a>           48989 libdb/sqlite3.c        &amp;&amp; (iHash&gt;=1 || iFrame&lt;=HASHTABLE_NPAGE_ONE)</span>
+<span class='curline'><a href='../S/185.html#L48990'>iFrame</a>           48990 libdb/sqlite3.c        &amp;&amp; (iHash&lt;=1 || iFrame&gt;(HASHTABLE_NPAGE_ONE+HASHTABLE_NPAGE))</span>
+<span class='curline'><a href='../S/185.html#L48991'>iFrame</a>           48991 libdb/sqlite3.c        &amp;&amp; (iHash&gt;=2 || iFrame&lt;=HASHTABLE_NPAGE_ONE+HASHTABLE_NPAGE)</span>
+<span class='curline'><a href='../S/185.html#L48992'>iFrame</a>           48992 libdb/sqlite3.c        &amp;&amp; (iHash&lt;=2 || iFrame&gt;(HASHTABLE_NPAGE_ONE+2*HASHTABLE_NPAGE))</span>
+<span class='curline'><a href='../S/185.html#L49000'>iFrame</a>           49000 libdb/sqlite3.c static u32 walFramePgno(Wal *pWal, u32 iFrame){</span>
+<span class='curline'><a href='../S/185.html#L49001'>iFrame</a>           49001 libdb/sqlite3.c   int iHash = walFramePage(iFrame);</span>
+<span class='curline'><a href='../S/185.html#L49003'>iFrame</a>           49003 libdb/sqlite3.c     return pWal-&gt;apWiData[0][WALINDEX_HDR_SIZE/sizeof(u32) + iFrame - 1];</span>
+<span class='curline'><a href='../S/185.html#L49005'>iFrame</a>           49005 libdb/sqlite3.c   return pWal-&gt;apWiData[iHash][(iFrame-1-HASHTABLE_NPAGE_ONE)%HASHTABLE_NPAGE];</span>
+<span class='curline'><a href='../S/185.html#L49082'>iFrame</a>           49082 libdb/sqlite3.c static int walIndexAppend(Wal *pWal, u32 iFrame, u32 iPage){</span>
+<span class='curline'><a href='../S/185.html#L49088'>iFrame</a>           49088 libdb/sqlite3.c   rc = walHashGet(pWal, walFramePage(iFrame), &amp;aHash, &amp;aPgno, &amp;iZero);</span>
+<span class='curline'><a href='../S/185.html#L49098'>iFrame</a>           49098 libdb/sqlite3.c     idx = iFrame - iZero;</span>
+<span class='curline'><a href='../S/185.html#L49208'>iFrame</a>           49208 libdb/sqlite3.c     int iFrame;                   /* Index of last frame read */</span>
+<span class='curline'><a href='../S/185.html#L49268'>iFrame</a>           49268 libdb/sqlite3.c     iFrame = 0;</span>
+<span class='curline'><a href='../S/185.html#L49274'>iFrame</a>           49274 libdb/sqlite3.c       iFrame++;</span>
+<span class='curline'><a href='../S/185.html#L49279'>iFrame</a>           49279 libdb/sqlite3.c       rc = walIndexAppend(pWal, iFrame, pgno);</span>
+<span class='curline'><a href='../S/185.html#L49284'>iFrame</a>           49284 libdb/sqlite3.c         pWal-&gt;hdr.mxFrame = iFrame;</span>
+<span class='curline'><a href='../S/185.html#L49780'>iFrame</a>           49780 libdb/sqlite3.c   u32 iFrame = 0;                 /* Wal frame containing data for iDbpage */</span>
+<span class='curline'><a href='../S/185.html#L49850'>iFrame</a>           49850 libdb/sqlite3.c     while( rc==SQLITE_OK &amp;&amp; 0==walIteratorNext(pIter, &amp;iDbpage, &amp;iFrame) ){</span>
+<span class='curline'><a href='../S/185.html#L49852'>iFrame</a>           49852 libdb/sqlite3.c       assert( walFramePgno(pWal, iFrame)==iDbpage );</span>
+<span class='curline'><a href='../S/185.html#L49853'>iFrame</a>           49853 libdb/sqlite3.c       if( iFrame&lt;=nBackfill || iFrame&gt;mxSafeFrame || iDbpage&gt;mxPage ) continue;</span>
+<span class='curline'><a href='../S/185.html#L49854'>iFrame</a>           49854 libdb/sqlite3.c       iOffset = walFrameOffset(iFrame, szPage) + WAL_FRAME_HDRSIZE;</span>
+<span class='curline'><a href='../S/185.html#L50472'>iFrame</a>           50472 libdb/sqlite3.c       u32 iFrame = aHash[iKey] + iZero;</span>
+<span class='curline'><a href='../S/185.html#L50473'>iFrame</a>           50473 libdb/sqlite3.c       if( iFrame&lt;=iLast &amp;&amp; aPgno[aHash[iKey]]==pgno ){</span>
+<span class='curline'><a href='../S/185.html#L50475'>iFrame</a>           50475 libdb/sqlite3.c         iRead = iFrame;</span>
+<span class='curline'><a href='../S/185.html#L50612'>iFrame</a>           50612 libdb/sqlite3.c     Pgno iFrame;</span>
+<span class='curline'><a href='../S/185.html#L50619'>iFrame</a>           50619 libdb/sqlite3.c     for(iFrame=pWal-&gt;hdr.mxFrame+1; </span>
+<span class='curline'><a href='../S/185.html#L50620'>iFrame</a>           50620 libdb/sqlite3.c         ALWAYS(rc==SQLITE_OK) &amp;&amp; iFrame&lt;=iMax; </span>
+<span class='curline'><a href='../S/185.html#L50621'>iFrame</a>           50621 libdb/sqlite3.c         iFrame++</span>
+<span class='curline'><a href='../S/185.html#L50634'>iFrame</a>           50634 libdb/sqlite3.c       assert( walFramePgno(pWal, iFrame)!=1 );</span>
+<span class='curline'><a href='../S/185.html#L50635'>iFrame</a>           50635 libdb/sqlite3.c       rc = xUndo(pUndoCtx, walFramePgno(pWal, iFrame));</span>
+<span class='curline'><a href='../S/185.html#L50836'>iFrame</a>           50836 libdb/sqlite3.c   u32 iFrame;                     /* Next frame address */</span>
+<span class='curline'><a href='../S/185.html#L50869'>iFrame</a>           50869 libdb/sqlite3.c   iFrame = pWal-&gt;hdr.mxFrame;</span>
+<span class='curline'><a href='../S/185.html#L50870'>iFrame</a>           50870 libdb/sqlite3.c   if( iFrame==0 ){</span>
+<span class='curline'><a href='../S/185.html#L50916'>iFrame</a>           50916 libdb/sqlite3.c   iOffset = walFrameOffset(iFrame+1, szPage);</span>
+<span class='curline'><a href='../S/185.html#L50922'>iFrame</a>           50922 libdb/sqlite3.c     iFrame++;</span>
+<span class='curline'><a href='../S/185.html#L50923'>iFrame</a>           50923 libdb/sqlite3.c     assert( iOffset==walFrameOffset(iFrame, szPage) );</span>
+<span class='curline'><a href='../S/185.html#L50966'>iFrame</a>           50966 libdb/sqlite3.c     if( walFrameOffset(iFrame+nExtra+1, szPage)&gt;pWal-&gt;mxWalSize ){</span>
+<span class='curline'><a href='../S/185.html#L50967'>iFrame</a>           50967 libdb/sqlite3.c       sz = walFrameOffset(iFrame+nExtra+1, szPage);</span>
+<span class='curline'><a href='../S/185.html#L50978'>iFrame</a>           50978 libdb/sqlite3.c   iFrame = pWal-&gt;hdr.mxFrame;</span>
+<span class='curline'><a href='../S/185.html#L50980'>iFrame</a>           50980 libdb/sqlite3.c     iFrame++;</span>
+<span class='curline'><a href='../S/185.html#L50981'>iFrame</a>           50981 libdb/sqlite3.c     rc = walIndexAppend(pWal, iFrame, p-&gt;pgno);</span>
+<span class='curline'><a href='../S/185.html#L50984'>iFrame</a>           50984 libdb/sqlite3.c     iFrame++;</span>
+<span class='curline'><a href='../S/185.html#L50986'>iFrame</a>           50986 libdb/sqlite3.c     rc = walIndexAppend(pWal, iFrame, pLast-&gt;pgno);</span>
+<span class='curline'><a href='../S/185.html#L50994'>iFrame</a>           50994 libdb/sqlite3.c     pWal-&gt;hdr.mxFrame = iFrame;</span>
+<span class='curline'><a href='../S/185.html#L51002'>iFrame</a>           51002 libdb/sqlite3.c       pWal-&gt;iCallback = iFrame;</span>
+</pre>
+</body>
+</html>

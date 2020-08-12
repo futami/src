@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>pScan</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/185.html#L114000'>pScan</a>            114000 libdb/sqlite3.c static WhereTerm *whereScanNext(WhereScan *pScan){</span>
+<span class='curline'><a href='../S/185.html#L114006'>pScan</a>            114006 libdb/sqlite3.c   int k = pScan-&gt;k;    /* Where to start scanning */</span>
+<span class='curline'><a href='../S/185.html#L114008'>pScan</a>            114008 libdb/sqlite3.c   while( pScan-&gt;iEquiv&lt;=pScan-&gt;nEquiv ){</span>
+<span class='curline'><a href='../S/185.html#L114009'>pScan</a>            114009 libdb/sqlite3.c     iCur = pScan-&gt;aEquiv[pScan-&gt;iEquiv-2];</span>
+<span class='curline'><a href='../S/185.html#L114010'>pScan</a>            114010 libdb/sqlite3.c     iColumn = pScan-&gt;aEquiv[pScan-&gt;iEquiv-1];</span>
+<span class='curline'><a href='../S/185.html#L114011'>pScan</a>            114011 libdb/sqlite3.c     while( (pWC = pScan-&gt;pWC)!=0 ){</span>
+<span class='curline'><a href='../S/185.html#L114015'>pScan</a>            114015 libdb/sqlite3.c          &amp;&amp; (pScan-&gt;iEquiv&lt;=2 || !ExprHasProperty(pTerm-&gt;pExpr, EP_FromJoin))</span>
+<span class='curline'><a href='../S/185.html#L114018'>pScan</a>            114018 libdb/sqlite3.c            &amp;&amp; pScan-&gt;nEquiv&lt;ArraySize(pScan-&gt;aEquiv)</span>
+<span class='curline'><a href='../S/185.html#L114023'>pScan</a>            114023 libdb/sqlite3.c             for(j=0; j&lt;pScan-&gt;nEquiv; j+=2){</span>
+<span class='curline'><a href='../S/185.html#L114024'>pScan</a>            114024 libdb/sqlite3.c               if( pScan-&gt;aEquiv[j]==pX-&gt;iTable</span>
+<span class='curline'><a href='../S/185.html#L114025'>pScan</a>            114025 libdb/sqlite3.c                &amp;&amp; pScan-&gt;aEquiv[j+1]==pX-&gt;iColumn ){</span>
+<span class='curline'><a href='../S/185.html#L114029'>pScan</a>            114029 libdb/sqlite3.c             if( j==pScan-&gt;nEquiv ){</span>
+<span class='curline'><a href='../S/185.html#L114030'>pScan</a>            114030 libdb/sqlite3.c               pScan-&gt;aEquiv[j] = pX-&gt;iTable;</span>
+<span class='curline'><a href='../S/185.html#L114031'>pScan</a>            114031 libdb/sqlite3.c               pScan-&gt;aEquiv[j+1] = pX-&gt;iColumn;</span>
+<span class='curline'><a href='../S/185.html#L114032'>pScan</a>            114032 libdb/sqlite3.c               pScan-&gt;nEquiv += 2;</span>
+<span class='curline'><a href='../S/185.html#L114035'>pScan</a>            114035 libdb/sqlite3.c           if( (pTerm-&gt;eOperator &amp; pScan-&gt;opMask)!=0 ){</span>
+<span class='curline'><a href='../S/185.html#L114037'>pScan</a>            114037 libdb/sqlite3.c             if( pScan-&gt;zCollName &amp;&amp; (pTerm-&gt;eOperator &amp; WO_ISNULL)==0 ){</span>
+<span class='curline'><a href='../S/185.html#L114041'>pScan</a>            114041 libdb/sqlite3.c               if( !sqlite3IndexAffinityOk(pX, pScan-&gt;idxaff) ){</span>
+<span class='curline'><a href='../S/185.html#L114048'>pScan</a>            114048 libdb/sqlite3.c               if( sqlite3StrICmp(pColl-&gt;zName, pScan-&gt;zCollName) ){</span>
+<span class='curline'><a href='../S/185.html#L114054'>pScan</a>            114054 libdb/sqlite3.c              &amp;&amp; pX-&gt;iTable==pScan-&gt;aEquiv[0]</span>
+<span class='curline'><a href='../S/185.html#L114055'>pScan</a>            114055 libdb/sqlite3.c              &amp;&amp; pX-&gt;iColumn==pScan-&gt;aEquiv[1]</span>
+<span class='curline'><a href='../S/185.html#L114059'>pScan</a>            114059 libdb/sqlite3.c             pScan-&gt;k = k+1;</span>
+<span class='curline'><a href='../S/185.html#L114064'>pScan</a>            114064 libdb/sqlite3.c       pScan-&gt;pWC = pScan-&gt;pWC-&gt;pOuter;</span>
+<span class='curline'><a href='../S/185.html#L114067'>pScan</a>            114067 libdb/sqlite3.c     pScan-&gt;pWC = pScan-&gt;pOrigWC;</span>
+<span class='curline'><a href='../S/185.html#L114069'>pScan</a>            114069 libdb/sqlite3.c     pScan-&gt;iEquiv += 2;</span>
+<span class='curline'><a href='../S/185.html#L114091'>pScan</a>            114091 libdb/sqlite3.c   WhereScan *pScan,       /* The WhereScan object being initialized */</span>
+<span class='curline'><a href='../S/185.html#L114101'>pScan</a>            114101 libdb/sqlite3.c   pScan-&gt;pOrigWC = pWC;</span>
+<span class='curline'><a href='../S/185.html#L114102'>pScan</a>            114102 libdb/sqlite3.c   pScan-&gt;pWC = pWC;</span>
+<span class='curline'><a href='../S/185.html#L114104'>pScan</a>            114104 libdb/sqlite3.c     pScan-&gt;idxaff = pIdx-&gt;pTable-&gt;aCol[iColumn].affinity;</span>
+<span class='curline'><a href='../S/185.html#L114108'>pScan</a>            114108 libdb/sqlite3.c     pScan-&gt;zCollName = pIdx-&gt;azColl[j];</span>
+<span class='curline'><a href='../S/185.html#L114110'>pScan</a>            114110 libdb/sqlite3.c     pScan-&gt;idxaff = 0;</span>
+<span class='curline'><a href='../S/185.html#L114111'>pScan</a>            114111 libdb/sqlite3.c     pScan-&gt;zCollName = 0;</span>
+<span class='curline'><a href='../S/185.html#L114113'>pScan</a>            114113 libdb/sqlite3.c   pScan-&gt;opMask = opMask;</span>
+<span class='curline'><a href='../S/185.html#L114114'>pScan</a>            114114 libdb/sqlite3.c   pScan-&gt;k = 0;</span>
+<span class='curline'><a href='../S/185.html#L114115'>pScan</a>            114115 libdb/sqlite3.c   pScan-&gt;aEquiv[0] = iCur;</span>
+<span class='curline'><a href='../S/185.html#L114116'>pScan</a>            114116 libdb/sqlite3.c   pScan-&gt;aEquiv[1] = iColumn;</span>
+<span class='curline'><a href='../S/185.html#L114117'>pScan</a>            114117 libdb/sqlite3.c   pScan-&gt;nEquiv = 2;</span>
+<span class='curline'><a href='../S/185.html#L114118'>pScan</a>            114118 libdb/sqlite3.c   pScan-&gt;iEquiv = 2;</span>
+<span class='curline'><a href='../S/185.html#L114119'>pScan</a>            114119 libdb/sqlite3.c   return whereScanNext(pScan);</span>
+</pre>
+</body>
+</html>

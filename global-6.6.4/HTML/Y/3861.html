@@ -1,0 +1,104 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>jfd</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/185.html#L41520'>jfd</a>              41520 libdb/sqlite3.c   sqlite3_file *jfd;          /* File descriptor for main journal */</span>
+<span class='curline'><a href='../S/185.html#L41721'>jfd</a>              41721 libdb/sqlite3.c   assert( p-&gt;journalMode!=PAGER_JOURNALMODE_OFF || !isOpen(p-&gt;jfd) );</span>
+<span class='curline'><a href='../S/185.html#L41781'>jfd</a>              41781 libdb/sqlite3.c         assert( isOpen(p-&gt;jfd) </span>
+<span class='curline'><a href='../S/185.html#L41795'>jfd</a>              41795 libdb/sqlite3.c       assert( isOpen(p-&gt;jfd) </span>
+<span class='curline'><a href='../S/185.html#L41806'>jfd</a>              41806 libdb/sqlite3.c       assert( isOpen(p-&gt;jfd) </span>
+<span class='curline'><a href='../S/185.html#L42187'>jfd</a>              42187 libdb/sqlite3.c   assert( isOpen(pPager-&gt;jfd) );</span>
+<span class='curline'><a href='../S/185.html#L42193'>jfd</a>              42193 libdb/sqlite3.c       rc = sqlite3OsTruncate(pPager-&gt;jfd, 0);</span>
+<span class='curline'><a href='../S/185.html#L42196'>jfd</a>              42196 libdb/sqlite3.c       rc = sqlite3OsWrite(pPager-&gt;jfd, zeroHdr, sizeof(zeroHdr), 0);</span>
+<span class='curline'><a href='../S/185.html#L42199'>jfd</a>              42199 libdb/sqlite3.c       rc = sqlite3OsSync(pPager-&gt;jfd, SQLITE_SYNC_DATAONLY|pPager-&gt;syncFlags);</span>
+<span class='curline'><a href='../S/185.html#L42210'>jfd</a>              42210 libdb/sqlite3.c       rc = sqlite3OsFileSize(pPager-&gt;jfd, &amp;sz);</span>
+<span class='curline'><a href='../S/185.html#L42212'>jfd</a>              42212 libdb/sqlite3.c         rc = sqlite3OsTruncate(pPager-&gt;jfd, iLimit);</span>
+<span class='curline'><a href='../S/185.html#L42241'>jfd</a>              42241 libdb/sqlite3.c   assert( isOpen(pPager-&gt;jfd) );      /* Journal file must be open. */</span>
+<span class='curline'><a href='../S/185.html#L42327'>jfd</a>              42327 libdb/sqlite3.c     rc = sqlite3OsWrite(pPager-&gt;jfd, zHeader, nHeader, pPager-&gt;journalOff);</span>
+<span class='curline'><a href='../S/185.html#L42363'>jfd</a>              42363 libdb/sqlite3.c   assert( isOpen(pPager-&gt;jfd) );      /* Journal file must be open. */</span>
+<span class='curline'><a href='../S/185.html#L42381'>jfd</a>              42381 libdb/sqlite3.c     rc = sqlite3OsRead(pPager-&gt;jfd, aMagic, sizeof(aMagic), iHdrOff);</span>
+<span class='curline'><a href='../S/185.html#L42394'>jfd</a>              42394 libdb/sqlite3.c   if( SQLITE_OK!=(rc = read32bits(pPager-&gt;jfd, iHdrOff+8, pNRec))</span>
+<span class='curline'><a href='../S/185.html#L42395'>jfd</a>              42395 libdb/sqlite3.c    || SQLITE_OK!=(rc = read32bits(pPager-&gt;jfd, iHdrOff+12, &amp;pPager-&gt;cksumInit))</span>
+<span class='curline'><a href='../S/185.html#L42396'>jfd</a>              42396 libdb/sqlite3.c    || SQLITE_OK!=(rc = read32bits(pPager-&gt;jfd, iHdrOff+16, pDbSize))</span>
+<span class='curline'><a href='../S/185.html#L42406'>jfd</a>              42406 libdb/sqlite3.c     if( SQLITE_OK!=(rc = read32bits(pPager-&gt;jfd, iHdrOff+20, &amp;iSectorSize))</span>
+<span class='curline'><a href='../S/185.html#L42407'>jfd</a>              42407 libdb/sqlite3.c      || SQLITE_OK!=(rc = read32bits(pPager-&gt;jfd, iHdrOff+24, &amp;iPageSize))</span>
+<span class='curline'><a href='../S/185.html#L42489'>jfd</a>              42489 libdb/sqlite3.c    || !isOpen(pPager-&gt;jfd)</span>
+<span class='curline'><a href='../S/185.html#L42513'>jfd</a>              42513 libdb/sqlite3.c   if( (0 != (rc = write32bits(pPager-&gt;jfd, iHdrOff, PAGER_MJ_PGNO(pPager))))</span>
+<span class='curline'><a href='../S/185.html#L42514'>jfd</a>              42514 libdb/sqlite3.c    || (0 != (rc = sqlite3OsWrite(pPager-&gt;jfd, zMaster, nMaster, iHdrOff+4)))</span>
+<span class='curline'><a href='../S/185.html#L42515'>jfd</a>              42515 libdb/sqlite3.c    || (0 != (rc = write32bits(pPager-&gt;jfd, iHdrOff+4+nMaster, nMaster)))</span>
+<span class='curline'><a href='../S/185.html#L42516'>jfd</a>              42516 libdb/sqlite3.c    || (0 != (rc = write32bits(pPager-&gt;jfd, iHdrOff+4+nMaster+4, cksum)))</span>
+<span class='curline'><a href='../S/185.html#L42517'>jfd</a>              42517 libdb/sqlite3.c    || (0 != (rc = sqlite3OsWrite(pPager-&gt;jfd, aJournalMagic, 8, iHdrOff+4+nMaster+8)))</span>
+<span class='curline'><a href='../S/185.html#L42533'>jfd</a>              42533 libdb/sqlite3.c   if( SQLITE_OK==(rc = sqlite3OsFileSize(pPager-&gt;jfd, &amp;jrnlSize))</span>
+<span class='curline'><a href='../S/185.html#L42536'>jfd</a>              42536 libdb/sqlite3.c     rc = sqlite3OsTruncate(pPager-&gt;jfd, pPager-&gt;journalOff);</span>
+<span class='curline'><a href='../S/185.html#L42617'>jfd</a>              42617 libdb/sqlite3.c     assert( !isOpen(pPager-&gt;jfd) );</span>
+<span class='curline'><a href='../S/185.html#L42638'>jfd</a>              42638 libdb/sqlite3.c       sqlite3OsClose(pPager-&gt;jfd);</span>
+<span class='curline'><a href='../S/185.html#L42792'>jfd</a>              42792 libdb/sqlite3.c   assert( isOpen(pPager-&gt;jfd) || pPager-&gt;pInJournal==0 );</span>
+<span class='curline'><a href='../S/185.html#L42793'>jfd</a>              42793 libdb/sqlite3.c   if( isOpen(pPager-&gt;jfd) ){</span>
+<span class='curline'><a href='../S/185.html#L42797'>jfd</a>              42797 libdb/sqlite3.c     if( sqlite3IsMemJournal(pPager-&gt;jfd) ){</span>
+<span class='curline'><a href='../S/185.html#L42799'>jfd</a>              42799 libdb/sqlite3.c       sqlite3OsClose(pPager-&gt;jfd);</span>
+<span class='curline'><a href='../S/185.html#L42804'>jfd</a>              42804 libdb/sqlite3.c         rc = sqlite3OsTruncate(pPager-&gt;jfd, 0);</span>
+<span class='curline'><a href='../S/185.html#L42811'>jfd</a>              42811 libdb/sqlite3.c           rc = sqlite3OsSync(pPager-&gt;jfd, pPager-&gt;syncFlags);</span>
+<span class='curline'><a href='../S/185.html#L42826'>jfd</a>              42826 libdb/sqlite3.c       int bDelete = (!pPager-&gt;tempFile &amp;&amp; sqlite3JournalExists(pPager-&gt;jfd));</span>
+<span class='curline'><a href='../S/185.html#L42831'>jfd</a>              42831 libdb/sqlite3.c       sqlite3OsClose(pPager-&gt;jfd);</span>
+<span class='curline'><a href='../S/185.html#L43015'>jfd</a>              43015 libdb/sqlite3.c   sqlite3_file *jfd;            /* The file descriptor for the journal file */</span>
+<span class='curline'><a href='../S/185.html#L43041'>jfd</a>              43041 libdb/sqlite3.c   jfd = isMainJrnl ? pPager-&gt;jfd : pPager-&gt;sjfd;</span>
+<span class='curline'><a href='../S/185.html#L43042'>jfd</a>              43042 libdb/sqlite3.c   rc = read32bits(jfd, *pOffset, &amp;pgno);</span>
+<span class='curline'><a href='../S/185.html#L43044'>jfd</a>              43044 libdb/sqlite3.c   rc = sqlite3OsRead(jfd, (u8*)aData, pPager-&gt;pageSize, (*pOffset)+4);</span>
+<span class='curline'><a href='../S/185.html#L43061'>jfd</a>              43061 libdb/sqlite3.c     rc = read32bits(jfd, (*pOffset)-4, &amp;cksum);</span>
+<span class='curline'><a href='../S/185.html#L43536'>jfd</a>              43536 libdb/sqlite3.c   assert( isOpen(pPager-&gt;jfd) );</span>
+<span class='curline'><a href='../S/185.html#L43537'>jfd</a>              43537 libdb/sqlite3.c   rc = sqlite3OsFileSize(pPager-&gt;jfd, &amp;szJ);</span>
+<span class='curline'><a href='../S/185.html#L43554'>jfd</a>              43554 libdb/sqlite3.c   rc = readMasterJournal(pPager-&gt;jfd, zMaster, pPager-&gt;pVfs-&gt;mxPathname+1);</span>
+<span class='curline'><a href='../S/185.html#L43685'>jfd</a>              43685 libdb/sqlite3.c     rc = readMasterJournal(pPager-&gt;jfd, zMaster, pPager-&gt;pVfs-&gt;mxPathname+1);</span>
+<span class='curline'><a href='../S/185.html#L44726'>jfd</a>              44726 libdb/sqlite3.c     rc = sqlite3OsSync(pPager-&gt;jfd, SQLITE_SYNC_NORMAL);</span>
+<span class='curline'><a href='../S/185.html#L44729'>jfd</a>              44729 libdb/sqlite3.c     rc = sqlite3OsFileSize(pPager-&gt;jfd, &amp;pPager-&gt;journalHdr);</span>
+<span class='curline'><a href='../S/185.html#L44851'>jfd</a>              44851 libdb/sqlite3.c     if( isOpen(pPager-&gt;jfd) ){</span>
+<span class='curline'><a href='../S/185.html#L44860'>jfd</a>              44860 libdb/sqlite3.c   sqlite3OsClose(pPager-&gt;jfd);</span>
+<span class='curline'><a href='../S/185.html#L44870'>jfd</a>              44870 libdb/sqlite3.c   assert( !isOpen(pPager-&gt;jfd) &amp;&amp; !isOpen(pPager-&gt;sjfd) );</span>
+<span class='curline'><a href='../S/185.html#L44941'>jfd</a>              44941 libdb/sqlite3.c     if( isOpen(pPager-&gt;jfd) &amp;&amp; pPager-&gt;journalMode!=PAGER_JOURNALMODE_MEMORY ){</span>
+<span class='curline'><a href='../S/185.html#L44943'>jfd</a>              44943 libdb/sqlite3.c       assert( isOpen(pPager-&gt;jfd) );</span>
+<span class='curline'><a href='../S/185.html#L44976'>jfd</a>              44976 libdb/sqlite3.c         rc = sqlite3OsRead(pPager-&gt;jfd, aMagic, 8, iNextHdrOffset);</span>
+<span class='curline'><a href='../S/185.html#L44979'>jfd</a>              44979 libdb/sqlite3.c           rc = sqlite3OsWrite(pPager-&gt;jfd, &amp;zerobyte, 1, iNextHdrOffset);</span>
+<span class='curline'><a href='../S/185.html#L44999'>jfd</a>              44999 libdb/sqlite3.c           rc = sqlite3OsSync(pPager-&gt;jfd, pPager-&gt;syncFlags);</span>
+<span class='curline'><a href='../S/185.html#L45004'>jfd</a>              45004 libdb/sqlite3.c             pPager-&gt;jfd, zHeader, sizeof(zHeader), pPager-&gt;journalHdr</span>
+<span class='curline'><a href='../S/185.html#L45011'>jfd</a>              45011 libdb/sqlite3.c         rc = sqlite3OsSync(pPager-&gt;jfd, pPager-&gt;syncFlags| </span>
+<span class='curline'><a href='../S/185.html#L45193'>jfd</a>              45193 libdb/sqlite3.c     assert( isOpen(pPager-&gt;jfd) || pagerUseWal(pPager) );</span>
+<span class='curline'><a href='../S/185.html#L45496'>jfd</a>              45496 libdb/sqlite3.c   pPager-&gt;jfd =  (sqlite3_file*)(pPtr += journalFileSize);</span>
+<span class='curline'><a href='../S/185.html#L45498'>jfd</a>              45498 libdb/sqlite3.c   assert( EIGHT_BYTE_ALIGNMENT(pPager-&gt;jfd) );</span>
+<span class='curline'><a href='../S/185.html#L45731'>jfd</a>              45731 libdb/sqlite3.c   int jrnlOpen = !!isOpen(pPager-&gt;jfd);</span>
+<span class='curline'><a href='../S/185.html#L45737'>jfd</a>              45737 libdb/sqlite3.c   assert( jrnlOpen==0 || ( sqlite3OsDeviceCharacteristics(pPager-&gt;jfd) &amp;</span>
+<span class='curline'><a href='../S/185.html#L45786'>jfd</a>              45786 libdb/sqlite3.c             rc = sqlite3OsOpen(pVfs, pPager-&gt;zJournal, pPager-&gt;jfd, f, &amp;f);</span>
+<span class='curline'><a href='../S/185.html#L45790'>jfd</a>              45790 libdb/sqlite3.c             rc = sqlite3OsRead(pPager-&gt;jfd, (void *)&amp;first, 1, 0);</span>
+<span class='curline'><a href='../S/185.html#L45795'>jfd</a>              45795 libdb/sqlite3.c               sqlite3OsClose(pPager-&gt;jfd);</span>
+<span class='curline'><a href='../S/185.html#L45918'>jfd</a>              45918 libdb/sqlite3.c       if( !isOpen(pPager-&gt;jfd) ){</span>
+<span class='curline'><a href='../S/185.html#L45927'>jfd</a>              45927 libdb/sqlite3.c           rc = sqlite3OsOpen(pVfs, pPager-&gt;zJournal, pPager-&gt;jfd, f, &amp;fout);</span>
+<span class='curline'><a href='../S/185.html#L45928'>jfd</a>              45928 libdb/sqlite3.c           assert( rc!=SQLITE_OK || isOpen(pPager-&gt;jfd) );</span>
+<span class='curline'><a href='../S/185.html#L45931'>jfd</a>              45931 libdb/sqlite3.c             sqlite3OsClose(pPager-&gt;jfd);</span>
+<span class='curline'><a href='../S/185.html#L45944'>jfd</a>              45944 libdb/sqlite3.c       if( isOpen(pPager-&gt;jfd) ){</span>
+<span class='curline'><a href='../S/185.html#L46373'>jfd</a>              46373 libdb/sqlite3.c     if( !isOpen(pPager-&gt;jfd) ){</span>
+<span class='curline'><a href='../S/185.html#L46375'>jfd</a>              46375 libdb/sqlite3.c         sqlite3MemJournalOpen(pPager-&gt;jfd);</span>
+<span class='curline'><a href='../S/185.html#L46390'>jfd</a>              46390 libdb/sqlite3.c               pVfs, pPager-&gt;zJournal, pPager-&gt;jfd, flags, jrnlBufferSize(pPager)</span>
+<span class='curline'><a href='../S/185.html#L46393'>jfd</a>              46393 libdb/sqlite3.c           rc = sqlite3OsOpen(pVfs, pPager-&gt;zJournal, pPager-&gt;jfd, flags, 0);</span>
+<span class='curline'><a href='../S/185.html#L46397'>jfd</a>              46397 libdb/sqlite3.c       assert( rc!=SQLITE_OK || isOpen(pPager-&gt;jfd) );</span>
+<span class='curline'><a href='../S/185.html#L46565'>jfd</a>              46565 libdb/sqlite3.c       if( pPg-&gt;pgno&lt;=pPager-&gt;dbOrigSize &amp;&amp; isOpen(pPager-&gt;jfd) ){</span>
+<span class='curline'><a href='../S/185.html#L46588'>jfd</a>              46588 libdb/sqlite3.c         rc = write32bits(pPager-&gt;jfd, iOff, pPg-&gt;pgno);</span>
+<span class='curline'><a href='../S/185.html#L46590'>jfd</a>              46590 libdb/sqlite3.c         rc = sqlite3OsWrite(pPager-&gt;jfd, pData2, pPager-&gt;pageSize, iOff+4);</span>
+<span class='curline'><a href='../S/185.html#L46592'>jfd</a>              46592 libdb/sqlite3.c         rc = write32bits(pPager-&gt;jfd, iOff+pPager-&gt;pageSize+4, cksum);</span>
+<span class='curline'><a href='../S/185.html#L47037'>jfd</a>              47037 libdb/sqlite3.c       assert( isOpen(pPager-&gt;jfd) </span>
+<span class='curline'><a href='../S/185.html#L47041'>jfd</a>              47041 libdb/sqlite3.c       if( !zMaster &amp;&amp; isOpen(pPager-&gt;jfd) </span>
+<span class='curline'><a href='../S/185.html#L47054'>jfd</a>              47054 libdb/sqlite3.c         rc = sqlite3JournalCreate(pPager-&gt;jfd);</span>
+<span class='curline'><a href='../S/185.html#L47218'>jfd</a>              47218 libdb/sqlite3.c   }else if( !isOpen(pPager-&gt;jfd) || pPager-&gt;eState==PAGER_WRITER_LOCKED ){</span>
+<span class='curline'><a href='../S/185.html#L47369'>jfd</a>              47369 libdb/sqlite3.c       if( isOpen(pPager-&gt;jfd) &amp;&amp; pPager-&gt;journalOff&gt;0 ){</span>
+<span class='curline'><a href='../S/185.html#L47458'>jfd</a>              47458 libdb/sqlite3.c     else if( pagerUseWal(pPager) || isOpen(pPager-&gt;jfd) ){</span>
+<span class='curline'><a href='../S/185.html#L47832'>jfd</a>              47832 libdb/sqlite3.c       sqlite3OsClose(pPager-&gt;jfd);</span>
+<span class='curline'><a href='../S/185.html#L47878'>jfd</a>              47878 libdb/sqlite3.c   if( NEVER(isOpen(pPager-&gt;jfd) &amp;&amp; pPager-&gt;journalOff&gt;0) ) return 0;</span>
+<span class='curline'><a href='../S/185.html#L48033'>jfd</a>              48033 libdb/sqlite3.c     sqlite3OsClose(pPager-&gt;jfd);</span>
+</pre>
+</body>
+</html>

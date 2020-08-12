@@ -1,0 +1,254 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>libdb/bt_overflow.c</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/400.html'>libdb</a>/bt_overflow.c</h2>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L82'>[^]</a><a href='#L191'>[v]</a>[top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L82' title='Defined at 82.'>__ovfl_get</a></li>
+<li><a href='#L139' title='Defined at 139.'>__ovfl_put</a></li>
+<li><a href='#L191' title='Defined at 191.'>__ovfl_delete</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*-</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * Copyright (c) 1990, 1993, 1994</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *  The Regents of the University of California.  All rights reserved.</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> *</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> * This code is derived from software contributed to Berkeley by</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> * Mike Olson.</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> *</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * Redistribution and use in source and binary forms, with or without</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * modification, are permitted provided that the following conditions</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> * are met:</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> * 1. Redistributions of source code must retain the above copyright</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> *    notice, this list of conditions and the following disclaimer.</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * 2. Redistributions in binary form must reproduce the above copyright</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> *    notice, this list of conditions and the following disclaimer in the</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> *    documentation and/or other materials provided with the distribution.</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> * 3. Neither the name of the University nor the names of its contributors</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> *    may be used to endorse or promote products derived from this software</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> *    without specific prior written permission.</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> *</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'> * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'> * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'> * ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE</em>
+<a id='L24' name='L24'></a>  24 <em class='comment'> * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL</em>
+<a id='L25' name='L25'></a>  25 <em class='comment'> * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS</em>
+<a id='L26' name='L26'></a>  26 <em class='comment'> * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)</em>
+<a id='L27' name='L27'></a>  27 <em class='comment'> * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT</em>
+<a id='L28' name='L28'></a>  28 <em class='comment'> * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY</em>
+<a id='L29' name='L29'></a>  29 <em class='comment'> * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF</em>
+<a id='L30' name='L30'></a>  30 <em class='comment'> * SUCH DAMAGE.</em>
+<a id='L31' name='L31'></a>  31 <em class='comment'> */</em>
+<a id='L32' name='L32'></a>  32 
+<a id='L33' name='L33'></a>  33 <em class='sharp'>#if</em> <strong class='reserved'>defined</strong>(<a href='../Y/373.html' title='Multiple used in 15 places.'>LIBC_SCCS</a>) &amp;&amp; !<strong class='reserved'>defined</strong>(<a href='../Y/4016.html' title='Multiple used in 16 places.'>lint</a>)
+<a id='L34' name='L34'></a>  34 <strong class='reserved'>static</strong> <strong class='reserved'>char</strong> <a href='../Y/6637.html' title='Multiple used in 15 places.'>sccsid</a>[] = "@(#)bt_overflow.c   8.5 (Berkeley) 7/16/94";
+<a id='L35' name='L35'></a>  35 <em class='sharp'>#endif</em> <em class='comment'>/* LIBC_SCCS and not lint */</em>
+<a id='L36' name='L36'></a>  36 
+<a id='L37' name='L37'></a>  37 <em class='sharp'>#ifdef</em> <a href='../Y/251.html' title='Multiple used in 98 places.'>HAVE_CONFIG_H</a>
+<a id='L38' name='L38'></a>  38 <em class='sharp'>#include</em> &lt;config.h&gt;
+<a id='L39' name='L39'></a>  39 <em class='sharp'>#endif</em>
+<a id='L40' name='L40'></a>  40 <em class='sharp'>#include</em> &lt;stdio.h&gt;
+<a id='L41' name='L41'></a>  41 <em class='sharp'>#ifdef</em> <a href='../Y/738.html' title='Multiple used in 61 places.'>STDC_HEADERS</a>
+<a id='L42' name='L42'></a>  42 <em class='sharp'>#include</em> &lt;stdlib.h&gt;
+<a id='L43' name='L43'></a>  43 <em class='sharp'>#endif</em>
+<a id='L44' name='L44'></a>  44 <em class='sharp'>#ifdef</em> <a href='../Y/303.html' title='Multiple used in 57 places.'>HAVE_STRING_H</a>
+<a id='L45' name='L45'></a>  45 <em class='sharp'>#include</em> &lt;string.h&gt;
+<a id='L46' name='L46'></a>  46 <em class='sharp'>#else</em>
+<a id='L47' name='L47'></a>  47 <em class='sharp'>#include</em> &lt;strings.h&gt;
+<a id='L48' name='L48'></a>  48 <em class='sharp'>#endif</em>
+<a id='L49' name='L49'></a>  49 
+<a id='L50' name='L50'></a>  50 <em class='sharp'>#include</em> "<a href='177.html'>db.h</a>"
+<a id='L51' name='L51'></a>  51 <em class='sharp'>#include</em> "<a href='161.html'>btree.h</a>"
+<a id='L52' name='L52'></a>  52 
+<a id='L53' name='L53'></a>  53 <em class='comment'>/**</em>
+<a id='L54' name='L54'></a>  54 <em class='comment'> * Big key/data code.</em>
+<a id='L55' name='L55'></a>  55 <em class='comment'> *</em>
+<a id='L56' name='L56'></a>  56 <em class='comment'> * Big key and data entries are stored on linked lists of pages.  The initial</em>
+<a id='L57' name='L57'></a>  57 <em class='comment'> * reference is byte string stored with the key or data and is the page number</em>
+<a id='L58' name='L58'></a>  58 <em class='comment'> * and size.  The actual record is stored in a chain of pages linked by the</em>
+<a id='L59' name='L59'></a>  59 <em class='comment'> * nextpg field of the PAGE header.</em>
+<a id='L60' name='L60'></a>  60 <em class='comment'> *</em>
+<a id='L61' name='L61'></a>  61 <em class='comment'> * The first page of the chain has a special property.  If the record is used</em>
+<a id='L62' name='L62'></a>  62 <em class='comment'> * by an internal page, it cannot be deleted and the P_PRESERVE bit will be set</em>
+<a id='L63' name='L63'></a>  63 <em class='comment'> * in the header.</em>
+<a id='L64' name='L64'></a>  64 <em class='comment'> *</em>
+<a id='L65' name='L65'></a>  65 <em class='comment'> * XXX</em>
+<a id='L66' name='L66'></a>  66 <em class='comment'> * A single DBT is written to each chain, so a lot of space on the last page</em>
+<a id='L67' name='L67'></a>  67 <em class='comment'> * is wasted.  This is a fairly major bug for some data sets.</em>
+<a id='L68' name='L68'></a>  68 <em class='comment'> */</em>
+<a id='L69' name='L69'></a>  69 
+<a id='L70' name='L70'></a>  70 <em class='comment'>/**</em>
+<a id='L71' name='L71'></a>  71 <em class='comment'> * __OVFL_GET -- Get an overflow key/data item.</em>
+<a id='L72' name='L72'></a>  72 <em class='comment'> *</em>
+<a id='L73' name='L73'></a>  73 <em class='comment'> *  @param t    tree</em>
+<a id='L74' name='L74'></a>  74 <em class='comment'> *  @param p    pointer to {pgno_t, u_int32_t}</em>
+<a id='L75' name='L75'></a>  75 <em class='comment'> *  @param ssz</em>
+<a id='L76' name='L76'></a>  76 <em class='comment'> *  @param buf  storage address</em>
+<a id='L77' name='L77'></a>  77 <em class='comment'> *  @param bufsz    storage size</em>
+<a id='L78' name='L78'></a>  78 <em class='comment'> *</em>
+<a id='L79' name='L79'></a>  79 <em class='comment'> * @return RET_ERROR, RET_SUCCESS</em>
+<a id='L80' name='L80'></a>  80 <em class='comment'> */</em>
+<a id='L81' name='L81'></a>  81 <strong class='reserved'>int</strong>
+<a id='L82' name='L82'></a>  82 <a href='../R/3266.html' title='Multiple referred from 4 places.'>__ovfl_get</a>(<a href='../Y/7096.html' title='Multiple used in 656 places.'>t</a>, <a href='../Y/5095.html' title='Multiple used in 7848 places.'>p</a>, <a href='../Y/6909.html' title='Multiple used in 3 places.'>ssz</a>, <a href='../Y/1937.html' title='Multiple used in 357 places.'>buf</a>, <a href='../Y/1945.html' title='Multiple used in 4 places.'>bufsz</a>)
+<a id='L83' name='L83'></a>  83     <a href='../S/161.html#L421' title='Defined at 421 in libdb/btree.h.'>BTREE</a> *<a href='../Y/7096.html' title='Multiple used in 656 places.'>t</a>;
+<a id='L84' name='L84'></a>  84     <strong class='reserved'>void</strong> *<a href='../Y/5095.html' title='Multiple used in 7848 places.'>p</a>;
+<a id='L85' name='L85'></a>  85     <a href='../Y/6751.html' title='Multiple used in 206 places.'>size_t</a> *<a href='../Y/6909.html' title='Multiple used in 3 places.'>ssz</a>;
+<a id='L86' name='L86'></a>  86     <strong class='reserved'>void</strong> **<a href='../Y/1937.html' title='Multiple used in 357 places.'>buf</a>;
+<a id='L87' name='L87'></a>  87     <a href='../Y/6751.html' title='Multiple used in 206 places.'>size_t</a> *<a href='../Y/1945.html' title='Multiple used in 4 places.'>bufsz</a>;
+<a id='L88' name='L88'></a>  88 <em class='brace'>{</em>
+<a id='L89' name='L89'></a>  89     <a href='../S/161.html#L95' title='Defined at 95 in libdb/btree.h.'>PAGE</a> *<a href='../Y/3056.html' title='Multiple used in 901 places.'>h</a>;
+<a id='L90' name='L90'></a>  90     <a href='../S/177.html#L54' title='Defined at 54 in libdb/db.h.'>pgno_t</a> <a href='../Y/5860.html' title='Multiple used in 129 places.'>pg</a>;
+<a id='L91' name='L91'></a>  91     <a href='../Y/6751.html' title='Multiple used in 206 places.'>size_t</a> <a href='../Y/4784.html' title='Multiple used in 11 places.'>nb</a>, <a href='../Y/5974.html' title='Multiple used in 19 places.'>plen</a>;
+<a id='L92' name='L92'></a>  92     <a href='../Y/7292.html' title='Multiple used in 65 places.'>u_int32_t</a> <a href='../Y/7056.html' title='Multiple used in 148 places.'>sz</a>;
+<a id='L93' name='L93'></a>  93 
+<a id='L94' name='L94'></a>  94     <a href='../D/5003.html' title='Multiple defined in 2 places.'>memmove</a>(&amp;<a href='../Y/5860.html' title='Multiple used in 129 places.'>pg</a>, <a href='../Y/5095.html' title='Multiple used in 7848 places.'>p</a>, <strong class='reserved'>sizeof</strong>(<a href='../S/177.html#L54' title='Defined at 54 in libdb/db.h.'>pgno_t</a>));
+<a id='L95' name='L95'></a>  95     <a href='../D/5003.html' title='Multiple defined in 2 places.'>memmove</a>(&amp;<a href='../Y/7056.html' title='Multiple used in 148 places.'>sz</a>, (<strong class='reserved'>char</strong> *)<a href='../Y/5095.html' title='Multiple used in 7848 places.'>p</a> + <strong class='reserved'>sizeof</strong>(<a href='../S/177.html#L54' title='Defined at 54 in libdb/db.h.'>pgno_t</a>), <strong class='reserved'>sizeof</strong>(<a href='../Y/7292.html' title='Multiple used in 65 places.'>u_int32_t</a>));
+<a id='L96' name='L96'></a>  96     *<a href='../Y/6909.html' title='Multiple used in 3 places.'>ssz</a> = <a href='../Y/7056.html' title='Multiple used in 148 places.'>sz</a>;
+<a id='L97' name='L97'></a>  97 
+<a id='L98' name='L98'></a>  98 <em class='sharp'>#ifdef</em> <a href='../Y/77.html' title='Multiple used in 26 places.'>DEBUG</a>
+<a id='L99' name='L99'></a>  99     <strong class='reserved'>if</strong> (<a href='../Y/5860.html' title='Multiple used in 129 places.'>pg</a> == <a href='../S/161.html#L57' title='Defined at 57 in libdb/btree.h.'>P_INVALID</a> || <a href='../Y/7056.html' title='Multiple used in 148 places.'>sz</a> == 0)
+<a id='L100' name='L100'></a> 100         <a href='../Y/1346.html' title='Multiple used in 17 places.'>abort</a>();
+<a id='L101' name='L101'></a> 101 <em class='sharp'>#endif</em>
+<a id='L102' name='L102'></a> 102     <em class='comment'>/* Make the buffer bigger as necessary. */</em>
+<a id='L103' name='L103'></a> 103     <strong class='reserved'>if</strong> (*<a href='../Y/1945.html' title='Multiple used in 4 places.'>bufsz</a> &lt; <a href='../Y/7056.html' title='Multiple used in 148 places.'>sz</a>) <em class='brace'>{</em>
+<a id='L104' name='L104'></a> 104         *<a href='../Y/1937.html' title='Multiple used in 357 places.'>buf</a> = (<strong class='reserved'>char</strong> *)(*<a href='../Y/1937.html' title='Multiple used in 357 places.'>buf</a> == <a href='../D/1121.html' title='Multiple defined in 3 places.'>NULL</a> ? <a href='../Y/4155.html' title='Multiple used in 52 places.'>malloc</a>(<a href='../Y/7056.html' title='Multiple used in 148 places.'>sz</a>) : <a href='../Y/6335.html' title='Multiple used in 29 places.'>realloc</a>(*<a href='../Y/1937.html' title='Multiple used in 357 places.'>buf</a>, <a href='../Y/7056.html' title='Multiple used in 148 places.'>sz</a>));
+<a id='L105' name='L105'></a> 105         <strong class='reserved'>if</strong> (*<a href='../Y/1937.html' title='Multiple used in 357 places.'>buf</a> == <a href='../D/1121.html' title='Multiple defined in 3 places.'>NULL</a>)
+<a id='L106' name='L106'></a> 106             <strong class='reserved'>return</strong> (<a href='../S/177.html#L47' title='Defined at 47 in libdb/db.h.'>RET_ERROR</a>);
+<a id='L107' name='L107'></a> 107         *<a href='../Y/1945.html' title='Multiple used in 4 places.'>bufsz</a> = <a href='../Y/7056.html' title='Multiple used in 148 places.'>sz</a>;
+<a id='L108' name='L108'></a> 108     <em class='brace'>}</em>
+<a id='L109' name='L109'></a> 109 
+<a id='L110' name='L110'></a> 110     <em class='comment'>/*</em>
+<a id='L111' name='L111'></a> 111 <em class='comment'>     * Step through the linked list of pages, copying the data on each one</em>
+<a id='L112' name='L112'></a> 112 <em class='comment'>     * into the buffer.  Never copy more than the data's length.</em>
+<a id='L113' name='L113'></a> 113 <em class='comment'>     */</em>
+<a id='L114' name='L114'></a> 114     <a href='../Y/5974.html' title='Multiple used in 19 places.'>plen</a> = <a href='../Y/7096.html' title='Multiple used in 656 places.'>t</a>-&gt;<a href='../Y/1919.html' title='Multiple used in 24 places.'>bt_psize</a> - <a href='../S/161.html#L98' title='Defined at 98 in libdb/btree.h.'>BTDATAOFF</a>;
+<a id='L115' name='L115'></a> 115     <strong class='reserved'>for</strong> (<a href='../Y/5095.html' title='Multiple used in 7848 places.'>p</a> = *<a href='../Y/1937.html' title='Multiple used in 357 places.'>buf</a>;; <a href='../Y/5095.html' title='Multiple used in 7848 places.'>p</a> = (<strong class='reserved'>char</strong> *)<a href='../Y/5095.html' title='Multiple used in 7848 places.'>p</a> + <a href='../Y/4784.html' title='Multiple used in 11 places.'>nb</a>, <a href='../Y/5860.html' title='Multiple used in 129 places.'>pg</a> = <a href='../Y/3056.html' title='Multiple used in 901 places.'>h</a>-&gt;<a href='../Y/4871.html' title='Multiple used in 33 places.'>nextpg</a>) <em class='brace'>{</em>
+<a id='L116' name='L116'></a> 116         <strong class='reserved'>if</strong> ((<a href='../Y/3056.html' title='Multiple used in 901 places.'>h</a> = <a href='../S/181.html#L180' title='Defined at 180 in libdb/mpool.c.'>mpool_get</a>(<a href='../Y/7096.html' title='Multiple used in 656 places.'>t</a>-&gt;<a href='../Y/1911.html' title='Multiple used in 129 places.'>bt_mp</a>, <a href='../Y/5860.html' title='Multiple used in 129 places.'>pg</a>, 0)) == <a href='../D/1121.html' title='Multiple defined in 3 places.'>NULL</a>)
+<a id='L117' name='L117'></a> 117             <strong class='reserved'>return</strong> (<a href='../S/177.html#L47' title='Defined at 47 in libdb/db.h.'>RET_ERROR</a>);
+<a id='L118' name='L118'></a> 118 
+<a id='L119' name='L119'></a> 119         <a href='../Y/4784.html' title='Multiple used in 11 places.'>nb</a> = <a href='../D/1041.html' title='Multiple defined in 6 places.'>MIN</a>(<a href='../Y/7056.html' title='Multiple used in 148 places.'>sz</a>, <a href='../Y/5974.html' title='Multiple used in 19 places.'>plen</a>);
+<a id='L120' name='L120'></a> 120         <a href='../D/5003.html' title='Multiple defined in 2 places.'>memmove</a>(<a href='../Y/5095.html' title='Multiple used in 7848 places.'>p</a>, (<strong class='reserved'>char</strong> *)<a href='../Y/3056.html' title='Multiple used in 901 places.'>h</a> + <a href='../S/161.html#L98' title='Defined at 98 in libdb/btree.h.'>BTDATAOFF</a>, <a href='../Y/4784.html' title='Multiple used in 11 places.'>nb</a>);
+<a id='L121' name='L121'></a> 121         <a href='../S/181.html#L295' title='Defined at 295 in libdb/mpool.c.'>mpool_put</a>(<a href='../Y/7096.html' title='Multiple used in 656 places.'>t</a>-&gt;<a href='../Y/1911.html' title='Multiple used in 129 places.'>bt_mp</a>, <a href='../Y/3056.html' title='Multiple used in 901 places.'>h</a>, 0);
+<a id='L122' name='L122'></a> 122 
+<a id='L123' name='L123'></a> 123         <strong class='reserved'>if</strong> ((<a href='../Y/7056.html' title='Multiple used in 148 places.'>sz</a> -= <a href='../Y/4784.html' title='Multiple used in 11 places.'>nb</a>) == 0)
+<a id='L124' name='L124'></a> 124             <strong class='reserved'>break</strong>;
+<a id='L125' name='L125'></a> 125     <em class='brace'>}</em>
+<a id='L126' name='L126'></a> 126     <strong class='reserved'>return</strong> (<a href='../S/177.html#L48' title='Defined at 48 in libdb/db.h.'>RET_SUCCESS</a>);
+<a id='L127' name='L127'></a> 127 <em class='brace'>}</em>
+<a id='L128' name='L128'></a> 128 
+<a id='L129' name='L129'></a> 129 <em class='comment'>/**</em>
+<a id='L130' name='L130'></a> 130 <em class='comment'> * __OVFL_PUT -- Store an overflow key/data item.</em>
+<a id='L131' name='L131'></a> 131 <em class='comment'> *</em>
+<a id='L132' name='L132'></a> 132 <em class='comment'> *  @param t    tree</em>
+<a id='L133' name='L133'></a> 133 <em class='comment'> *  @param dbt  DBT to store</em>
+<a id='L134' name='L134'></a> 134 <em class='comment'> *  @param pg   storage page number</em>
+<a id='L135' name='L135'></a> 135 <em class='comment'> *</em>
+<a id='L136' name='L136'></a> 136 <em class='comment'> * @return RET_ERROR, RET_SUCCESS</em>
+<a id='L137' name='L137'></a> 137 <em class='comment'> */</em>
+<a id='L138' name='L138'></a> 138 <strong class='reserved'>int</strong>
+<a id='L139' name='L139'></a> 139 <a href='../R/3267.html' title='Multiple referred from 3 places.'>__ovfl_put</a>(<a href='../Y/7096.html' title='Multiple used in 656 places.'>t</a>, <a href='../Y/2371.html' title='Multiple used in 3 places.'>dbt</a>, <a href='../Y/5860.html' title='Multiple used in 129 places.'>pg</a>)
+<a id='L140' name='L140'></a> 140     <a href='../S/161.html#L421' title='Defined at 421 in libdb/btree.h.'>BTREE</a> *<a href='../Y/7096.html' title='Multiple used in 656 places.'>t</a>;
+<a id='L141' name='L141'></a> 141     <strong class='reserved'>const</strong> <a href='../S/177.html#L68' title='Defined at 68 in libdb/db.h.'>DBT</a> *<a href='../Y/2371.html' title='Multiple used in 3 places.'>dbt</a>;
+<a id='L142' name='L142'></a> 142     <a href='../S/177.html#L54' title='Defined at 54 in libdb/db.h.'>pgno_t</a> *<a href='../Y/5860.html' title='Multiple used in 129 places.'>pg</a>;
+<a id='L143' name='L143'></a> 143 <em class='brace'>{</em>
+<a id='L144' name='L144'></a> 144     <a href='../S/161.html#L95' title='Defined at 95 in libdb/btree.h.'>PAGE</a> *<a href='../Y/3056.html' title='Multiple used in 901 places.'>h</a>, *<a href='../Y/3923.html' title='Multiple used in 64 places.'>last</a>;
+<a id='L145' name='L145'></a> 145     <strong class='reserved'>void</strong> *<a href='../Y/5095.html' title='Multiple used in 7848 places.'>p</a>;
+<a id='L146' name='L146'></a> 146     <a href='../S/177.html#L54' title='Defined at 54 in libdb/db.h.'>pgno_t</a> <a href='../Y/4929.html' title='Multiple used in 15 places.'>npg</a>;
+<a id='L147' name='L147'></a> 147     <a href='../Y/6751.html' title='Multiple used in 206 places.'>size_t</a> <a href='../Y/4784.html' title='Multiple used in 11 places.'>nb</a>, <a href='../Y/5974.html' title='Multiple used in 19 places.'>plen</a>;
+<a id='L148' name='L148'></a> 148     <a href='../Y/7292.html' title='Multiple used in 65 places.'>u_int32_t</a> <a href='../Y/7056.html' title='Multiple used in 148 places.'>sz</a>;
+<a id='L149' name='L149'></a> 149 
+<a id='L150' name='L150'></a> 150     <em class='comment'>/*</em>
+<a id='L151' name='L151'></a> 151 <em class='comment'>     * Allocate pages and copy the key/data record into them.  Store the</em>
+<a id='L152' name='L152'></a> 152 <em class='comment'>     * number of the first page in the chain.</em>
+<a id='L153' name='L153'></a> 153 <em class='comment'>     */</em>
+<a id='L154' name='L154'></a> 154     <a href='../Y/5974.html' title='Multiple used in 19 places.'>plen</a> = <a href='../Y/7096.html' title='Multiple used in 656 places.'>t</a>-&gt;<a href='../Y/1919.html' title='Multiple used in 24 places.'>bt_psize</a> - <a href='../S/161.html#L98' title='Defined at 98 in libdb/btree.h.'>BTDATAOFF</a>;
+<a id='L155' name='L155'></a> 155     <strong class='reserved'>for</strong> (<a href='../Y/3923.html' title='Multiple used in 64 places.'>last</a> = <a href='../D/1121.html' title='Multiple defined in 3 places.'>NULL</a>, <a href='../Y/5095.html' title='Multiple used in 7848 places.'>p</a> = <a href='../Y/2371.html' title='Multiple used in 3 places.'>dbt</a>-&gt;<a href='../S/126.html#L24' title='Defined at 24 in htags/incop.h.'>data</a>, <a href='../Y/7056.html' title='Multiple used in 148 places.'>sz</a> = <a href='../Y/2371.html' title='Multiple used in 3 places.'>dbt</a>-&gt;<a href='../Y/6747.html' title='Multiple used in 449 places.'>size</a>;;
+<a id='L156' name='L156'></a> 156         <a href='../Y/5095.html' title='Multiple used in 7848 places.'>p</a> = (<strong class='reserved'>char</strong> *)<a href='../Y/5095.html' title='Multiple used in 7848 places.'>p</a> + <a href='../Y/5974.html' title='Multiple used in 19 places.'>plen</a>, <a href='../Y/3923.html' title='Multiple used in 64 places.'>last</a> = <a href='../Y/3056.html' title='Multiple used in 901 places.'>h</a>) <em class='brace'>{</em>
+<a id='L157' name='L157'></a> 157         <strong class='reserved'>if</strong> ((<a href='../Y/3056.html' title='Multiple used in 901 places.'>h</a> = <a href='../S/169.html#L80' title='Defined at 80 in libdb/bt_page.c.'>__bt_new</a>(<a href='../Y/7096.html' title='Multiple used in 656 places.'>t</a>, &amp;<a href='../Y/4929.html' title='Multiple used in 15 places.'>npg</a>)) == <a href='../D/1121.html' title='Multiple defined in 3 places.'>NULL</a>)
+<a id='L158' name='L158'></a> 158             <strong class='reserved'>return</strong> (<a href='../S/177.html#L47' title='Defined at 47 in libdb/db.h.'>RET_ERROR</a>);
+<a id='L159' name='L159'></a> 159 
+<a id='L160' name='L160'></a> 160         <a href='../Y/3056.html' title='Multiple used in 901 places.'>h</a>-&gt;<a href='../Y/5865.html' title='Multiple used in 381 places.'>pgno</a> = <a href='../Y/4929.html' title='Multiple used in 15 places.'>npg</a>;
+<a id='L161' name='L161'></a> 161         <a href='../Y/3056.html' title='Multiple used in 901 places.'>h</a>-&gt;<a href='../Y/4871.html' title='Multiple used in 33 places.'>nextpg</a> = <a href='../Y/3056.html' title='Multiple used in 901 places.'>h</a>-&gt;<a href='../Y/6157.html' title='Multiple used in 29 places.'>prevpg</a> = <a href='../S/161.html#L57' title='Defined at 57 in libdb/btree.h.'>P_INVALID</a>;
+<a id='L162' name='L162'></a> 162         <a href='../Y/3056.html' title='Multiple used in 901 places.'>h</a>-&gt;<a href='../Y/2894.html' title='Multiple used in 1201 places.'>flags</a> = <a href='../Y/538.html' title='Multiple used in 5 places.'>P_OVERFLOW</a>;
+<a id='L163' name='L163'></a> 163         <a href='../Y/3056.html' title='Multiple used in 901 places.'>h</a>-&gt;<a href='../Y/4077.html' title='Multiple used in 34 places.'>lower</a> = <a href='../Y/3056.html' title='Multiple used in 901 places.'>h</a>-&gt;<a href='../Y/7340.html' title='Multiple used in 46 places.'>upper</a> = 0;
+<a id='L164' name='L164'></a> 164 
+<a id='L165' name='L165'></a> 165         <a href='../Y/4784.html' title='Multiple used in 11 places.'>nb</a> = <a href='../D/1041.html' title='Multiple defined in 6 places.'>MIN</a>(<a href='../Y/7056.html' title='Multiple used in 148 places.'>sz</a>, <a href='../Y/5974.html' title='Multiple used in 19 places.'>plen</a>);
+<a id='L166' name='L166'></a> 166         <a href='../D/5003.html' title='Multiple defined in 2 places.'>memmove</a>((<strong class='reserved'>char</strong> *)<a href='../Y/3056.html' title='Multiple used in 901 places.'>h</a> + <a href='../S/161.html#L98' title='Defined at 98 in libdb/btree.h.'>BTDATAOFF</a>, <a href='../Y/5095.html' title='Multiple used in 7848 places.'>p</a>, <a href='../Y/4784.html' title='Multiple used in 11 places.'>nb</a>);
+<a id='L167' name='L167'></a> 167 
+<a id='L168' name='L168'></a> 168         <strong class='reserved'>if</strong> (<a href='../Y/3923.html' title='Multiple used in 64 places.'>last</a>) <em class='brace'>{</em>
+<a id='L169' name='L169'></a> 169             <a href='../Y/3923.html' title='Multiple used in 64 places.'>last</a>-&gt;<a href='../Y/4871.html' title='Multiple used in 33 places.'>nextpg</a> = <a href='../Y/3056.html' title='Multiple used in 901 places.'>h</a>-&gt;<a href='../Y/5865.html' title='Multiple used in 381 places.'>pgno</a>;
+<a id='L170' name='L170'></a> 170             <a href='../S/181.html#L295' title='Defined at 295 in libdb/mpool.c.'>mpool_put</a>(<a href='../Y/7096.html' title='Multiple used in 656 places.'>t</a>-&gt;<a href='../Y/1911.html' title='Multiple used in 129 places.'>bt_mp</a>, <a href='../Y/3923.html' title='Multiple used in 64 places.'>last</a>, <a href='../Y/439.html' title='Multiple used in 31 places.'>MPOOL_DIRTY</a>);
+<a id='L171' name='L171'></a> 171         <em class='brace'>}</em> <strong class='reserved'>else</strong>
+<a id='L172' name='L172'></a> 172             *<a href='../Y/5860.html' title='Multiple used in 129 places.'>pg</a> = <a href='../Y/3056.html' title='Multiple used in 901 places.'>h</a>-&gt;<a href='../Y/5865.html' title='Multiple used in 381 places.'>pgno</a>;
+<a id='L173' name='L173'></a> 173 
+<a id='L174' name='L174'></a> 174         <strong class='reserved'>if</strong> ((<a href='../Y/7056.html' title='Multiple used in 148 places.'>sz</a> -= <a href='../Y/4784.html' title='Multiple used in 11 places.'>nb</a>) == 0) <em class='brace'>{</em>
+<a id='L175' name='L175'></a> 175             <a href='../S/181.html#L295' title='Defined at 295 in libdb/mpool.c.'>mpool_put</a>(<a href='../Y/7096.html' title='Multiple used in 656 places.'>t</a>-&gt;<a href='../Y/1911.html' title='Multiple used in 129 places.'>bt_mp</a>, <a href='../Y/3056.html' title='Multiple used in 901 places.'>h</a>, <a href='../Y/439.html' title='Multiple used in 31 places.'>MPOOL_DIRTY</a>);
+<a id='L176' name='L176'></a> 176             <strong class='reserved'>break</strong>;
+<a id='L177' name='L177'></a> 177         <em class='brace'>}</em>
+<a id='L178' name='L178'></a> 178     <em class='brace'>}</em>
+<a id='L179' name='L179'></a> 179     <strong class='reserved'>return</strong> (<a href='../S/177.html#L48' title='Defined at 48 in libdb/db.h.'>RET_SUCCESS</a>);
+<a id='L180' name='L180'></a> 180 <em class='brace'>}</em>
+<a id='L181' name='L181'></a> 181 
+<a id='L182' name='L182'></a> 182 <em class='comment'>/**</em>
+<a id='L183' name='L183'></a> 183 <em class='comment'> * __OVFL_DELETE -- Delete an overflow chain.</em>
+<a id='L184' name='L184'></a> 184 <em class='comment'> *</em>
+<a id='L185' name='L185'></a> 185 <em class='comment'> *  @param t    tree</em>
+<a id='L186' name='L186'></a> 186 <em class='comment'> *  @param p    pointer to {pgno_t, u_int32_t}</em>
+<a id='L187' name='L187'></a> 187 <em class='comment'> *</em>
+<a id='L188' name='L188'></a> 188 <em class='comment'> * @return RET_ERROR, RET_SUCCESS</em>
+<a id='L189' name='L189'></a> 189 <em class='comment'> */</em>
+<a id='L190' name='L190'></a> 190 <strong class='reserved'>int</strong>
+<a id='L191' name='L191'></a> 191 <a href='../R/3265.html' title='Multiple referred from 4 places.'>__ovfl_delete</a>(<a href='../Y/7096.html' title='Multiple used in 656 places.'>t</a>, <a href='../Y/5095.html' title='Multiple used in 7848 places.'>p</a>)
+<a id='L192' name='L192'></a> 192     <a href='../S/161.html#L421' title='Defined at 421 in libdb/btree.h.'>BTREE</a> *<a href='../Y/7096.html' title='Multiple used in 656 places.'>t</a>;
+<a id='L193' name='L193'></a> 193     <strong class='reserved'>void</strong> *<a href='../Y/5095.html' title='Multiple used in 7848 places.'>p</a>;
+<a id='L194' name='L194'></a> 194 <em class='brace'>{</em>
+<a id='L195' name='L195'></a> 195     <a href='../S/161.html#L95' title='Defined at 95 in libdb/btree.h.'>PAGE</a> *<a href='../Y/3056.html' title='Multiple used in 901 places.'>h</a>;
+<a id='L196' name='L196'></a> 196     <a href='../S/177.html#L54' title='Defined at 54 in libdb/db.h.'>pgno_t</a> <a href='../Y/5860.html' title='Multiple used in 129 places.'>pg</a>;
+<a id='L197' name='L197'></a> 197     <a href='../Y/6751.html' title='Multiple used in 206 places.'>size_t</a> <a href='../Y/5974.html' title='Multiple used in 19 places.'>plen</a>;
+<a id='L198' name='L198'></a> 198     <a href='../Y/7292.html' title='Multiple used in 65 places.'>u_int32_t</a> <a href='../Y/7056.html' title='Multiple used in 148 places.'>sz</a>;
+<a id='L199' name='L199'></a> 199 
+<a id='L200' name='L200'></a> 200     <a href='../D/5003.html' title='Multiple defined in 2 places.'>memmove</a>(&amp;<a href='../Y/5860.html' title='Multiple used in 129 places.'>pg</a>, <a href='../Y/5095.html' title='Multiple used in 7848 places.'>p</a>, <strong class='reserved'>sizeof</strong>(<a href='../S/177.html#L54' title='Defined at 54 in libdb/db.h.'>pgno_t</a>));
+<a id='L201' name='L201'></a> 201     <a href='../D/5003.html' title='Multiple defined in 2 places.'>memmove</a>(&amp;<a href='../Y/7056.html' title='Multiple used in 148 places.'>sz</a>, (<strong class='reserved'>char</strong> *)<a href='../Y/5095.html' title='Multiple used in 7848 places.'>p</a> + <strong class='reserved'>sizeof</strong>(<a href='../S/177.html#L54' title='Defined at 54 in libdb/db.h.'>pgno_t</a>), <strong class='reserved'>sizeof</strong>(<a href='../Y/7292.html' title='Multiple used in 65 places.'>u_int32_t</a>));
+<a id='L202' name='L202'></a> 202 
+<a id='L203' name='L203'></a> 203 <em class='sharp'>#ifdef</em> <a href='../Y/77.html' title='Multiple used in 26 places.'>DEBUG</a>
+<a id='L204' name='L204'></a> 204     <strong class='reserved'>if</strong> (<a href='../Y/5860.html' title='Multiple used in 129 places.'>pg</a> == <a href='../S/161.html#L57' title='Defined at 57 in libdb/btree.h.'>P_INVALID</a> || <a href='../Y/7056.html' title='Multiple used in 148 places.'>sz</a> == 0)
+<a id='L205' name='L205'></a> 205         <a href='../Y/1346.html' title='Multiple used in 17 places.'>abort</a>();
+<a id='L206' name='L206'></a> 206 <em class='sharp'>#endif</em>
+<a id='L207' name='L207'></a> 207     <strong class='reserved'>if</strong> ((<a href='../Y/3056.html' title='Multiple used in 901 places.'>h</a> = <a href='../S/181.html#L180' title='Defined at 180 in libdb/mpool.c.'>mpool_get</a>(<a href='../Y/7096.html' title='Multiple used in 656 places.'>t</a>-&gt;<a href='../Y/1911.html' title='Multiple used in 129 places.'>bt_mp</a>, <a href='../Y/5860.html' title='Multiple used in 129 places.'>pg</a>, 0)) == <a href='../D/1121.html' title='Multiple defined in 3 places.'>NULL</a>)
+<a id='L208' name='L208'></a> 208         <strong class='reserved'>return</strong> (<a href='../S/177.html#L47' title='Defined at 47 in libdb/db.h.'>RET_ERROR</a>);
+<a id='L209' name='L209'></a> 209 
+<a id='L210' name='L210'></a> 210     <em class='comment'>/* Don't delete chains used by internal pages. */</em>
+<a id='L211' name='L211'></a> 211     <strong class='reserved'>if</strong> (<a href='../Y/3056.html' title='Multiple used in 901 places.'>h</a>-&gt;<a href='../Y/2894.html' title='Multiple used in 1201 places.'>flags</a> &amp; <a href='../Y/539.html' title='Multiple used in 4 places.'>P_PRESERVE</a>) <em class='brace'>{</em>
+<a id='L212' name='L212'></a> 212         <a href='../S/181.html#L295' title='Defined at 295 in libdb/mpool.c.'>mpool_put</a>(<a href='../Y/7096.html' title='Multiple used in 656 places.'>t</a>-&gt;<a href='../Y/1911.html' title='Multiple used in 129 places.'>bt_mp</a>, <a href='../Y/3056.html' title='Multiple used in 901 places.'>h</a>, 0);
+<a id='L213' name='L213'></a> 213         <strong class='reserved'>return</strong> (<a href='../S/177.html#L48' title='Defined at 48 in libdb/db.h.'>RET_SUCCESS</a>);
+<a id='L214' name='L214'></a> 214     <em class='brace'>}</em>
+<a id='L215' name='L215'></a> 215 
+<a id='L216' name='L216'></a> 216     <em class='comment'>/* Step through the chain, calling the free routine for each page. */</em>
+<a id='L217' name='L217'></a> 217     <strong class='reserved'>for</strong> (<a href='../Y/5974.html' title='Multiple used in 19 places.'>plen</a> = <a href='../Y/7096.html' title='Multiple used in 656 places.'>t</a>-&gt;<a href='../Y/1919.html' title='Multiple used in 24 places.'>bt_psize</a> - <a href='../S/161.html#L98' title='Defined at 98 in libdb/btree.h.'>BTDATAOFF</a>;; <a href='../Y/7056.html' title='Multiple used in 148 places.'>sz</a> -= <a href='../Y/5974.html' title='Multiple used in 19 places.'>plen</a>) <em class='brace'>{</em>
+<a id='L218' name='L218'></a> 218         <a href='../Y/5860.html' title='Multiple used in 129 places.'>pg</a> = <a href='../Y/3056.html' title='Multiple used in 901 places.'>h</a>-&gt;<a href='../Y/4871.html' title='Multiple used in 33 places.'>nextpg</a>;
+<a id='L219' name='L219'></a> 219         <a href='../S/169.html#L56' title='Defined at 56 in libdb/bt_page.c.'>__bt_free</a>(<a href='../Y/7096.html' title='Multiple used in 656 places.'>t</a>, <a href='../Y/3056.html' title='Multiple used in 901 places.'>h</a>);
+<a id='L220' name='L220'></a> 220         <strong class='reserved'>if</strong> (<a href='../Y/7056.html' title='Multiple used in 148 places.'>sz</a> &lt;= <a href='../Y/5974.html' title='Multiple used in 19 places.'>plen</a>)
+<a id='L221' name='L221'></a> 221             <strong class='reserved'>break</strong>;
+<a id='L222' name='L222'></a> 222         <strong class='reserved'>if</strong> ((<a href='../Y/3056.html' title='Multiple used in 901 places.'>h</a> = <a href='../S/181.html#L180' title='Defined at 180 in libdb/mpool.c.'>mpool_get</a>(<a href='../Y/7096.html' title='Multiple used in 656 places.'>t</a>-&gt;<a href='../Y/1911.html' title='Multiple used in 129 places.'>bt_mp</a>, <a href='../Y/5860.html' title='Multiple used in 129 places.'>pg</a>, 0)) == <a href='../D/1121.html' title='Multiple defined in 3 places.'>NULL</a>)
+<a id='L223' name='L223'></a> 223             <strong class='reserved'>return</strong> (<a href='../S/177.html#L47' title='Defined at 47 in libdb/db.h.'>RET_ERROR</a>);
+<a id='L224' name='L224'></a> 224     <em class='brace'>}</em>
+<a id='L225' name='L225'></a> 225     <strong class='reserved'>return</strong> (<a href='../S/177.html#L48' title='Defined at 48 in libdb/db.h.'>RET_SUCCESS</a>);
+<a id='L226' name='L226'></a> 226 <em class='brace'>}</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L82'>[^]</a><a href='#L191'>[v]</a><a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

@@ -1,0 +1,495 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>pMem</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/185.html#L9248'>pMem</a>             9248 libdb/sqlite3.c     Mem *pMem;             /* Used when p4type is P4_MEM */</span>
+<span class='curline'><a href='../S/185.html#L14296'>pMem</a>             14296 libdb/sqlite3.c   Mem *pMem;            /* Memory cell used to store aggregate context */</span>
+<span class='curline'><a href='../S/185.html#L14457'>pMem</a>             14457 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3VdbeMemGrow(Mem *pMem, int n, int preserve);</span>
+<span class='curline'><a href='../S/185.html#L14458'>pMem</a>             14458 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3VdbeMemClearAndResize(Mem *pMem, int n);</span>
+<span class='curline'><a href='../S/185.html#L14495'>pMem</a>             14495 libdb/sqlite3.c SQLITE_PRIVATE   void sqlite3VdbeMemPrettyPrint(Mem *pMem, char *zBuf);</span>
+<span class='curline'><a href='../S/185.html#L14497'>pMem</a>             14497 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3VdbeMemHandleBom(Mem *pMem);</span>
+<span class='curline'><a href='../S/185.html#L22456'>pMem</a>             22456 libdb/sqlite3.c SQLITE_PRIVATE SQLITE_NOINLINE int sqlite3VdbeMemTranslate(Mem *pMem, u8 desiredEnc){</span>
+<span class='curline'><a href='../S/185.html#L22464'>pMem</a>             22464 libdb/sqlite3.c   assert( pMem-&gt;db==0 || sqlite3_mutex_held(pMem-&gt;db-&gt;mutex) );</span>
+<span class='curline'><a href='../S/185.html#L22465'>pMem</a>             22465 libdb/sqlite3.c   assert( pMem-&gt;flags&amp;MEM_Str );</span>
+<span class='curline'><a href='../S/185.html#L22466'>pMem</a>             22466 libdb/sqlite3.c   assert( pMem-&gt;enc!=desiredEnc );</span>
+<span class='curline'><a href='../S/185.html#L22467'>pMem</a>             22467 libdb/sqlite3.c   assert( pMem-&gt;enc!=0 );</span>
+<span class='curline'><a href='../S/185.html#L22468'>pMem</a>             22468 libdb/sqlite3.c   assert( pMem-&gt;n&gt;=0 );</span>
+<span class='curline'><a href='../S/185.html#L22473'>pMem</a>             22473 libdb/sqlite3.c     sqlite3VdbeMemPrettyPrint(pMem, zBuf);</span>
+<span class='curline'><a href='../S/185.html#L22482'>pMem</a>             22482 libdb/sqlite3.c   if( pMem-&gt;enc!=SQLITE_UTF8 &amp;&amp; desiredEnc!=SQLITE_UTF8 ){</span>
+<span class='curline'><a href='../S/185.html#L22485'>pMem</a>             22485 libdb/sqlite3.c     rc = sqlite3VdbeMemMakeWriteable(pMem);</span>
+<span class='curline'><a href='../S/185.html#L22490'>pMem</a>             22490 libdb/sqlite3.c     zIn = (u8*)pMem-&gt;z;</span>
+<span class='curline'><a href='../S/185.html#L22491'>pMem</a>             22491 libdb/sqlite3.c     zTerm = &amp;zIn[pMem-&gt;n&amp;~1];</span>
+<span class='curline'><a href='../S/185.html#L22498'>pMem</a>             22498 libdb/sqlite3.c     pMem-&gt;enc = desiredEnc;</span>
+<span class='curline'><a href='../S/185.html#L22509'>pMem</a>             22509 libdb/sqlite3.c     pMem-&gt;n &amp;= ~1;</span>
+<span class='curline'><a href='../S/185.html#L22510'>pMem</a>             22510 libdb/sqlite3.c     len = pMem-&gt;n * 2 + 1;</span>
+<span class='curline'><a href='../S/185.html#L22517'>pMem</a>             22517 libdb/sqlite3.c     len = pMem-&gt;n * 2 + 2;</span>
+<span class='curline'><a href='../S/185.html#L22526'>pMem</a>             22526 libdb/sqlite3.c   zIn = (u8*)pMem-&gt;z;</span>
+<span class='curline'><a href='../S/185.html#L22527'>pMem</a>             22527 libdb/sqlite3.c   zTerm = &amp;zIn[pMem-&gt;n];</span>
+<span class='curline'><a href='../S/185.html#L22528'>pMem</a>             22528 libdb/sqlite3.c   zOut = sqlite3DbMallocRaw(pMem-&gt;db, len);</span>
+<span class='curline'><a href='../S/185.html#L22534'>pMem</a>             22534 libdb/sqlite3.c   if( pMem-&gt;enc==SQLITE_UTF8 ){</span>
+<span class='curline'><a href='../S/185.html#L22549'>pMem</a>             22549 libdb/sqlite3.c     pMem-&gt;n = (int)(z - zOut);</span>
+<span class='curline'><a href='../S/185.html#L22553'>pMem</a>             22553 libdb/sqlite3.c     if( pMem-&gt;enc==SQLITE_UTF16LE ){</span>
+<span class='curline'><a href='../S/185.html#L22566'>pMem</a>             22566 libdb/sqlite3.c     pMem-&gt;n = (int)(z - zOut);</span>
+<span class='curline'><a href='../S/185.html#L22569'>pMem</a>             22569 libdb/sqlite3.c   assert( (pMem-&gt;n+(desiredEnc==SQLITE_UTF8?1:2))&lt;=len );</span>
+<span class='curline'><a href='../S/185.html#L22571'>pMem</a>             22571 libdb/sqlite3.c   c = pMem-&gt;flags;</span>
+<span class='curline'><a href='../S/185.html#L22572'>pMem</a>             22572 libdb/sqlite3.c   sqlite3VdbeMemRelease(pMem);</span>
+<span class='curline'><a href='../S/185.html#L22573'>pMem</a>             22573 libdb/sqlite3.c   pMem-&gt;flags = MEM_Str|MEM_Term|(c&amp;MEM_AffMask);</span>
+<span class='curline'><a href='../S/185.html#L22574'>pMem</a>             22574 libdb/sqlite3.c   pMem-&gt;enc = desiredEnc;</span>
+<span class='curline'><a href='../S/185.html#L22575'>pMem</a>             22575 libdb/sqlite3.c   pMem-&gt;z = (char*)zOut;</span>
+<span class='curline'><a href='../S/185.html#L22576'>pMem</a>             22576 libdb/sqlite3.c   pMem-&gt;zMalloc = pMem-&gt;z;</span>
+<span class='curline'><a href='../S/185.html#L22577'>pMem</a>             22577 libdb/sqlite3.c   pMem-&gt;szMalloc = sqlite3DbMallocSize(pMem-&gt;db, pMem-&gt;z);</span>
+<span class='curline'><a href='../S/185.html#L22583'>pMem</a>             22583 libdb/sqlite3.c     sqlite3VdbeMemPrettyPrint(pMem, zBuf);</span>
+<span class='curline'><a href='../S/185.html#L22599'>pMem</a>             22599 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3VdbeMemHandleBom(Mem *pMem){</span>
+<span class='curline'><a href='../S/185.html#L22603'>pMem</a>             22603 libdb/sqlite3.c   assert( pMem-&gt;n&gt;=0 );</span>
+<span class='curline'><a href='../S/185.html#L22604'>pMem</a>             22604 libdb/sqlite3.c   if( pMem-&gt;n&gt;1 ){</span>
+<span class='curline'><a href='../S/185.html#L22605'>pMem</a>             22605 libdb/sqlite3.c     u8 b1 = *(u8 *)pMem-&gt;z;</span>
+<span class='curline'><a href='../S/185.html#L22606'>pMem</a>             22606 libdb/sqlite3.c     u8 b2 = *(((u8 *)pMem-&gt;z) + 1);</span>
+<span class='curline'><a href='../S/185.html#L22616'>pMem</a>             22616 libdb/sqlite3.c     rc = sqlite3VdbeMemMakeWriteable(pMem);</span>
+<span class='curline'><a href='../S/185.html#L22618'>pMem</a>             22618 libdb/sqlite3.c       pMem-&gt;n -= 2;</span>
+<span class='curline'><a href='../S/185.html#L22619'>pMem</a>             22619 libdb/sqlite3.c       memmove(pMem-&gt;z, &amp;pMem-&gt;z[2], pMem-&gt;n);</span>
+<span class='curline'><a href='../S/185.html#L22620'>pMem</a>             22620 libdb/sqlite3.c       pMem-&gt;z[pMem-&gt;n] = '\0';</span>
+<span class='curline'><a href='../S/185.html#L22621'>pMem</a>             22621 libdb/sqlite3.c       pMem-&gt;z[pMem-&gt;n+1] = '\0';</span>
+<span class='curline'><a href='../S/185.html#L22622'>pMem</a>             22622 libdb/sqlite3.c       pMem-&gt;flags |= MEM_Term;</span>
+<span class='curline'><a href='../S/185.html#L22623'>pMem</a>             22623 libdb/sqlite3.c       pMem-&gt;enc = bom;</span>
+<span class='curline'><a href='../S/185.html#L29272'>pMem</a>             29272 libdb/sqlite3.c       void *pMem;</span>
+<span class='curline'><a href='../S/185.html#L29274'>pMem</a>             29274 libdb/sqlite3.c         pMem = osMmap(0, nMap,</span>
+<span class='curline'><a href='../S/185.html#L29278'>pMem</a>             29278 libdb/sqlite3.c         if( pMem==MAP_FAILED ){</span>
+<span class='curline'><a href='../S/185.html#L29283'>pMem</a>             29283 libdb/sqlite3.c         pMem = sqlite3_malloc(szRegion);</span>
+<span class='curline'><a href='../S/185.html#L29284'>pMem</a>             29284 libdb/sqlite3.c         if( pMem==0 ){</span>
+<span class='curline'><a href='../S/185.html#L29288'>pMem</a>             29288 libdb/sqlite3.c         memset(pMem, 0, szRegion);</span>
+<span class='curline'><a href='../S/185.html#L29292'>pMem</a>             29292 libdb/sqlite3.c         pShmNode-&gt;apRegion[pShmNode-&gt;nRegion+i] = &amp;((char*)pMem)[szRegion*i];</span>
+<span class='curline'><a href='../S/185.html#L33740'>pMem</a>             33740 libdb/sqlite3.c   MUTEX_LOGIC( sqlite3_mutex *pMem; )    /* The memsys static mutex */</span>
+<span class='curline'><a href='../S/185.html#L33742'>pMem</a>             33742 libdb/sqlite3.c   MUTEX_LOGIC( pMem = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MEM); )</span>
+<span class='curline'><a href='../S/185.html#L33744'>pMem</a>             33744 libdb/sqlite3.c   sqlite3_mutex_enter(pMem);</span>
+<span class='curline'><a href='../S/185.html#L33771'>pMem</a>             33771 libdb/sqlite3.c   sqlite3_mutex_leave(pMem);</span>
+<span class='curline'><a href='../S/185.html#L61699'>pMem</a>             61699 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3VdbeChangeEncoding(Mem *pMem, int desiredEnc){</span>
+<span class='curline'><a href='../S/185.html#L61703'>pMem</a>             61703 libdb/sqlite3.c   assert( (pMem-&gt;flags&amp;MEM_RowSet)==0 );</span>
+<span class='curline'><a href='../S/185.html#L61706'>pMem</a>             61706 libdb/sqlite3.c   if( !(pMem-&gt;flags&amp;MEM_Str) || pMem-&gt;enc==desiredEnc ){</span>
+<span class='curline'><a href='../S/185.html#L61709'>pMem</a>             61709 libdb/sqlite3.c   assert( pMem-&gt;db==0 || sqlite3_mutex_held(pMem-&gt;db-&gt;mutex) );</span>
+<span class='curline'><a href='../S/185.html#L61717'>pMem</a>             61717 libdb/sqlite3.c   rc = sqlite3VdbeMemTranslate(pMem, (u8)desiredEnc);</span>
+<span class='curline'><a href='../S/185.html#L61719'>pMem</a>             61719 libdb/sqlite3.c   assert(rc==SQLITE_OK    || pMem-&gt;enc!=desiredEnc);</span>
+<span class='curline'><a href='../S/185.html#L61720'>pMem</a>             61720 libdb/sqlite3.c   assert(rc==SQLITE_NOMEM || pMem-&gt;enc==desiredEnc);</span>
+<span class='curline'><a href='../S/185.html#L61734'>pMem</a>             61734 libdb/sqlite3.c SQLITE_PRIVATE SQLITE_NOINLINE int sqlite3VdbeMemGrow(Mem *pMem, int n, int bPreserve){</span>
+<span class='curline'><a href='../S/185.html#L61735'>pMem</a>             61735 libdb/sqlite3.c   assert( sqlite3VdbeCheckMemInvariants(pMem) );</span>
+<span class='curline'><a href='../S/185.html#L61736'>pMem</a>             61736 libdb/sqlite3.c   assert( (pMem-&gt;flags&amp;MEM_RowSet)==0 );</span>
+<span class='curline'><a href='../S/185.html#L61740'>pMem</a>             61740 libdb/sqlite3.c   assert( bPreserve==0 || pMem-&gt;flags&amp;(MEM_Blob|MEM_Str) );</span>
+<span class='curline'><a href='../S/185.html#L61741'>pMem</a>             61741 libdb/sqlite3.c   testcase( bPreserve &amp;&amp; pMem-&gt;z==0 );</span>
+<span class='curline'><a href='../S/185.html#L61743'>pMem</a>             61743 libdb/sqlite3.c   assert( pMem-&gt;szMalloc==0</span>
+<span class='curline'><a href='../S/185.html#L61744'>pMem</a>             61744 libdb/sqlite3.c        || pMem-&gt;szMalloc==sqlite3DbMallocSize(pMem-&gt;db, pMem-&gt;zMalloc) );</span>
+<span class='curline'><a href='../S/185.html#L61745'>pMem</a>             61745 libdb/sqlite3.c   if( pMem-&gt;szMalloc&lt;n ){</span>
+<span class='curline'><a href='../S/185.html#L61747'>pMem</a>             61747 libdb/sqlite3.c     if( bPreserve &amp;&amp; pMem-&gt;szMalloc&gt;0 &amp;&amp; pMem-&gt;z==pMem-&gt;zMalloc ){</span>
+<span class='curline'><a href='../S/185.html#L61748'>pMem</a>             61748 libdb/sqlite3.c       pMem-&gt;z = pMem-&gt;zMalloc = sqlite3DbReallocOrFree(pMem-&gt;db, pMem-&gt;z, n);</span>
+<span class='curline'><a href='../S/185.html#L61751'>pMem</a>             61751 libdb/sqlite3.c       if( pMem-&gt;szMalloc&gt;0 ) sqlite3DbFree(pMem-&gt;db, pMem-&gt;zMalloc);</span>
+<span class='curline'><a href='../S/185.html#L61752'>pMem</a>             61752 libdb/sqlite3.c       pMem-&gt;zMalloc = sqlite3DbMallocRaw(pMem-&gt;db, n);</span>
+<span class='curline'><a href='../S/185.html#L61754'>pMem</a>             61754 libdb/sqlite3.c     if( pMem-&gt;zMalloc==0 ){</span>
+<span class='curline'><a href='../S/185.html#L61755'>pMem</a>             61755 libdb/sqlite3.c       sqlite3VdbeMemSetNull(pMem);</span>
+<span class='curline'><a href='../S/185.html#L61756'>pMem</a>             61756 libdb/sqlite3.c       pMem-&gt;z = 0;</span>
+<span class='curline'><a href='../S/185.html#L61757'>pMem</a>             61757 libdb/sqlite3.c       pMem-&gt;szMalloc = 0;</span>
+<span class='curline'><a href='../S/185.html#L61760'>pMem</a>             61760 libdb/sqlite3.c       pMem-&gt;szMalloc = sqlite3DbMallocSize(pMem-&gt;db, pMem-&gt;zMalloc);</span>
+<span class='curline'><a href='../S/185.html#L61764'>pMem</a>             61764 libdb/sqlite3.c   if( bPreserve &amp;&amp; pMem-&gt;z &amp;&amp; pMem-&gt;z!=pMem-&gt;zMalloc ){</span>
+<span class='curline'><a href='../S/185.html#L61765'>pMem</a>             61765 libdb/sqlite3.c     memcpy(pMem-&gt;zMalloc, pMem-&gt;z, pMem-&gt;n);</span>
+<span class='curline'><a href='../S/185.html#L61767'>pMem</a>             61767 libdb/sqlite3.c   if( (pMem-&gt;flags&amp;MEM_Dyn)!=0 ){</span>
+<span class='curline'><a href='../S/185.html#L61768'>pMem</a>             61768 libdb/sqlite3.c     assert( pMem-&gt;xDel!=0 &amp;&amp; pMem-&gt;xDel!=SQLITE_DYNAMIC );</span>
+<span class='curline'><a href='../S/185.html#L61769'>pMem</a>             61769 libdb/sqlite3.c     pMem-&gt;xDel((void *)(pMem-&gt;z));</span>
+<span class='curline'><a href='../S/185.html#L61772'>pMem</a>             61772 libdb/sqlite3.c   pMem-&gt;z = pMem-&gt;zMalloc;</span>
+<span class='curline'><a href='../S/185.html#L61773'>pMem</a>             61773 libdb/sqlite3.c   pMem-&gt;flags &amp;= ~(MEM_Dyn|MEM_Ephem|MEM_Static);</span>
+<span class='curline'><a href='../S/185.html#L61790'>pMem</a>             61790 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3VdbeMemClearAndResize(Mem *pMem, int szNew){</span>
+<span class='curline'><a href='../S/185.html#L61792'>pMem</a>             61792 libdb/sqlite3.c   assert( (pMem-&gt;flags &amp; MEM_Dyn)==0 || pMem-&gt;szMalloc==0 );</span>
+<span class='curline'><a href='../S/185.html#L61793'>pMem</a>             61793 libdb/sqlite3.c   if( pMem-&gt;szMalloc&lt;szNew ){</span>
+<span class='curline'><a href='../S/185.html#L61794'>pMem</a>             61794 libdb/sqlite3.c     return sqlite3VdbeMemGrow(pMem, szNew, 0);</span>
+<span class='curline'><a href='../S/185.html#L61796'>pMem</a>             61796 libdb/sqlite3.c   assert( (pMem-&gt;flags &amp; MEM_Dyn)==0 );</span>
+<span class='curline'><a href='../S/185.html#L61797'>pMem</a>             61797 libdb/sqlite3.c   pMem-&gt;z = pMem-&gt;zMalloc;</span>
+<span class='curline'><a href='../S/185.html#L61798'>pMem</a>             61798 libdb/sqlite3.c   pMem-&gt;flags &amp;= (MEM_Null|MEM_Int|MEM_Real);</span>
+<span class='curline'><a href='../S/185.html#L61808'>pMem</a>             61808 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3VdbeMemMakeWriteable(Mem *pMem){</span>
+<span class='curline'><a href='../S/185.html#L61810'>pMem</a>             61810 libdb/sqlite3.c   assert( pMem-&gt;db==0 || sqlite3_mutex_held(pMem-&gt;db-&gt;mutex) );</span>
+<span class='curline'><a href='../S/185.html#L61811'>pMem</a>             61811 libdb/sqlite3.c   assert( (pMem-&gt;flags&amp;MEM_RowSet)==0 );</span>
+<span class='curline'><a href='../S/185.html#L61812'>pMem</a>             61812 libdb/sqlite3.c   ExpandBlob(pMem);</span>
+<span class='curline'><a href='../S/185.html#L61813'>pMem</a>             61813 libdb/sqlite3.c   f = pMem-&gt;flags;</span>
+<span class='curline'><a href='../S/185.html#L61814'>pMem</a>             61814 libdb/sqlite3.c   if( (f&amp;(MEM_Str|MEM_Blob)) &amp;&amp; (pMem-&gt;szMalloc==0 || pMem-&gt;z!=pMem-&gt;zMalloc) ){</span>
+<span class='curline'><a href='../S/185.html#L61815'>pMem</a>             61815 libdb/sqlite3.c     if( sqlite3VdbeMemGrow(pMem, pMem-&gt;n + 2, 1) ){</span>
+<span class='curline'><a href='../S/185.html#L61818'>pMem</a>             61818 libdb/sqlite3.c     pMem-&gt;z[pMem-&gt;n] = 0;</span>
+<span class='curline'><a href='../S/185.html#L61819'>pMem</a>             61819 libdb/sqlite3.c     pMem-&gt;z[pMem-&gt;n+1] = 0;</span>
+<span class='curline'><a href='../S/185.html#L61820'>pMem</a>             61820 libdb/sqlite3.c     pMem-&gt;flags |= MEM_Term;</span>
+<span class='curline'><a href='../S/185.html#L61822'>pMem</a>             61822 libdb/sqlite3.c     pMem-&gt;pScopyFrom = 0;</span>
+<span class='curline'><a href='../S/185.html#L61834'>pMem</a>             61834 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3VdbeMemExpandBlob(Mem *pMem){</span>
+<span class='curline'><a href='../S/185.html#L61835'>pMem</a>             61835 libdb/sqlite3.c   if( pMem-&gt;flags &amp; MEM_Zero ){</span>
+<span class='curline'><a href='../S/185.html#L61837'>pMem</a>             61837 libdb/sqlite3.c     assert( pMem-&gt;flags&amp;MEM_Blob );</span>
+<span class='curline'><a href='../S/185.html#L61838'>pMem</a>             61838 libdb/sqlite3.c     assert( (pMem-&gt;flags&amp;MEM_RowSet)==0 );</span>
+<span class='curline'><a href='../S/185.html#L61839'>pMem</a>             61839 libdb/sqlite3.c     assert( pMem-&gt;db==0 || sqlite3_mutex_held(pMem-&gt;db-&gt;mutex) );</span>
+<span class='curline'><a href='../S/185.html#L61842'>pMem</a>             61842 libdb/sqlite3.c     nByte = pMem-&gt;n + pMem-&gt;u.nZero;</span>
+<span class='curline'><a href='../S/185.html#L61846'>pMem</a>             61846 libdb/sqlite3.c     if( sqlite3VdbeMemGrow(pMem, nByte, 1) ){</span>
+<span class='curline'><a href='../S/185.html#L61850'>pMem</a>             61850 libdb/sqlite3.c     memset(&amp;pMem-&gt;z[pMem-&gt;n], 0, pMem-&gt;u.nZero);</span>
+<span class='curline'><a href='../S/185.html#L61851'>pMem</a>             61851 libdb/sqlite3.c     pMem-&gt;n += pMem-&gt;u.nZero;</span>
+<span class='curline'><a href='../S/185.html#L61852'>pMem</a>             61852 libdb/sqlite3.c     pMem-&gt;flags &amp;= ~(MEM_Zero|MEM_Term);</span>
+<span class='curline'><a href='../S/185.html#L61862'>pMem</a>             61862 libdb/sqlite3.c static SQLITE_NOINLINE int vdbeMemAddTerminator(Mem *pMem){</span>
+<span class='curline'><a href='../S/185.html#L61863'>pMem</a>             61863 libdb/sqlite3.c   if( sqlite3VdbeMemGrow(pMem, pMem-&gt;n+2, 1) ){</span>
+<span class='curline'><a href='../S/185.html#L61866'>pMem</a>             61866 libdb/sqlite3.c   pMem-&gt;z[pMem-&gt;n] = 0;</span>
+<span class='curline'><a href='../S/185.html#L61867'>pMem</a>             61867 libdb/sqlite3.c   pMem-&gt;z[pMem-&gt;n+1] = 0;</span>
+<span class='curline'><a href='../S/185.html#L61868'>pMem</a>             61868 libdb/sqlite3.c   pMem-&gt;flags |= MEM_Term;</span>
+<span class='curline'><a href='../S/185.html#L61875'>pMem</a>             61875 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3VdbeMemNulTerminate(Mem *pMem){</span>
+<span class='curline'><a href='../S/185.html#L61876'>pMem</a>             61876 libdb/sqlite3.c   assert( pMem-&gt;db==0 || sqlite3_mutex_held(pMem-&gt;db-&gt;mutex) );</span>
+<span class='curline'><a href='../S/185.html#L61877'>pMem</a>             61877 libdb/sqlite3.c   testcase( (pMem-&gt;flags &amp; (MEM_Term|MEM_Str))==(MEM_Term|MEM_Str) );</span>
+<span class='curline'><a href='../S/185.html#L61878'>pMem</a>             61878 libdb/sqlite3.c   testcase( (pMem-&gt;flags &amp; (MEM_Term|MEM_Str))==0 );</span>
+<span class='curline'><a href='../S/185.html#L61879'>pMem</a>             61879 libdb/sqlite3.c   if( (pMem-&gt;flags &amp; (MEM_Term|MEM_Str))!=MEM_Str ){</span>
+<span class='curline'><a href='../S/185.html#L61882'>pMem</a>             61882 libdb/sqlite3.c     return vdbeMemAddTerminator(pMem);</span>
+<span class='curline'><a href='../S/185.html#L61900'>pMem</a>             61900 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3VdbeMemStringify(Mem *pMem, u8 enc, u8 bForce){</span>
+<span class='curline'><a href='../S/185.html#L61901'>pMem</a>             61901 libdb/sqlite3.c   int fg = pMem-&gt;flags;</span>
+<span class='curline'><a href='../S/185.html#L61904'>pMem</a>             61904 libdb/sqlite3.c   assert( pMem-&gt;db==0 || sqlite3_mutex_held(pMem-&gt;db-&gt;mutex) );</span>
+<span class='curline'><a href='../S/185.html#L61908'>pMem</a>             61908 libdb/sqlite3.c   assert( (pMem-&gt;flags&amp;MEM_RowSet)==0 );</span>
+<span class='curline'><a href='../S/185.html#L61909'>pMem</a>             61909 libdb/sqlite3.c   assert( EIGHT_BYTE_ALIGNMENT(pMem) );</span>
+<span class='curline'><a href='../S/185.html#L61912'>pMem</a>             61912 libdb/sqlite3.c   if( sqlite3VdbeMemClearAndResize(pMem, nByte) ){</span>
+<span class='curline'><a href='../S/185.html#L61923'>pMem</a>             61923 libdb/sqlite3.c     sqlite3_snprintf(nByte, pMem-&gt;z, "%lld", pMem-&gt;u.i);</span>
+<span class='curline'><a href='../S/185.html#L61926'>pMem</a>             61926 libdb/sqlite3.c     sqlite3_snprintf(nByte, pMem-&gt;z, "%!.15g", pMem-&gt;u.r);</span>
+<span class='curline'><a href='../S/185.html#L61928'>pMem</a>             61928 libdb/sqlite3.c   pMem-&gt;n = sqlite3Strlen30(pMem-&gt;z);</span>
+<span class='curline'><a href='../S/185.html#L61929'>pMem</a>             61929 libdb/sqlite3.c   pMem-&gt;enc = SQLITE_UTF8;</span>
+<span class='curline'><a href='../S/185.html#L61930'>pMem</a>             61930 libdb/sqlite3.c   pMem-&gt;flags |= MEM_Str|MEM_Term;</span>
+<span class='curline'><a href='../S/185.html#L61931'>pMem</a>             61931 libdb/sqlite3.c   if( bForce ) pMem-&gt;flags &amp;= ~(MEM_Int|MEM_Real);</span>
+<span class='curline'><a href='../S/185.html#L61932'>pMem</a>             61932 libdb/sqlite3.c   sqlite3VdbeChangeEncoding(pMem, enc);</span>
+<span class='curline'><a href='../S/185.html#L61944'>pMem</a>             61944 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3VdbeMemFinalize(Mem *pMem, FuncDef *pFunc){</span>
+<span class='curline'><a href='../S/185.html#L61949'>pMem</a>             61949 libdb/sqlite3.c     assert( (pMem-&gt;flags &amp; MEM_Null)!=0 || pFunc==pMem-&gt;u.pDef );</span>
+<span class='curline'><a href='../S/185.html#L61950'>pMem</a>             61950 libdb/sqlite3.c     assert( pMem-&gt;db==0 || sqlite3_mutex_held(pMem-&gt;db-&gt;mutex) );</span>
+<span class='curline'><a href='../S/185.html#L61954'>pMem</a>             61954 libdb/sqlite3.c     t.db = pMem-&gt;db;</span>
+<span class='curline'><a href='../S/185.html#L61956'>pMem</a>             61956 libdb/sqlite3.c     ctx.pMem = pMem;</span>
+<span class='curline'><a href='../S/185.html#L61959'>pMem</a>             61959 libdb/sqlite3.c     assert( (pMem-&gt;flags &amp; MEM_Dyn)==0 );</span>
+<span class='curline'><a href='../S/185.html#L61960'>pMem</a>             61960 libdb/sqlite3.c     if( pMem-&gt;szMalloc&gt;0 ) sqlite3DbFree(pMem-&gt;db, pMem-&gt;zMalloc);</span>
+<span class='curline'><a href='../S/185.html#L61961'>pMem</a>             61961 libdb/sqlite3.c     memcpy(pMem, &amp;t, sizeof(t));</span>
+<span class='curline'><a href='../S/185.html#L62075'>pMem</a>             62075 libdb/sqlite3.c SQLITE_PRIVATE i64 sqlite3VdbeIntValue(Mem *pMem){</span>
+<span class='curline'><a href='../S/185.html#L62077'>pMem</a>             62077 libdb/sqlite3.c   assert( pMem-&gt;db==0 || sqlite3_mutex_held(pMem-&gt;db-&gt;mutex) );</span>
+<span class='curline'><a href='../S/185.html#L62078'>pMem</a>             62078 libdb/sqlite3.c   assert( EIGHT_BYTE_ALIGNMENT(pMem) );</span>
+<span class='curline'><a href='../S/185.html#L62079'>pMem</a>             62079 libdb/sqlite3.c   flags = pMem-&gt;flags;</span>
+<span class='curline'><a href='../S/185.html#L62081'>pMem</a>             62081 libdb/sqlite3.c     return pMem-&gt;u.i;</span>
+<span class='curline'><a href='../S/185.html#L62083'>pMem</a>             62083 libdb/sqlite3.c     return doubleToInt64(pMem-&gt;u.r);</span>
+<span class='curline'><a href='../S/185.html#L62086'>pMem</a>             62086 libdb/sqlite3.c     assert( pMem-&gt;z || pMem-&gt;n==0 );</span>
+<span class='curline'><a href='../S/185.html#L62087'>pMem</a>             62087 libdb/sqlite3.c     sqlite3Atoi64(pMem-&gt;z, &amp;value, pMem-&gt;n, pMem-&gt;enc);</span>
+<span class='curline'><a href='../S/185.html#L62100'>pMem</a>             62100 libdb/sqlite3.c SQLITE_PRIVATE double sqlite3VdbeRealValue(Mem *pMem){</span>
+<span class='curline'><a href='../S/185.html#L62101'>pMem</a>             62101 libdb/sqlite3.c   assert( pMem-&gt;db==0 || sqlite3_mutex_held(pMem-&gt;db-&gt;mutex) );</span>
+<span class='curline'><a href='../S/185.html#L62102'>pMem</a>             62102 libdb/sqlite3.c   assert( EIGHT_BYTE_ALIGNMENT(pMem) );</span>
+<span class='curline'><a href='../S/185.html#L62103'>pMem</a>             62103 libdb/sqlite3.c   if( pMem-&gt;flags &amp; MEM_Real ){</span>
+<span class='curline'><a href='../S/185.html#L62104'>pMem</a>             62104 libdb/sqlite3.c     return pMem-&gt;u.r;</span>
+<span class='curline'><a href='../S/185.html#L62105'>pMem</a>             62105 libdb/sqlite3.c   }else if( pMem-&gt;flags &amp; MEM_Int ){</span>
+<span class='curline'><a href='../S/185.html#L62106'>pMem</a>             62106 libdb/sqlite3.c     return (double)pMem-&gt;u.i;</span>
+<span class='curline'><a href='../S/185.html#L62107'>pMem</a>             62107 libdb/sqlite3.c   }else if( pMem-&gt;flags &amp; (MEM_Str|MEM_Blob) ){</span>
+<span class='curline'><a href='../S/185.html#L62110'>pMem</a>             62110 libdb/sqlite3.c     sqlite3AtoF(pMem-&gt;z, &amp;val, pMem-&gt;n, pMem-&gt;enc);</span>
+<span class='curline'><a href='../S/185.html#L62122'>pMem</a>             62122 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3VdbeIntegerAffinity(Mem *pMem){</span>
+<span class='curline'><a href='../S/185.html#L62124'>pMem</a>             62124 libdb/sqlite3.c   assert( pMem-&gt;flags &amp; MEM_Real );</span>
+<span class='curline'><a href='../S/185.html#L62125'>pMem</a>             62125 libdb/sqlite3.c   assert( (pMem-&gt;flags &amp; MEM_RowSet)==0 );</span>
+<span class='curline'><a href='../S/185.html#L62126'>pMem</a>             62126 libdb/sqlite3.c   assert( pMem-&gt;db==0 || sqlite3_mutex_held(pMem-&gt;db-&gt;mutex) );</span>
+<span class='curline'><a href='../S/185.html#L62127'>pMem</a>             62127 libdb/sqlite3.c   assert( EIGHT_BYTE_ALIGNMENT(pMem) );</span>
+<span class='curline'><a href='../S/185.html#L62129'>pMem</a>             62129 libdb/sqlite3.c   ix = doubleToInt64(pMem-&gt;u.r);</span>
+<span class='curline'><a href='../S/185.html#L62141'>pMem</a>             62141 libdb/sqlite3.c   if( pMem-&gt;u.r==ix &amp;&amp; ix&gt;SMALLEST_INT64 &amp;&amp; ix&lt;LARGEST_INT64 ){</span>
+<span class='curline'><a href='../S/185.html#L62142'>pMem</a>             62142 libdb/sqlite3.c     pMem-&gt;u.i = ix;</span>
+<span class='curline'><a href='../S/185.html#L62143'>pMem</a>             62143 libdb/sqlite3.c     MemSetTypeFlag(pMem, MEM_Int);</span>
+<span class='curline'><a href='../S/185.html#L62150'>pMem</a>             62150 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3VdbeMemIntegerify(Mem *pMem){</span>
+<span class='curline'><a href='../S/185.html#L62151'>pMem</a>             62151 libdb/sqlite3.c   assert( pMem-&gt;db==0 || sqlite3_mutex_held(pMem-&gt;db-&gt;mutex) );</span>
+<span class='curline'><a href='../S/185.html#L62152'>pMem</a>             62152 libdb/sqlite3.c   assert( (pMem-&gt;flags &amp; MEM_RowSet)==0 );</span>
+<span class='curline'><a href='../S/185.html#L62153'>pMem</a>             62153 libdb/sqlite3.c   assert( EIGHT_BYTE_ALIGNMENT(pMem) );</span>
+<span class='curline'><a href='../S/185.html#L62155'>pMem</a>             62155 libdb/sqlite3.c   pMem-&gt;u.i = sqlite3VdbeIntValue(pMem);</span>
+<span class='curline'><a href='../S/185.html#L62156'>pMem</a>             62156 libdb/sqlite3.c   MemSetTypeFlag(pMem, MEM_Int);</span>
+<span class='curline'><a href='../S/185.html#L62164'>pMem</a>             62164 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3VdbeMemRealify(Mem *pMem){</span>
+<span class='curline'><a href='../S/185.html#L62165'>pMem</a>             62165 libdb/sqlite3.c   assert( pMem-&gt;db==0 || sqlite3_mutex_held(pMem-&gt;db-&gt;mutex) );</span>
+<span class='curline'><a href='../S/185.html#L62166'>pMem</a>             62166 libdb/sqlite3.c   assert( EIGHT_BYTE_ALIGNMENT(pMem) );</span>
+<span class='curline'><a href='../S/185.html#L62168'>pMem</a>             62168 libdb/sqlite3.c   pMem-&gt;u.r = sqlite3VdbeRealValue(pMem);</span>
+<span class='curline'><a href='../S/185.html#L62169'>pMem</a>             62169 libdb/sqlite3.c   MemSetTypeFlag(pMem, MEM_Real);</span>
+<span class='curline'><a href='../S/185.html#L62181'>pMem</a>             62181 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3VdbeMemNumerify(Mem *pMem){</span>
+<span class='curline'><a href='../S/185.html#L62182'>pMem</a>             62182 libdb/sqlite3.c   if( (pMem-&gt;flags &amp; (MEM_Int|MEM_Real|MEM_Null))==0 ){</span>
+<span class='curline'><a href='../S/185.html#L62183'>pMem</a>             62183 libdb/sqlite3.c     assert( (pMem-&gt;flags &amp; (MEM_Blob|MEM_Str))!=0 );</span>
+<span class='curline'><a href='../S/185.html#L62184'>pMem</a>             62184 libdb/sqlite3.c     assert( pMem-&gt;db==0 || sqlite3_mutex_held(pMem-&gt;db-&gt;mutex) );</span>
+<span class='curline'><a href='../S/185.html#L62185'>pMem</a>             62185 libdb/sqlite3.c     if( 0==sqlite3Atoi64(pMem-&gt;z, &amp;pMem-&gt;u.i, pMem-&gt;n, pMem-&gt;enc) ){</span>
+<span class='curline'><a href='../S/185.html#L62186'>pMem</a>             62186 libdb/sqlite3.c       MemSetTypeFlag(pMem, MEM_Int);</span>
+<span class='curline'><a href='../S/185.html#L62188'>pMem</a>             62188 libdb/sqlite3.c       pMem-&gt;u.r = sqlite3VdbeRealValue(pMem);</span>
+<span class='curline'><a href='../S/185.html#L62189'>pMem</a>             62189 libdb/sqlite3.c       MemSetTypeFlag(pMem, MEM_Real);</span>
+<span class='curline'><a href='../S/185.html#L62190'>pMem</a>             62190 libdb/sqlite3.c       sqlite3VdbeIntegerAffinity(pMem);</span>
+<span class='curline'><a href='../S/185.html#L62193'>pMem</a>             62193 libdb/sqlite3.c   assert( (pMem-&gt;flags &amp; (MEM_Int|MEM_Real|MEM_Null))!=0 );</span>
+<span class='curline'><a href='../S/185.html#L62194'>pMem</a>             62194 libdb/sqlite3.c   pMem-&gt;flags &amp;= ~(MEM_Str|MEM_Blob);</span>
+<span class='curline'><a href='../S/185.html#L62205'>pMem</a>             62205 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3VdbeMemCast(Mem *pMem, u8 aff, u8 encoding){</span>
+<span class='curline'><a href='../S/185.html#L62206'>pMem</a>             62206 libdb/sqlite3.c   if( pMem-&gt;flags &amp; MEM_Null ) return;</span>
+<span class='curline'><a href='../S/185.html#L62209'>pMem</a>             62209 libdb/sqlite3.c       if( (pMem-&gt;flags &amp; MEM_Blob)==0 ){</span>
+<span class='curline'><a href='../S/185.html#L62210'>pMem</a>             62210 libdb/sqlite3.c         sqlite3ValueApplyAffinity(pMem, SQLITE_AFF_TEXT, encoding);</span>
+<span class='curline'><a href='../S/185.html#L62211'>pMem</a>             62211 libdb/sqlite3.c         assert( pMem-&gt;flags &amp; MEM_Str || pMem-&gt;db-&gt;mallocFailed );</span>
+<span class='curline'><a href='../S/185.html#L62212'>pMem</a>             62212 libdb/sqlite3.c         MemSetTypeFlag(pMem, MEM_Blob);</span>
+<span class='curline'><a href='../S/185.html#L62214'>pMem</a>             62214 libdb/sqlite3.c         pMem-&gt;flags &amp;= ~(MEM_TypeMask&amp;~MEM_Blob);</span>
+<span class='curline'><a href='../S/185.html#L62219'>pMem</a>             62219 libdb/sqlite3.c       sqlite3VdbeMemNumerify(pMem);</span>
+<span class='curline'><a href='../S/185.html#L62223'>pMem</a>             62223 libdb/sqlite3.c       sqlite3VdbeMemIntegerify(pMem);</span>
+<span class='curline'><a href='../S/185.html#L62227'>pMem</a>             62227 libdb/sqlite3.c       sqlite3VdbeMemRealify(pMem);</span>
+<span class='curline'><a href='../S/185.html#L62233'>pMem</a>             62233 libdb/sqlite3.c       pMem-&gt;flags |= (pMem-&gt;flags&amp;MEM_Blob)&gt;&gt;3;</span>
+<span class='curline'><a href='../S/185.html#L62234'>pMem</a>             62234 libdb/sqlite3.c       sqlite3ValueApplyAffinity(pMem, SQLITE_AFF_TEXT, encoding);</span>
+<span class='curline'><a href='../S/185.html#L62235'>pMem</a>             62235 libdb/sqlite3.c       assert( pMem-&gt;flags &amp; MEM_Str || pMem-&gt;db-&gt;mallocFailed );</span>
+<span class='curline'><a href='../S/185.html#L62236'>pMem</a>             62236 libdb/sqlite3.c       pMem-&gt;flags &amp;= ~(MEM_Int|MEM_Real|MEM_Blob|MEM_Zero);</span>
+<span class='curline'><a href='../S/185.html#L62247'>pMem</a>             62247 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3VdbeMemInit(Mem *pMem, sqlite3 *db, u16 flags){</span>
+<span class='curline'><a href='../S/185.html#L62249'>pMem</a>             62249 libdb/sqlite3.c   pMem-&gt;flags = flags;</span>
+<span class='curline'><a href='../S/185.html#L62250'>pMem</a>             62250 libdb/sqlite3.c   pMem-&gt;db = db;</span>
+<span class='curline'><a href='../S/185.html#L62251'>pMem</a>             62251 libdb/sqlite3.c   pMem-&gt;szMalloc = 0;</span>
+<span class='curline'><a href='../S/185.html#L62267'>pMem</a>             62267 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3VdbeMemSetNull(Mem *pMem){</span>
+<span class='curline'><a href='../S/185.html#L62268'>pMem</a>             62268 libdb/sqlite3.c   if( VdbeMemDynamic(pMem) ){</span>
+<span class='curline'><a href='../S/185.html#L62269'>pMem</a>             62269 libdb/sqlite3.c     vdbeMemClearExternAndSetNull(pMem);</span>
+<span class='curline'><a href='../S/185.html#L62271'>pMem</a>             62271 libdb/sqlite3.c     pMem-&gt;flags = MEM_Null;</span>
+<span class='curline'><a href='../S/185.html#L62282'>pMem</a>             62282 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3VdbeMemSetZeroBlob(Mem *pMem, int n){</span>
+<span class='curline'><a href='../S/185.html#L62283'>pMem</a>             62283 libdb/sqlite3.c   sqlite3VdbeMemRelease(pMem);</span>
+<span class='curline'><a href='../S/185.html#L62284'>pMem</a>             62284 libdb/sqlite3.c   pMem-&gt;flags = MEM_Blob|MEM_Zero;</span>
+<span class='curline'><a href='../S/185.html#L62285'>pMem</a>             62285 libdb/sqlite3.c   pMem-&gt;n = 0;</span>
+<span class='curline'><a href='../S/185.html#L62287'>pMem</a>             62287 libdb/sqlite3.c   pMem-&gt;u.nZero = n;</span>
+<span class='curline'><a href='../S/185.html#L62288'>pMem</a>             62288 libdb/sqlite3.c   pMem-&gt;enc = SQLITE_UTF8;</span>
+<span class='curline'><a href='../S/185.html#L62289'>pMem</a>             62289 libdb/sqlite3.c   pMem-&gt;z = 0;</span>
+<span class='curline'><a href='../S/185.html#L62297'>pMem</a>             62297 libdb/sqlite3.c static SQLITE_NOINLINE void vdbeReleaseAndSetInt64(Mem *pMem, i64 val){</span>
+<span class='curline'><a href='../S/185.html#L62298'>pMem</a>             62298 libdb/sqlite3.c   sqlite3VdbeMemSetNull(pMem);</span>
+<span class='curline'><a href='../S/185.html#L62299'>pMem</a>             62299 libdb/sqlite3.c   pMem-&gt;u.i = val;</span>
+<span class='curline'><a href='../S/185.html#L62300'>pMem</a>             62300 libdb/sqlite3.c   pMem-&gt;flags = MEM_Int;</span>
+<span class='curline'><a href='../S/185.html#L62307'>pMem</a>             62307 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3VdbeMemSetInt64(Mem *pMem, i64 val){</span>
+<span class='curline'><a href='../S/185.html#L62308'>pMem</a>             62308 libdb/sqlite3.c   if( VdbeMemDynamic(pMem) ){</span>
+<span class='curline'><a href='../S/185.html#L62309'>pMem</a>             62309 libdb/sqlite3.c     vdbeReleaseAndSetInt64(pMem, val);</span>
+<span class='curline'><a href='../S/185.html#L62311'>pMem</a>             62311 libdb/sqlite3.c     pMem-&gt;u.i = val;</span>
+<span class='curline'><a href='../S/185.html#L62312'>pMem</a>             62312 libdb/sqlite3.c     pMem-&gt;flags = MEM_Int;</span>
+<span class='curline'><a href='../S/185.html#L62321'>pMem</a>             62321 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3VdbeMemSetDouble(Mem *pMem, double val){</span>
+<span class='curline'><a href='../S/185.html#L62322'>pMem</a>             62322 libdb/sqlite3.c   sqlite3VdbeMemSetNull(pMem);</span>
+<span class='curline'><a href='../S/185.html#L62324'>pMem</a>             62324 libdb/sqlite3.c     pMem-&gt;u.r = val;</span>
+<span class='curline'><a href='../S/185.html#L62325'>pMem</a>             62325 libdb/sqlite3.c     pMem-&gt;flags = MEM_Real;</span>
+<span class='curline'><a href='../S/185.html#L62334'>pMem</a>             62334 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3VdbeMemSetRowSet(Mem *pMem){</span>
+<span class='curline'><a href='../S/185.html#L62335'>pMem</a>             62335 libdb/sqlite3.c   sqlite3 *db = pMem-&gt;db;</span>
+<span class='curline'><a href='../S/185.html#L62337'>pMem</a>             62337 libdb/sqlite3.c   assert( (pMem-&gt;flags &amp; MEM_RowSet)==0 );</span>
+<span class='curline'><a href='../S/185.html#L62338'>pMem</a>             62338 libdb/sqlite3.c   sqlite3VdbeMemRelease(pMem);</span>
+<span class='curline'><a href='../S/185.html#L62339'>pMem</a>             62339 libdb/sqlite3.c   pMem-&gt;zMalloc = sqlite3DbMallocRaw(db, 64);</span>
+<span class='curline'><a href='../S/185.html#L62341'>pMem</a>             62341 libdb/sqlite3.c     pMem-&gt;flags = MEM_Null;</span>
+<span class='curline'><a href='../S/185.html#L62342'>pMem</a>             62342 libdb/sqlite3.c     pMem-&gt;szMalloc = 0;</span>
+<span class='curline'><a href='../S/185.html#L62344'>pMem</a>             62344 libdb/sqlite3.c     assert( pMem-&gt;zMalloc );</span>
+<span class='curline'><a href='../S/185.html#L62345'>pMem</a>             62345 libdb/sqlite3.c     pMem-&gt;szMalloc = sqlite3DbMallocSize(db, pMem-&gt;zMalloc);</span>
+<span class='curline'><a href='../S/185.html#L62346'>pMem</a>             62346 libdb/sqlite3.c     pMem-&gt;u.pRowSet = sqlite3RowSetInit(db, pMem-&gt;zMalloc, pMem-&gt;szMalloc);</span>
+<span class='curline'><a href='../S/185.html#L62347'>pMem</a>             62347 libdb/sqlite3.c     assert( pMem-&gt;u.pRowSet!=0 );</span>
+<span class='curline'><a href='../S/185.html#L62348'>pMem</a>             62348 libdb/sqlite3.c     pMem-&gt;flags = MEM_RowSet;</span>
+<span class='curline'><a href='../S/185.html#L62377'>pMem</a>             62377 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3VdbeMemAboutToChange(Vdbe *pVdbe, Mem *pMem){</span>
+<span class='curline'><a href='../S/185.html#L62381'>pMem</a>             62381 libdb/sqlite3.c     if( pX-&gt;pScopyFrom==pMem ){</span>
+<span class='curline'><a href='../S/185.html#L62386'>pMem</a>             62386 libdb/sqlite3.c   pMem-&gt;pScopyFrom = 0;</span>
+<span class='curline'><a href='../S/185.html#L62468'>pMem</a>             62468 libdb/sqlite3.c   Mem *pMem,          /* Memory cell to set to string value */</span>
+<span class='curline'><a href='../S/185.html#L62478'>pMem</a>             62478 libdb/sqlite3.c   assert( pMem-&gt;db==0 || sqlite3_mutex_held(pMem-&gt;db-&gt;mutex) );</span>
+<span class='curline'><a href='../S/185.html#L62479'>pMem</a>             62479 libdb/sqlite3.c   assert( (pMem-&gt;flags &amp; MEM_RowSet)==0 );</span>
+<span class='curline'><a href='../S/185.html#L62483'>pMem</a>             62483 libdb/sqlite3.c     sqlite3VdbeMemSetNull(pMem);</span>
+<span class='curline'><a href='../S/185.html#L62487'>pMem</a>             62487 libdb/sqlite3.c   if( pMem-&gt;db ){</span>
+<span class='curline'><a href='../S/185.html#L62488'>pMem</a>             62488 libdb/sqlite3.c     iLimit = pMem-&gt;db-&gt;aLimit[SQLITE_LIMIT_LENGTH];</span>
+<span class='curline'><a href='../S/185.html#L62519'>pMem</a>             62519 libdb/sqlite3.c     if( sqlite3VdbeMemClearAndResize(pMem, MAX(nAlloc,32)) ){</span>
+<span class='curline'><a href='../S/185.html#L62522'>pMem</a>             62522 libdb/sqlite3.c     memcpy(pMem-&gt;z, z, nAlloc);</span>
+<span class='curline'><a href='../S/185.html#L62524'>pMem</a>             62524 libdb/sqlite3.c     sqlite3VdbeMemRelease(pMem);</span>
+<span class='curline'><a href='../S/185.html#L62525'>pMem</a>             62525 libdb/sqlite3.c     pMem-&gt;zMalloc = pMem-&gt;z = (char *)z;</span>
+<span class='curline'><a href='../S/185.html#L62526'>pMem</a>             62526 libdb/sqlite3.c     pMem-&gt;szMalloc = sqlite3DbMallocSize(pMem-&gt;db, pMem-&gt;zMalloc);</span>
+<span class='curline'><a href='../S/185.html#L62528'>pMem</a>             62528 libdb/sqlite3.c     sqlite3VdbeMemRelease(pMem);</span>
+<span class='curline'><a href='../S/185.html#L62529'>pMem</a>             62529 libdb/sqlite3.c     pMem-&gt;z = (char *)z;</span>
+<span class='curline'><a href='../S/185.html#L62530'>pMem</a>             62530 libdb/sqlite3.c     pMem-&gt;xDel = xDel;</span>
+<span class='curline'><a href='../S/185.html#L62534'>pMem</a>             62534 libdb/sqlite3.c   pMem-&gt;n = nByte;</span>
+<span class='curline'><a href='../S/185.html#L62535'>pMem</a>             62535 libdb/sqlite3.c   pMem-&gt;flags = flags;</span>
+<span class='curline'><a href='../S/185.html#L62536'>pMem</a>             62536 libdb/sqlite3.c   pMem-&gt;enc = (enc==0 ? SQLITE_UTF8 : enc);</span>
+<span class='curline'><a href='../S/185.html#L62539'>pMem</a>             62539 libdb/sqlite3.c   if( pMem-&gt;enc!=SQLITE_UTF8 &amp;&amp; sqlite3VdbeMemHandleBom(pMem) ){</span>
+<span class='curline'><a href='../S/185.html#L62572'>pMem</a>             62572 libdb/sqlite3.c   Mem *pMem         /* OUT: Return data in this Mem structure. */</span>
+<span class='curline'><a href='../S/185.html#L62579'>pMem</a>             62579 libdb/sqlite3.c   assert( !VdbeMemDynamic(pMem) );</span>
+<span class='curline'><a href='../S/185.html#L62583'>pMem</a>             62583 libdb/sqlite3.c   assert( (pMem-&gt;flags &amp; MEM_RowSet)==0 );</span>
+<span class='curline'><a href='../S/185.html#L62592'>pMem</a>             62592 libdb/sqlite3.c     pMem-&gt;z = &amp;zData[offset];</span>
+<span class='curline'><a href='../S/185.html#L62593'>pMem</a>             62593 libdb/sqlite3.c     pMem-&gt;flags = MEM_Blob|MEM_Ephem;</span>
+<span class='curline'><a href='../S/185.html#L62594'>pMem</a>             62594 libdb/sqlite3.c     pMem-&gt;n = (int)amt;</span>
+<span class='curline'><a href='../S/185.html#L62596'>pMem</a>             62596 libdb/sqlite3.c     pMem-&gt;flags = MEM_Null;</span>
+<span class='curline'><a href='../S/185.html#L62597'>pMem</a>             62597 libdb/sqlite3.c     if( SQLITE_OK==(rc = sqlite3VdbeMemClearAndResize(pMem, amt+2)) ){</span>
+<span class='curline'><a href='../S/185.html#L62599'>pMem</a>             62599 libdb/sqlite3.c         rc = sqlite3BtreeKey(pCur, offset, amt, pMem-&gt;z);</span>
+<span class='curline'><a href='../S/185.html#L62601'>pMem</a>             62601 libdb/sqlite3.c         rc = sqlite3BtreeData(pCur, offset, amt, pMem-&gt;z);</span>
+<span class='curline'><a href='../S/185.html#L62604'>pMem</a>             62604 libdb/sqlite3.c         pMem-&gt;z[amt] = 0;</span>
+<span class='curline'><a href='../S/185.html#L62605'>pMem</a>             62605 libdb/sqlite3.c         pMem-&gt;z[amt+1] = 0;</span>
+<span class='curline'><a href='../S/185.html#L62606'>pMem</a>             62606 libdb/sqlite3.c         pMem-&gt;flags = MEM_Blob|MEM_Term;</span>
+<span class='curline'><a href='../S/185.html#L62607'>pMem</a>             62607 libdb/sqlite3.c         pMem-&gt;n = (int)amt;</span>
+<span class='curline'><a href='../S/185.html#L62609'>pMem</a>             62609 libdb/sqlite3.c         sqlite3VdbeMemRelease(pMem);</span>
+<span class='curline'><a href='../S/185.html#L63111'>pMem</a>             63111 libdb/sqlite3.c   Mem *pMem = *ppVal;             /* Write result into this Mem object */</span>
+<span class='curline'><a href='../S/185.html#L63128'>pMem</a>             63128 libdb/sqlite3.c   if( pMem==0 ){</span>
+<span class='curline'><a href='../S/185.html#L63129'>pMem</a>             63129 libdb/sqlite3.c     pMem = *ppVal = sqlite3ValueNew(db);</span>
+<span class='curline'><a href='../S/185.html#L63130'>pMem</a>             63130 libdb/sqlite3.c     if( pMem==0 ) return SQLITE_NOMEM;</span>
+<span class='curline'><a href='../S/185.html#L63132'>pMem</a>             63132 libdb/sqlite3.c   sqlite3VdbeSerialGet(&amp;a[iField-szField], t, pMem);</span>
+<span class='curline'><a href='../S/185.html#L63133'>pMem</a>             63133 libdb/sqlite3.c   pMem-&gt;enc = ENC(db);</span>
+<span class='curline'><a href='../S/185.html#L64266'>pMem</a>             64266 libdb/sqlite3.c       Mem *pMem = pOp-&gt;p4.pMem;</span>
+<span class='curline'><a href='../S/185.html#L64267'>pMem</a>             64267 libdb/sqlite3.c       if( pMem-&gt;flags &amp; MEM_Str ){</span>
+<span class='curline'><a href='../S/185.html#L64268'>pMem</a>             64268 libdb/sqlite3.c         zP4 = pMem-&gt;z;</span>
+<span class='curline'><a href='../S/185.html#L64269'>pMem</a>             64269 libdb/sqlite3.c       }else if( pMem-&gt;flags &amp; MEM_Int ){</span>
+<span class='curline'><a href='../S/185.html#L64270'>pMem</a>             64270 libdb/sqlite3.c         sqlite3_snprintf(nTemp, zTemp, "%lld", pMem-&gt;u.i);</span>
+<span class='curline'><a href='../S/185.html#L64271'>pMem</a>             64271 libdb/sqlite3.c       }else if( pMem-&gt;flags &amp; MEM_Real ){</span>
+<span class='curline'><a href='../S/185.html#L64272'>pMem</a>             64272 libdb/sqlite3.c         sqlite3_snprintf(nTemp, zTemp, "%.16g", pMem-&gt;u.r);</span>
+<span class='curline'><a href='../S/185.html#L64273'>pMem</a>             64273 libdb/sqlite3.c       }else if( pMem-&gt;flags &amp; MEM_Null ){</span>
+<span class='curline'><a href='../S/185.html#L64276'>pMem</a>             64276 libdb/sqlite3.c         assert( pMem-&gt;flags &amp; MEM_Blob );</span>
+<span class='curline'><a href='../S/185.html#L64505'>pMem</a>             64505 libdb/sqlite3.c   Mem *pMem = &amp;p-&gt;aMem[1];             /* First Mem of result set */</span>
+<span class='curline'><a href='../S/185.html#L64515'>pMem</a>             64515 libdb/sqlite3.c   releaseMemArray(pMem, 8);</span>
+<span class='curline'><a href='../S/185.html#L64579'>pMem</a>             64579 libdb/sqlite3.c       pMem-&gt;flags = MEM_Int;</span>
+<span class='curline'><a href='../S/185.html#L64580'>pMem</a>             64580 libdb/sqlite3.c       pMem-&gt;u.i = i;                                /* Program counter */</span>
+<span class='curline'><a href='../S/185.html#L64581'>pMem</a>             64581 libdb/sqlite3.c       pMem++;</span>
+<span class='curline'><a href='../S/185.html#L64583'>pMem</a>             64583 libdb/sqlite3.c       pMem-&gt;flags = MEM_Static|MEM_Str|MEM_Term;</span>
+<span class='curline'><a href='../S/185.html#L64584'>pMem</a>             64584 libdb/sqlite3.c       pMem-&gt;z = (char*)sqlite3OpcodeName(pOp-&gt;opcode); /* Opcode */</span>
+<span class='curline'><a href='../S/185.html#L64585'>pMem</a>             64585 libdb/sqlite3.c       assert( pMem-&gt;z!=0 );</span>
+<span class='curline'><a href='../S/185.html#L64586'>pMem</a>             64586 libdb/sqlite3.c       pMem-&gt;n = sqlite3Strlen30(pMem-&gt;z);</span>
+<span class='curline'><a href='../S/185.html#L64587'>pMem</a>             64587 libdb/sqlite3.c       pMem-&gt;enc = SQLITE_UTF8;</span>
+<span class='curline'><a href='../S/185.html#L64588'>pMem</a>             64588 libdb/sqlite3.c       pMem++;</span>
+<span class='curline'><a href='../S/185.html#L64610'>pMem</a>             64610 libdb/sqlite3.c     pMem-&gt;flags = MEM_Int;</span>
+<span class='curline'><a href='../S/185.html#L64611'>pMem</a>             64611 libdb/sqlite3.c     pMem-&gt;u.i = pOp-&gt;p1;                          /* P1 */</span>
+<span class='curline'><a href='../S/185.html#L64612'>pMem</a>             64612 libdb/sqlite3.c     pMem++;</span>
+<span class='curline'><a href='../S/185.html#L64614'>pMem</a>             64614 libdb/sqlite3.c     pMem-&gt;flags = MEM_Int;</span>
+<span class='curline'><a href='../S/185.html#L64615'>pMem</a>             64615 libdb/sqlite3.c     pMem-&gt;u.i = pOp-&gt;p2;                          /* P2 */</span>
+<span class='curline'><a href='../S/185.html#L64616'>pMem</a>             64616 libdb/sqlite3.c     pMem++;</span>
+<span class='curline'><a href='../S/185.html#L64618'>pMem</a>             64618 libdb/sqlite3.c     pMem-&gt;flags = MEM_Int;</span>
+<span class='curline'><a href='../S/185.html#L64619'>pMem</a>             64619 libdb/sqlite3.c     pMem-&gt;u.i = pOp-&gt;p3;                          /* P3 */</span>
+<span class='curline'><a href='../S/185.html#L64620'>pMem</a>             64620 libdb/sqlite3.c     pMem++;</span>
+<span class='curline'><a href='../S/185.html#L64622'>pMem</a>             64622 libdb/sqlite3.c     if( sqlite3VdbeMemClearAndResize(pMem, 32) ){ /* P4 */</span>
+<span class='curline'><a href='../S/185.html#L64626'>pMem</a>             64626 libdb/sqlite3.c     pMem-&gt;flags = MEM_Str|MEM_Term;</span>
+<span class='curline'><a href='../S/185.html#L64627'>pMem</a>             64627 libdb/sqlite3.c     zP4 = displayP4(pOp, pMem-&gt;z, 32);</span>
+<span class='curline'><a href='../S/185.html#L64628'>pMem</a>             64628 libdb/sqlite3.c     if( zP4!=pMem-&gt;z ){</span>
+<span class='curline'><a href='../S/185.html#L64629'>pMem</a>             64629 libdb/sqlite3.c       sqlite3VdbeMemSetStr(pMem, zP4, -1, SQLITE_UTF8, 0);</span>
+<span class='curline'><a href='../S/185.html#L64631'>pMem</a>             64631 libdb/sqlite3.c       assert( pMem-&gt;z!=0 );</span>
+<span class='curline'><a href='../S/185.html#L64632'>pMem</a>             64632 libdb/sqlite3.c       pMem-&gt;n = sqlite3Strlen30(pMem-&gt;z);</span>
+<span class='curline'><a href='../S/185.html#L64633'>pMem</a>             64633 libdb/sqlite3.c       pMem-&gt;enc = SQLITE_UTF8;</span>
+<span class='curline'><a href='../S/185.html#L64635'>pMem</a>             64635 libdb/sqlite3.c     pMem++;</span>
+<span class='curline'><a href='../S/185.html#L64638'>pMem</a>             64638 libdb/sqlite3.c       if( sqlite3VdbeMemClearAndResize(pMem, 4) ){</span>
+<span class='curline'><a href='../S/185.html#L64642'>pMem</a>             64642 libdb/sqlite3.c       pMem-&gt;flags = MEM_Str|MEM_Term;</span>
+<span class='curline'><a href='../S/185.html#L64643'>pMem</a>             64643 libdb/sqlite3.c       pMem-&gt;n = 2;</span>
+<span class='curline'><a href='../S/185.html#L64644'>pMem</a>             64644 libdb/sqlite3.c       sqlite3_snprintf(3, pMem-&gt;z, "%.2x", pOp-&gt;p5);   /* P5 */</span>
+<span class='curline'><a href='../S/185.html#L64645'>pMem</a>             64645 libdb/sqlite3.c       pMem-&gt;enc = SQLITE_UTF8;</span>
+<span class='curline'><a href='../S/185.html#L64646'>pMem</a>             64646 libdb/sqlite3.c       pMem++;</span>
+<span class='curline'><a href='../S/185.html#L64649'>pMem</a>             64649 libdb/sqlite3.c       if( sqlite3VdbeMemClearAndResize(pMem, 500) ){</span>
+<span class='curline'><a href='../S/185.html#L64653'>pMem</a>             64653 libdb/sqlite3.c       pMem-&gt;flags = MEM_Str|MEM_Term;</span>
+<span class='curline'><a href='../S/185.html#L64654'>pMem</a>             64654 libdb/sqlite3.c       pMem-&gt;n = displayComment(pOp, zP4, pMem-&gt;z, 500);</span>
+<span class='curline'><a href='../S/185.html#L64655'>pMem</a>             64655 libdb/sqlite3.c       pMem-&gt;enc = SQLITE_UTF8;</span>
+<span class='curline'><a href='../S/185.html#L64657'>pMem</a>             64657 libdb/sqlite3.c       pMem-&gt;flags = MEM_Null;                       /* Comment */</span>
+<span class='curline'><a href='../S/185.html#L66021'>pMem</a>             66021 libdb/sqlite3.c SQLITE_PRIVATE u32 sqlite3VdbeSerialType(Mem *pMem, int file_format){</span>
+<span class='curline'><a href='../S/185.html#L66022'>pMem</a>             66022 libdb/sqlite3.c   int flags = pMem-&gt;flags;</span>
+<span class='curline'><a href='../S/185.html#L66031'>pMem</a>             66031 libdb/sqlite3.c     i64 i = pMem-&gt;u.i;</span>
+<span class='curline'><a href='../S/185.html#L66052'>pMem</a>             66052 libdb/sqlite3.c   assert( pMem-&gt;db-&gt;mallocFailed || flags&amp;(MEM_Str|MEM_Blob) );</span>
+<span class='curline'><a href='../S/185.html#L66053'>pMem</a>             66053 libdb/sqlite3.c   assert( pMem-&gt;n&gt;=0 );</span>
+<span class='curline'><a href='../S/185.html#L66054'>pMem</a>             66054 libdb/sqlite3.c   n = (u32)pMem-&gt;n;</span>
+<span class='curline'><a href='../S/185.html#L66056'>pMem</a>             66056 libdb/sqlite3.c     n += pMem-&gt;u.nZero;</span>
+<span class='curline'><a href='../S/185.html#L66139'>pMem</a>             66139 libdb/sqlite3.c SQLITE_PRIVATE u32 sqlite3VdbeSerialPut(u8 *buf, Mem *pMem, u32 serial_type){</span>
+<span class='curline'><a href='../S/185.html#L66147'>pMem</a>             66147 libdb/sqlite3.c       assert( sizeof(v)==sizeof(pMem-&gt;u.r) );</span>
+<span class='curline'><a href='../S/185.html#L66148'>pMem</a>             66148 libdb/sqlite3.c       memcpy(&amp;v, &amp;pMem-&gt;u.r, sizeof(v));</span>
+<span class='curline'><a href='../S/185.html#L66151'>pMem</a>             66151 libdb/sqlite3.c       v = pMem-&gt;u.i;</span>
+<span class='curline'><a href='../S/185.html#L66164'>pMem</a>             66164 libdb/sqlite3.c     assert( pMem-&gt;n + ((pMem-&gt;flags &amp; MEM_Zero)?pMem-&gt;u.nZero:0)</span>
+<span class='curline'><a href='../S/185.html#L66166'>pMem</a>             66166 libdb/sqlite3.c     len = pMem-&gt;n;</span>
+<span class='curline'><a href='../S/185.html#L66167'>pMem</a>             66167 libdb/sqlite3.c     memcpy(buf, pMem-&gt;z, len);</span>
+<span class='curline'><a href='../S/185.html#L66196'>pMem</a>             66196 libdb/sqlite3.c   Mem *pMem                     /* Memory cell to write value into */</span>
+<span class='curline'><a href='../S/185.html#L66202'>pMem</a>             66202 libdb/sqlite3.c     pMem-&gt;u.i = *(i64*)&amp;x;</span>
+<span class='curline'><a href='../S/185.html#L66203'>pMem</a>             66203 libdb/sqlite3.c     pMem-&gt;flags = MEM_Int;</span>
+<span class='curline'><a href='../S/185.html#L66204'>pMem</a>             66204 libdb/sqlite3.c     testcase( pMem-&gt;u.i&lt;0 );</span>
+<span class='curline'><a href='../S/185.html#L66218'>pMem</a>             66218 libdb/sqlite3.c     assert( sizeof(x)==8 &amp;&amp; sizeof(pMem-&gt;u.r)==8 );</span>
+<span class='curline'><a href='../S/185.html#L66220'>pMem</a>             66220 libdb/sqlite3.c     memcpy(&amp;pMem-&gt;u.r, &amp;x, sizeof(x));</span>
+<span class='curline'><a href='../S/185.html#L66221'>pMem</a>             66221 libdb/sqlite3.c     pMem-&gt;flags = sqlite3IsNaN(pMem-&gt;u.r) ? MEM_Null : MEM_Real;</span>
+<span class='curline'><a href='../S/185.html#L66228'>pMem</a>             66228 libdb/sqlite3.c   Mem *pMem                     /* Memory cell to write value into */</span>
+<span class='curline'><a href='../S/185.html#L66234'>pMem</a>             66234 libdb/sqlite3.c       pMem-&gt;flags = MEM_Null;</span>
+<span class='curline'><a href='../S/185.html#L66238'>pMem</a>             66238 libdb/sqlite3.c       pMem-&gt;u.i = ONE_BYTE_INT(buf);</span>
+<span class='curline'><a href='../S/185.html#L66239'>pMem</a>             66239 libdb/sqlite3.c       pMem-&gt;flags = MEM_Int;</span>
+<span class='curline'><a href='../S/185.html#L66240'>pMem</a>             66240 libdb/sqlite3.c       testcase( pMem-&gt;u.i&lt;0 );</span>
+<span class='curline'><a href='../S/185.html#L66244'>pMem</a>             66244 libdb/sqlite3.c       pMem-&gt;u.i = TWO_BYTE_INT(buf);</span>
+<span class='curline'><a href='../S/185.html#L66245'>pMem</a>             66245 libdb/sqlite3.c       pMem-&gt;flags = MEM_Int;</span>
+<span class='curline'><a href='../S/185.html#L66246'>pMem</a>             66246 libdb/sqlite3.c       testcase( pMem-&gt;u.i&lt;0 );</span>
+<span class='curline'><a href='../S/185.html#L66250'>pMem</a>             66250 libdb/sqlite3.c       pMem-&gt;u.i = THREE_BYTE_INT(buf);</span>
+<span class='curline'><a href='../S/185.html#L66251'>pMem</a>             66251 libdb/sqlite3.c       pMem-&gt;flags = MEM_Int;</span>
+<span class='curline'><a href='../S/185.html#L66252'>pMem</a>             66252 libdb/sqlite3.c       testcase( pMem-&gt;u.i&lt;0 );</span>
+<span class='curline'><a href='../S/185.html#L66256'>pMem</a>             66256 libdb/sqlite3.c       pMem-&gt;u.i = FOUR_BYTE_INT(buf);</span>
+<span class='curline'><a href='../S/185.html#L66257'>pMem</a>             66257 libdb/sqlite3.c       pMem-&gt;flags = MEM_Int;</span>
+<span class='curline'><a href='../S/185.html#L66258'>pMem</a>             66258 libdb/sqlite3.c       testcase( pMem-&gt;u.i&lt;0 );</span>
+<span class='curline'><a href='../S/185.html#L66262'>pMem</a>             66262 libdb/sqlite3.c       pMem-&gt;u.i = FOUR_BYTE_UINT(buf+2) + (((i64)1)&lt;&lt;32)*TWO_BYTE_INT(buf);</span>
+<span class='curline'><a href='../S/185.html#L66263'>pMem</a>             66263 libdb/sqlite3.c       pMem-&gt;flags = MEM_Int;</span>
+<span class='curline'><a href='../S/185.html#L66264'>pMem</a>             66264 libdb/sqlite3.c       testcase( pMem-&gt;u.i&lt;0 );</span>
+<span class='curline'><a href='../S/185.html#L66271'>pMem</a>             66271 libdb/sqlite3.c       return serialGet(buf,serial_type,pMem);</span>
+<span class='curline'><a href='../S/185.html#L66275'>pMem</a>             66275 libdb/sqlite3.c       pMem-&gt;u.i = serial_type-8;</span>
+<span class='curline'><a href='../S/185.html#L66276'>pMem</a>             66276 libdb/sqlite3.c       pMem-&gt;flags = MEM_Int;</span>
+<span class='curline'><a href='../S/185.html#L66281'>pMem</a>             66281 libdb/sqlite3.c       pMem-&gt;z = (char *)buf;</span>
+<span class='curline'><a href='../S/185.html#L66282'>pMem</a>             66282 libdb/sqlite3.c       pMem-&gt;n = (serial_type-12)/2;</span>
+<span class='curline'><a href='../S/185.html#L66283'>pMem</a>             66283 libdb/sqlite3.c       pMem-&gt;flags = aFlag[serial_type&amp;1];</span>
+<span class='curline'><a href='../S/185.html#L66284'>pMem</a>             66284 libdb/sqlite3.c       return pMem-&gt;n;</span>
+<span class='curline'><a href='../S/185.html#L66351'>pMem</a>             66351 libdb/sqlite3.c   Mem *pMem = p-&gt;aMem;</span>
+<span class='curline'><a href='../S/185.html#L66354'>pMem</a>             66354 libdb/sqlite3.c   assert( EIGHT_BYTE_ALIGNMENT(pMem) );</span>
+<span class='curline'><a href='../S/185.html#L66362'>pMem</a>             66362 libdb/sqlite3.c     pMem-&gt;enc = pKeyInfo-&gt;enc;</span>
+<span class='curline'><a href='../S/185.html#L66363'>pMem</a>             66363 libdb/sqlite3.c     pMem-&gt;db = pKeyInfo-&gt;db;</span>
+<span class='curline'><a href='../S/185.html#L66365'>pMem</a>             66365 libdb/sqlite3.c     pMem-&gt;szMalloc = 0;</span>
+<span class='curline'><a href='../S/185.html#L66366'>pMem</a>             66366 libdb/sqlite3.c     d += sqlite3VdbeSerialGet(&amp;aKey[d], serial_type, pMem);</span>
+<span class='curline'><a href='../S/185.html#L66367'>pMem</a>             66367 libdb/sqlite3.c     pMem++;</span>
+<span class='curline'><a href='../S/185.html#L67233'>pMem</a>             67233 libdb/sqlite3.c     Mem *pMem = &amp;v-&gt;aVar[iVar-1];</span>
+<span class='curline'><a href='../S/185.html#L67234'>pMem</a>             67234 libdb/sqlite3.c     if( 0==(pMem-&gt;flags &amp; MEM_Null) ){</span>
+<span class='curline'><a href='../S/185.html#L67237'>pMem</a>             67237 libdb/sqlite3.c         sqlite3VdbeMemCopy((Mem *)pRet, pMem);</span>
+<span class='curline'><a href='../S/185.html#L67937'>pMem</a>             67937 libdb/sqlite3.c   Mem *pMem = p-&gt;pMem;</span>
+<span class='curline'><a href='../S/185.html#L67938'>pMem</a>             67938 libdb/sqlite3.c   assert( (pMem-&gt;flags &amp; MEM_Agg)==0 );</span>
+<span class='curline'><a href='../S/185.html#L67940'>pMem</a>             67940 libdb/sqlite3.c     sqlite3VdbeMemSetNull(pMem);</span>
+<span class='curline'><a href='../S/185.html#L67941'>pMem</a>             67941 libdb/sqlite3.c     pMem-&gt;z = 0;</span>
+<span class='curline'><a href='../S/185.html#L67943'>pMem</a>             67943 libdb/sqlite3.c     sqlite3VdbeMemClearAndResize(pMem, nByte);</span>
+<span class='curline'><a href='../S/185.html#L67944'>pMem</a>             67944 libdb/sqlite3.c     pMem-&gt;flags = MEM_Agg;</span>
+<span class='curline'><a href='../S/185.html#L67945'>pMem</a>             67945 libdb/sqlite3.c     pMem-&gt;u.pDef = p-&gt;pFunc;</span>
+<span class='curline'><a href='../S/185.html#L67946'>pMem</a>             67946 libdb/sqlite3.c     if( pMem-&gt;z ){</span>
+<span class='curline'><a href='../S/185.html#L67947'>pMem</a>             67947 libdb/sqlite3.c       memset(pMem-&gt;z, 0, nByte);</span>
+<span class='curline'><a href='../S/185.html#L67950'>pMem</a>             67950 libdb/sqlite3.c   return (void*)pMem-&gt;z;</span>
+<span class='curline'><a href='../S/185.html#L67962'>pMem</a>             67962 libdb/sqlite3.c   if( (p-&gt;pMem-&gt;flags &amp; MEM_Agg)==0 ){</span>
+<span class='curline'><a href='../S/185.html#L67965'>pMem</a>             67965 libdb/sqlite3.c     return (void*)p-&gt;pMem-&gt;z;</span>
+<span class='curline'><a href='../S/185.html#L68040'>pMem</a>             68040 libdb/sqlite3.c   assert( p &amp;&amp; p-&gt;pMem &amp;&amp; p-&gt;pFunc &amp;&amp; p-&gt;pFunc-&gt;xStep );</span>
+<span class='curline'><a href='../S/185.html#L68041'>pMem</a>             68041 libdb/sqlite3.c   return p-&gt;pMem-&gt;n;</span>
+<span class='curline'><a href='../S/185.html#L69116'>pMem</a>             69116 libdb/sqlite3.c   Mem *pMem = &amp;p-&gt;aMem[p-&gt;nMem-iCur];</span>
+<span class='curline'><a href='../S/185.html#L69129'>pMem</a>             69129 libdb/sqlite3.c   if( SQLITE_OK==sqlite3VdbeMemClearAndResize(pMem, nByte) ){</span>
+<span class='curline'><a href='../S/185.html#L69130'>pMem</a>             69130 libdb/sqlite3.c     p-&gt;apCsr[iCur] = pCx = (VdbeCursor*)pMem-&gt;z;</span>
+<span class='curline'><a href='../S/185.html#L69137'>pMem</a>             69137 libdb/sqlite3.c           &amp;pMem-&gt;z[ROUND8(sizeof(VdbeCursor))+2*sizeof(u32)*nField];</span>
+<span class='curline'><a href='../S/185.html#L69228'>pMem</a>             69228 libdb/sqlite3.c     Mem *pMem = (Mem*)pVal;</span>
+<span class='curline'><a href='../S/185.html#L69229'>pMem</a>             69229 libdb/sqlite3.c     applyNumericAffinity(pMem, 0);</span>
+<span class='curline'><a href='../S/185.html#L69253'>pMem</a>             69253 libdb/sqlite3.c static u16 SQLITE_NOINLINE computeNumericType(Mem *pMem){</span>
+<span class='curline'><a href='../S/185.html#L69254'>pMem</a>             69254 libdb/sqlite3.c   assert( (pMem-&gt;flags &amp; (MEM_Int|MEM_Real))==0 );</span>
+<span class='curline'><a href='../S/185.html#L69255'>pMem</a>             69255 libdb/sqlite3.c   assert( (pMem-&gt;flags &amp; (MEM_Str|MEM_Blob))!=0 );</span>
+<span class='curline'><a href='../S/185.html#L69256'>pMem</a>             69256 libdb/sqlite3.c   if( sqlite3AtoF(pMem-&gt;z, &amp;pMem-&gt;u.r, pMem-&gt;n, pMem-&gt;enc)==0 ){</span>
+<span class='curline'><a href='../S/185.html#L69259'>pMem</a>             69259 libdb/sqlite3.c   if( sqlite3Atoi64(pMem-&gt;z, &amp;pMem-&gt;u.i, pMem-&gt;n, pMem-&gt;enc)==SQLITE_OK ){</span>
+<span class='curline'><a href='../S/185.html#L69272'>pMem</a>             69272 libdb/sqlite3.c static u16 numericType(Mem *pMem){</span>
+<span class='curline'><a href='../S/185.html#L69273'>pMem</a>             69273 libdb/sqlite3.c   if( pMem-&gt;flags &amp; (MEM_Int|MEM_Real) ){</span>
+<span class='curline'><a href='../S/185.html#L69274'>pMem</a>             69274 libdb/sqlite3.c     return pMem-&gt;flags &amp; (MEM_Int|MEM_Real);</span>
+<span class='curline'><a href='../S/185.html#L69276'>pMem</a>             69276 libdb/sqlite3.c   if( pMem-&gt;flags &amp; (MEM_Str|MEM_Blob) ){</span>
+<span class='curline'><a href='../S/185.html#L69277'>pMem</a>             69277 libdb/sqlite3.c     return computeNumericType(pMem);</span>
+<span class='curline'><a href='../S/185.html#L69287'>pMem</a>             69287 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3VdbeMemPrettyPrint(Mem *pMem, char *zBuf){</span>
+<span class='curline'><a href='../S/185.html#L69289'>pMem</a>             69289 libdb/sqlite3.c   int f = pMem-&gt;flags;</span>
+<span class='curline'><a href='../S/185.html#L69311'>pMem</a>             69311 libdb/sqlite3.c     sqlite3_snprintf(100, zCsr, "%d[", pMem-&gt;n);</span>
+<span class='curline'><a href='../S/185.html#L69313'>pMem</a>             69313 libdb/sqlite3.c     for(i=0; i&lt;16 &amp;&amp; i&lt;pMem-&gt;n; i++){</span>
+<span class='curline'><a href='../S/185.html#L69314'>pMem</a>             69314 libdb/sqlite3.c       sqlite3_snprintf(100, zCsr, "%02X", ((int)pMem-&gt;z[i] &amp; 0xFF));</span>
+<span class='curline'><a href='../S/185.html#L69317'>pMem</a>             69317 libdb/sqlite3.c     for(i=0; i&lt;16 &amp;&amp; i&lt;pMem-&gt;n; i++){</span>
+<span class='curline'><a href='../S/185.html#L69318'>pMem</a>             69318 libdb/sqlite3.c       char z = pMem-&gt;z[i];</span>
+<span class='curline'><a href='../S/185.html#L69323'>pMem</a>             69323 libdb/sqlite3.c     sqlite3_snprintf(100, zCsr, "]%s", encnames[pMem-&gt;enc]);</span>
+<span class='curline'><a href='../S/185.html#L69326'>pMem</a>             69326 libdb/sqlite3.c       sqlite3_snprintf(100, zCsr,"+%dz",pMem-&gt;u.nZero);</span>
+<span class='curline'><a href='../S/185.html#L69346'>pMem</a>             69346 libdb/sqlite3.c     sqlite3_snprintf(100, &amp;zBuf[k], "%d", pMem-&gt;n);</span>
+<span class='curline'><a href='../S/185.html#L69349'>pMem</a>             69349 libdb/sqlite3.c     for(j=0; j&lt;15 &amp;&amp; j&lt;pMem-&gt;n; j++){</span>
+<span class='curline'><a href='../S/185.html#L69350'>pMem</a>             69350 libdb/sqlite3.c       u8 c = pMem-&gt;z[j];</span>
+<span class='curline'><a href='../S/185.html#L69358'>pMem</a>             69358 libdb/sqlite3.c     sqlite3_snprintf(100,&amp;zBuf[k], encnames[pMem-&gt;enc]);</span>
+<span class='curline'><a href='../S/185.html#L70250'>pMem</a>             70250 libdb/sqlite3.c   Mem *pMem;</span>
+<span class='curline'><a href='../S/185.html#L70305'>pMem</a>             70305 libdb/sqlite3.c   pMem = p-&gt;pResultSet = &amp;aMem[pOp-&gt;p1];</span>
+<span class='curline'><a href='../S/185.html#L70307'>pMem</a>             70307 libdb/sqlite3.c     assert( memIsValid(&amp;pMem[i]) );</span>
+<span class='curline'><a href='../S/185.html#L70308'>pMem</a>             70308 libdb/sqlite3.c     Deephemeralize(&amp;pMem[i]);</span>
+<span class='curline'><a href='../S/185.html#L70309'>pMem</a>             70309 libdb/sqlite3.c     assert( (pMem[i].flags &amp; MEM_Ephem)==0</span>
+<span class='curline'><a href='../S/185.html#L70310'>pMem</a>             70310 libdb/sqlite3.c             || (pMem[i].flags &amp; (MEM_Str|MEM_Blob))==0 );</span>
+<span class='curline'><a href='../S/185.html#L70311'>pMem</a>             70311 libdb/sqlite3.c     sqlite3VdbeMemNulTerminate(&amp;pMem[i]);</span>
+<span class='curline'><a href='../S/185.html#L70312'>pMem</a>             70312 libdb/sqlite3.c     REGISTER_TRACE(pOp-&gt;p1+i, &amp;pMem[i]);</span>
+<span class='curline'><a href='../S/185.html#L71448'>pMem</a>             71448 libdb/sqlite3.c         sqlite3VdbeMemShallowCopy(pDest, pOp-&gt;p4.pMem, MEM_Static);</span>
+<span class='curline'><a href='../S/185.html#L72931'>pMem</a>             72931 libdb/sqlite3.c   Mem *pMem;             /* Register holding largest rowid for AUTOINCREMENT */</span>
+<span class='curline'><a href='../S/185.html#L72994'>pMem</a>             72994 libdb/sqlite3.c         pMem = &amp;pFrame-&gt;aMem[pOp-&gt;p3];</span>
+<span class='curline'><a href='../S/185.html#L72998'>pMem</a>             72998 libdb/sqlite3.c         pMem = &amp;aMem[pOp-&gt;p3];</span>
+<span class='curline'><a href='../S/185.html#L72999'>pMem</a>             72999 libdb/sqlite3.c         memAboutToChange(p, pMem);</span>
+<span class='curline'><a href='../S/185.html#L73001'>pMem</a>             73001 libdb/sqlite3.c       assert( memIsValid(pMem) );</span>
+<span class='curline'><a href='../S/185.html#L73003'>pMem</a>             73003 libdb/sqlite3.c       REGISTER_TRACE(pOp-&gt;p3, pMem);</span>
+<span class='curline'><a href='../S/185.html#L73004'>pMem</a>             73004 libdb/sqlite3.c       sqlite3VdbeMemIntegerify(pMem);</span>
+<span class='curline'><a href='../S/185.html#L73005'>pMem</a>             73005 libdb/sqlite3.c       assert( (pMem-&gt;flags &amp; MEM_Int)!=0 );  /* mem(P3) holds an integer */</span>
+<span class='curline'><a href='../S/185.html#L73006'>pMem</a>             73006 libdb/sqlite3.c       if( pMem-&gt;u.i==MAX_ROWID || pC-&gt;useRandomRowid ){</span>
+<span class='curline'><a href='../S/185.html#L73010'>pMem</a>             73010 libdb/sqlite3.c       if( v&lt;pMem-&gt;u.i+1 ){</span>
+<span class='curline'><a href='../S/185.html#L73011'>pMem</a>             73011 libdb/sqlite3.c         v = pMem-&gt;u.i + 1;</span>
+<span class='curline'><a href='../S/185.html#L73013'>pMem</a>             73013 libdb/sqlite3.c       pMem-&gt;u.i = v;</span>
+<span class='curline'><a href='../S/185.html#L74346'>pMem</a>             74346 libdb/sqlite3.c   Mem *pMem;              /* Used to iterate through memory cells */</span>
+<span class='curline'><a href='../S/185.html#L74417'>pMem</a>             74417 libdb/sqlite3.c     for(pMem=VdbeFrameMem(pFrame); pMem!=pEnd; pMem++){</span>
+<span class='curline'><a href='../S/185.html#L74418'>pMem</a>             74418 libdb/sqlite3.c       pMem-&gt;flags = MEM_Undefined;</span>
+<span class='curline'><a href='../S/185.html#L74419'>pMem</a>             74419 libdb/sqlite3.c       pMem-&gt;db = db;</span>
+<span class='curline'><a href='../S/185.html#L74612'>pMem</a>             74612 libdb/sqlite3.c   Mem *pMem;</span>
+<span class='curline'><a href='../S/185.html#L74630'>pMem</a>             74630 libdb/sqlite3.c   ctx.pMem = pMem = &amp;aMem[pOp-&gt;p3];</span>
+<span class='curline'><a href='../S/185.html#L74631'>pMem</a>             74631 libdb/sqlite3.c   pMem-&gt;n++;</span>
+<span class='curline'><a href='../S/185.html#L74666'>pMem</a>             74666 libdb/sqlite3.c   Mem *pMem;</span>
+<span class='curline'><a href='../S/185.html#L74668'>pMem</a>             74668 libdb/sqlite3.c   pMem = &amp;aMem[pOp-&gt;p1];</span>
+<span class='curline'><a href='../S/185.html#L74669'>pMem</a>             74669 libdb/sqlite3.c   assert( (pMem-&gt;flags &amp; ~(MEM_Null|MEM_Agg))==0 );</span>
+<span class='curline'><a href='../S/185.html#L74670'>pMem</a>             74670 libdb/sqlite3.c   rc = sqlite3VdbeMemFinalize(pMem, pOp-&gt;p4.pFunc);</span>
+<span class='curline'><a href='../S/185.html#L74672'>pMem</a>             74672 libdb/sqlite3.c     sqlite3SetString(&amp;p-&gt;zErrMsg, db, "%s", sqlite3_value_text(pMem));</span>
+<span class='curline'><a href='../S/185.html#L74674'>pMem</a>             74674 libdb/sqlite3.c   sqlite3VdbeChangeEncoding(pMem, encoding);</span>
+<span class='curline'><a href='../S/185.html#L74675'>pMem</a>             74675 libdb/sqlite3.c   UPDATE_MAX_BLOBSIZE(pMem);</span>
+<span class='curline'><a href='../S/185.html#L74676'>pMem</a>             74676 libdb/sqlite3.c   if( sqlite3VdbeMemTooBig(pMem) ){</span>
+<span class='curline'><a href='../S/185.html#L74697'>pMem</a>             74697 libdb/sqlite3.c   Mem *pMem;                      /* Write results here */</span>
+<span class='curline'><a href='../S/185.html#L74711'>pMem</a>             74711 libdb/sqlite3.c   for(i=0, pMem = &amp;aMem[pOp-&gt;p3]; i&lt;3; i++, pMem++){</span>
+<span class='curline'><a href='../S/185.html#L74712'>pMem</a>             74712 libdb/sqlite3.c     sqlite3VdbeMemSetInt64(pMem, (i64)aRes[i]);</span>
+</pre>
+</body>
+</html>

@@ -1,0 +1,193 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>libparser/asm_parse.y</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/405.html'>libparser</a>/asm_parse.y</h2>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L148'>[^]</a><a href='#L163'>[v]</a>[top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L148' title='Defined at 148.'>assembly</a></li>
+<li><a href='#L163' title='Defined at 163.'>yyerror</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <strong class='reserved'>%{</strong>
+<a id='L2' name='L2'></a>   2 <em class='comment'>/*</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> * Copyright (c) 2004, 2010 Tama Communications Corporation</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> *</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> * This file is part of GNU GLOBAL.</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> *</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> * This program is free software: you can redistribute it and/or modify</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * it under the terms of the GNU General Public License as published by</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * the Free Software Foundation, either version 3 of the License, or</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> * (at your option) any later version.</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> * </em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> * This program is distributed in the hope that it will be useful,</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> * GNU General Public License for more details.</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> * </em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> * You should have received a copy of the GNU General Public License</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> */</em>
+<a id='L20' name='L20'></a>  20 
+<a id='L21' name='L21'></a>  21 <em class='sharp'>#ifdef</em> <a href='../Y/251.html' title='Multiple used in 98 places.'>HAVE_CONFIG_H</a>
+<a id='L22' name='L22'></a>  22 <em class='sharp'>#include</em> &lt;config.h&gt;
+<a id='L23' name='L23'></a>  23 <em class='sharp'>#endif</em>
+<a id='L24' name='L24'></a>  24 <em class='sharp'>#include</em> &lt;assert.h&gt;
+<a id='L25' name='L25'></a>  25 <em class='sharp'>#include</em> &lt;ctype.h&gt;
+<a id='L26' name='L26'></a>  26 <em class='sharp'>#ifdef</em> <a href='../Y/303.html' title='Multiple used in 57 places.'>HAVE_STRING_H</a>
+<a id='L27' name='L27'></a>  27 <em class='sharp'>#include</em> &lt;string.h&gt;
+<a id='L28' name='L28'></a>  28 <em class='sharp'>#else</em>
+<a id='L29' name='L29'></a>  29 <em class='sharp'>#include</em> &lt;strings.h&gt;
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#endif</em>
+<a id='L31' name='L31'></a>  31 
+<a id='L32' name='L32'></a>  32 <em class='sharp'>#include</em> "<a href='249.html'>internal.h</a>"
+<a id='L33' name='L33'></a>  33 <em class='sharp'>#include</em> "<a href='287.html'>die.h</a>"
+<a id='L34' name='L34'></a>  34 <em class='sharp'>#include</em> "<a href='314.html'>linetable.h</a>"
+<a id='L35' name='L35'></a>  35 <em class='sharp'>#include</em> "<a href='341.html'>strbuf.h</a>"
+<a id='L36' name='L36'></a>  36 
+<a id='L37' name='L37'></a>  37 <em class='sharp'>#define</em> <a href='../R/3028.html' title='Multiple referred from 20 places.'>YYLTYPE</a>     <strong class='reserved'>int</strong>
+<a id='L38' name='L38'></a>  38 <em class='sharp'>#define</em> <a href='../R/3027.html' title='Multiple referred from 3 places.'>YYLLOC_DEFAULT</a>(<a href='../Y/74.html' title='Multiple used in 9 places.'>Current</a>, <a href='../Y/568.html' title='Multiple used in 10 places.'>Rhs</a>, <a href='../Y/450.html' title='Multiple used in 162 places.'>N</a>) ((<a href='../Y/74.html' title='Multiple used in 9 places.'>Current</a>) = (<a href='../Y/568.html' title='Multiple used in 10 places.'>Rhs</a>)[1])
+<a id='L39' name='L39'></a>  39 
+<a id='L40' name='L40'></a>  40 <em class='sharp'>#undef</em> <a href='../R/1556.html' title='Multiple referred from 108 places.'>PUT</a>
+<a id='L41' name='L41'></a>  41 <em class='sharp'>#define</em> <a href='../R/1556.html' title='Multiple referred from 108 places.'>PUT</a>(<a href='../Y/7270.html' title='Multiple used in 239 places.'>type</a>, <a href='../Y/7124.html' title='Multiple used in 98 places.'>tag</a>, <a href='../Y/4026.html' title='Multiple used in 42 places.'>lno</a>) <strong class='reserved'>do</strong> <em class='brace'>{</em>                    \
+<a id='L42' name='L42'></a>  42     <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/4000.html' title='Multiple used in 16 places.'>line_image</a> = <a href='../S/313.html#L135' title='Defined at 135 in libutil/linetable.c.'>linetable_get</a>(<a href='../Y/4026.html' title='Multiple used in 42 places.'>lno</a>, <a href='../D/1121.html' title='Multiple defined in 3 places.'>NULL</a>);      \
+<a id='L43' name='L43'></a>  43     <strong class='reserved'>char</strong> *<a href='../Y/4880.html' title='Multiple used in 20 places.'>nl</a> = <a href='../D/7120.html' title='Multiple defined in 2 places.'>strchr</a>(<a href='../Y/4000.html' title='Multiple used in 16 places.'>line_image</a>, '\n');                \
+<a id='L44' name='L44'></a>  44     <strong class='reserved'>if</strong> (<a href='../Y/4880.html' title='Multiple used in 20 places.'>nl</a> != <a href='../D/1121.html' title='Multiple defined in 3 places.'>NULL</a>)                         \
+<a id='L45' name='L45'></a>  45         *<a href='../Y/4880.html' title='Multiple used in 20 places.'>nl</a> = '\0';                     \
+<a id='L46' name='L46'></a>  46     <a href='../Y/5792.html' title='Multiple used in 230 places.'>param</a>-&gt;<a href='../Y/6216.html' title='Multiple used in 19 places.'>put</a>(<a href='../Y/7270.html' title='Multiple used in 239 places.'>type</a>, <a href='../Y/7124.html' title='Multiple used in 98 places.'>tag</a>, <a href='../Y/4026.html' title='Multiple used in 42 places.'>lno</a>, <a href='../Y/5792.html' title='Multiple used in 230 places.'>param</a>-&gt;<a href='../Y/2816.html' title='Multiple used in 263 places.'>file</a>, <a href='../Y/4000.html' title='Multiple used in 16 places.'>line_image</a>, <a href='../Y/5792.html' title='Multiple used in 230 places.'>param</a>-&gt;<a href='../Y/1554.html' title='Multiple used in 71 places.'>arg</a>);\
+<a id='L47' name='L47'></a>  47     <strong class='reserved'>if</strong> (<a href='../Y/4880.html' title='Multiple used in 20 places.'>nl</a> != <a href='../D/1121.html' title='Multiple defined in 3 places.'>NULL</a>)                         \
+<a id='L48' name='L48'></a>  48         *<a href='../Y/4880.html' title='Multiple used in 20 places.'>nl</a> = '\n';                     \
+<a id='L49' name='L49'></a>  49 <em class='brace'>}</em> <strong class='reserved'>while</strong> (0)
+<a id='L50' name='L50'></a>  50 
+<a id='L51' name='L51'></a>  51 <em class='sharp'>#define</em> <a href='../R/611.html' title='Multiple referred from 22 places.'>GET_SYM</a>(<a href='../Y/4976.html' title='Multiple used in 207 places.'>offset</a>) (<a href='../D/3630.html' title='Multiple defined in 2 places.'>assert</a>((<a href='../Y/4976.html' title='Multiple used in 207 places.'>offset</a>) &lt; <a href='../S/341.html#L102' title='Defined at 102 in libutil/strbuf.h.'>strbuf_getlen</a>(<a href='../Y/1613.html' title='Multiple used in 33 places.'>asm_symtable</a>)),\
+<a id='L52' name='L52'></a>  52              &amp;<a href='../S/340.html#L309' title='Defined at 309 in libutil/strbuf.c.'>strbuf_value</a>(<a href='../Y/1613.html' title='Multiple used in 33 places.'>asm_symtable</a>)[<a href='../Y/4976.html' title='Multiple used in 207 places.'>offset</a>])
+<a id='L53' name='L53'></a>  53 
+<a id='L54' name='L54'></a>  54 <a href='../S/341.html#L64' title='Defined at 64 in libutil/strbuf.h.'>STRBUF</a> *<a href='../Y/1613.html' title='Multiple used in 33 places.'>asm_symtable</a>;
+<a id='L55' name='L55'></a>  55 
+<a id='L56' name='L56'></a>  56 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong> <a href='../D/7690.html' title='Multiple defined in 3 places.'>yyerror</a>(<strong class='reserved'>const</strong> <strong class='reserved'>struct</strong> <a href='../S/257.html#L53' title='Defined at 53 in libparser/parser.h.'>parser_param</a> *, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *);
+<a id='L57' name='L57'></a>  57 
+<a id='L58' name='L58'></a>  58 <strong class='reserved'>%}</strong>
+<a id='L59' name='L59'></a>  59 
+<a id='L60' name='L60'></a>  60 <strong class='reserved'>%token</strong> <a href='../D/19.html' title='Multiple defined in 2 places.'>ASM_CONST</a>        <em class='comment'>/* number, string, character */</em>
+<a id='L61' name='L61'></a>  61 
+<a id='L62' name='L62'></a>  62 <strong class='reserved'>%token</strong> <a href='../D/18.html' title='Multiple defined in 2 places.'>ASM_CALL</a>         <em class='comment'>/* call, jsr */</em>
+<a id='L63' name='L63'></a>  63 <strong class='reserved'>%token</strong> <a href='../D/22.html' title='Multiple defined in 2 places.'>ASM_ENTRY</a>        <em class='comment'>/* ENTRY, ALTENTRY, ... */</em>
+<a id='L64' name='L64'></a>  64 <strong class='reserved'>%token</strong> <a href='../D/24.html' title='Multiple defined in 2 places.'>ASM_EXT</a>          <em class='comment'>/* EXT, SYMBOL_NAME, ... */</em>
+<a id='L65' name='L65'></a>  65 <strong class='reserved'>%token</strong> <a href='../D/27.html' title='Multiple defined in 2 places.'>ASM_SYMBOL</a>
+<a id='L66' name='L66'></a>  66 <strong class='reserved'>%token</strong> <a href='../D/25.html' title='Multiple defined in 2 places.'>ASM_LABEL</a>        <em class='comment'>/* ^sym */</em>
+<a id='L67' name='L67'></a>  67 
+<a id='L68' name='L68'></a>  68 <strong class='reserved'>%token</strong> <a href='../D/20.html' title='Multiple defined in 2 places.'>ASM_DEFINE</a> "#define"
+<a id='L69' name='L69'></a>  69 <strong class='reserved'>%token</strong> <a href='../D/28.html' title='Multiple defined in 2 places.'>ASM_UNDEF</a> "#undef"
+<a id='L70' name='L70'></a>  70 <strong class='reserved'>%token</strong> <a href='../D/21.html' title='Multiple defined in 2 places.'>ASM_DIRECTIVE</a>        <em class='comment'>/* #xxx */</em>
+<a id='L71' name='L71'></a>  71 
+<a id='L72' name='L72'></a>  72 <strong class='reserved'>%token</strong> <a href='../D/26.html' title='Multiple defined in 2 places.'>ASM_MACRO</a>        <em class='comment'>/* .macro */</em>
+<a id='L73' name='L73'></a>  73 <strong class='reserved'>%token</strong> <a href='../D/23.html' title='Multiple defined in 2 places.'>ASM_EQU</a>          <em class='comment'>/* .equ */</em>
+<a id='L74' name='L74'></a>  74 
+<a id='L75' name='L75'></a>  75 <strong class='reserved'>%start</strong> <a href='../Y/3623.html' title='Multiple used in 43 places.'>input</a>
+<a id='L76' name='L76'></a>  76 <strong class='reserved'>%name-prefix</strong> "asm_"
+<a id='L77' name='L77'></a>  77 
+<a id='L78' name='L78'></a>  78 <strong class='reserved'>%parse-param</strong> <em class='brace'>{</em> <strong class='reserved'>const</strong> <strong class='reserved'>struct</strong> <a href='../S/257.html#L53' title='Defined at 53 in libparser/parser.h.'>parser_param</a> *<a href='../Y/5792.html' title='Multiple used in 230 places.'>param</a> <em class='brace'>}</em>
+<a id='L79' name='L79'></a>  79 <strong class='reserved'>%lex-param</strong> <em class='brace'>{</em> <strong class='reserved'>const</strong> <strong class='reserved'>struct</strong> <a href='../S/257.html#L53' title='Defined at 53 in libparser/parser.h.'>parser_param</a> *<a href='../Y/5792.html' title='Multiple used in 230 places.'>param</a> <em class='brace'>}</em>
+<a id='L80' name='L80'></a>  80 
+<a id='L81' name='L81'></a>  81 <strong class='reserved'>%%</strong>
+<a id='L82' name='L82'></a>  82 
+<a id='L83' name='L83'></a>  83 <a href='../Y/3623.html' title='Multiple used in 43 places.'>input</a>:  <em class='comment'>/* empty */</em>
+<a id='L84' name='L84'></a>  84     | <a href='../Y/3623.html' title='Multiple used in 43 places.'>input</a> <a href='../Y/3999.html' title='Multiple used in 109 places.'>line</a>
+<a id='L85' name='L85'></a>  85 ;
+<a id='L86' name='L86'></a>  86 
+<a id='L87' name='L87'></a>  87 <a href='../Y/3999.html' title='Multiple used in 109 places.'>line</a>:   <a href='../D/22.html' title='Multiple defined in 2 places.'>ASM_ENTRY</a> '(' <a href='../D/27.html' title='Multiple defined in 2 places.'>ASM_SYMBOL</a> ')' <a href='../Y/2696.html' title='Multiple used in 31 places.'>error</a> '\n'
+<a id='L88' name='L88'></a>  88         <em class='brace'>{</em>
+<a id='L89' name='L89'></a>  89             <a href='../D/1624.html' title='Multiple defined in 10 places.'>PUT</a>(<a href='../S/257.html#L35' title='Defined at 35 in libparser/parser.h.'>PARSER_REF_SYM</a>, <a href='../D/634.html' title='Multiple defined in 2 places.'>GET_SYM</a>($1), @1);
+<a id='L90' name='L90'></a>  90             <a href='../D/1624.html' title='Multiple defined in 10 places.'>PUT</a>(<a href='../S/257.html#L33' title='Defined at 33 in libparser/parser.h.'>PARSER_DEF</a>, <a href='../D/634.html' title='Multiple defined in 2 places.'>GET_SYM</a>($3), @3);
+<a id='L91' name='L91'></a>  91             <a href='../S/340.html#L125' title='Defined at 125 in libutil/strbuf.c.'>strbuf_reset</a>(<a href='../Y/1613.html' title='Multiple used in 33 places.'>asm_symtable</a>);
+<a id='L92' name='L92'></a>  92         <em class='brace'>}</em>
+<a id='L93' name='L93'></a>  93     | <a href='../D/18.html' title='Multiple defined in 2 places.'>ASM_CALL</a> <a href='../D/27.html' title='Multiple defined in 2 places.'>ASM_SYMBOL</a> <a href='../Y/2696.html' title='Multiple used in 31 places.'>error</a> '\n'
+<a id='L94' name='L94'></a>  94         <em class='brace'>{</em>
+<a id='L95' name='L95'></a>  95             <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/7031.html' title='Multiple used in 26 places.'>sym</a> = <a href='../D/634.html' title='Multiple defined in 2 places.'>GET_SYM</a>($2);
+<a id='L96' name='L96'></a>  96 
+<a id='L97' name='L97'></a>  97             <strong class='reserved'>if</strong> (<a href='../Y/7031.html' title='Multiple used in 26 places.'>sym</a>[0] == '_') <em class='brace'>{</em>
+<a id='L98' name='L98'></a>  98                 <strong class='reserved'>int</strong> <a href='../Y/1956.html' title='Multiple used in 1519 places.'>c</a> = (<strong class='reserved'>unsigned</strong> <strong class='reserved'>char</strong>)<a href='../Y/7031.html' title='Multiple used in 26 places.'>sym</a>[1];
+<a id='L99' name='L99'></a>  99 
+<a id='L100' name='L100'></a> 100                 <strong class='reserved'>if</strong> (<a href='../Y/3785.html' title='Multiple used in 12 places.'>isalpha</a>(<a href='../Y/1956.html' title='Multiple used in 1519 places.'>c</a>) || <a href='../Y/1956.html' title='Multiple used in 1519 places.'>c</a> == '_' || <a href='../Y/1956.html' title='Multiple used in 1519 places.'>c</a> &gt;= 0x80)
+<a id='L101' name='L101'></a> 101                     <a href='../D/1624.html' title='Multiple defined in 10 places.'>PUT</a>(<a href='../S/257.html#L35' title='Defined at 35 in libparser/parser.h.'>PARSER_REF_SYM</a>, &amp;<a href='../Y/7031.html' title='Multiple used in 26 places.'>sym</a>[1], @2);
+<a id='L102' name='L102'></a> 102             <em class='brace'>}</em>
+<a id='L103' name='L103'></a> 103             <a href='../S/340.html#L125' title='Defined at 125 in libutil/strbuf.c.'>strbuf_reset</a>(<a href='../Y/1613.html' title='Multiple used in 33 places.'>asm_symtable</a>);
+<a id='L104' name='L104'></a> 104         <em class='brace'>}</em>
+<a id='L105' name='L105'></a> 105     | <a href='../D/18.html' title='Multiple defined in 2 places.'>ASM_CALL</a> <a href='../D/24.html' title='Multiple defined in 2 places.'>ASM_EXT</a> '(' <a href='../D/27.html' title='Multiple defined in 2 places.'>ASM_SYMBOL</a> ')' <a href='../Y/2696.html' title='Multiple used in 31 places.'>error</a> '\n'
+<a id='L106' name='L106'></a> 106         <em class='brace'>{</em>
+<a id='L107' name='L107'></a> 107             <a href='../D/1624.html' title='Multiple defined in 10 places.'>PUT</a>(<a href='../S/257.html#L35' title='Defined at 35 in libparser/parser.h.'>PARSER_REF_SYM</a>, <a href='../D/634.html' title='Multiple defined in 2 places.'>GET_SYM</a>($2), @2);
+<a id='L108' name='L108'></a> 108             <a href='../D/1624.html' title='Multiple defined in 10 places.'>PUT</a>(<a href='../S/257.html#L35' title='Defined at 35 in libparser/parser.h.'>PARSER_REF_SYM</a>, <a href='../D/634.html' title='Multiple defined in 2 places.'>GET_SYM</a>($4), @4);
+<a id='L109' name='L109'></a> 109             <a href='../S/340.html#L125' title='Defined at 125 in libutil/strbuf.c.'>strbuf_reset</a>(<a href='../Y/1613.html' title='Multiple used in 33 places.'>asm_symtable</a>);
+<a id='L110' name='L110'></a> 110         <em class='brace'>}</em>
+<a id='L111' name='L111'></a> 111     | "#define" <a href='../D/27.html' title='Multiple defined in 2 places.'>ASM_SYMBOL</a> <a href='../Y/2696.html' title='Multiple used in 31 places.'>error</a> '\n'
+<a id='L112' name='L112'></a> 112         <em class='brace'>{</em>
+<a id='L113' name='L113'></a> 113             <a href='../D/1624.html' title='Multiple defined in 10 places.'>PUT</a>(<a href='../S/257.html#L33' title='Defined at 33 in libparser/parser.h.'>PARSER_DEF</a>, <a href='../D/634.html' title='Multiple defined in 2 places.'>GET_SYM</a>($2), @2);
+<a id='L114' name='L114'></a> 114             <a href='../S/340.html#L125' title='Defined at 125 in libutil/strbuf.c.'>strbuf_reset</a>(<a href='../Y/1613.html' title='Multiple used in 33 places.'>asm_symtable</a>);
+<a id='L115' name='L115'></a> 115         <em class='brace'>}</em>
+<a id='L116' name='L116'></a> 116     | "#undef" <a href='../D/27.html' title='Multiple defined in 2 places.'>ASM_SYMBOL</a> <a href='../Y/2696.html' title='Multiple used in 31 places.'>error</a> '\n'
+<a id='L117' name='L117'></a> 117         <em class='brace'>{</em>
+<a id='L118' name='L118'></a> 118             <a href='../D/1624.html' title='Multiple defined in 10 places.'>PUT</a>(<a href='../S/257.html#L33' title='Defined at 33 in libparser/parser.h.'>PARSER_DEF</a>, <a href='../D/634.html' title='Multiple defined in 2 places.'>GET_SYM</a>($2), @2);
+<a id='L119' name='L119'></a> 119             <a href='../S/340.html#L125' title='Defined at 125 in libutil/strbuf.c.'>strbuf_reset</a>(<a href='../Y/1613.html' title='Multiple used in 33 places.'>asm_symtable</a>);
+<a id='L120' name='L120'></a> 120         <em class='brace'>}</em>
+<a id='L121' name='L121'></a> 121     | <a href='../D/26.html' title='Multiple defined in 2 places.'>ASM_MACRO</a> <a href='../D/27.html' title='Multiple defined in 2 places.'>ASM_SYMBOL</a> <a href='../Y/2696.html' title='Multiple used in 31 places.'>error</a> '\n'
+<a id='L122' name='L122'></a> 122         <em class='brace'>{</em>
+<a id='L123' name='L123'></a> 123             <a href='../D/1624.html' title='Multiple defined in 10 places.'>PUT</a>(<a href='../S/257.html#L33' title='Defined at 33 in libparser/parser.h.'>PARSER_DEF</a>, <a href='../D/634.html' title='Multiple defined in 2 places.'>GET_SYM</a>($2), @2);
+<a id='L124' name='L124'></a> 124             <a href='../S/340.html#L125' title='Defined at 125 in libutil/strbuf.c.'>strbuf_reset</a>(<a href='../Y/1613.html' title='Multiple used in 33 places.'>asm_symtable</a>);
+<a id='L125' name='L125'></a> 125         <em class='brace'>}</em>
+<a id='L126' name='L126'></a> 126     | <a href='../D/25.html' title='Multiple defined in 2 places.'>ASM_LABEL</a> <a href='../D/26.html' title='Multiple defined in 2 places.'>ASM_MACRO</a> <a href='../Y/2696.html' title='Multiple used in 31 places.'>error</a> '\n'
+<a id='L127' name='L127'></a> 127         <em class='brace'>{</em>
+<a id='L128' name='L128'></a> 128             <a href='../D/1624.html' title='Multiple defined in 10 places.'>PUT</a>(<a href='../S/257.html#L33' title='Defined at 33 in libparser/parser.h.'>PARSER_DEF</a>, <a href='../D/634.html' title='Multiple defined in 2 places.'>GET_SYM</a>($1), @1);
+<a id='L129' name='L129'></a> 129             <a href='../S/340.html#L125' title='Defined at 125 in libutil/strbuf.c.'>strbuf_reset</a>(<a href='../Y/1613.html' title='Multiple used in 33 places.'>asm_symtable</a>);
+<a id='L130' name='L130'></a> 130         <em class='brace'>}</em>
+<a id='L131' name='L131'></a> 131     | <a href='../D/23.html' title='Multiple defined in 2 places.'>ASM_EQU</a> <a href='../D/27.html' title='Multiple defined in 2 places.'>ASM_SYMBOL</a> ',' <a href='../Y/2696.html' title='Multiple used in 31 places.'>error</a> '\n'
+<a id='L132' name='L132'></a> 132         <em class='brace'>{</em>
+<a id='L133' name='L133'></a> 133             <a href='../D/1624.html' title='Multiple defined in 10 places.'>PUT</a>(<a href='../S/257.html#L33' title='Defined at 33 in libparser/parser.h.'>PARSER_DEF</a>, <a href='../D/634.html' title='Multiple defined in 2 places.'>GET_SYM</a>($2), @2);
+<a id='L134' name='L134'></a> 134             <a href='../S/340.html#L125' title='Defined at 125 in libutil/strbuf.c.'>strbuf_reset</a>(<a href='../Y/1613.html' title='Multiple used in 33 places.'>asm_symtable</a>);
+<a id='L135' name='L135'></a> 135         <em class='brace'>}</em>
+<a id='L136' name='L136'></a> 136     | <a href='../D/25.html' title='Multiple defined in 2 places.'>ASM_LABEL</a> <a href='../D/23.html' title='Multiple defined in 2 places.'>ASM_EQU</a> <a href='../Y/2696.html' title='Multiple used in 31 places.'>error</a> '\n'
+<a id='L137' name='L137'></a> 137         <em class='brace'>{</em>
+<a id='L138' name='L138'></a> 138             <a href='../D/1624.html' title='Multiple defined in 10 places.'>PUT</a>(<a href='../S/257.html#L33' title='Defined at 33 in libparser/parser.h.'>PARSER_DEF</a>, <a href='../D/634.html' title='Multiple defined in 2 places.'>GET_SYM</a>($1), @1);
+<a id='L139' name='L139'></a> 139             <a href='../S/340.html#L125' title='Defined at 125 in libutil/strbuf.c.'>strbuf_reset</a>(<a href='../Y/1613.html' title='Multiple used in 33 places.'>asm_symtable</a>);
+<a id='L140' name='L140'></a> 140         <em class='brace'>}</em>
+<a id='L141' name='L141'></a> 141     | <a href='../Y/2696.html' title='Multiple used in 31 places.'>error</a> '\n'
+<a id='L142' name='L142'></a> 142         <em class='brace'>{</em> <a href='../S/340.html#L125' title='Defined at 125 in libutil/strbuf.c.'>strbuf_reset</a>(<a href='../Y/1613.html' title='Multiple used in 33 places.'>asm_symtable</a>); <em class='brace'>}</em>
+<a id='L143' name='L143'></a> 143 ;
+<a id='L144' name='L144'></a> 144 
+<a id='L145' name='L145'></a> 145 <strong class='reserved'>%%</strong>
+<a id='L146' name='L146'></a> 146 
+<a id='L147' name='L147'></a> 147 <strong class='reserved'>void</strong>
+<a id='L148' name='L148'></a> 148 <a href='../R/3367.html' title='Multiple referred from 2 places.'>assembly</a>(<strong class='reserved'>const</strong> <strong class='reserved'>struct</strong> <a href='../S/257.html#L53' title='Defined at 53 in libparser/parser.h.'>parser_param</a> *<a href='../Y/5792.html' title='Multiple used in 230 places.'>param</a>)
+<a id='L149' name='L149'></a> 149 <em class='brace'>{</em>
+<a id='L150' name='L150'></a> 150     <strong class='reserved'>if</strong> (<a href='../S/313.html#L60' title='Defined at 60 in libutil/linetable.c.'>linetable_open</a>(<a href='../Y/5792.html' title='Multiple used in 230 places.'>param</a>-&gt;<a href='../Y/2816.html' title='Multiple used in 263 places.'>file</a>) == -1)
+<a id='L151' name='L151'></a> 151         <a href='../S/286.html#L57' title='Defined at 57 in libutil/die.c.'>die</a>("'%s' cannot open.", <a href='../Y/5792.html' title='Multiple used in 230 places.'>param</a>-&gt;<a href='../Y/2816.html' title='Multiple used in 263 places.'>file</a>);
+<a id='L152' name='L152'></a> 152 
+<a id='L153' name='L153'></a> 153     <a href='../Y/1613.html' title='Multiple used in 33 places.'>asm_symtable</a> = <a href='../S/340.html#L108' title='Defined at 108 in libutil/strbuf.c.'>strbuf_open</a>(0);
+<a id='L154' name='L154'></a> 154     <a href='../S/238.html#L2605' title='Defined at 2605 in libparser/asm_scan.c.'>asm_initscan</a>();
+<a id='L155' name='L155'></a> 155 
+<a id='L156' name='L156'></a> 156     <a href='../Y/1603.html' title='Multiple used in 5 places.'>asm_parse</a>(<a href='../Y/5792.html' title='Multiple used in 230 places.'>param</a>);
+<a id='L157' name='L157'></a> 157 
+<a id='L158' name='L158'></a> 158     <a href='../S/340.html#L482' title='Defined at 482 in libutil/strbuf.c.'>strbuf_close</a>(<a href='../Y/1613.html' title='Multiple used in 33 places.'>asm_symtable</a>);
+<a id='L159' name='L159'></a> 159     <a href='../S/313.html#L150' title='Defined at 150 in libutil/linetable.c.'>linetable_close</a>();
+<a id='L160' name='L160'></a> 160 <em class='brace'>}</em>
+<a id='L161' name='L161'></a> 161 
+<a id='L162' name='L162'></a> 162 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L163' name='L163'></a> 163 <a href='../R/7204.html' title='Multiple referred from 6 places.'>yyerror</a>(<strong class='reserved'>const</strong> <strong class='reserved'>struct</strong> <a href='../S/257.html#L53' title='Defined at 53 in libparser/parser.h.'>parser_param</a> *<a href='../Y/5792.html' title='Multiple used in 230 places.'>param</a>, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/6533.html' title='Multiple used in 409 places.'>s</a>)
+<a id='L164' name='L164'></a> 164 <em class='brace'>{</em>
+<a id='L165' name='L165'></a> 165 
+<a id='L166' name='L166'></a> 166 <em class='brace'>}</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L148'>[^]</a><a href='#L163'>[v]</a><a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>idset</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/306.html#L42'>idset</a>              42 libutil/idset.c #define IS_EMPTY(idset)	 ((idset)-&gt;min == END_OF_ID ? 1 : 0)</span>
+<span class='curline'><a href='../S/306.html#L92'>idset</a>              92 libutil/idset.c 	IDSET *idset = (IDSET *)check_malloc(sizeof(IDSET));</span>
+<span class='curline'><a href='../S/306.html#L100'>idset</a>             100 libutil/idset.c 	idset-&gt;set = (unsigned long *)check_calloc(sizeof(unsigned long), (size + LONG_BIT - 1) / LONG_BIT);</span>
+<span class='curline'><a href='../S/306.html#L101'>idset</a>             101 libutil/idset.c 	idset-&gt;size = size;</span>
+<span class='curline'><a href='../S/306.html#L106'>idset</a>             106 libutil/idset.c 	idset-&gt;min = idset-&gt;max = idset-&gt;lastid = END_OF_ID;</span>
+<span class='curline'><a href='../S/306.html#L107'>idset</a>             107 libutil/idset.c 	return idset;</span>
+<span class='curline'><a href='../S/306.html#L116'>idset</a>             116 libutil/idset.c idset_empty(IDSET *idset)</span>
+<span class='curline'><a href='../S/306.html#L118'>idset</a>             118 libutil/idset.c 	return IS_EMPTY(idset);</span>
+<span class='curline'><a href='../S/306.html#L127'>idset</a>             127 libutil/idset.c idset_add(IDSET *idset, unsigned int id)</span>
+<span class='curline'><a href='../S/306.html#L129'>idset</a>             129 libutil/idset.c 	int empty = IS_EMPTY(idset);</span>
+<span class='curline'><a href='../S/306.html#L131'>idset</a>             131 libutil/idset.c 	if (id &gt;= idset-&gt;size)</span>
+<span class='curline'><a href='../S/306.html#L133'>idset</a>             133 libutil/idset.c 	idset-&gt;set[id / LONG_BIT] |= bit[id % LONG_BIT];</span>
+<span class='curline'><a href='../S/306.html#L135'>idset</a>             135 libutil/idset.c 		idset-&gt;max = idset-&gt;min = id;</span>
+<span class='curline'><a href='../S/306.html#L136'>idset</a>             136 libutil/idset.c 	else if (id &gt; idset-&gt;max)</span>
+<span class='curline'><a href='../S/306.html#L137'>idset</a>             137 libutil/idset.c 		idset-&gt;max = id;</span>
+<span class='curline'><a href='../S/306.html#L138'>idset</a>             138 libutil/idset.c 	else if (id &lt; idset-&gt;min)</span>
+<span class='curline'><a href='../S/306.html#L139'>idset</a>             139 libutil/idset.c 		idset-&gt;min = id;</span>
+<span class='curline'><a href='../S/306.html#L149'>idset</a>             149 libutil/idset.c idset_contains(IDSET *idset, unsigned int id)</span>
+<span class='curline'><a href='../S/306.html#L151'>idset</a>             151 libutil/idset.c 	if (IS_EMPTY(idset))</span>
+<span class='curline'><a href='../S/306.html#L153'>idset</a>             153 libutil/idset.c 	if (id &lt; idset-&gt;min || id &gt; idset-&gt;max)</span>
+<span class='curline'><a href='../S/306.html#L155'>idset</a>             155 libutil/idset.c 	return (idset-&gt;set[id / LONG_BIT] &amp; bit[id % LONG_BIT]) != 0;</span>
+<span class='curline'><a href='../S/306.html#L165'>idset</a>             165 libutil/idset.c idset_first(IDSET *idset)</span>
+<span class='curline'><a href='../S/306.html#L169'>idset</a>             169 libutil/idset.c 	return idset-&gt;lastid = idset-&gt;min;</span>
+<span class='curline'><a href='../S/306.html#L179'>idset</a>             179 libutil/idset.c idset_next(IDSET *idset)</span>
+<span class='curline'><a href='../S/306.html#L184'>idset</a>             184 libutil/idset.c 	if (IS_EMPTY(idset))</span>
+<span class='curline'><a href='../S/306.html#L186'>idset</a>             186 libutil/idset.c 	if (idset-&gt;lastid &gt;= idset-&gt;max)</span>
+<span class='curline'><a href='../S/306.html#L188'>idset</a>             188 libutil/idset.c 	limit = idset-&gt;max / LONG_BIT + 1;</span>
+<span class='curline'><a href='../S/306.html#L189'>idset</a>             189 libutil/idset.c 	index0 = idset-&gt;lastid / LONG_BIT;</span>
+<span class='curline'><a href='../S/306.html#L190'>idset</a>             190 libutil/idset.c 	index1 = idset-&gt;lastid % LONG_BIT;</span>
+<span class='curline'><a href='../S/306.html#L192'>idset</a>             192 libutil/idset.c 		if (bit[i] &amp; idset-&gt;set[index0])</span>
+<span class='curline'><a href='../S/306.html#L193'>idset</a>             193 libutil/idset.c 			return idset-&gt;lastid = index0 * LONG_BIT + i;</span>
+<span class='curline'><a href='../S/306.html#L195'>idset</a>             195 libutil/idset.c 	for (i = index0; i &lt; limit &amp;&amp; idset-&gt;set[i] == 0; i++)</span>
+<span class='curline'><a href='../S/306.html#L201'>idset</a>             201 libutil/idset.c 		if (bit[i] &amp; idset-&gt;set[index0])</span>
+<span class='curline'><a href='../S/306.html#L202'>idset</a>             202 libutil/idset.c 			return idset-&gt;lastid = index0 * LONG_BIT + i;</span>
+<span class='curline'><a href='../S/306.html#L212'>idset</a>             212 libutil/idset.c idset_count(IDSET *idset)</span>
+<span class='curline'><a href='../S/306.html#L216'>idset</a>             216 libutil/idset.c 	for (id = idset_first(idset); id != END_OF_ID; id = idset_next(idset))</span>
+<span class='curline'><a href='../S/306.html#L224'>idset</a>             224 libutil/idset.c idset_close(IDSET *idset)</span>
+<span class='curline'><a href='../S/306.html#L226'>idset</a>             226 libutil/idset.c 	free(idset-&gt;set);</span>
+<span class='curline'><a href='../S/306.html#L227'>idset</a>             227 libutil/idset.c 	free(idset);</span>
+</pre>
+</body>
+</html>

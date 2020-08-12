@@ -1,0 +1,835 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>pFile</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/185.html#L16083'>pFile</a>            16083 libdb/sqlite3.c   sqlite3_file *pFile, </span>
+<span class='curline'><a href='../S/185.html#L16093'>pFile</a>            16093 libdb/sqlite3.c   rc = pVfs-&gt;xOpen(pVfs, zPath, pFile, flags &amp; 0x87f7f, pFlagsOut);</span>
+<span class='curline'><a href='../S/185.html#L16094'>pFile</a>            16094 libdb/sqlite3.c   assert( rc==SQLITE_OK || pFile-&gt;pMethods==0 );</span>
+<span class='curline'><a href='../S/185.html#L16167'>pFile</a>            16167 libdb/sqlite3.c   sqlite3_file *pFile;</span>
+<span class='curline'><a href='../S/185.html#L16168'>pFile</a>            16168 libdb/sqlite3.c   pFile = (sqlite3_file *)sqlite3MallocZero(pVfs-&gt;szOsFile);</span>
+<span class='curline'><a href='../S/185.html#L16169'>pFile</a>            16169 libdb/sqlite3.c   if( pFile ){</span>
+<span class='curline'><a href='../S/185.html#L16170'>pFile</a>            16170 libdb/sqlite3.c     rc = sqlite3OsOpen(pVfs, zFile, pFile, flags, pOutFlags);</span>
+<span class='curline'><a href='../S/185.html#L16172'>pFile</a>            16172 libdb/sqlite3.c       sqlite3_free(pFile);</span>
+<span class='curline'><a href='../S/185.html#L16174'>pFile</a>            16174 libdb/sqlite3.c       *ppFile = pFile;</span>
+<span class='curline'><a href='../S/185.html#L16179'>pFile</a>            16179 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3OsCloseFree(sqlite3_file *pFile){</span>
+<span class='curline'><a href='../S/185.html#L16181'>pFile</a>            16181 libdb/sqlite3.c   assert( pFile );</span>
+<span class='curline'><a href='../S/185.html#L16182'>pFile</a>            16182 libdb/sqlite3.c   rc = sqlite3OsClose(pFile);</span>
+<span class='curline'><a href='../S/185.html#L16183'>pFile</a>            16183 libdb/sqlite3.c   sqlite3_free(pFile);</span>
+<span class='curline'><a href='../S/185.html#L25975'>pFile</a>            25975 libdb/sqlite3.c static void robust_close(unixFile *pFile, int h, int lineno){</span>
+<span class='curline'><a href='../S/185.html#L25978'>pFile</a>            25978 libdb/sqlite3.c                        pFile ? pFile-&gt;zPath : 0, lineno);</span>
+<span class='curline'><a href='../S/185.html#L25985'>pFile</a>            25985 libdb/sqlite3.c static void closePendingFds(unixFile *pFile){</span>
+<span class='curline'><a href='../S/185.html#L25986'>pFile</a>            25986 libdb/sqlite3.c   unixInodeInfo *pInode = pFile-&gt;pInode;</span>
+<span class='curline'><a href='../S/185.html#L25991'>pFile</a>            25991 libdb/sqlite3.c     robust_close(pFile, p-&gt;fd, __LINE__);</span>
+<span class='curline'><a href='../S/185.html#L26003'>pFile</a>            26003 libdb/sqlite3.c static void releaseInodeInfo(unixFile *pFile){</span>
+<span class='curline'><a href='../S/185.html#L26004'>pFile</a>            26004 libdb/sqlite3.c   unixInodeInfo *pInode = pFile-&gt;pInode;</span>
+<span class='curline'><a href='../S/185.html#L26010'>pFile</a>            26010 libdb/sqlite3.c       closePendingFds(pFile);</span>
+<span class='curline'><a href='../S/185.html#L26038'>pFile</a>            26038 libdb/sqlite3.c   unixFile *pFile,               /* Unix file with file desc used in the key */</span>
+<span class='curline'><a href='../S/185.html#L26052'>pFile</a>            26052 libdb/sqlite3.c   fd = pFile-&gt;h;</span>
+<span class='curline'><a href='../S/185.html#L26055'>pFile</a>            26055 libdb/sqlite3.c     pFile-&gt;lastErrno = errno;</span>
+<span class='curline'><a href='../S/185.html#L26057'>pFile</a>            26057 libdb/sqlite3.c     if( pFile-&gt;lastErrno==EOVERFLOW ) return SQLITE_NOLFS;</span>
+<span class='curline'><a href='../S/185.html#L26073'>pFile</a>            26073 libdb/sqlite3.c   if( statbuf.st_size==0 &amp;&amp; (pFile-&gt;fsFlags &amp; SQLITE_FSFLAGS_IS_MSDOS)!=0 ){</span>
+<span class='curline'><a href='../S/185.html#L26076'>pFile</a>            26076 libdb/sqlite3.c       pFile-&gt;lastErrno = errno;</span>
+<span class='curline'><a href='../S/185.html#L26081'>pFile</a>            26081 libdb/sqlite3.c       pFile-&gt;lastErrno = errno;</span>
+<span class='curline'><a href='../S/185.html#L26090'>pFile</a>            26090 libdb/sqlite3.c   fileId.pId = pFile-&gt;pId;</span>
+<span class='curline'><a href='../S/185.html#L26120'>pFile</a>            26120 libdb/sqlite3.c static int fileHasMoved(unixFile *pFile){</span>
+<span class='curline'><a href='../S/185.html#L26122'>pFile</a>            26122 libdb/sqlite3.c   return pFile-&gt;pInode!=0 &amp;&amp; pFile-&gt;pId!=pFile-&gt;pInode-&gt;fileId.pId;</span>
+<span class='curline'><a href='../S/185.html#L26125'>pFile</a>            26125 libdb/sqlite3.c   return pFile-&gt;pInode!=0 &amp;&amp;</span>
+<span class='curline'><a href='../S/185.html#L26126'>pFile</a>            26126 libdb/sqlite3.c       (osStat(pFile-&gt;zPath, &amp;buf)!=0 || buf.st_ino!=pFile-&gt;pInode-&gt;fileId.ino);</span>
+<span class='curline'><a href='../S/185.html#L26140'>pFile</a>            26140 libdb/sqlite3.c static void verifyDbFile(unixFile *pFile){</span>
+<span class='curline'><a href='../S/185.html#L26143'>pFile</a>            26143 libdb/sqlite3.c   if( pFile-&gt;ctrlFlags &amp; UNIXFILE_WARNED ){</span>
+<span class='curline'><a href='../S/185.html#L26148'>pFile</a>            26148 libdb/sqlite3.c   rc = osFstat(pFile-&gt;h, &amp;buf);</span>
+<span class='curline'><a href='../S/185.html#L26150'>pFile</a>            26150 libdb/sqlite3.c     sqlite3_log(SQLITE_WARNING, "cannot fstat db file %s", pFile-&gt;zPath);</span>
+<span class='curline'><a href='../S/185.html#L26151'>pFile</a>            26151 libdb/sqlite3.c     pFile-&gt;ctrlFlags |= UNIXFILE_WARNED;</span>
+<span class='curline'><a href='../S/185.html#L26154'>pFile</a>            26154 libdb/sqlite3.c   if( buf.st_nlink==0 &amp;&amp; (pFile-&gt;ctrlFlags &amp; UNIXFILE_DELETE)==0 ){</span>
+<span class='curline'><a href='../S/185.html#L26155'>pFile</a>            26155 libdb/sqlite3.c     sqlite3_log(SQLITE_WARNING, "file unlinked while open: %s", pFile-&gt;zPath);</span>
+<span class='curline'><a href='../S/185.html#L26156'>pFile</a>            26156 libdb/sqlite3.c     pFile-&gt;ctrlFlags |= UNIXFILE_WARNED;</span>
+<span class='curline'><a href='../S/185.html#L26160'>pFile</a>            26160 libdb/sqlite3.c     sqlite3_log(SQLITE_WARNING, "multiple links to file: %s", pFile-&gt;zPath);</span>
+<span class='curline'><a href='../S/185.html#L26161'>pFile</a>            26161 libdb/sqlite3.c     pFile-&gt;ctrlFlags |= UNIXFILE_WARNED;</span>
+<span class='curline'><a href='../S/185.html#L26164'>pFile</a>            26164 libdb/sqlite3.c   if( fileHasMoved(pFile) ){</span>
+<span class='curline'><a href='../S/185.html#L26165'>pFile</a>            26165 libdb/sqlite3.c     sqlite3_log(SQLITE_WARNING, "file renamed while open: %s", pFile-&gt;zPath);</span>
+<span class='curline'><a href='../S/185.html#L26166'>pFile</a>            26166 libdb/sqlite3.c     pFile-&gt;ctrlFlags |= UNIXFILE_WARNED;</span>
+<span class='curline'><a href='../S/185.html#L26181'>pFile</a>            26181 libdb/sqlite3.c   unixFile *pFile = (unixFile*)id;</span>
+<span class='curline'><a href='../S/185.html#L26185'>pFile</a>            26185 libdb/sqlite3.c   assert( pFile );</span>
+<span class='curline'><a href='../S/185.html#L26189'>pFile</a>            26189 libdb/sqlite3.c   if( pFile-&gt;pInode-&gt;eFileLock&gt;SHARED_LOCK ){</span>
+<span class='curline'><a href='../S/185.html#L26196'>pFile</a>            26196 libdb/sqlite3.c   if( !reserved &amp;&amp; !pFile-&gt;pInode-&gt;bProcessLock ){</span>
+<span class='curline'><a href='../S/185.html#L26202'>pFile</a>            26202 libdb/sqlite3.c     if( osFcntl(pFile-&gt;h, F_GETLK, &amp;lock) ){</span>
+<span class='curline'><a href='../S/185.html#L26204'>pFile</a>            26204 libdb/sqlite3.c       pFile-&gt;lastErrno = errno;</span>
+<span class='curline'><a href='../S/185.html#L26212'>pFile</a>            26212 libdb/sqlite3.c   OSTRACE(("TEST WR-LOCK %d %d %d (unix)\n", pFile-&gt;h, rc, reserved));</span>
+<span class='curline'><a href='../S/185.html#L26237'>pFile</a>            26237 libdb/sqlite3.c static int unixFileLock(unixFile *pFile, struct flock *pLock){</span>
+<span class='curline'><a href='../S/185.html#L26239'>pFile</a>            26239 libdb/sqlite3.c   unixInodeInfo *pInode = pFile-&gt;pInode;</span>
+<span class='curline'><a href='../S/185.html#L26242'>pFile</a>            26242 libdb/sqlite3.c   if( ((pFile-&gt;ctrlFlags &amp; UNIXFILE_EXCL)!=0 || pInode-&gt;bProcessLock)</span>
+<span class='curline'><a href='../S/185.html#L26243'>pFile</a>            26243 libdb/sqlite3.c    &amp;&amp; ((pFile-&gt;ctrlFlags &amp; UNIXFILE_RDONLY)==0)</span>
+<span class='curline'><a href='../S/185.html#L26252'>pFile</a>            26252 libdb/sqlite3.c       rc = osFcntl(pFile-&gt;h, F_SETLK, &amp;lock);</span>
+<span class='curline'><a href='../S/185.html#L26260'>pFile</a>            26260 libdb/sqlite3.c     rc = osFcntl(pFile-&gt;h, F_SETLK, pLock);</span>
+<span class='curline'><a href='../S/185.html#L26329'>pFile</a>            26329 libdb/sqlite3.c   unixFile *pFile = (unixFile*)id;</span>
+<span class='curline'><a href='../S/185.html#L26334'>pFile</a>            26334 libdb/sqlite3.c   assert( pFile );</span>
+<span class='curline'><a href='../S/185.html#L26335'>pFile</a>            26335 libdb/sqlite3.c   OSTRACE(("LOCK    %d %s was %s(%s,%d) pid=%d (unix)\n", pFile-&gt;h,</span>
+<span class='curline'><a href='../S/185.html#L26336'>pFile</a>            26336 libdb/sqlite3.c       azFileLock(eFileLock), azFileLock(pFile-&gt;eFileLock),</span>
+<span class='curline'><a href='../S/185.html#L26337'>pFile</a>            26337 libdb/sqlite3.c       azFileLock(pFile-&gt;pInode-&gt;eFileLock), pFile-&gt;pInode-&gt;nShared , getpid()));</span>
+<span class='curline'><a href='../S/185.html#L26343'>pFile</a>            26343 libdb/sqlite3.c   if( pFile-&gt;eFileLock&gt;=eFileLock ){</span>
+<span class='curline'><a href='../S/185.html#L26344'>pFile</a>            26344 libdb/sqlite3.c     OSTRACE(("LOCK    %d %s ok (already held) (unix)\n", pFile-&gt;h,</span>
+<span class='curline'><a href='../S/185.html#L26354'>pFile</a>            26354 libdb/sqlite3.c   assert( pFile-&gt;eFileLock!=NO_LOCK || eFileLock==SHARED_LOCK );</span>
+<span class='curline'><a href='../S/185.html#L26356'>pFile</a>            26356 libdb/sqlite3.c   assert( eFileLock!=RESERVED_LOCK || pFile-&gt;eFileLock==SHARED_LOCK );</span>
+<span class='curline'><a href='../S/185.html#L26361'>pFile</a>            26361 libdb/sqlite3.c   pInode = pFile-&gt;pInode;</span>
+<span class='curline'><a href='../S/185.html#L26366'>pFile</a>            26366 libdb/sqlite3.c   if( (pFile-&gt;eFileLock!=pInode-&gt;eFileLock &amp;&amp; </span>
+<span class='curline'><a href='../S/185.html#L26380'>pFile</a>            26380 libdb/sqlite3.c     assert( pFile-&gt;eFileLock==0 );</span>
+<span class='curline'><a href='../S/185.html#L26382'>pFile</a>            26382 libdb/sqlite3.c     pFile-&gt;eFileLock = SHARED_LOCK;</span>
+<span class='curline'><a href='../S/185.html#L26396'>pFile</a>            26396 libdb/sqlite3.c       || (eFileLock==EXCLUSIVE_LOCK &amp;&amp; pFile-&gt;eFileLock&lt;PENDING_LOCK)</span>
+<span class='curline'><a href='../S/185.html#L26400'>pFile</a>            26400 libdb/sqlite3.c     if( unixFileLock(pFile, &amp;lock) ){</span>
+<span class='curline'><a href='../S/185.html#L26404'>pFile</a>            26404 libdb/sqlite3.c         pFile-&gt;lastErrno = tErrno;</span>
+<span class='curline'><a href='../S/185.html#L26422'>pFile</a>            26422 libdb/sqlite3.c     if( unixFileLock(pFile, &amp;lock) ){</span>
+<span class='curline'><a href='../S/185.html#L26431'>pFile</a>            26431 libdb/sqlite3.c     if( unixFileLock(pFile, &amp;lock) &amp;&amp; rc==SQLITE_OK ){</span>
+<span class='curline'><a href='../S/185.html#L26439'>pFile</a>            26439 libdb/sqlite3.c         pFile-&gt;lastErrno = tErrno;</span>
+<span class='curline'><a href='../S/185.html#L26443'>pFile</a>            26443 libdb/sqlite3.c       pFile-&gt;eFileLock = SHARED_LOCK;</span>
+<span class='curline'><a href='../S/185.html#L26456'>pFile</a>            26456 libdb/sqlite3.c     assert( 0!=pFile-&gt;eFileLock );</span>
+<span class='curline'><a href='../S/185.html#L26468'>pFile</a>            26468 libdb/sqlite3.c     if( unixFileLock(pFile, &amp;lock) ){</span>
+<span class='curline'><a href='../S/185.html#L26472'>pFile</a>            26472 libdb/sqlite3.c         pFile-&gt;lastErrno = tErrno;</span>
+<span class='curline'><a href='../S/185.html#L26485'>pFile</a>            26485 libdb/sqlite3.c    &amp;&amp; pFile-&gt;eFileLock&lt;=SHARED_LOCK</span>
+<span class='curline'><a href='../S/185.html#L26488'>pFile</a>            26488 libdb/sqlite3.c     pFile-&gt;transCntrChng = 0;</span>
+<span class='curline'><a href='../S/185.html#L26489'>pFile</a>            26489 libdb/sqlite3.c     pFile-&gt;dbUpdate = 0;</span>
+<span class='curline'><a href='../S/185.html#L26490'>pFile</a>            26490 libdb/sqlite3.c     pFile-&gt;inNormalWrite = 1;</span>
+<span class='curline'><a href='../S/185.html#L26496'>pFile</a>            26496 libdb/sqlite3.c     pFile-&gt;eFileLock = eFileLock;</span>
+<span class='curline'><a href='../S/185.html#L26499'>pFile</a>            26499 libdb/sqlite3.c     pFile-&gt;eFileLock = PENDING_LOCK;</span>
+<span class='curline'><a href='../S/185.html#L26505'>pFile</a>            26505 libdb/sqlite3.c   OSTRACE(("LOCK    %d %s %s (unix)\n", pFile-&gt;h, azFileLock(eFileLock), </span>
+<span class='curline'><a href='../S/185.html#L26514'>pFile</a>            26514 libdb/sqlite3.c static void setPendingFd(unixFile *pFile){</span>
+<span class='curline'><a href='../S/185.html#L26515'>pFile</a>            26515 libdb/sqlite3.c   unixInodeInfo *pInode = pFile-&gt;pInode;</span>
+<span class='curline'><a href='../S/185.html#L26516'>pFile</a>            26516 libdb/sqlite3.c   UnixUnusedFd *p = pFile-&gt;pUnused;</span>
+<span class='curline'><a href='../S/185.html#L26519'>pFile</a>            26519 libdb/sqlite3.c   pFile-&gt;h = -1;</span>
+<span class='curline'><a href='../S/185.html#L26520'>pFile</a>            26520 libdb/sqlite3.c   pFile-&gt;pUnused = 0;</span>
+<span class='curline'><a href='../S/185.html#L26537'>pFile</a>            26537 libdb/sqlite3.c   unixFile *pFile = (unixFile*)id;</span>
+<span class='curline'><a href='../S/185.html#L26542'>pFile</a>            26542 libdb/sqlite3.c   assert( pFile );</span>
+<span class='curline'><a href='../S/185.html#L26543'>pFile</a>            26543 libdb/sqlite3.c   OSTRACE(("UNLOCK  %d %d was %d(%d,%d) pid=%d (unix)\n", pFile-&gt;h, eFileLock,</span>
+<span class='curline'><a href='../S/185.html#L26544'>pFile</a>            26544 libdb/sqlite3.c       pFile-&gt;eFileLock, pFile-&gt;pInode-&gt;eFileLock, pFile-&gt;pInode-&gt;nShared,</span>
+<span class='curline'><a href='../S/185.html#L26548'>pFile</a>            26548 libdb/sqlite3.c   if( pFile-&gt;eFileLock&lt;=eFileLock ){</span>
+<span class='curline'><a href='../S/185.html#L26552'>pFile</a>            26552 libdb/sqlite3.c   pInode = pFile-&gt;pInode;</span>
+<span class='curline'><a href='../S/185.html#L26554'>pFile</a>            26554 libdb/sqlite3.c   if( pFile-&gt;eFileLock&gt;SHARED_LOCK ){</span>
+<span class='curline'><a href='../S/185.html#L26555'>pFile</a>            26555 libdb/sqlite3.c     assert( pInode-&gt;eFileLock==pFile-&gt;eFileLock );</span>
+<span class='curline'><a href='../S/185.html#L26566'>pFile</a>            26566 libdb/sqlite3.c     pFile-&gt;inNormalWrite = 0;</span>
+<span class='curline'><a href='../S/185.html#L26593'>pFile</a>            26593 libdb/sqlite3.c         if( unixFileLock(pFile, &amp;lock)==(-1) ){</span>
+<span class='curline'><a href='../S/185.html#L26597'>pFile</a>            26597 libdb/sqlite3.c             pFile-&gt;lastErrno = tErrno;</span>
+<span class='curline'><a href='../S/185.html#L26605'>pFile</a>            26605 libdb/sqlite3.c         if( unixFileLock(pFile, &amp;lock)==(-1) ){</span>
+<span class='curline'><a href='../S/185.html#L26609'>pFile</a>            26609 libdb/sqlite3.c             pFile-&gt;lastErrno = tErrno;</span>
+<span class='curline'><a href='../S/185.html#L26617'>pFile</a>            26617 libdb/sqlite3.c         if( unixFileLock(pFile, &amp;lock)==(-1) ){</span>
+<span class='curline'><a href='../S/185.html#L26621'>pFile</a>            26621 libdb/sqlite3.c             pFile-&gt;lastErrno = tErrno;</span>
+<span class='curline'><a href='../S/185.html#L26632'>pFile</a>            26632 libdb/sqlite3.c         if( unixFileLock(pFile, &amp;lock) ){</span>
+<span class='curline'><a href='../S/185.html#L26640'>pFile</a>            26640 libdb/sqlite3.c           pFile-&gt;lastErrno = errno;</span>
+<span class='curline'><a href='../S/185.html#L26649'>pFile</a>            26649 libdb/sqlite3.c     if( unixFileLock(pFile, &amp;lock)==0 ){</span>
+<span class='curline'><a href='../S/185.html#L26653'>pFile</a>            26653 libdb/sqlite3.c       pFile-&gt;lastErrno = errno;</span>
+<span class='curline'><a href='../S/185.html#L26667'>pFile</a>            26667 libdb/sqlite3.c       if( unixFileLock(pFile, &amp;lock)==0 ){</span>
+<span class='curline'><a href='../S/185.html#L26671'>pFile</a>            26671 libdb/sqlite3.c         pFile-&gt;lastErrno = errno;</span>
+<span class='curline'><a href='../S/185.html#L26673'>pFile</a>            26673 libdb/sqlite3.c         pFile-&gt;eFileLock = NO_LOCK;</span>
+<span class='curline'><a href='../S/185.html#L26684'>pFile</a>            26684 libdb/sqlite3.c       closePendingFds(pFile);</span>
+<span class='curline'><a href='../S/185.html#L26690'>pFile</a>            26690 libdb/sqlite3.c   if( rc==SQLITE_OK ) pFile-&gt;eFileLock = eFileLock;</span>
+<span class='curline'><a href='../S/185.html#L26724'>pFile</a>            26724 libdb/sqlite3.c   unixFile *pFile = (unixFile*)id;</span>
+<span class='curline'><a href='../S/185.html#L26726'>pFile</a>            26726 libdb/sqlite3.c   unixUnmapfile(pFile);</span>
+<span class='curline'><a href='../S/185.html#L26728'>pFile</a>            26728 libdb/sqlite3.c   if( pFile-&gt;h&gt;=0 ){</span>
+<span class='curline'><a href='../S/185.html#L26729'>pFile</a>            26729 libdb/sqlite3.c     robust_close(pFile, pFile-&gt;h, __LINE__);</span>
+<span class='curline'><a href='../S/185.html#L26730'>pFile</a>            26730 libdb/sqlite3.c     pFile-&gt;h = -1;</span>
+<span class='curline'><a href='../S/185.html#L26733'>pFile</a>            26733 libdb/sqlite3.c   if( pFile-&gt;pId ){</span>
+<span class='curline'><a href='../S/185.html#L26734'>pFile</a>            26734 libdb/sqlite3.c     if( pFile-&gt;ctrlFlags &amp; UNIXFILE_DELETE ){</span>
+<span class='curline'><a href='../S/185.html#L26735'>pFile</a>            26735 libdb/sqlite3.c       osUnlink(pFile-&gt;pId-&gt;zCanonicalName);</span>
+<span class='curline'><a href='../S/185.html#L26737'>pFile</a>            26737 libdb/sqlite3.c     vxworksReleaseFileId(pFile-&gt;pId);</span>
+<span class='curline'><a href='../S/185.html#L26738'>pFile</a>            26738 libdb/sqlite3.c     pFile-&gt;pId = 0;</span>
+<span class='curline'><a href='../S/185.html#L26742'>pFile</a>            26742 libdb/sqlite3.c   if( pFile-&gt;ctrlFlags &amp; UNIXFILE_DELETE ){</span>
+<span class='curline'><a href='../S/185.html#L26743'>pFile</a>            26743 libdb/sqlite3.c     osUnlink(pFile-&gt;zPath);</span>
+<span class='curline'><a href='../S/185.html#L26744'>pFile</a>            26744 libdb/sqlite3.c     sqlite3_free(*(char**)&amp;pFile-&gt;zPath);</span>
+<span class='curline'><a href='../S/185.html#L26745'>pFile</a>            26745 libdb/sqlite3.c     pFile-&gt;zPath = 0;</span>
+<span class='curline'><a href='../S/185.html#L26748'>pFile</a>            26748 libdb/sqlite3.c   OSTRACE(("CLOSE   %-3d\n", pFile-&gt;h));</span>
+<span class='curline'><a href='../S/185.html#L26750'>pFile</a>            26750 libdb/sqlite3.c   sqlite3_free(pFile-&gt;pUnused);</span>
+<span class='curline'><a href='../S/185.html#L26751'>pFile</a>            26751 libdb/sqlite3.c   memset(pFile, 0, sizeof(unixFile));</span>
+<span class='curline'><a href='../S/185.html#L26760'>pFile</a>            26760 libdb/sqlite3.c   unixFile *pFile = (unixFile *)id;</span>
+<span class='curline'><a href='../S/185.html#L26761'>pFile</a>            26761 libdb/sqlite3.c   verifyDbFile(pFile);</span>
+<span class='curline'><a href='../S/185.html#L26768'>pFile</a>            26768 libdb/sqlite3.c   assert( pFile-&gt;pInode-&gt;nLock&gt;0 || pFile-&gt;pInode-&gt;bProcessLock==0 );</span>
+<span class='curline'><a href='../S/185.html#L26769'>pFile</a>            26769 libdb/sqlite3.c   if( ALWAYS(pFile-&gt;pInode) &amp;&amp; pFile-&gt;pInode-&gt;nLock ){</span>
+<span class='curline'><a href='../S/185.html#L26775'>pFile</a>            26775 libdb/sqlite3.c     setPendingFd(pFile);</span>
+<span class='curline'><a href='../S/185.html#L26777'>pFile</a>            26777 libdb/sqlite3.c   releaseInodeInfo(pFile);</span>
+<span class='curline'><a href='../S/185.html#L26868'>pFile</a>            26868 libdb/sqlite3.c   unixFile *pFile = (unixFile*)id;</span>
+<span class='curline'><a href='../S/185.html#L26872'>pFile</a>            26872 libdb/sqlite3.c   assert( pFile );</span>
+<span class='curline'><a href='../S/185.html#L26875'>pFile</a>            26875 libdb/sqlite3.c   if( pFile-&gt;eFileLock&gt;SHARED_LOCK ){</span>
+<span class='curline'><a href='../S/185.html#L26881'>pFile</a>            26881 libdb/sqlite3.c     const char *zLockFile = (const char*)pFile-&gt;lockingContext;</span>
+<span class='curline'><a href='../S/185.html#L26884'>pFile</a>            26884 libdb/sqlite3.c   OSTRACE(("TEST WR-LOCK %d %d %d (dotlock)\n", pFile-&gt;h, rc, reserved));</span>
+<span class='curline'><a href='../S/185.html#L26917'>pFile</a>            26917 libdb/sqlite3.c   unixFile *pFile = (unixFile*)id;</span>
+<span class='curline'><a href='../S/185.html#L26918'>pFile</a>            26918 libdb/sqlite3.c   char *zLockFile = (char *)pFile-&gt;lockingContext;</span>
+<span class='curline'><a href='../S/185.html#L26925'>pFile</a>            26925 libdb/sqlite3.c   if( pFile-&gt;eFileLock &gt; NO_LOCK ){</span>
+<span class='curline'><a href='../S/185.html#L26926'>pFile</a>            26926 libdb/sqlite3.c     pFile-&gt;eFileLock = eFileLock;</span>
+<span class='curline'><a href='../S/185.html#L26946'>pFile</a>            26946 libdb/sqlite3.c         pFile-&gt;lastErrno = tErrno;</span>
+<span class='curline'><a href='../S/185.html#L26953'>pFile</a>            26953 libdb/sqlite3.c   pFile-&gt;eFileLock = eFileLock;</span>
+<span class='curline'><a href='../S/185.html#L26967'>pFile</a>            26967 libdb/sqlite3.c   unixFile *pFile = (unixFile*)id;</span>
+<span class='curline'><a href='../S/185.html#L26968'>pFile</a>            26968 libdb/sqlite3.c   char *zLockFile = (char *)pFile-&gt;lockingContext;</span>
+<span class='curline'><a href='../S/185.html#L26971'>pFile</a>            26971 libdb/sqlite3.c   assert( pFile );</span>
+<span class='curline'><a href='../S/185.html#L26972'>pFile</a>            26972 libdb/sqlite3.c   OSTRACE(("UNLOCK  %d %d was %d pid=%d (dotlock)\n", pFile-&gt;h, eFileLock,</span>
+<span class='curline'><a href='../S/185.html#L26973'>pFile</a>            26973 libdb/sqlite3.c            pFile-&gt;eFileLock, getpid()));</span>
+<span class='curline'><a href='../S/185.html#L26977'>pFile</a>            26977 libdb/sqlite3.c   if( pFile-&gt;eFileLock==eFileLock ){</span>
+<span class='curline'><a href='../S/185.html#L26985'>pFile</a>            26985 libdb/sqlite3.c     pFile-&gt;eFileLock = SHARED_LOCK;</span>
+<span class='curline'><a href='../S/185.html#L27000'>pFile</a>            27000 libdb/sqlite3.c       pFile-&gt;lastErrno = tErrno;</span>
+<span class='curline'><a href='../S/185.html#L27004'>pFile</a>            27004 libdb/sqlite3.c   pFile-&gt;eFileLock = NO_LOCK;</span>
+<span class='curline'><a href='../S/185.html#L27014'>pFile</a>            27014 libdb/sqlite3.c     unixFile *pFile = (unixFile*)id;</span>
+<span class='curline'><a href='../S/185.html#L27016'>pFile</a>            27016 libdb/sqlite3.c     sqlite3_free(pFile-&gt;lockingContext);</span>
+<span class='curline'><a href='../S/185.html#L27064'>pFile</a>            27064 libdb/sqlite3.c   unixFile *pFile = (unixFile*)id;</span>
+<span class='curline'><a href='../S/185.html#L27068'>pFile</a>            27068 libdb/sqlite3.c   assert( pFile );</span>
+<span class='curline'><a href='../S/185.html#L27071'>pFile</a>            27071 libdb/sqlite3.c   if( pFile-&gt;eFileLock&gt;SHARED_LOCK ){</span>
+<span class='curline'><a href='../S/185.html#L27078'>pFile</a>            27078 libdb/sqlite3.c     int lrc = robust_flock(pFile-&gt;h, LOCK_EX | LOCK_NB);</span>
+<span class='curline'><a href='../S/185.html#L27081'>pFile</a>            27081 libdb/sqlite3.c       lrc = robust_flock(pFile-&gt;h, LOCK_UN);</span>
+<span class='curline'><a href='../S/185.html#L27087'>pFile</a>            27087 libdb/sqlite3.c           pFile-&gt;lastErrno = tErrno;</span>
+<span class='curline'><a href='../S/185.html#L27097'>pFile</a>            27097 libdb/sqlite3.c         pFile-&gt;lastErrno = tErrno;</span>
+<span class='curline'><a href='../S/185.html#L27102'>pFile</a>            27102 libdb/sqlite3.c   OSTRACE(("TEST WR-LOCK %d %d %d (flock)\n", pFile-&gt;h, rc, reserved));</span>
+<span class='curline'><a href='../S/185.html#L27145'>pFile</a>            27145 libdb/sqlite3.c   unixFile *pFile = (unixFile*)id;</span>
+<span class='curline'><a href='../S/185.html#L27147'>pFile</a>            27147 libdb/sqlite3.c   assert( pFile );</span>
+<span class='curline'><a href='../S/185.html#L27151'>pFile</a>            27151 libdb/sqlite3.c   if (pFile-&gt;eFileLock &gt; NO_LOCK) {</span>
+<span class='curline'><a href='../S/185.html#L27152'>pFile</a>            27152 libdb/sqlite3.c     pFile-&gt;eFileLock = eFileLock;</span>
+<span class='curline'><a href='../S/185.html#L27158'>pFile</a>            27158 libdb/sqlite3.c   if (robust_flock(pFile-&gt;h, LOCK_EX | LOCK_NB)) {</span>
+<span class='curline'><a href='../S/185.html#L27163'>pFile</a>            27163 libdb/sqlite3.c       pFile-&gt;lastErrno = tErrno;</span>
+<span class='curline'><a href='../S/185.html#L27167'>pFile</a>            27167 libdb/sqlite3.c     pFile-&gt;eFileLock = eFileLock;</span>
+<span class='curline'><a href='../S/185.html#L27169'>pFile</a>            27169 libdb/sqlite3.c   OSTRACE(("LOCK    %d %s %s (flock)\n", pFile-&gt;h, azFileLock(eFileLock), </span>
+<span class='curline'><a href='../S/185.html#L27188'>pFile</a>            27188 libdb/sqlite3.c   unixFile *pFile = (unixFile*)id;</span>
+<span class='curline'><a href='../S/185.html#L27190'>pFile</a>            27190 libdb/sqlite3.c   assert( pFile );</span>
+<span class='curline'><a href='../S/185.html#L27191'>pFile</a>            27191 libdb/sqlite3.c   OSTRACE(("UNLOCK  %d %d was %d pid=%d (flock)\n", pFile-&gt;h, eFileLock,</span>
+<span class='curline'><a href='../S/185.html#L27192'>pFile</a>            27192 libdb/sqlite3.c            pFile-&gt;eFileLock, getpid()));</span>
+<span class='curline'><a href='../S/185.html#L27196'>pFile</a>            27196 libdb/sqlite3.c   if( pFile-&gt;eFileLock==eFileLock ){</span>
+<span class='curline'><a href='../S/185.html#L27202'>pFile</a>            27202 libdb/sqlite3.c     pFile-&gt;eFileLock = eFileLock;</span>
+<span class='curline'><a href='../S/185.html#L27207'>pFile</a>            27207 libdb/sqlite3.c   if( robust_flock(pFile-&gt;h, LOCK_UN) ){</span>
+<span class='curline'><a href='../S/185.html#L27213'>pFile</a>            27213 libdb/sqlite3.c     pFile-&gt;eFileLock = NO_LOCK;</span>
+<span class='curline'><a href='../S/185.html#L27256'>pFile</a>            27256 libdb/sqlite3.c   unixFile *pFile = (unixFile*)id;</span>
+<span class='curline'><a href='../S/185.html#L27260'>pFile</a>            27260 libdb/sqlite3.c   assert( pFile );</span>
+<span class='curline'><a href='../S/185.html#L27263'>pFile</a>            27263 libdb/sqlite3.c   if( pFile-&gt;eFileLock&gt;SHARED_LOCK ){</span>
+<span class='curline'><a href='../S/185.html#L27269'>pFile</a>            27269 libdb/sqlite3.c     sem_t *pSem = pFile-&gt;pInode-&gt;pSem;</span>
+<span class='curline'><a href='../S/185.html#L27275'>pFile</a>            27275 libdb/sqlite3.c         pFile-&gt;lastErrno = tErrno;</span>
+<span class='curline'><a href='../S/185.html#L27278'>pFile</a>            27278 libdb/sqlite3.c         reserved = (pFile-&gt;eFileLock &lt; SHARED_LOCK);</span>
+<span class='curline'><a href='../S/185.html#L27285'>pFile</a>            27285 libdb/sqlite3.c   OSTRACE(("TEST WR-LOCK %d %d %d (sem)\n", pFile-&gt;h, rc, reserved));</span>
+<span class='curline'><a href='../S/185.html#L27321'>pFile</a>            27321 libdb/sqlite3.c   unixFile *pFile = (unixFile*)id;</span>
+<span class='curline'><a href='../S/185.html#L27322'>pFile</a>            27322 libdb/sqlite3.c   sem_t *pSem = pFile-&gt;pInode-&gt;pSem;</span>
+<span class='curline'><a href='../S/185.html#L27327'>pFile</a>            27327 libdb/sqlite3.c   if (pFile-&gt;eFileLock &gt; NO_LOCK) {</span>
+<span class='curline'><a href='../S/185.html#L27328'>pFile</a>            27328 libdb/sqlite3.c     pFile-&gt;eFileLock = eFileLock;</span>
+<span class='curline'><a href='../S/185.html#L27340'>pFile</a>            27340 libdb/sqlite3.c   pFile-&gt;eFileLock = eFileLock;</span>
+<span class='curline'><a href='../S/185.html#L27354'>pFile</a>            27354 libdb/sqlite3.c   unixFile *pFile = (unixFile*)id;</span>
+<span class='curline'><a href='../S/185.html#L27355'>pFile</a>            27355 libdb/sqlite3.c   sem_t *pSem = pFile-&gt;pInode-&gt;pSem;</span>
+<span class='curline'><a href='../S/185.html#L27357'>pFile</a>            27357 libdb/sqlite3.c   assert( pFile );</span>
+<span class='curline'><a href='../S/185.html#L27359'>pFile</a>            27359 libdb/sqlite3.c   OSTRACE(("UNLOCK  %d %d was %d pid=%d (sem)\n", pFile-&gt;h, eFileLock,</span>
+<span class='curline'><a href='../S/185.html#L27360'>pFile</a>            27360 libdb/sqlite3.c            pFile-&gt;eFileLock, getpid()));</span>
+<span class='curline'><a href='../S/185.html#L27364'>pFile</a>            27364 libdb/sqlite3.c   if( pFile-&gt;eFileLock==eFileLock ){</span>
+<span class='curline'><a href='../S/185.html#L27370'>pFile</a>            27370 libdb/sqlite3.c     pFile-&gt;eFileLock = eFileLock;</span>
+<span class='curline'><a href='../S/185.html#L27379'>pFile</a>            27379 libdb/sqlite3.c       pFile-&gt;lastErrno = tErrno;</span>
+<span class='curline'><a href='../S/185.html#L27383'>pFile</a>            27383 libdb/sqlite3.c   pFile-&gt;eFileLock = NO_LOCK;</span>
+<span class='curline'><a href='../S/185.html#L27392'>pFile</a>            27392 libdb/sqlite3.c     unixFile *pFile = (unixFile*)id;</span>
+<span class='curline'><a href='../S/185.html#L27394'>pFile</a>            27394 libdb/sqlite3.c     assert( pFile );</span>
+<span class='curline'><a href='../S/185.html#L27396'>pFile</a>            27396 libdb/sqlite3.c     releaseInodeInfo(pFile);</span>
+<span class='curline'><a href='../S/185.html#L27451'>pFile</a>            27451 libdb/sqlite3.c   unixFile *pFile,               /* Open file descriptor on path */</span>
+<span class='curline'><a href='../S/185.html#L27463'>pFile</a>            27463 libdb/sqlite3.c   pb.fd = pFile-&gt;h;</span>
+<span class='curline'><a href='../S/185.html#L27466'>pFile</a>            27466 libdb/sqlite3.c     (setLockFlag?"ON":"OFF"), pFile-&gt;h, (pb.fd==-1?"[testval-1]":""),</span>
+<span class='curline'><a href='../S/185.html#L27481'>pFile</a>            27481 libdb/sqlite3.c       pFile-&gt;lastErrno = tErrno;</span>
+<span class='curline'><a href='../S/185.html#L27498'>pFile</a>            27498 libdb/sqlite3.c   unixFile *pFile = (unixFile*)id;</span>
+<span class='curline'><a href='../S/185.html#L27503'>pFile</a>            27503 libdb/sqlite3.c   assert( pFile );</span>
+<span class='curline'><a href='../S/185.html#L27504'>pFile</a>            27504 libdb/sqlite3.c   context = (afpLockingContext *) pFile-&gt;lockingContext;</span>
+<span class='curline'><a href='../S/185.html#L27512'>pFile</a>            27512 libdb/sqlite3.c   if( pFile-&gt;pInode-&gt;eFileLock&gt;SHARED_LOCK ){</span>
+<span class='curline'><a href='../S/185.html#L27520'>pFile</a>            27520 libdb/sqlite3.c     int lrc = afpSetLock(context-&gt;dbPath, pFile, RESERVED_BYTE, 1,1);  </span>
+<span class='curline'><a href='../S/185.html#L27524'>pFile</a>            27524 libdb/sqlite3.c       lrc = afpSetLock(context-&gt;dbPath, pFile, RESERVED_BYTE, 1, 0);</span>
+<span class='curline'><a href='../S/185.html#L27535'>pFile</a>            27535 libdb/sqlite3.c   OSTRACE(("TEST WR-LOCK %d %d %d (afp)\n", pFile-&gt;h, rc, reserved));</span>
+<span class='curline'><a href='../S/185.html#L27567'>pFile</a>            27567 libdb/sqlite3.c   unixFile *pFile = (unixFile*)id;</span>
+<span class='curline'><a href='../S/185.html#L27568'>pFile</a>            27568 libdb/sqlite3.c   unixInodeInfo *pInode = pFile-&gt;pInode;</span>
+<span class='curline'><a href='../S/185.html#L27569'>pFile</a>            27569 libdb/sqlite3.c   afpLockingContext *context = (afpLockingContext *) pFile-&gt;lockingContext;</span>
+<span class='curline'><a href='../S/185.html#L27571'>pFile</a>            27571 libdb/sqlite3.c   assert( pFile );</span>
+<span class='curline'><a href='../S/185.html#L27572'>pFile</a>            27572 libdb/sqlite3.c   OSTRACE(("LOCK    %d %s was %s(%s,%d) pid=%d (afp)\n", pFile-&gt;h,</span>
+<span class='curline'><a href='../S/185.html#L27573'>pFile</a>            27573 libdb/sqlite3.c            azFileLock(eFileLock), azFileLock(pFile-&gt;eFileLock),</span>
+<span class='curline'><a href='../S/185.html#L27580'>pFile</a>            27580 libdb/sqlite3.c   if( pFile-&gt;eFileLock&gt;=eFileLock ){</span>
+<span class='curline'><a href='../S/185.html#L27581'>pFile</a>            27581 libdb/sqlite3.c     OSTRACE(("LOCK    %d %s ok (already held) (afp)\n", pFile-&gt;h,</span>
+<span class='curline'><a href='../S/185.html#L27591'>pFile</a>            27591 libdb/sqlite3.c   assert( pFile-&gt;eFileLock!=NO_LOCK || eFileLock==SHARED_LOCK );</span>
+<span class='curline'><a href='../S/185.html#L27593'>pFile</a>            27593 libdb/sqlite3.c   assert( eFileLock!=RESERVED_LOCK || pFile-&gt;eFileLock==SHARED_LOCK );</span>
+<span class='curline'><a href='../S/185.html#L27598'>pFile</a>            27598 libdb/sqlite3.c   pInode = pFile-&gt;pInode;</span>
+<span class='curline'><a href='../S/185.html#L27603'>pFile</a>            27603 libdb/sqlite3.c   if( (pFile-&gt;eFileLock!=pInode-&gt;eFileLock &amp;&amp; </span>
+<span class='curline'><a href='../S/185.html#L27617'>pFile</a>            27617 libdb/sqlite3.c     assert( pFile-&gt;eFileLock==0 );</span>
+<span class='curline'><a href='../S/185.html#L27619'>pFile</a>            27619 libdb/sqlite3.c     pFile-&gt;eFileLock = SHARED_LOCK;</span>
+<span class='curline'><a href='../S/185.html#L27630'>pFile</a>            27630 libdb/sqlite3.c       || (eFileLock==EXCLUSIVE_LOCK &amp;&amp; pFile-&gt;eFileLock&lt;PENDING_LOCK)</span>
+<span class='curline'><a href='../S/185.html#L27633'>pFile</a>            27633 libdb/sqlite3.c     failed = afpSetLock(context-&gt;dbPath, pFile, PENDING_BYTE, 1, 1);</span>
+<span class='curline'><a href='../S/185.html#L27655'>pFile</a>            27655 libdb/sqlite3.c     lrc1 = afpSetLock(context-&gt;dbPath, pFile, </span>
+<span class='curline'><a href='../S/185.html#L27658'>pFile</a>            27658 libdb/sqlite3.c       lrc1Errno = pFile-&gt;lastErrno;</span>
+<span class='curline'><a href='../S/185.html#L27661'>pFile</a>            27661 libdb/sqlite3.c     lrc2 = afpSetLock(context-&gt;dbPath, pFile, PENDING_BYTE, 1, 0);</span>
+<span class='curline'><a href='../S/185.html#L27664'>pFile</a>            27664 libdb/sqlite3.c       pFile-&gt;lastErrno = lrc1Errno;</span>
+<span class='curline'><a href='../S/185.html#L27673'>pFile</a>            27673 libdb/sqlite3.c       pFile-&gt;eFileLock = SHARED_LOCK;</span>
+<span class='curline'><a href='../S/185.html#L27687'>pFile</a>            27687 libdb/sqlite3.c     assert( 0!=pFile-&gt;eFileLock );</span>
+<span class='curline'><a href='../S/185.html#L27688'>pFile</a>            27688 libdb/sqlite3.c     if (eFileLock &gt;= RESERVED_LOCK &amp;&amp; pFile-&gt;eFileLock &lt; RESERVED_LOCK) {</span>
+<span class='curline'><a href='../S/185.html#L27690'>pFile</a>            27690 libdb/sqlite3.c         failed = afpSetLock(context-&gt;dbPath, pFile, RESERVED_BYTE, 1,1);</span>
+<span class='curline'><a href='../S/185.html#L27701'>pFile</a>            27701 libdb/sqlite3.c       if( !(failed = afpSetLock(context-&gt;dbPath, pFile, SHARED_FIRST +</span>
+<span class='curline'><a href='../S/185.html#L27705'>pFile</a>            27705 libdb/sqlite3.c         failed = afpSetLock(context-&gt;dbPath, pFile, SHARED_FIRST, </span>
+<span class='curline'><a href='../S/185.html#L27707'>pFile</a>            27707 libdb/sqlite3.c         if( failed &amp;&amp; (failed2 = afpSetLock(context-&gt;dbPath, pFile, </span>
+<span class='curline'><a href='../S/185.html#L27726'>pFile</a>            27726 libdb/sqlite3.c     pFile-&gt;eFileLock = eFileLock;</span>
+<span class='curline'><a href='../S/185.html#L27729'>pFile</a>            27729 libdb/sqlite3.c     pFile-&gt;eFileLock = PENDING_LOCK;</span>
+<span class='curline'><a href='../S/185.html#L27735'>pFile</a>            27735 libdb/sqlite3.c   OSTRACE(("LOCK    %d %s %s (afp)\n", pFile-&gt;h, azFileLock(eFileLock), </span>
+<span class='curline'><a href='../S/185.html#L27749'>pFile</a>            27749 libdb/sqlite3.c   unixFile *pFile = (unixFile*)id;</span>
+<span class='curline'><a href='../S/185.html#L27751'>pFile</a>            27751 libdb/sqlite3.c   afpLockingContext *context = (afpLockingContext *) pFile-&gt;lockingContext;</span>
+<span class='curline'><a href='../S/185.html#L27754'>pFile</a>            27754 libdb/sqlite3.c   int h = pFile-&gt;h;</span>
+<span class='curline'><a href='../S/185.html#L27757'>pFile</a>            27757 libdb/sqlite3.c   assert( pFile );</span>
+<span class='curline'><a href='../S/185.html#L27758'>pFile</a>            27758 libdb/sqlite3.c   OSTRACE(("UNLOCK  %d %d was %d(%d,%d) pid=%d (afp)\n", pFile-&gt;h, eFileLock,</span>
+<span class='curline'><a href='../S/185.html#L27759'>pFile</a>            27759 libdb/sqlite3.c            pFile-&gt;eFileLock, pFile-&gt;pInode-&gt;eFileLock, pFile-&gt;pInode-&gt;nShared,</span>
+<span class='curline'><a href='../S/185.html#L27763'>pFile</a>            27763 libdb/sqlite3.c   if( pFile-&gt;eFileLock&lt;=eFileLock ){</span>
+<span class='curline'><a href='../S/185.html#L27767'>pFile</a>            27767 libdb/sqlite3.c   pInode = pFile-&gt;pInode;</span>
+<span class='curline'><a href='../S/185.html#L27769'>pFile</a>            27769 libdb/sqlite3.c   if( pFile-&gt;eFileLock&gt;SHARED_LOCK ){</span>
+<span class='curline'><a href='../S/185.html#L27770'>pFile</a>            27770 libdb/sqlite3.c     assert( pInode-&gt;eFileLock==pFile-&gt;eFileLock );</span>
+<span class='curline'><a href='../S/185.html#L27784'>pFile</a>            27784 libdb/sqlite3.c     assert( pFile-&gt;inNormalWrite==0</span>
+<span class='curline'><a href='../S/185.html#L27785'>pFile</a>            27785 libdb/sqlite3.c            || pFile-&gt;dbUpdate==0</span>
+<span class='curline'><a href='../S/185.html#L27786'>pFile</a>            27786 libdb/sqlite3.c            || pFile-&gt;transCntrChng==1 );</span>
+<span class='curline'><a href='../S/185.html#L27787'>pFile</a>            27787 libdb/sqlite3.c     pFile-&gt;inNormalWrite = 0;</span>
+<span class='curline'><a href='../S/185.html#L27790'>pFile</a>            27790 libdb/sqlite3.c     if( pFile-&gt;eFileLock==EXCLUSIVE_LOCK ){</span>
+<span class='curline'><a href='../S/185.html#L27791'>pFile</a>            27791 libdb/sqlite3.c       rc = afpSetLock(context-&gt;dbPath, pFile, SHARED_FIRST, SHARED_SIZE, 0);</span>
+<span class='curline'><a href='../S/185.html#L27795'>pFile</a>            27795 libdb/sqlite3.c         rc = afpSetLock(context-&gt;dbPath, pFile, sharedLockByte, 1, 1);</span>
+<span class='curline'><a href='../S/185.html#L27800'>pFile</a>            27800 libdb/sqlite3.c     if( rc==SQLITE_OK &amp;&amp; pFile-&gt;eFileLock&gt;=PENDING_LOCK ){</span>
+<span class='curline'><a href='../S/185.html#L27801'>pFile</a>            27801 libdb/sqlite3.c       rc = afpSetLock(context-&gt;dbPath, pFile, PENDING_BYTE, 1, 0);</span>
+<span class='curline'><a href='../S/185.html#L27803'>pFile</a>            27803 libdb/sqlite3.c     if( rc==SQLITE_OK &amp;&amp; pFile-&gt;eFileLock&gt;=RESERVED_LOCK &amp;&amp; context-&gt;reserved ){</span>
+<span class='curline'><a href='../S/185.html#L27804'>pFile</a>            27804 libdb/sqlite3.c       rc = afpSetLock(context-&gt;dbPath, pFile, RESERVED_BYTE, 1, 0);</span>
+<span class='curline'><a href='../S/185.html#L27826'>pFile</a>            27826 libdb/sqlite3.c         rc = afpSetLock(context-&gt;dbPath, pFile, sharedLockByte, 1, 0);</span>
+<span class='curline'><a href='../S/185.html#L27830'>pFile</a>            27830 libdb/sqlite3.c         pFile-&gt;eFileLock = NO_LOCK;</span>
+<span class='curline'><a href='../S/185.html#L27837'>pFile</a>            27837 libdb/sqlite3.c         closePendingFds(pFile);</span>
+<span class='curline'><a href='../S/185.html#L27843'>pFile</a>            27843 libdb/sqlite3.c   if( rc==SQLITE_OK ) pFile-&gt;eFileLock = eFileLock;</span>
+<span class='curline'><a href='../S/185.html#L27853'>pFile</a>            27853 libdb/sqlite3.c     unixFile *pFile = (unixFile*)id;</span>
+<span class='curline'><a href='../S/185.html#L27856'>pFile</a>            27856 libdb/sqlite3.c     if( pFile-&gt;pInode &amp;&amp; pFile-&gt;pInode-&gt;nLock ){</span>
+<span class='curline'><a href='../S/185.html#L27862'>pFile</a>            27862 libdb/sqlite3.c       setPendingFd(pFile);</span>
+<span class='curline'><a href='../S/185.html#L27864'>pFile</a>            27864 libdb/sqlite3.c     releaseInodeInfo(pFile);</span>
+<span class='curline'><a href='../S/185.html#L27865'>pFile</a>            27865 libdb/sqlite3.c     sqlite3_free(pFile-&gt;lockingContext);</span>
+<span class='curline'><a href='../S/185.html#L27989'>pFile</a>            27989 libdb/sqlite3.c   unixFile *pFile = (unixFile *)id;</span>
+<span class='curline'><a href='../S/185.html#L27998'>pFile</a>            27998 libdb/sqlite3.c   assert( pFile-&gt;pUnused==0</span>
+<span class='curline'><a href='../S/185.html#L28007'>pFile</a>            28007 libdb/sqlite3.c   if( offset&lt;pFile-&gt;mmapSize ){</span>
+<span class='curline'><a href='../S/185.html#L28008'>pFile</a>            28008 libdb/sqlite3.c     if( offset+amt &lt;= pFile-&gt;mmapSize ){</span>
+<span class='curline'><a href='../S/185.html#L28009'>pFile</a>            28009 libdb/sqlite3.c       memcpy(pBuf, &amp;((u8 *)(pFile-&gt;pMapRegion))[offset], amt);</span>
+<span class='curline'><a href='../S/185.html#L28012'>pFile</a>            28012 libdb/sqlite3.c       int nCopy = pFile-&gt;mmapSize - offset;</span>
+<span class='curline'><a href='../S/185.html#L28013'>pFile</a>            28013 libdb/sqlite3.c       memcpy(pBuf, &amp;((u8 *)(pFile-&gt;pMapRegion))[offset], nCopy);</span>
+<span class='curline'><a href='../S/185.html#L28021'>pFile</a>            28021 libdb/sqlite3.c   got = seekAndRead(pFile, offset, pBuf, amt);</span>
+<span class='curline'><a href='../S/185.html#L28028'>pFile</a>            28028 libdb/sqlite3.c     pFile-&gt;lastErrno = 0; /* not a system error */</span>
+<span class='curline'><a href='../S/185.html#L28103'>pFile</a>            28103 libdb/sqlite3.c   unixFile *pFile = (unixFile*)id;</span>
+<span class='curline'><a href='../S/185.html#L28111'>pFile</a>            28111 libdb/sqlite3.c   assert( pFile-&gt;pUnused==0</span>
+<span class='curline'><a href='../S/185.html#L28124'>pFile</a>            28124 libdb/sqlite3.c   if( pFile-&gt;inNormalWrite ){</span>
+<span class='curline'><a href='../S/185.html#L28125'>pFile</a>            28125 libdb/sqlite3.c     pFile-&gt;dbUpdate = 1;  /* The database has been modified */</span>
+<span class='curline'><a href='../S/185.html#L28130'>pFile</a>            28130 libdb/sqlite3.c       rc = seekAndRead(pFile, 24, oldCntr, 4);</span>
+<span class='curline'><a href='../S/185.html#L28133'>pFile</a>            28133 libdb/sqlite3.c         pFile-&gt;transCntrChng = 1;  /* The transaction counter has changed */</span>
+<span class='curline'><a href='../S/185.html#L28142'>pFile</a>            28142 libdb/sqlite3.c   if( offset&lt;pFile-&gt;mmapSize ){</span>
+<span class='curline'><a href='../S/185.html#L28143'>pFile</a>            28143 libdb/sqlite3.c     if( offset+amt &lt;= pFile-&gt;mmapSize ){</span>
+<span class='curline'><a href='../S/185.html#L28144'>pFile</a>            28144 libdb/sqlite3.c       memcpy(&amp;((u8 *)(pFile-&gt;pMapRegion))[offset], pBuf, amt);</span>
+<span class='curline'><a href='../S/185.html#L28147'>pFile</a>            28147 libdb/sqlite3.c       int nCopy = pFile-&gt;mmapSize - offset;</span>
+<span class='curline'><a href='../S/185.html#L28148'>pFile</a>            28148 libdb/sqlite3.c       memcpy(&amp;((u8 *)(pFile-&gt;pMapRegion))[offset], pBuf, nCopy);</span>
+<span class='curline'><a href='../S/185.html#L28156'>pFile</a>            28156 libdb/sqlite3.c   while( amt&gt;0 &amp;&amp; (wrote = seekAndWrite(pFile, offset, pBuf, amt))&gt;0 ){</span>
+<span class='curline'><a href='../S/185.html#L28165'>pFile</a>            28165 libdb/sqlite3.c     if( wrote&lt;0 &amp;&amp; pFile-&gt;lastErrno!=ENOSPC ){</span>
+<span class='curline'><a href='../S/185.html#L28169'>pFile</a>            28169 libdb/sqlite3.c       pFile-&gt;lastErrno = 0; /* not a system error */</span>
+<span class='curline'><a href='../S/185.html#L28358'>pFile</a>            28358 libdb/sqlite3.c   unixFile *pFile = (unixFile*)id;</span>
+<span class='curline'><a href='../S/185.html#L28373'>pFile</a>            28373 libdb/sqlite3.c   assert( pFile );</span>
+<span class='curline'><a href='../S/185.html#L28374'>pFile</a>            28374 libdb/sqlite3.c   OSTRACE(("SYNC    %-3d\n", pFile-&gt;h));</span>
+<span class='curline'><a href='../S/185.html#L28375'>pFile</a>            28375 libdb/sqlite3.c   rc = full_fsync(pFile-&gt;h, isFullsync, isDataOnly);</span>
+<span class='curline'><a href='../S/185.html#L28378'>pFile</a>            28378 libdb/sqlite3.c     pFile-&gt;lastErrno = errno;</span>
+<span class='curline'><a href='../S/185.html#L28379'>pFile</a>            28379 libdb/sqlite3.c     return unixLogError(SQLITE_IOERR_FSYNC, "full_fsync", pFile-&gt;zPath);</span>
+<span class='curline'><a href='../S/185.html#L28386'>pFile</a>            28386 libdb/sqlite3.c   if( pFile-&gt;ctrlFlags &amp; UNIXFILE_DIRSYNC ){</span>
+<span class='curline'><a href='../S/185.html#L28388'>pFile</a>            28388 libdb/sqlite3.c     OSTRACE(("DIRSYNC %s (have_fullfsync=%d fullsync=%d)\n", pFile-&gt;zPath,</span>
+<span class='curline'><a href='../S/185.html#L28390'>pFile</a>            28390 libdb/sqlite3.c     rc = osOpenDirectory(pFile-&gt;zPath, &amp;dirfd);</span>
+<span class='curline'><a href='../S/185.html#L28393'>pFile</a>            28393 libdb/sqlite3.c       robust_close(pFile, dirfd, __LINE__);</span>
+<span class='curline'><a href='../S/185.html#L28397'>pFile</a>            28397 libdb/sqlite3.c     pFile-&gt;ctrlFlags &amp;= ~UNIXFILE_DIRSYNC;</span>
+<span class='curline'><a href='../S/185.html#L28406'>pFile</a>            28406 libdb/sqlite3.c   unixFile *pFile = (unixFile *)id;</span>
+<span class='curline'><a href='../S/185.html#L28408'>pFile</a>            28408 libdb/sqlite3.c   assert( pFile );</span>
+<span class='curline'><a href='../S/185.html#L28416'>pFile</a>            28416 libdb/sqlite3.c   if( pFile-&gt;szChunk&gt;0 ){</span>
+<span class='curline'><a href='../S/185.html#L28417'>pFile</a>            28417 libdb/sqlite3.c     nByte = ((nByte + pFile-&gt;szChunk - 1)/pFile-&gt;szChunk) * pFile-&gt;szChunk;</span>
+<span class='curline'><a href='../S/185.html#L28420'>pFile</a>            28420 libdb/sqlite3.c   rc = robust_ftruncate(pFile-&gt;h, nByte);</span>
+<span class='curline'><a href='../S/185.html#L28422'>pFile</a>            28422 libdb/sqlite3.c     pFile-&gt;lastErrno = errno;</span>
+<span class='curline'><a href='../S/185.html#L28423'>pFile</a>            28423 libdb/sqlite3.c     return unixLogError(SQLITE_IOERR_TRUNCATE, "ftruncate", pFile-&gt;zPath);</span>
+<span class='curline'><a href='../S/185.html#L28433'>pFile</a>            28433 libdb/sqlite3.c     if( pFile-&gt;inNormalWrite &amp;&amp; nByte==0 ){</span>
+<span class='curline'><a href='../S/185.html#L28434'>pFile</a>            28434 libdb/sqlite3.c       pFile-&gt;transCntrChng = 1;</span>
+<span class='curline'><a href='../S/185.html#L28443'>pFile</a>            28443 libdb/sqlite3.c     if( nByte&lt;pFile-&gt;mmapSize ){</span>
+<span class='curline'><a href='../S/185.html#L28444'>pFile</a>            28444 libdb/sqlite3.c       pFile-&gt;mmapSize = nByte;</span>
+<span class='curline'><a href='../S/185.html#L28493'>pFile</a>            28493 libdb/sqlite3.c static int fcntlSizeHint(unixFile *pFile, i64 nByte){</span>
+<span class='curline'><a href='../S/185.html#L28494'>pFile</a>            28494 libdb/sqlite3.c   if( pFile-&gt;szChunk&gt;0 ){</span>
+<span class='curline'><a href='../S/185.html#L28498'>pFile</a>            28498 libdb/sqlite3.c     if( osFstat(pFile-&gt;h, &amp;buf) ) return SQLITE_IOERR_FSTAT;</span>
+<span class='curline'><a href='../S/185.html#L28500'>pFile</a>            28500 libdb/sqlite3.c     nSize = ((nByte+pFile-&gt;szChunk-1) / pFile-&gt;szChunk) * pFile-&gt;szChunk;</span>
+<span class='curline'><a href='../S/185.html#L28509'>pFile</a>            28509 libdb/sqlite3.c         err = osFallocate(pFile-&gt;h, buf.st_size, nSize-buf.st_size);</span>
+<span class='curline'><a href='../S/185.html#L28522'>pFile</a>            28522 libdb/sqlite3.c       if( robust_ftruncate(pFile-&gt;h, nSize) ){</span>
+<span class='curline'><a href='../S/185.html#L28523'>pFile</a>            28523 libdb/sqlite3.c         pFile-&gt;lastErrno = errno;</span>
+<span class='curline'><a href='../S/185.html#L28524'>pFile</a>            28524 libdb/sqlite3.c         return unixLogError(SQLITE_IOERR_TRUNCATE, "ftruncate", pFile-&gt;zPath);</span>
+<span class='curline'><a href='../S/185.html#L28528'>pFile</a>            28528 libdb/sqlite3.c         int nWrite = seekAndWrite(pFile, iWrite, "", 1);</span>
+<span class='curline'><a href='../S/185.html#L28537'>pFile</a>            28537 libdb/sqlite3.c   if( pFile-&gt;mmapSizeMax&gt;0 &amp;&amp; nByte&gt;pFile-&gt;mmapSize ){</span>
+<span class='curline'><a href='../S/185.html#L28539'>pFile</a>            28539 libdb/sqlite3.c     if( pFile-&gt;szChunk&lt;=0 ){</span>
+<span class='curline'><a href='../S/185.html#L28540'>pFile</a>            28540 libdb/sqlite3.c       if( robust_ftruncate(pFile-&gt;h, nByte) ){</span>
+<span class='curline'><a href='../S/185.html#L28541'>pFile</a>            28541 libdb/sqlite3.c         pFile-&gt;lastErrno = errno;</span>
+<span class='curline'><a href='../S/185.html#L28542'>pFile</a>            28542 libdb/sqlite3.c         return unixLogError(SQLITE_IOERR_TRUNCATE, "ftruncate", pFile-&gt;zPath);</span>
+<span class='curline'><a href='../S/185.html#L28546'>pFile</a>            28546 libdb/sqlite3.c     rc = unixMapfile(pFile, nByte);</span>
+<span class='curline'><a href='../S/185.html#L28560'>pFile</a>            28560 libdb/sqlite3.c static void unixModeBit(unixFile *pFile, unsigned char mask, int *pArg){</span>
+<span class='curline'><a href='../S/185.html#L28562'>pFile</a>            28562 libdb/sqlite3.c     *pArg = (pFile-&gt;ctrlFlags &amp; mask)!=0;</span>
+<span class='curline'><a href='../S/185.html#L28564'>pFile</a>            28564 libdb/sqlite3.c     pFile-&gt;ctrlFlags &amp;= ~mask;</span>
+<span class='curline'><a href='../S/185.html#L28566'>pFile</a>            28566 libdb/sqlite3.c     pFile-&gt;ctrlFlags |= mask;</span>
+<span class='curline'><a href='../S/185.html#L28577'>pFile</a>            28577 libdb/sqlite3.c   unixFile *pFile = (unixFile*)id;</span>
+<span class='curline'><a href='../S/185.html#L28580'>pFile</a>            28580 libdb/sqlite3.c       *(int*)pArg = pFile-&gt;eFileLock;</span>
+<span class='curline'><a href='../S/185.html#L28584'>pFile</a>            28584 libdb/sqlite3.c       *(int*)pArg = pFile-&gt;lastErrno;</span>
+<span class='curline'><a href='../S/185.html#L28588'>pFile</a>            28588 libdb/sqlite3.c       pFile-&gt;szChunk = *(int *)pArg;</span>
+<span class='curline'><a href='../S/185.html#L28594'>pFile</a>            28594 libdb/sqlite3.c       rc = fcntlSizeHint(pFile, *(i64 *)pArg);</span>
+<span class='curline'><a href='../S/185.html#L28599'>pFile</a>            28599 libdb/sqlite3.c       unixModeBit(pFile, UNIXFILE_PERSIST_WAL, (int*)pArg);</span>
+<span class='curline'><a href='../S/185.html#L28603'>pFile</a>            28603 libdb/sqlite3.c       unixModeBit(pFile, UNIXFILE_PSOW, (int*)pArg);</span>
+<span class='curline'><a href='../S/185.html#L28607'>pFile</a>            28607 libdb/sqlite3.c       *(char**)pArg = sqlite3_mprintf("%s", pFile-&gt;pVfs-&gt;zName);</span>
+<span class='curline'><a href='../S/185.html#L28611'>pFile</a>            28611 libdb/sqlite3.c       char *zTFile = sqlite3_malloc( pFile-&gt;pVfs-&gt;mxPathname );</span>
+<span class='curline'><a href='../S/185.html#L28613'>pFile</a>            28613 libdb/sqlite3.c         unixGetTempname(pFile-&gt;pVfs-&gt;mxPathname, zTFile);</span>
+<span class='curline'><a href='../S/185.html#L28619'>pFile</a>            28619 libdb/sqlite3.c       *(int*)pArg = fileHasMoved(pFile);</span>
+<span class='curline'><a href='../S/185.html#L28629'>pFile</a>            28629 libdb/sqlite3.c       *(i64*)pArg = pFile-&gt;mmapSizeMax;</span>
+<span class='curline'><a href='../S/185.html#L28630'>pFile</a>            28630 libdb/sqlite3.c       if( newLimit&gt;=0 &amp;&amp; newLimit!=pFile-&gt;mmapSizeMax &amp;&amp; pFile-&gt;nFetchOut==0 ){</span>
+<span class='curline'><a href='../S/185.html#L28631'>pFile</a>            28631 libdb/sqlite3.c         pFile-&gt;mmapSizeMax = newLimit;</span>
+<span class='curline'><a href='../S/185.html#L28632'>pFile</a>            28632 libdb/sqlite3.c         if( pFile-&gt;mmapSize&gt;0 ){</span>
+<span class='curline'><a href='../S/185.html#L28633'>pFile</a>            28633 libdb/sqlite3.c           unixUnmapfile(pFile);</span>
+<span class='curline'><a href='../S/185.html#L28634'>pFile</a>            28634 libdb/sqlite3.c           rc = unixMapfile(pFile, -1);</span>
+<span class='curline'><a href='../S/185.html#L28685'>pFile</a>            28685 libdb/sqlite3.c   unixFile *pFile = (unixFile*)id;</span>
+<span class='curline'><a href='../S/185.html#L28686'>pFile</a>            28686 libdb/sqlite3.c   if( pFile-&gt;sectorSize == 0 ){</span>
+<span class='curline'><a href='../S/185.html#L28690'>pFile</a>            28690 libdb/sqlite3.c     pFile-&gt;sectorSize = SQLITE_DEFAULT_SECTOR_SIZE;</span>
+<span class='curline'><a href='../S/185.html#L28691'>pFile</a>            28691 libdb/sqlite3.c     pFile-&gt;deviceCharacteristics = 0;</span>
+<span class='curline'><a href='../S/185.html#L28692'>pFile</a>            28692 libdb/sqlite3.c     if( fstatvfs(pFile-&gt;h, &amp;fsInfo) == -1 ) {</span>
+<span class='curline'><a href='../S/185.html#L28693'>pFile</a>            28693 libdb/sqlite3.c       return pFile-&gt;sectorSize;</span>
+<span class='curline'><a href='../S/185.html#L28697'>pFile</a>            28697 libdb/sqlite3.c       pFile-&gt;sectorSize = fsInfo.f_bsize;</span>
+<span class='curline'><a href='../S/185.html#L28698'>pFile</a>            28698 libdb/sqlite3.c       pFile-&gt;deviceCharacteristics =</span>
+<span class='curline'><a href='../S/185.html#L28706'>pFile</a>            28706 libdb/sqlite3.c       pFile-&gt;sectorSize = fsInfo.f_bsize;</span>
+<span class='curline'><a href='../S/185.html#L28707'>pFile</a>            28707 libdb/sqlite3.c       pFile-&gt;deviceCharacteristics =</span>
+<span class='curline'><a href='../S/185.html#L28709'>pFile</a>            28709 libdb/sqlite3.c         (pFile-&gt;sectorSize / 512 * SQLITE_IOCAP_ATOMIC512) |</span>
+<span class='curline'><a href='../S/185.html#L28716'>pFile</a>            28716 libdb/sqlite3.c       pFile-&gt;sectorSize = fsInfo.f_bsize;</span>
+<span class='curline'><a href='../S/185.html#L28717'>pFile</a>            28717 libdb/sqlite3.c       pFile-&gt;deviceCharacteristics =</span>
+<span class='curline'><a href='../S/185.html#L28725'>pFile</a>            28725 libdb/sqlite3.c       pFile-&gt;sectorSize = fsInfo.f_bsize;</span>
+<span class='curline'><a href='../S/185.html#L28726'>pFile</a>            28726 libdb/sqlite3.c       pFile-&gt;deviceCharacteristics =</span>
+<span class='curline'><a href='../S/185.html#L28728'>pFile</a>            28728 libdb/sqlite3.c         ((pFile-&gt;sectorSize / 512 * SQLITE_IOCAP_ATOMIC512) &lt;&lt; 1) - 2 |</span>
+<span class='curline'><a href='../S/185.html#L28733'>pFile</a>            28733 libdb/sqlite3.c       pFile-&gt;sectorSize = fsInfo.f_bsize;</span>
+<span class='curline'><a href='../S/185.html#L28734'>pFile</a>            28734 libdb/sqlite3.c       pFile-&gt;deviceCharacteristics =</span>
+<span class='curline'><a href='../S/185.html#L28736'>pFile</a>            28736 libdb/sqlite3.c         ((pFile-&gt;sectorSize / 512 * SQLITE_IOCAP_ATOMIC512) &lt;&lt; 1) - 2 |</span>
+<span class='curline'><a href='../S/185.html#L28741'>pFile</a>            28741 libdb/sqlite3.c       pFile-&gt;deviceCharacteristics =</span>
+<span class='curline'><a href='../S/185.html#L28750'>pFile</a>            28750 libdb/sqlite3.c   if( pFile-&gt;sectorSize % 512 != 0 ){</span>
+<span class='curline'><a href='../S/185.html#L28751'>pFile</a>            28751 libdb/sqlite3.c     pFile-&gt;deviceCharacteristics = 0;</span>
+<span class='curline'><a href='../S/185.html#L28752'>pFile</a>            28752 libdb/sqlite3.c     pFile-&gt;sectorSize = SQLITE_DEFAULT_SECTOR_SIZE;</span>
+<span class='curline'><a href='../S/185.html#L28754'>pFile</a>            28754 libdb/sqlite3.c   return pFile-&gt;sectorSize;</span>
+<span class='curline'><a href='../S/185.html#L30443'>pFile</a>            30443 libdb/sqlite3.c   sqlite3_file *pFile,         /* The file descriptor to be filled in */</span>
+<span class='curline'><a href='../S/185.html#L30447'>pFile</a>            30447 libdb/sqlite3.c   unixFile *p = (unixFile *)pFile;</span>
+<span class='curline'><a href='../S/185.html#L30631'>pFile</a>            30631 libdb/sqlite3.c     ((unixFile*)pFile)-&gt;lastErrno = errno;</span>
+<span class='curline'><a href='../S/185.html#L30636'>pFile</a>            30636 libdb/sqlite3.c     ((unixFile*)pFile)-&gt;fsFlags |= SQLITE_FSFLAGS_IS_MSDOS;</span>
+<span class='curline'><a href='../S/185.html#L30676'>pFile</a>            30676 libdb/sqlite3.c       rc = fillInUnixFile(pVfs, fd, pFile, zPath, ctrlFlags);</span>
+<span class='curline'><a href='../S/185.html#L30678'>pFile</a>            30678 libdb/sqlite3.c         rc = proxyTransformUnixFile((unixFile*)pFile, ":auto:");</span>
+<span class='curline'><a href='../S/185.html#L30684'>pFile</a>            30684 libdb/sqlite3.c           unixClose(pFile);</span>
+<span class='curline'><a href='../S/185.html#L30693'>pFile</a>            30693 libdb/sqlite3.c   rc = fillInUnixFile(pVfs, fd, pFile, zPath, ctrlFlags);</span>
+<span class='curline'><a href='../S/185.html#L31440'>pFile</a>            31440 libdb/sqlite3.c static int proxyBreakConchLock(unixFile *pFile, uuid_t myHostID){</span>
+<span class='curline'><a href='../S/185.html#L31441'>pFile</a>            31441 libdb/sqlite3.c   proxyLockingContext *pCtx = (proxyLockingContext *)pFile-&gt;lockingContext; </span>
+<span class='curline'><a href='../S/185.html#L31482'>pFile</a>            31482 libdb/sqlite3.c   robust_close(pFile, conchFile-&gt;h, __LINE__);</span>
+<span class='curline'><a href='../S/185.html#L31490'>pFile</a>            31490 libdb/sqlite3.c       robust_close(pFile, fd, __LINE__);</span>
+<span class='curline'><a href='../S/185.html#L31500'>pFile</a>            31500 libdb/sqlite3.c static int proxyConchLock(unixFile *pFile, uuid_t myHostID, int lockType){</span>
+<span class='curline'><a href='../S/185.html#L31501'>pFile</a>            31501 libdb/sqlite3.c   proxyLockingContext *pCtx = (proxyLockingContext *)pFile-&gt;lockingContext; </span>
+<span class='curline'><a href='../S/185.html#L31520'>pFile</a>            31520 libdb/sqlite3.c         pFile-&gt;lastErrno = errno;</span>
+<span class='curline'><a href='../S/185.html#L31540'>pFile</a>            31540 libdb/sqlite3.c           pFile-&gt;lastErrno = errno;</span>
+<span class='curline'><a href='../S/185.html#L31557'>pFile</a>            31557 libdb/sqlite3.c       if( 0==proxyBreakConchLock(pFile, myHostID) ){</span>
+<span class='curline'><a href='../S/185.html#L31578'>pFile</a>            31578 libdb/sqlite3.c static int proxyTakeConch(unixFile *pFile){</span>
+<span class='curline'><a href='../S/185.html#L31579'>pFile</a>            31579 libdb/sqlite3.c   proxyLockingContext *pCtx = (proxyLockingContext *)pFile-&gt;lockingContext; </span>
+<span class='curline'><a href='../S/185.html#L31602'>pFile</a>            31602 libdb/sqlite3.c       pFile-&gt;lastErrno = pError;</span>
+<span class='curline'><a href='../S/185.html#L31605'>pFile</a>            31605 libdb/sqlite3.c     rc = proxyConchLock(pFile, myHostID, SHARED_LOCK);</span>
+<span class='curline'><a href='../S/185.html#L31613'>pFile</a>            31613 libdb/sqlite3.c       pFile-&gt;lastErrno = conchFile-&gt;lastErrno;</span>
+<span class='curline'><a href='../S/185.html#L31683'>pFile</a>            31683 libdb/sqlite3.c           rc = proxyConchLock(pFile, myHostID, EXCLUSIVE_LOCK);</span>
+<span class='curline'><a href='../S/185.html#L31708'>pFile</a>            31708 libdb/sqlite3.c           int err = osFstat(pFile-&gt;h, &amp;buf);</span>
+<span class='curline'><a href='../S/185.html#L31737'>pFile</a>            31737 libdb/sqlite3.c       OSTRACE(("TRANSPROXY: CLOSE  %d\n", pFile-&gt;h));</span>
+<span class='curline'><a href='../S/185.html#L31738'>pFile</a>            31738 libdb/sqlite3.c       if( rc==SQLITE_OK &amp;&amp; pFile-&gt;openFlags ){</span>
+<span class='curline'><a href='../S/185.html#L31740'>pFile</a>            31740 libdb/sqlite3.c         if( pFile-&gt;h&gt;=0 ){</span>
+<span class='curline'><a href='../S/185.html#L31741'>pFile</a>            31741 libdb/sqlite3.c           robust_close(pFile, pFile-&gt;h, __LINE__);</span>
+<span class='curline'><a href='../S/185.html#L31743'>pFile</a>            31743 libdb/sqlite3.c         pFile-&gt;h = -1;</span>
+<span class='curline'><a href='../S/185.html#L31744'>pFile</a>            31744 libdb/sqlite3.c         fd = robust_open(pCtx-&gt;dbPath, pFile-&gt;openFlags, 0);</span>
+<span class='curline'><a href='../S/185.html#L31747'>pFile</a>            31747 libdb/sqlite3.c           pFile-&gt;h = fd;</span>
+<span class='curline'><a href='../S/185.html#L31798'>pFile</a>            31798 libdb/sqlite3.c static int proxyReleaseConch(unixFile *pFile){</span>
+<span class='curline'><a href='../S/185.html#L31803'>pFile</a>            31803 libdb/sqlite3.c   pCtx = (proxyLockingContext *)pFile-&gt;lockingContext;</span>
+<span class='curline'><a href='../S/185.html#L31865'>pFile</a>            31865 libdb/sqlite3.c static int switchLockProxyPath(unixFile *pFile, const char *path) {</span>
+<span class='curline'><a href='../S/185.html#L31866'>pFile</a>            31866 libdb/sqlite3.c   proxyLockingContext *pCtx = (proxyLockingContext*)pFile-&gt;lockingContext;</span>
+<span class='curline'><a href='../S/185.html#L31870'>pFile</a>            31870 libdb/sqlite3.c   if( pFile-&gt;eFileLock!=NO_LOCK ){</span>
+<span class='curline'><a href='../S/185.html#L31901'>pFile</a>            31901 libdb/sqlite3.c static int proxyGetDbPathForUnixFile(unixFile *pFile, char *dbPath){</span>
+<span class='curline'><a href='../S/185.html#L31903'>pFile</a>            31903 libdb/sqlite3.c   if( pFile-&gt;pMethod == &amp;afpIoMethods ){</span>
+<span class='curline'><a href='../S/185.html#L31906'>pFile</a>            31906 libdb/sqlite3.c     assert( (int)strlen((char*)pFile-&gt;lockingContext)&lt;=MAXPATHLEN );</span>
+<span class='curline'><a href='../S/185.html#L31907'>pFile</a>            31907 libdb/sqlite3.c     strlcpy(dbPath, ((afpLockingContext *)pFile-&gt;lockingContext)-&gt;dbPath, MAXPATHLEN);</span>
+<span class='curline'><a href='../S/185.html#L31910'>pFile</a>            31910 libdb/sqlite3.c   if( pFile-&gt;pMethod == &amp;dotlockIoMethods ){</span>
+<span class='curline'><a href='../S/185.html#L31913'>pFile</a>            31913 libdb/sqlite3.c     int len = strlen((char *)pFile-&gt;lockingContext) - strlen(DOTLOCK_SUFFIX);</span>
+<span class='curline'><a href='../S/185.html#L31914'>pFile</a>            31914 libdb/sqlite3.c     memcpy(dbPath, (char *)pFile-&gt;lockingContext, len + 1);</span>
+<span class='curline'><a href='../S/185.html#L31917'>pFile</a>            31917 libdb/sqlite3.c     assert( strlen((char*)pFile-&gt;lockingContext)&lt;=MAXPATHLEN );</span>
+<span class='curline'><a href='../S/185.html#L31918'>pFile</a>            31918 libdb/sqlite3.c     strlcpy(dbPath, (char *)pFile-&gt;lockingContext, MAXPATHLEN);</span>
+<span class='curline'><a href='../S/185.html#L31931'>pFile</a>            31931 libdb/sqlite3.c static int proxyTransformUnixFile(unixFile *pFile, const char *path) {</span>
+<span class='curline'><a href='../S/185.html#L31937'>pFile</a>            31937 libdb/sqlite3.c   if( pFile-&gt;eFileLock!=NO_LOCK ){</span>
+<span class='curline'><a href='../S/185.html#L31940'>pFile</a>            31940 libdb/sqlite3.c   proxyGetDbPathForUnixFile(pFile, dbPath);</span>
+<span class='curline'><a href='../S/185.html#L31947'>pFile</a>            31947 libdb/sqlite3.c   OSTRACE(("TRANSPROXY  %d for %s pid=%d\n", pFile-&gt;h,</span>
+<span class='curline'><a href='../S/185.html#L31959'>pFile</a>            31959 libdb/sqlite3.c     if( rc==SQLITE_CANTOPEN &amp;&amp; ((pFile-&gt;openFlags&amp;O_RDWR) == 0) ){</span>
+<span class='curline'><a href='../S/185.html#L31995'>pFile</a>            31995 libdb/sqlite3.c     pCtx-&gt;oldLockingContext = pFile-&gt;lockingContext;</span>
+<span class='curline'><a href='../S/185.html#L31996'>pFile</a>            31996 libdb/sqlite3.c     pFile-&gt;lockingContext = pCtx;</span>
+<span class='curline'><a href='../S/185.html#L31997'>pFile</a>            31997 libdb/sqlite3.c     pCtx-&gt;pOldMethod = pFile-&gt;pMethod;</span>
+<span class='curline'><a href='../S/185.html#L31998'>pFile</a>            31998 libdb/sqlite3.c     pFile-&gt;pMethod = &amp;proxyIoMethods;</span>
+<span class='curline'><a href='../S/185.html#L32008'>pFile</a>            32008 libdb/sqlite3.c   OSTRACE(("TRANSPROXY  %d %s\n", pFile-&gt;h,</span>
+<span class='curline'><a href='../S/185.html#L32021'>pFile</a>            32021 libdb/sqlite3.c       unixFile *pFile = (unixFile*)id;</span>
+<span class='curline'><a href='../S/185.html#L32022'>pFile</a>            32022 libdb/sqlite3.c       if( pFile-&gt;pMethod == &amp;proxyIoMethods ){</span>
+<span class='curline'><a href='../S/185.html#L32023'>pFile</a>            32023 libdb/sqlite3.c         proxyLockingContext *pCtx = (proxyLockingContext*)pFile-&gt;lockingContext;</span>
+<span class='curline'><a href='../S/185.html#L32024'>pFile</a>            32024 libdb/sqlite3.c         proxyTakeConch(pFile);</span>
+<span class='curline'><a href='../S/185.html#L32036'>pFile</a>            32036 libdb/sqlite3.c       unixFile *pFile = (unixFile*)id;</span>
+<span class='curline'><a href='../S/185.html#L32038'>pFile</a>            32038 libdb/sqlite3.c       int isProxyStyle = (pFile-&gt;pMethod == &amp;proxyIoMethods);</span>
+<span class='curline'><a href='../S/185.html#L32051'>pFile</a>            32051 libdb/sqlite3.c             (proxyLockingContext*)pFile-&gt;lockingContext;</span>
+<span class='curline'><a href='../S/185.html#L32058'>pFile</a>            32058 libdb/sqlite3.c             rc = switchLockProxyPath(pFile, proxyPath);</span>
+<span class='curline'><a href='../S/185.html#L32062'>pFile</a>            32062 libdb/sqlite3.c           rc = proxyTransformUnixFile(pFile, proxyPath);</span>
+<span class='curline'><a href='../S/185.html#L32089'>pFile</a>            32089 libdb/sqlite3.c   unixFile *pFile = (unixFile*)id;</span>
+<span class='curline'><a href='../S/185.html#L32090'>pFile</a>            32090 libdb/sqlite3.c   int rc = proxyTakeConch(pFile);</span>
+<span class='curline'><a href='../S/185.html#L32092'>pFile</a>            32092 libdb/sqlite3.c     proxyLockingContext *pCtx = (proxyLockingContext *)pFile-&gt;lockingContext;</span>
+<span class='curline'><a href='../S/185.html#L32128'>pFile</a>            32128 libdb/sqlite3.c   unixFile *pFile = (unixFile*)id;</span>
+<span class='curline'><a href='../S/185.html#L32129'>pFile</a>            32129 libdb/sqlite3.c   int rc = proxyTakeConch(pFile);</span>
+<span class='curline'><a href='../S/185.html#L32131'>pFile</a>            32131 libdb/sqlite3.c     proxyLockingContext *pCtx = (proxyLockingContext *)pFile-&gt;lockingContext;</span>
+<span class='curline'><a href='../S/185.html#L32135'>pFile</a>            32135 libdb/sqlite3.c       pFile-&gt;eFileLock = proxy-&gt;eFileLock;</span>
+<span class='curline'><a href='../S/185.html#L32152'>pFile</a>            32152 libdb/sqlite3.c   unixFile *pFile = (unixFile*)id;</span>
+<span class='curline'><a href='../S/185.html#L32153'>pFile</a>            32153 libdb/sqlite3.c   int rc = proxyTakeConch(pFile);</span>
+<span class='curline'><a href='../S/185.html#L32155'>pFile</a>            32155 libdb/sqlite3.c     proxyLockingContext *pCtx = (proxyLockingContext *)pFile-&gt;lockingContext;</span>
+<span class='curline'><a href='../S/185.html#L32159'>pFile</a>            32159 libdb/sqlite3.c       pFile-&gt;eFileLock = proxy-&gt;eFileLock;</span>
+<span class='curline'><a href='../S/185.html#L32172'>pFile</a>            32172 libdb/sqlite3.c     unixFile *pFile = (unixFile*)id;</span>
+<span class='curline'><a href='../S/185.html#L32173'>pFile</a>            32173 libdb/sqlite3.c     proxyLockingContext *pCtx = (proxyLockingContext *)pFile-&gt;lockingContext;</span>
+<span class='curline'><a href='../S/185.html#L32188'>pFile</a>            32188 libdb/sqlite3.c         rc = proxyReleaseConch(pFile);</span>
+<span class='curline'><a href='../S/185.html#L32199'>pFile</a>            32199 libdb/sqlite3.c     pFile-&gt;lockingContext = pCtx-&gt;oldLockingContext;</span>
+<span class='curline'><a href='../S/185.html#L32200'>pFile</a>            32200 libdb/sqlite3.c     pFile-&gt;pMethod = pCtx-&gt;pOldMethod;</span>
+<span class='curline'><a href='../S/185.html#L32202'>pFile</a>            32202 libdb/sqlite3.c     return pFile-&gt;pMethod-&gt;xClose(id);</span>
+<span class='curline'><a href='../S/185.html#L34549'>pFile</a>            34549 libdb/sqlite3.c static int winceCreateLock(const char *zFilename, winFile *pFile){</span>
+<span class='curline'><a href='../S/185.html#L34563'>pFile</a>            34563 libdb/sqlite3.c   memset(&amp;pFile-&gt;local, 0, sizeof(pFile-&gt;local));</span>
+<span class='curline'><a href='../S/185.html#L34573'>pFile</a>            34573 libdb/sqlite3.c   pFile-&gt;hMutex = osCreateMutexW(NULL, FALSE, zName);</span>
+<span class='curline'><a href='../S/185.html#L34574'>pFile</a>            34574 libdb/sqlite3.c   if (!pFile-&gt;hMutex){</span>
+<span class='curline'><a href='../S/185.html#L34575'>pFile</a>            34575 libdb/sqlite3.c     pFile-&gt;lastErrno = osGetLastError();</span>
+<span class='curline'><a href='../S/185.html#L34577'>pFile</a>            34577 libdb/sqlite3.c     return winLogError(SQLITE_IOERR, pFile-&gt;lastErrno,</span>
+<span class='curline'><a href='../S/185.html#L34582'>pFile</a>            34582 libdb/sqlite3.c   winceMutexAcquire(pFile-&gt;hMutex);</span>
+<span class='curline'><a href='../S/185.html#L34589'>pFile</a>            34589 libdb/sqlite3.c   pFile-&gt;hShared = osCreateFileMappingW(INVALID_HANDLE_VALUE, NULL,</span>
+<span class='curline'><a href='../S/185.html#L34603'>pFile</a>            34603 libdb/sqlite3.c   if( pFile-&gt;hShared ){</span>
+<span class='curline'><a href='../S/185.html#L34604'>pFile</a>            34604 libdb/sqlite3.c     pFile-&gt;shared = (winceLock*)osMapViewOfFile(pFile-&gt;hShared,</span>
+<span class='curline'><a href='../S/185.html#L34607'>pFile</a>            34607 libdb/sqlite3.c     if( !pFile-&gt;shared ){</span>
+<span class='curline'><a href='../S/185.html#L34608'>pFile</a>            34608 libdb/sqlite3.c       pFile-&gt;lastErrno = osGetLastError();</span>
+<span class='curline'><a href='../S/185.html#L34609'>pFile</a>            34609 libdb/sqlite3.c       winLogError(SQLITE_IOERR, pFile-&gt;lastErrno,</span>
+<span class='curline'><a href='../S/185.html#L34612'>pFile</a>            34612 libdb/sqlite3.c       osCloseHandle(pFile-&gt;hShared);</span>
+<span class='curline'><a href='../S/185.html#L34613'>pFile</a>            34613 libdb/sqlite3.c       pFile-&gt;hShared = NULL;</span>
+<span class='curline'><a href='../S/185.html#L34618'>pFile</a>            34618 libdb/sqlite3.c   if( pFile-&gt;hShared==NULL ){</span>
+<span class='curline'><a href='../S/185.html#L34620'>pFile</a>            34620 libdb/sqlite3.c       pFile-&gt;lastErrno = lastErrno;</span>
+<span class='curline'><a href='../S/185.html#L34621'>pFile</a>            34621 libdb/sqlite3.c       winLogError(SQLITE_IOERR, pFile-&gt;lastErrno,</span>
+<span class='curline'><a href='../S/185.html#L34625'>pFile</a>            34625 libdb/sqlite3.c     winceMutexRelease(pFile-&gt;hMutex);</span>
+<span class='curline'><a href='../S/185.html#L34626'>pFile</a>            34626 libdb/sqlite3.c     osCloseHandle(pFile-&gt;hMutex);</span>
+<span class='curline'><a href='../S/185.html#L34627'>pFile</a>            34627 libdb/sqlite3.c     pFile-&gt;hMutex = NULL;</span>
+<span class='curline'><a href='../S/185.html#L34633'>pFile</a>            34633 libdb/sqlite3.c     memset(pFile-&gt;shared, 0, sizeof(winceLock));</span>
+<span class='curline'><a href='../S/185.html#L34636'>pFile</a>            34636 libdb/sqlite3.c   winceMutexRelease(pFile-&gt;hMutex);</span>
+<span class='curline'><a href='../S/185.html#L34643'>pFile</a>            34643 libdb/sqlite3.c static void winceDestroyLock(winFile *pFile){</span>
+<span class='curline'><a href='../S/185.html#L34644'>pFile</a>            34644 libdb/sqlite3.c   if (pFile-&gt;hMutex){</span>
+<span class='curline'><a href='../S/185.html#L34646'>pFile</a>            34646 libdb/sqlite3.c     winceMutexAcquire(pFile-&gt;hMutex);</span>
+<span class='curline'><a href='../S/185.html#L34650'>pFile</a>            34650 libdb/sqlite3.c     if (pFile-&gt;local.nReaders){</span>
+<span class='curline'><a href='../S/185.html#L34651'>pFile</a>            34651 libdb/sqlite3.c       pFile-&gt;shared-&gt;nReaders --;</span>
+<span class='curline'><a href='../S/185.html#L34653'>pFile</a>            34653 libdb/sqlite3.c     if (pFile-&gt;local.bReserved){</span>
+<span class='curline'><a href='../S/185.html#L34654'>pFile</a>            34654 libdb/sqlite3.c       pFile-&gt;shared-&gt;bReserved = FALSE;</span>
+<span class='curline'><a href='../S/185.html#L34656'>pFile</a>            34656 libdb/sqlite3.c     if (pFile-&gt;local.bPending){</span>
+<span class='curline'><a href='../S/185.html#L34657'>pFile</a>            34657 libdb/sqlite3.c       pFile-&gt;shared-&gt;bPending = FALSE;</span>
+<span class='curline'><a href='../S/185.html#L34659'>pFile</a>            34659 libdb/sqlite3.c     if (pFile-&gt;local.bExclusive){</span>
+<span class='curline'><a href='../S/185.html#L34660'>pFile</a>            34660 libdb/sqlite3.c       pFile-&gt;shared-&gt;bExclusive = FALSE;</span>
+<span class='curline'><a href='../S/185.html#L34664'>pFile</a>            34664 libdb/sqlite3.c     osUnmapViewOfFile(pFile-&gt;shared);</span>
+<span class='curline'><a href='../S/185.html#L34665'>pFile</a>            34665 libdb/sqlite3.c     osCloseHandle(pFile-&gt;hShared);</span>
+<span class='curline'><a href='../S/185.html#L34668'>pFile</a>            34668 libdb/sqlite3.c     winceMutexRelease(pFile-&gt;hMutex);</span>
+<span class='curline'><a href='../S/185.html#L34669'>pFile</a>            34669 libdb/sqlite3.c     osCloseHandle(pFile-&gt;hMutex);</span>
+<span class='curline'><a href='../S/185.html#L34670'>pFile</a>            34670 libdb/sqlite3.c     pFile-&gt;hMutex = NULL;</span>
+<span class='curline'><a href='../S/185.html#L34684'>pFile</a>            34684 libdb/sqlite3.c   winFile *pFile = HANDLE_TO_WINFILE(phFile);</span>
+<span class='curline'><a href='../S/185.html#L34690'>pFile</a>            34690 libdb/sqlite3.c   if (!pFile-&gt;hMutex) return TRUE;</span>
+<span class='curline'><a href='../S/185.html#L34691'>pFile</a>            34691 libdb/sqlite3.c   winceMutexAcquire(pFile-&gt;hMutex);</span>
+<span class='curline'><a href='../S/185.html#L34696'>pFile</a>            34696 libdb/sqlite3.c     if (pFile-&gt;shared-&gt;nReaders == 0 &amp;&amp; pFile-&gt;shared-&gt;bExclusive == 0){</span>
+<span class='curline'><a href='../S/185.html#L34697'>pFile</a>            34697 libdb/sqlite3.c        pFile-&gt;shared-&gt;bExclusive = TRUE;</span>
+<span class='curline'><a href='../S/185.html#L34698'>pFile</a>            34698 libdb/sqlite3.c        pFile-&gt;local.bExclusive = TRUE;</span>
+<span class='curline'><a href='../S/185.html#L34706'>pFile</a>            34706 libdb/sqlite3.c     if (pFile-&gt;shared-&gt;bExclusive == 0){</span>
+<span class='curline'><a href='../S/185.html#L34707'>pFile</a>            34707 libdb/sqlite3.c       pFile-&gt;local.nReaders ++;</span>
+<span class='curline'><a href='../S/185.html#L34708'>pFile</a>            34708 libdb/sqlite3.c       if (pFile-&gt;local.nReaders == 1){</span>
+<span class='curline'><a href='../S/185.html#L34709'>pFile</a>            34709 libdb/sqlite3.c         pFile-&gt;shared-&gt;nReaders ++;</span>
+<span class='curline'><a href='../S/185.html#L34719'>pFile</a>            34719 libdb/sqlite3.c     if (pFile-&gt;shared-&gt;bPending == 0) {</span>
+<span class='curline'><a href='../S/185.html#L34720'>pFile</a>            34720 libdb/sqlite3.c       pFile-&gt;shared-&gt;bPending = TRUE;</span>
+<span class='curline'><a href='../S/185.html#L34721'>pFile</a>            34721 libdb/sqlite3.c       pFile-&gt;local.bPending = TRUE;</span>
+<span class='curline'><a href='../S/185.html#L34729'>pFile</a>            34729 libdb/sqlite3.c     if (pFile-&gt;shared-&gt;bReserved == 0) {</span>
+<span class='curline'><a href='../S/185.html#L34730'>pFile</a>            34730 libdb/sqlite3.c       pFile-&gt;shared-&gt;bReserved = TRUE;</span>
+<span class='curline'><a href='../S/185.html#L34731'>pFile</a>            34731 libdb/sqlite3.c       pFile-&gt;local.bReserved = TRUE;</span>
+<span class='curline'><a href='../S/185.html#L34736'>pFile</a>            34736 libdb/sqlite3.c   winceMutexRelease(pFile-&gt;hMutex);</span>
+<span class='curline'><a href='../S/185.html#L34750'>pFile</a>            34750 libdb/sqlite3.c   winFile *pFile = HANDLE_TO_WINFILE(phFile);</span>
+<span class='curline'><a href='../S/185.html#L34756'>pFile</a>            34756 libdb/sqlite3.c   if (!pFile-&gt;hMutex) return TRUE;</span>
+<span class='curline'><a href='../S/185.html#L34757'>pFile</a>            34757 libdb/sqlite3.c   winceMutexAcquire(pFile-&gt;hMutex);</span>
+<span class='curline'><a href='../S/185.html#L34762'>pFile</a>            34762 libdb/sqlite3.c     if (pFile-&gt;local.bExclusive){</span>
+<span class='curline'><a href='../S/185.html#L34764'>pFile</a>            34764 libdb/sqlite3.c       pFile-&gt;local.bExclusive = FALSE;</span>
+<span class='curline'><a href='../S/185.html#L34765'>pFile</a>            34765 libdb/sqlite3.c       pFile-&gt;shared-&gt;bExclusive = FALSE;</span>
+<span class='curline'><a href='../S/185.html#L34770'>pFile</a>            34770 libdb/sqlite3.c     else if (pFile-&gt;local.nReaders){</span>
+<span class='curline'><a href='../S/185.html#L34773'>pFile</a>            34773 libdb/sqlite3.c       pFile-&gt;local.nReaders --;</span>
+<span class='curline'><a href='../S/185.html#L34774'>pFile</a>            34774 libdb/sqlite3.c       if (pFile-&gt;local.nReaders == 0)</span>
+<span class='curline'><a href='../S/185.html#L34776'>pFile</a>            34776 libdb/sqlite3.c         pFile-&gt;shared-&gt;nReaders --;</span>
+<span class='curline'><a href='../S/185.html#L34785'>pFile</a>            34785 libdb/sqlite3.c     if (pFile-&gt;local.bPending){</span>
+<span class='curline'><a href='../S/185.html#L34786'>pFile</a>            34786 libdb/sqlite3.c       pFile-&gt;local.bPending = FALSE;</span>
+<span class='curline'><a href='../S/185.html#L34787'>pFile</a>            34787 libdb/sqlite3.c       pFile-&gt;shared-&gt;bPending = FALSE;</span>
+<span class='curline'><a href='../S/185.html#L34794'>pFile</a>            34794 libdb/sqlite3.c     if (pFile-&gt;local.bReserved) {</span>
+<span class='curline'><a href='../S/185.html#L34795'>pFile</a>            34795 libdb/sqlite3.c       pFile-&gt;local.bReserved = FALSE;</span>
+<span class='curline'><a href='../S/185.html#L34796'>pFile</a>            34796 libdb/sqlite3.c       pFile-&gt;shared-&gt;bReserved = FALSE;</span>
+<span class='curline'><a href='../S/185.html#L34801'>pFile</a>            34801 libdb/sqlite3.c   winceMutexRelease(pFile-&gt;hMutex);</span>
+<span class='curline'><a href='../S/185.html#L34889'>pFile</a>            34889 libdb/sqlite3.c static int winSeekFile(winFile *pFile, sqlite3_int64 iOffset){</span>
+<span class='curline'><a href='../S/185.html#L34896'>pFile</a>            34896 libdb/sqlite3.c   OSTRACE(("SEEK file=%p, offset=%lld\n", pFile-&gt;h, iOffset));</span>
+<span class='curline'><a href='../S/185.html#L34908'>pFile</a>            34908 libdb/sqlite3.c   dwRet = osSetFilePointer(pFile-&gt;h, lowerBits, &amp;upperBits, FILE_BEGIN);</span>
+<span class='curline'><a href='../S/185.html#L34912'>pFile</a>            34912 libdb/sqlite3.c     pFile-&gt;lastErrno = lastErrno;</span>
+<span class='curline'><a href='../S/185.html#L34913'>pFile</a>            34913 libdb/sqlite3.c     winLogError(SQLITE_IOERR_SEEK, pFile-&gt;lastErrno,</span>
+<span class='curline'><a href='../S/185.html#L34914'>pFile</a>            34914 libdb/sqlite3.c                 "winSeekFile", pFile-&gt;zPath);</span>
+<span class='curline'><a href='../S/185.html#L34915'>pFile</a>            34915 libdb/sqlite3.c     OSTRACE(("SEEK file=%p, rc=SQLITE_IOERR_SEEK\n", pFile-&gt;h));</span>
+<span class='curline'><a href='../S/185.html#L34919'>pFile</a>            34919 libdb/sqlite3.c   OSTRACE(("SEEK file=%p, rc=SQLITE_OK\n", pFile-&gt;h));</span>
+<span class='curline'><a href='../S/185.html#L34930'>pFile</a>            34930 libdb/sqlite3.c   bRet = osSetFilePointerEx(pFile-&gt;h, x, 0, FILE_BEGIN);</span>
+<span class='curline'><a href='../S/185.html#L34933'>pFile</a>            34933 libdb/sqlite3.c     pFile-&gt;lastErrno = osGetLastError();</span>
+<span class='curline'><a href='../S/185.html#L34934'>pFile</a>            34934 libdb/sqlite3.c     winLogError(SQLITE_IOERR_SEEK, pFile-&gt;lastErrno,</span>
+<span class='curline'><a href='../S/185.html#L34935'>pFile</a>            34935 libdb/sqlite3.c                 "winSeekFile", pFile-&gt;zPath);</span>
+<span class='curline'><a href='../S/185.html#L34936'>pFile</a>            34936 libdb/sqlite3.c     OSTRACE(("SEEK file=%p, rc=SQLITE_IOERR_SEEK\n", pFile-&gt;h));</span>
+<span class='curline'><a href='../S/185.html#L34940'>pFile</a>            34940 libdb/sqlite3.c   OSTRACE(("SEEK file=%p, rc=SQLITE_OK\n", pFile-&gt;h));</span>
+<span class='curline'><a href='../S/185.html#L34964'>pFile</a>            34964 libdb/sqlite3.c   winFile *pFile = (winFile*)id;</span>
+<span class='curline'><a href='../S/185.html#L34968'>pFile</a>            34968 libdb/sqlite3.c   assert( pFile-&gt;pShm==0 );</span>
+<span class='curline'><a href='../S/185.html#L34970'>pFile</a>            34970 libdb/sqlite3.c   assert( pFile-&gt;h!=NULL &amp;&amp; pFile-&gt;h!=INVALID_HANDLE_VALUE );</span>
+<span class='curline'><a href='../S/185.html#L34971'>pFile</a>            34971 libdb/sqlite3.c   OSTRACE(("CLOSE file=%p\n", pFile-&gt;h));</span>
+<span class='curline'><a href='../S/185.html#L34974'>pFile</a>            34974 libdb/sqlite3.c   winUnmapfile(pFile);</span>
+<span class='curline'><a href='../S/185.html#L34978'>pFile</a>            34978 libdb/sqlite3.c     rc = osCloseHandle(pFile-&gt;h);</span>
+<span class='curline'><a href='../S/185.html#L34983'>pFile</a>            34983 libdb/sqlite3.c   winceDestroyLock(pFile);</span>
+<span class='curline'><a href='../S/185.html#L34984'>pFile</a>            34984 libdb/sqlite3.c   if( pFile-&gt;zDeleteOnClose ){</span>
+<span class='curline'><a href='../S/185.html#L34987'>pFile</a>            34987 libdb/sqlite3.c            osDeleteFileW(pFile-&gt;zDeleteOnClose)==0</span>
+<span class='curline'><a href='../S/185.html#L34988'>pFile</a>            34988 libdb/sqlite3.c         &amp;&amp; osGetFileAttributesW(pFile-&gt;zDeleteOnClose)!=0xffffffff</span>
+<span class='curline'><a href='../S/185.html#L34993'>pFile</a>            34993 libdb/sqlite3.c     sqlite3_free(pFile-&gt;zDeleteOnClose);</span>
+<span class='curline'><a href='../S/185.html#L34997'>pFile</a>            34997 libdb/sqlite3.c     pFile-&gt;h = NULL;</span>
+<span class='curline'><a href='../S/185.html#L35000'>pFile</a>            35000 libdb/sqlite3.c   OSTRACE(("CLOSE file=%p, rc=%s\n", pFile-&gt;h, rc ? "ok" : "failed"));</span>
+<span class='curline'><a href='../S/185.html#L35003'>pFile</a>            35003 libdb/sqlite3.c                           "winClose", pFile-&gt;zPath);</span>
+<span class='curline'><a href='../S/185.html#L35020'>pFile</a>            35020 libdb/sqlite3.c   winFile *pFile = (winFile*)id;  /* file handle */</span>
+<span class='curline'><a href='../S/185.html#L35029'>pFile</a>            35029 libdb/sqlite3.c            pFile-&gt;h, pBuf, amt, offset, pFile-&gt;locktype));</span>
+<span class='curline'><a href='../S/185.html#L35034'>pFile</a>            35034 libdb/sqlite3.c   if( offset&lt;pFile-&gt;mmapSize ){</span>
+<span class='curline'><a href='../S/185.html#L35035'>pFile</a>            35035 libdb/sqlite3.c     if( offset+amt &lt;= pFile-&gt;mmapSize ){</span>
+<span class='curline'><a href='../S/185.html#L35036'>pFile</a>            35036 libdb/sqlite3.c       memcpy(pBuf, &amp;((u8 *)(pFile-&gt;pMapRegion))[offset], amt);</span>
+<span class='curline'><a href='../S/185.html#L35037'>pFile</a>            35037 libdb/sqlite3.c       OSTRACE(("READ-MMAP file=%p, rc=SQLITE_OK\n", pFile-&gt;h));</span>
+<span class='curline'><a href='../S/185.html#L35040'>pFile</a>            35040 libdb/sqlite3.c       int nCopy = (int)(pFile-&gt;mmapSize - offset);</span>
+<span class='curline'><a href='../S/185.html#L35041'>pFile</a>            35041 libdb/sqlite3.c       memcpy(pBuf, &amp;((u8 *)(pFile-&gt;pMapRegion))[offset], nCopy);</span>
+<span class='curline'><a href='../S/185.html#L35050'>pFile</a>            35050 libdb/sqlite3.c   if( winSeekFile(pFile, offset) ){</span>
+<span class='curline'><a href='../S/185.html#L35051'>pFile</a>            35051 libdb/sqlite3.c     OSTRACE(("READ file=%p, rc=SQLITE_FULL\n", pFile-&gt;h));</span>
+<span class='curline'><a href='../S/185.html#L35054'>pFile</a>            35054 libdb/sqlite3.c   while( !osReadFile(pFile-&gt;h, pBuf, amt, &amp;nRead, 0) ){</span>
+<span class='curline'><a href='../S/185.html#L35059'>pFile</a>            35059 libdb/sqlite3.c   while( !osReadFile(pFile-&gt;h, pBuf, amt, &amp;nRead, &amp;overlapped) &amp;&amp;</span>
+<span class='curline'><a href='../S/185.html#L35064'>pFile</a>            35064 libdb/sqlite3.c     pFile-&gt;lastErrno = lastErrno;</span>
+<span class='curline'><a href='../S/185.html#L35065'>pFile</a>            35065 libdb/sqlite3.c     OSTRACE(("READ file=%p, rc=SQLITE_IOERR_READ\n", pFile-&gt;h));</span>
+<span class='curline'><a href='../S/185.html#L35066'>pFile</a>            35066 libdb/sqlite3.c     return winLogError(SQLITE_IOERR_READ, pFile-&gt;lastErrno,</span>
+<span class='curline'><a href='../S/185.html#L35067'>pFile</a>            35067 libdb/sqlite3.c                        "winRead", pFile-&gt;zPath);</span>
+<span class='curline'><a href='../S/185.html#L35073'>pFile</a>            35073 libdb/sqlite3.c     OSTRACE(("READ file=%p, rc=SQLITE_IOERR_SHORT_READ\n", pFile-&gt;h));</span>
+<span class='curline'><a href='../S/185.html#L35077'>pFile</a>            35077 libdb/sqlite3.c   OSTRACE(("READ file=%p, rc=SQLITE_OK\n", pFile-&gt;h));</span>
+<span class='curline'><a href='../S/185.html#L35092'>pFile</a>            35092 libdb/sqlite3.c   winFile *pFile = (winFile*)id;  /* File handle */</span>
+<span class='curline'><a href='../S/185.html#L35096'>pFile</a>            35096 libdb/sqlite3.c   assert( pFile );</span>
+<span class='curline'><a href='../S/185.html#L35101'>pFile</a>            35101 libdb/sqlite3.c            pFile-&gt;h, pBuf, amt, offset, pFile-&gt;locktype));</span>
+<span class='curline'><a href='../S/185.html#L35106'>pFile</a>            35106 libdb/sqlite3.c   if( offset&lt;pFile-&gt;mmapSize ){</span>
+<span class='curline'><a href='../S/185.html#L35107'>pFile</a>            35107 libdb/sqlite3.c     if( offset+amt &lt;= pFile-&gt;mmapSize ){</span>
+<span class='curline'><a href='../S/185.html#L35108'>pFile</a>            35108 libdb/sqlite3.c       memcpy(&amp;((u8 *)(pFile-&gt;pMapRegion))[offset], pBuf, amt);</span>
+<span class='curline'><a href='../S/185.html#L35109'>pFile</a>            35109 libdb/sqlite3.c       OSTRACE(("WRITE-MMAP file=%p, rc=SQLITE_OK\n", pFile-&gt;h));</span>
+<span class='curline'><a href='../S/185.html#L35112'>pFile</a>            35112 libdb/sqlite3.c       int nCopy = (int)(pFile-&gt;mmapSize - offset);</span>
+<span class='curline'><a href='../S/185.html#L35113'>pFile</a>            35113 libdb/sqlite3.c       memcpy(&amp;((u8 *)(pFile-&gt;pMapRegion))[offset], pBuf, nCopy);</span>
+<span class='curline'><a href='../S/185.html#L35122'>pFile</a>            35122 libdb/sqlite3.c   rc = winSeekFile(pFile, offset);</span>
+<span class='curline'><a href='../S/185.html#L35143'>pFile</a>            35143 libdb/sqlite3.c       if( !osWriteFile(pFile-&gt;h, aRem, nRem, &amp;nWrite, 0) ){</span>
+<span class='curline'><a href='../S/185.html#L35145'>pFile</a>            35145 libdb/sqlite3.c       if( !osWriteFile(pFile-&gt;h, aRem, nRem, &amp;nWrite, &amp;overlapped) ){</span>
+<span class='curline'><a href='../S/185.html#L35164'>pFile</a>            35164 libdb/sqlite3.c       pFile-&gt;lastErrno = lastErrno;</span>
+<span class='curline'><a href='../S/185.html#L35170'>pFile</a>            35170 libdb/sqlite3.c     if(   ( pFile-&gt;lastErrno==ERROR_HANDLE_DISK_FULL )</span>
+<span class='curline'><a href='../S/185.html#L35171'>pFile</a>            35171 libdb/sqlite3.c        || ( pFile-&gt;lastErrno==ERROR_DISK_FULL )){</span>
+<span class='curline'><a href='../S/185.html#L35172'>pFile</a>            35172 libdb/sqlite3.c       OSTRACE(("WRITE file=%p, rc=SQLITE_FULL\n", pFile-&gt;h));</span>
+<span class='curline'><a href='../S/185.html#L35173'>pFile</a>            35173 libdb/sqlite3.c       return winLogError(SQLITE_FULL, pFile-&gt;lastErrno,</span>
+<span class='curline'><a href='../S/185.html#L35174'>pFile</a>            35174 libdb/sqlite3.c                          "winWrite1", pFile-&gt;zPath);</span>
+<span class='curline'><a href='../S/185.html#L35176'>pFile</a>            35176 libdb/sqlite3.c     OSTRACE(("WRITE file=%p, rc=SQLITE_IOERR_WRITE\n", pFile-&gt;h));</span>
+<span class='curline'><a href='../S/185.html#L35177'>pFile</a>            35177 libdb/sqlite3.c     return winLogError(SQLITE_IOERR_WRITE, pFile-&gt;lastErrno,</span>
+<span class='curline'><a href='../S/185.html#L35178'>pFile</a>            35178 libdb/sqlite3.c                        "winWrite2", pFile-&gt;zPath);</span>
+<span class='curline'><a href='../S/185.html#L35182'>pFile</a>            35182 libdb/sqlite3.c   OSTRACE(("WRITE file=%p, rc=SQLITE_OK\n", pFile-&gt;h));</span>
+<span class='curline'><a href='../S/185.html#L35190'>pFile</a>            35190 libdb/sqlite3.c   winFile *pFile = (winFile*)id;  /* File handle object */</span>
+<span class='curline'><a href='../S/185.html#L35194'>pFile</a>            35194 libdb/sqlite3.c   assert( pFile );</span>
+<span class='curline'><a href='../S/185.html#L35197'>pFile</a>            35197 libdb/sqlite3.c            pFile-&gt;h, nByte, pFile-&gt;locktype));</span>
+<span class='curline'><a href='../S/185.html#L35204'>pFile</a>            35204 libdb/sqlite3.c   if( pFile-&gt;szChunk&gt;0 ){</span>
+<span class='curline'><a href='../S/185.html#L35205'>pFile</a>            35205 libdb/sqlite3.c     nByte = ((nByte + pFile-&gt;szChunk - 1)/pFile-&gt;szChunk) * pFile-&gt;szChunk;</span>
+<span class='curline'><a href='../S/185.html#L35209'>pFile</a>            35209 libdb/sqlite3.c   if( winSeekFile(pFile, nByte) ){</span>
+<span class='curline'><a href='../S/185.html#L35210'>pFile</a>            35210 libdb/sqlite3.c     rc = winLogError(SQLITE_IOERR_TRUNCATE, pFile-&gt;lastErrno,</span>
+<span class='curline'><a href='../S/185.html#L35211'>pFile</a>            35211 libdb/sqlite3.c                      "winTruncate1", pFile-&gt;zPath);</span>
+<span class='curline'><a href='../S/185.html#L35212'>pFile</a>            35212 libdb/sqlite3.c   }else if( 0==osSetEndOfFile(pFile-&gt;h) &amp;&amp;</span>
+<span class='curline'><a href='../S/185.html#L35214'>pFile</a>            35214 libdb/sqlite3.c     pFile-&gt;lastErrno = lastErrno;</span>
+<span class='curline'><a href='../S/185.html#L35215'>pFile</a>            35215 libdb/sqlite3.c     rc = winLogError(SQLITE_IOERR_TRUNCATE, pFile-&gt;lastErrno,</span>
+<span class='curline'><a href='../S/185.html#L35216'>pFile</a>            35216 libdb/sqlite3.c                      "winTruncate2", pFile-&gt;zPath);</span>
+<span class='curline'><a href='../S/185.html#L35224'>pFile</a>            35224 libdb/sqlite3.c   if( pFile-&gt;pMapRegion &amp;&amp; nByte&lt;pFile-&gt;mmapSize ){</span>
+<span class='curline'><a href='../S/185.html#L35225'>pFile</a>            35225 libdb/sqlite3.c     pFile-&gt;mmapSize = nByte;</span>
+<span class='curline'><a href='../S/185.html#L35229'>pFile</a>            35229 libdb/sqlite3.c   OSTRACE(("TRUNCATE file=%p, rc=%s\n", pFile-&gt;h, sqlite3ErrName(rc)));</span>
+<span class='curline'><a href='../S/185.html#L35258'>pFile</a>            35258 libdb/sqlite3.c   winFile *pFile = (winFile*)id;</span>
+<span class='curline'><a href='../S/185.html#L35263'>pFile</a>            35263 libdb/sqlite3.c   assert( pFile );</span>
+<span class='curline'><a href='../S/185.html#L35275'>pFile</a>            35275 libdb/sqlite3.c            pFile-&gt;h, flags, pFile-&gt;locktype));</span>
+<span class='curline'><a href='../S/185.html#L35290'>pFile</a>            35290 libdb/sqlite3.c   OSTRACE(("SYNC-NOP file=%p, rc=SQLITE_OK\n", pFile-&gt;h));</span>
+<span class='curline'><a href='../S/185.html#L35293'>pFile</a>            35293 libdb/sqlite3.c   rc = osFlushFileBuffers(pFile-&gt;h);</span>
+<span class='curline'><a href='../S/185.html#L35296'>pFile</a>            35296 libdb/sqlite3.c     OSTRACE(("SYNC file=%p, rc=SQLITE_OK\n", pFile-&gt;h));</span>
+<span class='curline'><a href='../S/185.html#L35299'>pFile</a>            35299 libdb/sqlite3.c     pFile-&gt;lastErrno = osGetLastError();</span>
+<span class='curline'><a href='../S/185.html#L35300'>pFile</a>            35300 libdb/sqlite3.c     OSTRACE(("SYNC file=%p, rc=SQLITE_IOERR_FSYNC\n", pFile-&gt;h));</span>
+<span class='curline'><a href='../S/185.html#L35301'>pFile</a>            35301 libdb/sqlite3.c     return winLogError(SQLITE_IOERR_FSYNC, pFile-&gt;lastErrno,</span>
+<span class='curline'><a href='../S/185.html#L35302'>pFile</a>            35302 libdb/sqlite3.c                        "winSync", pFile-&gt;zPath);</span>
+<span class='curline'><a href='../S/185.html#L35311'>pFile</a>            35311 libdb/sqlite3.c   winFile *pFile = (winFile*)id;</span>
+<span class='curline'><a href='../S/185.html#L35317'>pFile</a>            35317 libdb/sqlite3.c   OSTRACE(("SIZE file=%p, pSize=%p\n", pFile-&gt;h, pSize));</span>
+<span class='curline'><a href='../S/185.html#L35322'>pFile</a>            35322 libdb/sqlite3.c     if( osGetFileInformationByHandleEx(pFile-&gt;h, FileStandardInfo,</span>
+<span class='curline'><a href='../S/185.html#L35326'>pFile</a>            35326 libdb/sqlite3.c       pFile-&gt;lastErrno = osGetLastError();</span>
+<span class='curline'><a href='../S/185.html#L35327'>pFile</a>            35327 libdb/sqlite3.c       rc = winLogError(SQLITE_IOERR_FSTAT, pFile-&gt;lastErrno,</span>
+<span class='curline'><a href='../S/185.html#L35328'>pFile</a>            35328 libdb/sqlite3.c                        "winFileSize", pFile-&gt;zPath);</span>
+<span class='curline'><a href='../S/185.html#L35337'>pFile</a>            35337 libdb/sqlite3.c     lowerBits = osGetFileSize(pFile-&gt;h, &amp;upperBits);</span>
+<span class='curline'><a href='../S/185.html#L35341'>pFile</a>            35341 libdb/sqlite3.c       pFile-&gt;lastErrno = lastErrno;</span>
+<span class='curline'><a href='../S/185.html#L35342'>pFile</a>            35342 libdb/sqlite3.c       rc = winLogError(SQLITE_IOERR_FSTAT, pFile-&gt;lastErrno,</span>
+<span class='curline'><a href='../S/185.html#L35343'>pFile</a>            35343 libdb/sqlite3.c                        "winFileSize", pFile-&gt;zPath);</span>
+<span class='curline'><a href='../S/185.html#L35348'>pFile</a>            35348 libdb/sqlite3.c            pFile-&gt;h, pSize, *pSize, sqlite3ErrName(rc)));</span>
+<span class='curline'><a href='../S/185.html#L35388'>pFile</a>            35388 libdb/sqlite3.c static int winGetReadLock(winFile *pFile){</span>
+<span class='curline'><a href='../S/185.html#L35390'>pFile</a>            35390 libdb/sqlite3.c   OSTRACE(("READ-LOCK file=%p, lock=%d\n", pFile-&gt;h, pFile-&gt;locktype));</span>
+<span class='curline'><a href='../S/185.html#L35397'>pFile</a>            35397 libdb/sqlite3.c     res = winceLockFile(&amp;pFile-&gt;h, SHARED_FIRST, 0, 1, 0);</span>
+<span class='curline'><a href='../S/185.html#L35399'>pFile</a>            35399 libdb/sqlite3.c     res = winLockFile(&amp;pFile-&gt;h, SQLITE_LOCKFILEEX_FLAGS, SHARED_FIRST, 0,</span>
+<span class='curline'><a href='../S/185.html#L35407'>pFile</a>            35407 libdb/sqlite3.c     pFile-&gt;sharedLockByte = (short)((lk &amp; 0x7fffffff)%(SHARED_SIZE - 1));</span>
+<span class='curline'><a href='../S/185.html#L35408'>pFile</a>            35408 libdb/sqlite3.c     res = winLockFile(&amp;pFile-&gt;h, SQLITE_LOCKFILE_FLAGS,</span>
+<span class='curline'><a href='../S/185.html#L35409'>pFile</a>            35409 libdb/sqlite3.c                       SHARED_FIRST+pFile-&gt;sharedLockByte, 0, 1, 0);</span>
+<span class='curline'><a href='../S/185.html#L35413'>pFile</a>            35413 libdb/sqlite3.c     pFile-&gt;lastErrno = osGetLastError();</span>
+<span class='curline'><a href='../S/185.html#L35416'>pFile</a>            35416 libdb/sqlite3.c   OSTRACE(("READ-LOCK file=%p, result=%d\n", pFile-&gt;h, res));</span>
+<span class='curline'><a href='../S/185.html#L35423'>pFile</a>            35423 libdb/sqlite3.c static int winUnlockReadLock(winFile *pFile){</span>
+<span class='curline'><a href='../S/185.html#L35426'>pFile</a>            35426 libdb/sqlite3.c   OSTRACE(("READ-UNLOCK file=%p, lock=%d\n", pFile-&gt;h, pFile-&gt;locktype));</span>
+<span class='curline'><a href='../S/185.html#L35428'>pFile</a>            35428 libdb/sqlite3.c     res = winUnlockFile(&amp;pFile-&gt;h, SHARED_FIRST, 0, SHARED_SIZE, 0);</span>
+<span class='curline'><a href='../S/185.html#L35432'>pFile</a>            35432 libdb/sqlite3.c     res = winUnlockFile(&amp;pFile-&gt;h, SHARED_FIRST+pFile-&gt;sharedLockByte, 0, 1, 0);</span>
+<span class='curline'><a href='../S/185.html#L35436'>pFile</a>            35436 libdb/sqlite3.c     pFile-&gt;lastErrno = lastErrno;</span>
+<span class='curline'><a href='../S/185.html#L35437'>pFile</a>            35437 libdb/sqlite3.c     winLogError(SQLITE_IOERR_UNLOCK, pFile-&gt;lastErrno,</span>
+<span class='curline'><a href='../S/185.html#L35438'>pFile</a>            35438 libdb/sqlite3.c                 "winUnlockReadLock", pFile-&gt;zPath);</span>
+<span class='curline'><a href='../S/185.html#L35440'>pFile</a>            35440 libdb/sqlite3.c   OSTRACE(("READ-UNLOCK file=%p, result=%d\n", pFile-&gt;h, res));</span>
+<span class='curline'><a href='../S/185.html#L35475'>pFile</a>            35475 libdb/sqlite3.c   winFile *pFile = (winFile*)id;</span>
+<span class='curline'><a href='../S/185.html#L35480'>pFile</a>            35480 libdb/sqlite3.c            pFile-&gt;h, pFile-&gt;locktype, pFile-&gt;sharedLockByte, locktype));</span>
+<span class='curline'><a href='../S/185.html#L35486'>pFile</a>            35486 libdb/sqlite3.c   if( pFile-&gt;locktype&gt;=locktype ){</span>
+<span class='curline'><a href='../S/185.html#L35487'>pFile</a>            35487 libdb/sqlite3.c     OSTRACE(("LOCK-HELD file=%p, rc=SQLITE_OK\n", pFile-&gt;h));</span>
+<span class='curline'><a href='../S/185.html#L35493'>pFile</a>            35493 libdb/sqlite3.c   assert( pFile-&gt;locktype!=NO_LOCK || locktype==SHARED_LOCK );</span>
+<span class='curline'><a href='../S/185.html#L35495'>pFile</a>            35495 libdb/sqlite3.c   assert( locktype!=RESERVED_LOCK || pFile-&gt;locktype==SHARED_LOCK );</span>
+<span class='curline'><a href='../S/185.html#L35501'>pFile</a>            35501 libdb/sqlite3.c   newLocktype = pFile-&gt;locktype;</span>
+<span class='curline'><a href='../S/185.html#L35502'>pFile</a>            35502 libdb/sqlite3.c   if(   (pFile-&gt;locktype==NO_LOCK)</span>
+<span class='curline'><a href='../S/185.html#L35504'>pFile</a>            35504 libdb/sqlite3.c          &amp;&amp; (pFile-&gt;locktype==RESERVED_LOCK))</span>
+<span class='curline'><a href='../S/185.html#L35507'>pFile</a>            35507 libdb/sqlite3.c     while( cnt--&gt;0 &amp;&amp; (res = winLockFile(&amp;pFile-&gt;h, SQLITE_LOCKFILE_FLAGS,</span>
+<span class='curline'><a href='../S/185.html#L35517'>pFile</a>            35517 libdb/sqlite3.c                pFile-&gt;h, cnt, res));</span>
+<span class='curline'><a href='../S/185.html#L35519'>pFile</a>            35519 libdb/sqlite3.c         pFile-&gt;lastErrno = lastErrno;</span>
+<span class='curline'><a href='../S/185.html#L35522'>pFile</a>            35522 libdb/sqlite3.c                  pFile-&gt;h, cnt, sqlite3ErrName(rc)));</span>
+<span class='curline'><a href='../S/185.html#L35536'>pFile</a>            35536 libdb/sqlite3.c     assert( pFile-&gt;locktype==NO_LOCK );</span>
+<span class='curline'><a href='../S/185.html#L35537'>pFile</a>            35537 libdb/sqlite3.c     res = winGetReadLock(pFile);</span>
+<span class='curline'><a href='../S/185.html#L35548'>pFile</a>            35548 libdb/sqlite3.c     assert( pFile-&gt;locktype==SHARED_LOCK );</span>
+<span class='curline'><a href='../S/185.html#L35549'>pFile</a>            35549 libdb/sqlite3.c     res = winLockFile(&amp;pFile-&gt;h, SQLITE_LOCKFILE_FLAGS, RESERVED_BYTE, 0, 1, 0);</span>
+<span class='curline'><a href='../S/185.html#L35567'>pFile</a>            35567 libdb/sqlite3.c     assert( pFile-&gt;locktype&gt;=SHARED_LOCK );</span>
+<span class='curline'><a href='../S/185.html#L35568'>pFile</a>            35568 libdb/sqlite3.c     res = winUnlockReadLock(pFile);</span>
+<span class='curline'><a href='../S/185.html#L35569'>pFile</a>            35569 libdb/sqlite3.c     res = winLockFile(&amp;pFile-&gt;h, SQLITE_LOCKFILE_FLAGS, SHARED_FIRST, 0,</span>
+<span class='curline'><a href='../S/185.html#L35575'>pFile</a>            35575 libdb/sqlite3.c       winGetReadLock(pFile);</span>
+<span class='curline'><a href='../S/185.html#L35583'>pFile</a>            35583 libdb/sqlite3.c     winUnlockFile(&amp;pFile-&gt;h, PENDING_BYTE, 0, 1, 0);</span>
+<span class='curline'><a href='../S/185.html#L35592'>pFile</a>            35592 libdb/sqlite3.c     pFile-&gt;lastErrno = lastErrno;</span>
+<span class='curline'><a href='../S/185.html#L35595'>pFile</a>            35595 libdb/sqlite3.c              pFile-&gt;h, locktype, newLocktype));</span>
+<span class='curline'><a href='../S/185.html#L35597'>pFile</a>            35597 libdb/sqlite3.c   pFile-&gt;locktype = (u8)newLocktype;</span>
+<span class='curline'><a href='../S/185.html#L35599'>pFile</a>            35599 libdb/sqlite3.c            pFile-&gt;h, pFile-&gt;locktype, sqlite3ErrName(rc)));</span>
+<span class='curline'><a href='../S/185.html#L35610'>pFile</a>            35610 libdb/sqlite3.c   winFile *pFile = (winFile*)id;</span>
+<span class='curline'><a href='../S/185.html#L35613'>pFile</a>            35613 libdb/sqlite3.c   OSTRACE(("TEST-WR-LOCK file=%p, pResOut=%p\n", pFile-&gt;h, pResOut));</span>
+<span class='curline'><a href='../S/185.html#L35616'>pFile</a>            35616 libdb/sqlite3.c   if( pFile-&gt;locktype&gt;=RESERVED_LOCK ){</span>
+<span class='curline'><a href='../S/185.html#L35618'>pFile</a>            35618 libdb/sqlite3.c     OSTRACE(("TEST-WR-LOCK file=%p, result=%d (local)\n", pFile-&gt;h, res));</span>
+<span class='curline'><a href='../S/185.html#L35620'>pFile</a>            35620 libdb/sqlite3.c     res = winLockFile(&amp;pFile-&gt;h, SQLITE_LOCKFILEEX_FLAGS,RESERVED_BYTE, 0, 1, 0);</span>
+<span class='curline'><a href='../S/185.html#L35622'>pFile</a>            35622 libdb/sqlite3.c       winUnlockFile(&amp;pFile-&gt;h, RESERVED_BYTE, 0, 1, 0);</span>
+<span class='curline'><a href='../S/185.html#L35625'>pFile</a>            35625 libdb/sqlite3.c     OSTRACE(("TEST-WR-LOCK file=%p, result=%d (remote)\n", pFile-&gt;h, res));</span>
+<span class='curline'><a href='../S/185.html#L35629'>pFile</a>            35629 libdb/sqlite3.c            pFile-&gt;h, pResOut, *pResOut));</span>
+<span class='curline'><a href='../S/185.html#L35646'>pFile</a>            35646 libdb/sqlite3.c   winFile *pFile = (winFile*)id;</span>
+<span class='curline'><a href='../S/185.html#L35648'>pFile</a>            35648 libdb/sqlite3.c   assert( pFile!=0 );</span>
+<span class='curline'><a href='../S/185.html#L35651'>pFile</a>            35651 libdb/sqlite3.c            pFile-&gt;h, pFile-&gt;locktype, pFile-&gt;sharedLockByte, locktype));</span>
+<span class='curline'><a href='../S/185.html#L35652'>pFile</a>            35652 libdb/sqlite3.c   type = pFile-&gt;locktype;</span>
+<span class='curline'><a href='../S/185.html#L35654'>pFile</a>            35654 libdb/sqlite3.c     winUnlockFile(&amp;pFile-&gt;h, SHARED_FIRST, 0, SHARED_SIZE, 0);</span>
+<span class='curline'><a href='../S/185.html#L35655'>pFile</a>            35655 libdb/sqlite3.c     if( locktype==SHARED_LOCK &amp;&amp; !winGetReadLock(pFile) ){</span>
+<span class='curline'><a href='../S/185.html#L35659'>pFile</a>            35659 libdb/sqlite3.c                        "winUnlock", pFile-&gt;zPath);</span>
+<span class='curline'><a href='../S/185.html#L35663'>pFile</a>            35663 libdb/sqlite3.c     winUnlockFile(&amp;pFile-&gt;h, RESERVED_BYTE, 0, 1, 0);</span>
+<span class='curline'><a href='../S/185.html#L35666'>pFile</a>            35666 libdb/sqlite3.c     winUnlockReadLock(pFile);</span>
+<span class='curline'><a href='../S/185.html#L35669'>pFile</a>            35669 libdb/sqlite3.c     winUnlockFile(&amp;pFile-&gt;h, PENDING_BYTE, 0, 1, 0);</span>
+<span class='curline'><a href='../S/185.html#L35671'>pFile</a>            35671 libdb/sqlite3.c   pFile-&gt;locktype = (u8)locktype;</span>
+<span class='curline'><a href='../S/185.html#L35673'>pFile</a>            35673 libdb/sqlite3.c            pFile-&gt;h, pFile-&gt;locktype, sqlite3ErrName(rc)));</span>
+<span class='curline'><a href='../S/185.html#L35683'>pFile</a>            35683 libdb/sqlite3.c static void winModeBit(winFile *pFile, unsigned char mask, int *pArg){</span>
+<span class='curline'><a href='../S/185.html#L35685'>pFile</a>            35685 libdb/sqlite3.c     *pArg = (pFile-&gt;ctrlFlags &amp; mask)!=0;</span>
+<span class='curline'><a href='../S/185.html#L35687'>pFile</a>            35687 libdb/sqlite3.c     pFile-&gt;ctrlFlags &amp;= ~mask;</span>
+<span class='curline'><a href='../S/185.html#L35689'>pFile</a>            35689 libdb/sqlite3.c     pFile-&gt;ctrlFlags |= mask;</span>
+<span class='curline'><a href='../S/185.html#L35702'>pFile</a>            35702 libdb/sqlite3.c   winFile *pFile = (winFile*)id;</span>
+<span class='curline'><a href='../S/185.html#L35703'>pFile</a>            35703 libdb/sqlite3.c   OSTRACE(("FCNTL file=%p, op=%d, pArg=%p\n", pFile-&gt;h, op, pArg));</span>
+<span class='curline'><a href='../S/185.html#L35706'>pFile</a>            35706 libdb/sqlite3.c       *(int*)pArg = pFile-&gt;locktype;</span>
+<span class='curline'><a href='../S/185.html#L35707'>pFile</a>            35707 libdb/sqlite3.c       OSTRACE(("FCNTL file=%p, rc=SQLITE_OK\n", pFile-&gt;h));</span>
+<span class='curline'><a href='../S/185.html#L35711'>pFile</a>            35711 libdb/sqlite3.c       *(int*)pArg = (int)pFile-&gt;lastErrno;</span>
+<span class='curline'><a href='../S/185.html#L35712'>pFile</a>            35712 libdb/sqlite3.c       OSTRACE(("FCNTL file=%p, rc=SQLITE_OK\n", pFile-&gt;h));</span>
+<span class='curline'><a href='../S/185.html#L35716'>pFile</a>            35716 libdb/sqlite3.c       pFile-&gt;szChunk = *(int *)pArg;</span>
+<span class='curline'><a href='../S/185.html#L35717'>pFile</a>            35717 libdb/sqlite3.c       OSTRACE(("FCNTL file=%p, rc=SQLITE_OK\n", pFile-&gt;h));</span>
+<span class='curline'><a href='../S/185.html#L35721'>pFile</a>            35721 libdb/sqlite3.c       if( pFile-&gt;szChunk&gt;0 ){</span>
+<span class='curline'><a href='../S/185.html#L35732'>pFile</a>            35732 libdb/sqlite3.c         OSTRACE(("FCNTL file=%p, rc=%s\n", pFile-&gt;h, sqlite3ErrName(rc)));</span>
+<span class='curline'><a href='../S/185.html#L35735'>pFile</a>            35735 libdb/sqlite3.c       OSTRACE(("FCNTL file=%p, rc=SQLITE_OK\n", pFile-&gt;h));</span>
+<span class='curline'><a href='../S/185.html#L35739'>pFile</a>            35739 libdb/sqlite3.c       winModeBit(pFile, WINFILE_PERSIST_WAL, (int*)pArg);</span>
+<span class='curline'><a href='../S/185.html#L35740'>pFile</a>            35740 libdb/sqlite3.c       OSTRACE(("FCNTL file=%p, rc=SQLITE_OK\n", pFile-&gt;h));</span>
+<span class='curline'><a href='../S/185.html#L35744'>pFile</a>            35744 libdb/sqlite3.c       winModeBit(pFile, WINFILE_PSOW, (int*)pArg);</span>
+<span class='curline'><a href='../S/185.html#L35745'>pFile</a>            35745 libdb/sqlite3.c       OSTRACE(("FCNTL file=%p, rc=SQLITE_OK\n", pFile-&gt;h));</span>
+<span class='curline'><a href='../S/185.html#L35749'>pFile</a>            35749 libdb/sqlite3.c       *(char**)pArg = sqlite3_mprintf("%s", pFile-&gt;pVfs-&gt;zName);</span>
+<span class='curline'><a href='../S/185.html#L35750'>pFile</a>            35750 libdb/sqlite3.c       OSTRACE(("FCNTL file=%p, rc=SQLITE_OK\n", pFile-&gt;h));</span>
+<span class='curline'><a href='../S/185.html#L35765'>pFile</a>            35765 libdb/sqlite3.c       OSTRACE(("FCNTL file=%p, rc=SQLITE_OK\n", pFile-&gt;h));</span>
+<span class='curline'><a href='../S/185.html#L35771'>pFile</a>            35771 libdb/sqlite3.c       HANDLE hOldFile = pFile-&gt;h;</span>
+<span class='curline'><a href='../S/185.html#L35772'>pFile</a>            35772 libdb/sqlite3.c       pFile-&gt;h = *phFile;</span>
+<span class='curline'><a href='../S/185.html#L35775'>pFile</a>            35775 libdb/sqlite3.c                hOldFile, pFile-&gt;h));</span>
+<span class='curline'><a href='../S/185.html#L35781'>pFile</a>            35781 libdb/sqlite3.c       int rc = winGetTempname(pFile-&gt;pVfs, &amp;zTFile);</span>
+<span class='curline'><a href='../S/185.html#L35785'>pFile</a>            35785 libdb/sqlite3.c       OSTRACE(("FCNTL file=%p, rc=%s\n", pFile-&gt;h, sqlite3ErrName(rc)));</span>
+<span class='curline'><a href='../S/185.html#L35795'>pFile</a>            35795 libdb/sqlite3.c       *(i64*)pArg = pFile-&gt;mmapSizeMax;</span>
+<span class='curline'><a href='../S/185.html#L35796'>pFile</a>            35796 libdb/sqlite3.c       if( newLimit&gt;=0 &amp;&amp; newLimit!=pFile-&gt;mmapSizeMax &amp;&amp; pFile-&gt;nFetchOut==0 ){</span>
+<span class='curline'><a href='../S/185.html#L35797'>pFile</a>            35797 libdb/sqlite3.c         pFile-&gt;mmapSizeMax = newLimit;</span>
+<span class='curline'><a href='../S/185.html#L35798'>pFile</a>            35798 libdb/sqlite3.c         if( pFile-&gt;mmapSize&gt;0 ){</span>
+<span class='curline'><a href='../S/185.html#L35799'>pFile</a>            35799 libdb/sqlite3.c           winUnmapfile(pFile);</span>
+<span class='curline'><a href='../S/185.html#L35800'>pFile</a>            35800 libdb/sqlite3.c           rc = winMapfile(pFile, -1);</span>
+<span class='curline'><a href='../S/185.html#L35803'>pFile</a>            35803 libdb/sqlite3.c       OSTRACE(("FCNTL file=%p, rc=%s\n", pFile-&gt;h, sqlite3ErrName(rc)));</span>
+<span class='curline'><a href='../S/185.html#L35808'>pFile</a>            35808 libdb/sqlite3.c   OSTRACE(("FCNTL file=%p, rc=SQLITE_NOTFOUND\n", pFile-&gt;h));</span>
+<span class='curline'><a href='../S/185.html#L35959'>pFile</a>            35959 libdb/sqlite3.c   winShmNode *pFile,    /* Apply locks to this open shared-memory segment */</span>
+<span class='curline'><a href='../S/185.html#L35967'>pFile</a>            35967 libdb/sqlite3.c   assert( sqlite3_mutex_held(pFile-&gt;mutex) || pFile-&gt;nRef==0 );</span>
+<span class='curline'><a href='../S/185.html#L35970'>pFile</a>            35970 libdb/sqlite3.c            pFile-&gt;hFile.h, lockType, ofst, nByte));</span>
+<span class='curline'><a href='../S/185.html#L35974'>pFile</a>            35974 libdb/sqlite3.c     rc = winUnlockFile(&amp;pFile-&gt;hFile.h, ofst, 0, nByte, 0);</span>
+<span class='curline'><a href='../S/185.html#L35979'>pFile</a>            35979 libdb/sqlite3.c     rc = winLockFile(&amp;pFile-&gt;hFile.h, dwFlags, ofst, 0, nByte, 0);</span>
+<span class='curline'><a href='../S/185.html#L35985'>pFile</a>            35985 libdb/sqlite3.c     pFile-&gt;lastErrno =  osGetLastError();</span>
+<span class='curline'><a href='../S/185.html#L35990'>pFile</a>            35990 libdb/sqlite3.c            pFile-&gt;hFile.h, (lockType == _SHM_UNLCK) ? "winUnlockFile" :</span>
+<span class='curline'><a href='../S/185.html#L35991'>pFile</a>            35991 libdb/sqlite3.c            "winLockFile", pFile-&gt;lastErrno, sqlite3ErrName(rc)));</span>
+<span class='curline'><a href='../S/185.html#L36484'>pFile</a>            36484 libdb/sqlite3.c static int winUnmapfile(winFile *pFile){</span>
+<span class='curline'><a href='../S/185.html#L36485'>pFile</a>            36485 libdb/sqlite3.c   assert( pFile!=0 );</span>
+<span class='curline'><a href='../S/185.html#L36488'>pFile</a>            36488 libdb/sqlite3.c            osGetCurrentProcessId(), pFile, pFile-&gt;hMap, pFile-&gt;pMapRegion,</span>
+<span class='curline'><a href='../S/185.html#L36489'>pFile</a>            36489 libdb/sqlite3.c            pFile-&gt;mmapSize, pFile-&gt;mmapSizeActual, pFile-&gt;mmapSizeMax));</span>
+<span class='curline'><a href='../S/185.html#L36490'>pFile</a>            36490 libdb/sqlite3.c   if( pFile-&gt;pMapRegion ){</span>
+<span class='curline'><a href='../S/185.html#L36491'>pFile</a>            36491 libdb/sqlite3.c     if( !osUnmapViewOfFile(pFile-&gt;pMapRegion) ){</span>
+<span class='curline'><a href='../S/185.html#L36492'>pFile</a>            36492 libdb/sqlite3.c       pFile-&gt;lastErrno = osGetLastError();</span>
+<span class='curline'><a href='../S/185.html#L36494'>pFile</a>            36494 libdb/sqlite3.c                "rc=SQLITE_IOERR_MMAP\n", osGetCurrentProcessId(), pFile,</span>
+<span class='curline'><a href='../S/185.html#L36495'>pFile</a>            36495 libdb/sqlite3.c                pFile-&gt;pMapRegion));</span>
+<span class='curline'><a href='../S/185.html#L36496'>pFile</a>            36496 libdb/sqlite3.c       return winLogError(SQLITE_IOERR_MMAP, pFile-&gt;lastErrno,</span>
+<span class='curline'><a href='../S/185.html#L36497'>pFile</a>            36497 libdb/sqlite3.c                          "winUnmapfile1", pFile-&gt;zPath);</span>
+<span class='curline'><a href='../S/185.html#L36499'>pFile</a>            36499 libdb/sqlite3.c     pFile-&gt;pMapRegion = 0;</span>
+<span class='curline'><a href='../S/185.html#L36500'>pFile</a>            36500 libdb/sqlite3.c     pFile-&gt;mmapSize = 0;</span>
+<span class='curline'><a href='../S/185.html#L36501'>pFile</a>            36501 libdb/sqlite3.c     pFile-&gt;mmapSizeActual = 0;</span>
+<span class='curline'><a href='../S/185.html#L36503'>pFile</a>            36503 libdb/sqlite3.c   if( pFile-&gt;hMap!=NULL ){</span>
+<span class='curline'><a href='../S/185.html#L36504'>pFile</a>            36504 libdb/sqlite3.c     if( !osCloseHandle(pFile-&gt;hMap) ){</span>
+<span class='curline'><a href='../S/185.html#L36505'>pFile</a>            36505 libdb/sqlite3.c       pFile-&gt;lastErrno = osGetLastError();</span>
+<span class='curline'><a href='../S/185.html#L36507'>pFile</a>            36507 libdb/sqlite3.c                osGetCurrentProcessId(), pFile, pFile-&gt;hMap));</span>
+<span class='curline'><a href='../S/185.html#L36508'>pFile</a>            36508 libdb/sqlite3.c       return winLogError(SQLITE_IOERR_MMAP, pFile-&gt;lastErrno,</span>
+<span class='curline'><a href='../S/185.html#L36509'>pFile</a>            36509 libdb/sqlite3.c                          "winUnmapfile2", pFile-&gt;zPath);</span>
+<span class='curline'><a href='../S/185.html#L36511'>pFile</a>            36511 libdb/sqlite3.c     pFile-&gt;hMap = NULL;</span>
+<span class='curline'><a href='../S/185.html#L36514'>pFile</a>            36514 libdb/sqlite3.c            osGetCurrentProcessId(), pFile));</span>
+<span class='curline'><a href='../S/185.html#L37084'>pFile</a>            37084 libdb/sqlite3.c   winFile *pFile = (winFile*)id;</span>
+<span class='curline'><a href='../S/185.html#L37142'>pFile</a>            37142 libdb/sqlite3.c   assert( pFile!=0 );</span>
+<span class='curline'><a href='../S/185.html#L37143'>pFile</a>            37143 libdb/sqlite3.c   memset(pFile, 0, sizeof(winFile));</span>
+<span class='curline'><a href='../S/185.html#L37144'>pFile</a>            37144 libdb/sqlite3.c   pFile-&gt;h = INVALID_HANDLE_VALUE;</span>
+<span class='curline'><a href='../S/185.html#L37279'>pFile</a>            37279 libdb/sqlite3.c     pFile-&gt;lastErrno = lastErrno;</span>
+<span class='curline'><a href='../S/185.html#L37280'>pFile</a>            37280 libdb/sqlite3.c     winLogError(SQLITE_CANTOPEN, pFile-&gt;lastErrno, "winOpen", zUtf8Name);</span>
+<span class='curline'><a href='../S/185.html#L37307'>pFile</a>            37307 libdb/sqlite3.c        &amp;&amp; (rc = winceCreateLock(zName, pFile))!=SQLITE_OK</span>
+<span class='curline'><a href='../S/185.html#L37316'>pFile</a>            37316 libdb/sqlite3.c     pFile-&gt;zDeleteOnClose = zConverted;</span>
+<span class='curline'><a href='../S/185.html#L37324'>pFile</a>            37324 libdb/sqlite3.c   pFile-&gt;pMethod = &amp;winIoMethod;</span>
+<span class='curline'><a href='../S/185.html#L37325'>pFile</a>            37325 libdb/sqlite3.c   pFile-&gt;pVfs = pVfs;</span>
+<span class='curline'><a href='../S/185.html#L37326'>pFile</a>            37326 libdb/sqlite3.c   pFile-&gt;h = h;</span>
+<span class='curline'><a href='../S/185.html#L37328'>pFile</a>            37328 libdb/sqlite3.c     pFile-&gt;ctrlFlags |= WINFILE_RDONLY;</span>
+<span class='curline'><a href='../S/185.html#L37331'>pFile</a>            37331 libdb/sqlite3.c     pFile-&gt;ctrlFlags |= WINFILE_PSOW;</span>
+<span class='curline'><a href='../S/185.html#L37333'>pFile</a>            37333 libdb/sqlite3.c   pFile-&gt;lastErrno = NO_ERROR;</span>
+<span class='curline'><a href='../S/185.html#L37334'>pFile</a>            37334 libdb/sqlite3.c   pFile-&gt;zPath = zName;</span>
+<span class='curline'><a href='../S/185.html#L37336'>pFile</a>            37336 libdb/sqlite3.c   pFile-&gt;hMap = NULL;</span>
+<span class='curline'><a href='../S/185.html#L37337'>pFile</a>            37337 libdb/sqlite3.c   pFile-&gt;pMapRegion = 0;</span>
+<span class='curline'><a href='../S/185.html#L37338'>pFile</a>            37338 libdb/sqlite3.c   pFile-&gt;mmapSize = 0;</span>
+<span class='curline'><a href='../S/185.html#L37339'>pFile</a>            37339 libdb/sqlite3.c   pFile-&gt;mmapSizeActual = 0;</span>
+<span class='curline'><a href='../S/185.html#L37340'>pFile</a>            37340 libdb/sqlite3.c   pFile-&gt;mmapSizeMax = sqlite3GlobalConfig.szMmap;</span>
+<span class='curline'><a href='../S/185.html#L43414'>pFile</a>            43414 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3SectorSize(sqlite3_file *pFile){</span>
+<span class='curline'><a href='../S/185.html#L43415'>pFile</a>            43415 libdb/sqlite3.c   int iRet = sqlite3OsSectorSize(pFile);</span>
+<span class='curline'><a href='../S/185.html#L44375'>pFile</a>            44375 libdb/sqlite3.c   sqlite3_file *pFile,  /* Write the file descriptor here */</span>
+<span class='curline'><a href='../S/185.html#L44386'>pFile</a>            44386 libdb/sqlite3.c   rc = sqlite3OsOpen(pPager-&gt;pVfs, 0, pFile, vfsFlags, 0);</span>
+<span class='curline'><a href='../S/185.html#L44387'>pFile</a>            44387 libdb/sqlite3.c   assert( rc!=SQLITE_OK || isOpen(pFile) );</span>
+<span class='curline'><a href='../S/185.html#L61175'>pFile</a>            61175 libdb/sqlite3.c static int backupTruncateFile(sqlite3_file *pFile, i64 iSize){</span>
+<span class='curline'><a href='../S/185.html#L61177'>pFile</a>            61177 libdb/sqlite3.c   int rc = sqlite3OsFileSize(pFile, &amp;iCurrent);</span>
+<span class='curline'><a href='../S/185.html#L61179'>pFile</a>            61179 libdb/sqlite3.c     rc = sqlite3OsTruncate(pFile, iSize);</span>
+<span class='curline'><a href='../S/185.html#L61342'>pFile</a>            61342 libdb/sqlite3.c           sqlite3_file * const pFile = sqlite3PagerFile(pDestPager);</span>
+<span class='curline'><a href='../S/185.html#L61348'>pFile</a>            61348 libdb/sqlite3.c           assert( pFile );</span>
+<span class='curline'><a href='../S/185.html#L61388'>pFile</a>            61388 libdb/sqlite3.c               rc = sqlite3OsWrite(pFile, zData, pgszSrc, iOff);</span>
+<span class='curline'><a href='../S/185.html#L61393'>pFile</a>            61393 libdb/sqlite3.c             rc = backupTruncateFile(pFile, iSize);</span>
+<span class='curline'><a href='../S/185.html#L76543'>pFile</a>            76543 libdb/sqlite3.c static int vdbeSorterMapFile(SortSubtask *pTask, SorterFile *pFile, u8 **pp){</span>
+<span class='curline'><a href='../S/185.html#L76545'>pFile</a>            76545 libdb/sqlite3.c   if( pFile-&gt;iEof&lt;=(i64)(pTask-&gt;pSorter-&gt;db-&gt;nMaxSorterMmap) ){</span>
+<span class='curline'><a href='../S/185.html#L76546'>pFile</a>            76546 libdb/sqlite3.c     sqlite3_file *pFd = pFile-&gt;pFd;</span>
+<span class='curline'><a href='../S/185.html#L76548'>pFile</a>            76548 libdb/sqlite3.c       rc = sqlite3OsFetch(pFd, 0, (int)pFile-&gt;iEof, (void**)pp);</span>
+<span class='curline'><a href='../S/185.html#L76563'>pFile</a>            76563 libdb/sqlite3.c   SorterFile *pFile,              /* Sorter file to read from */</span>
+<span class='curline'><a href='../S/185.html#L76576'>pFile</a>            76576 libdb/sqlite3.c   pReadr-&gt;iEof = pFile-&gt;iEof;</span>
+<span class='curline'><a href='../S/185.html#L76577'>pFile</a>            76577 libdb/sqlite3.c   pReadr-&gt;pFd = pFile-&gt;pFd;</span>
+<span class='curline'><a href='../S/185.html#L76579'>pFile</a>            76579 libdb/sqlite3.c   rc = vdbeSorterMapFile(pTask, pFile, &amp;pReadr-&gt;aMap);</span>
+<span class='curline'><a href='../S/185.html#L76656'>pFile</a>            76656 libdb/sqlite3.c   SorterFile *pFile,              /* Sorter file to read from */</span>
+<span class='curline'><a href='../S/185.html#L76663'>pFile</a>            76663 libdb/sqlite3.c   assert( pFile-&gt;iEof&gt;iStart );</span>
+<span class='curline'><a href='../S/185.html#L76668'>pFile</a>            76668 libdb/sqlite3.c   rc = vdbePmaReaderSeek(pTask, pReadr, pFile, iStart);</span>
+<span class='curline'><a href='../S/185.html#L102067'>pFile</a>            102067 libdb/sqlite3.c       sqlite3_file *pFile = sqlite3PagerFile(pPager);</span>
+<span class='curline'><a href='../S/185.html#L102068'>pFile</a>            102068 libdb/sqlite3.c       sqlite3OsFileControlHint(pFile, SQLITE_GET_LOCKPROXYFILE, </span>
+<span class='curline'><a href='../S/185.html#L102080'>pFile</a>            102080 libdb/sqlite3.c       sqlite3_file *pFile = sqlite3PagerFile(pPager);</span>
+<span class='curline'><a href='../S/185.html#L102083'>pFile</a>            102083 libdb/sqlite3.c         res=sqlite3OsFileControl(pFile, SQLITE_SET_LOCKPROXYFILE, </span>
+<span class='curline'><a href='../S/185.html#L102086'>pFile</a>            102086 libdb/sqlite3.c         res=sqlite3OsFileControl(pFile, SQLITE_SET_LOCKPROXYFILE, </span>
+</pre>
+</body>
+</html>

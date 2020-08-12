@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>mem</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/185.html#L16860'>mem</a>              16860 libdb/sqlite3.c } mem;</span>
+<span class='curline'><a href='../S/185.html#L16872'>mem</a>              16872 libdb/sqlite3.c     mem.nAlloc[i]++;</span>
+<span class='curline'><a href='../S/185.html#L16873'>mem</a>              16873 libdb/sqlite3.c     mem.nCurrent[i]++;</span>
+<span class='curline'><a href='../S/185.html#L16874'>mem</a>              16874 libdb/sqlite3.c     if( mem.nCurrent[i]&gt;mem.mxCurrent[i] ){</span>
+<span class='curline'><a href='../S/185.html#L16875'>mem</a>              16875 libdb/sqlite3.c       mem.mxCurrent[i] = mem.nCurrent[i];</span>
+<span class='curline'><a href='../S/185.html#L16878'>mem</a>              16878 libdb/sqlite3.c     mem.nCurrent[i]--;</span>
+<span class='curline'><a href='../S/185.html#L16879'>mem</a>              16879 libdb/sqlite3.c     assert( mem.nCurrent[i]&gt;=0 );</span>
+<span class='curline'><a href='../S/185.html#L16931'>mem</a>              16931 libdb/sqlite3.c     mem.mutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MEM);</span>
+<span class='curline'><a href='../S/185.html#L16941'>mem</a>              16941 libdb/sqlite3.c   mem.mutex = 0;</span>
+<span class='curline'><a href='../S/185.html#L16987'>mem</a>              16987 libdb/sqlite3.c   sqlite3_mutex_enter(mem.mutex);</span>
+<span class='curline'><a href='../S/185.html#L16988'>mem</a>              16988 libdb/sqlite3.c   assert( mem.disallow==0 );</span>
+<span class='curline'><a href='../S/185.html#L16991'>mem</a>              16991 libdb/sqlite3.c                mem.nBacktrace*sizeof(void*) + mem.nTitle;</span>
+<span class='curline'><a href='../S/185.html#L16995'>mem</a>              16995 libdb/sqlite3.c     pBt = (void**)&amp;z[mem.nTitle];</span>
+<span class='curline'><a href='../S/185.html#L16996'>mem</a>              16996 libdb/sqlite3.c     pHdr = (struct MemBlockHdr*)&amp;pBt[mem.nBacktrace];</span>
+<span class='curline'><a href='../S/185.html#L16998'>mem</a>              16998 libdb/sqlite3.c     pHdr-&gt;pPrev = mem.pLast;</span>
+<span class='curline'><a href='../S/185.html#L16999'>mem</a>              16999 libdb/sqlite3.c     if( mem.pLast ){</span>
+<span class='curline'><a href='../S/185.html#L17000'>mem</a>              17000 libdb/sqlite3.c       mem.pLast-&gt;pNext = pHdr;</span>
+<span class='curline'><a href='../S/185.html#L17002'>mem</a>              17002 libdb/sqlite3.c       mem.pFirst = pHdr;</span>
+<span class='curline'><a href='../S/185.html#L17004'>mem</a>              17004 libdb/sqlite3.c     mem.pLast = pHdr;</span>
+<span class='curline'><a href='../S/185.html#L17007'>mem</a>              17007 libdb/sqlite3.c     pHdr-&gt;nBacktraceSlots = mem.nBacktrace;</span>
+<span class='curline'><a href='../S/185.html#L17008'>mem</a>              17008 libdb/sqlite3.c     pHdr-&gt;nTitle = mem.nTitle;</span>
+<span class='curline'><a href='../S/185.html#L17009'>mem</a>              17009 libdb/sqlite3.c     if( mem.nBacktrace ){</span>
+<span class='curline'><a href='../S/185.html#L17011'>mem</a>              17011 libdb/sqlite3.c       pHdr-&gt;nBacktrace = backtrace(aAddr, mem.nBacktrace+1)-1;</span>
+<span class='curline'><a href='../S/185.html#L17014'>mem</a>              17014 libdb/sqlite3.c       if( mem.xBacktrace ){</span>
+<span class='curline'><a href='../S/185.html#L17015'>mem</a>              17015 libdb/sqlite3.c         mem.xBacktrace(nByte, pHdr-&gt;nBacktrace-1, &amp;aAddr[1]);</span>
+<span class='curline'><a href='../S/185.html#L17020'>mem</a>              17020 libdb/sqlite3.c     if( mem.nTitle ){</span>
+<span class='curline'><a href='../S/185.html#L17021'>mem</a>              17021 libdb/sqlite3.c       memcpy(z, mem.zTitle, mem.nTitle);</span>
+<span class='curline'><a href='../S/185.html#L17031'>mem</a>              17031 libdb/sqlite3.c   sqlite3_mutex_leave(mem.mutex);</span>
+<span class='curline'><a href='../S/185.html#L17043'>mem</a>              17043 libdb/sqlite3.c        || mem.mutex!=0 );</span>
+<span class='curline'><a href='../S/185.html#L17047'>mem</a>              17047 libdb/sqlite3.c   sqlite3_mutex_enter(mem.mutex);</span>
+<span class='curline'><a href='../S/185.html#L17052'>mem</a>              17052 libdb/sqlite3.c     assert( mem.pFirst==pHdr );</span>
+<span class='curline'><a href='../S/185.html#L17053'>mem</a>              17053 libdb/sqlite3.c     mem.pFirst = pHdr-&gt;pNext;</span>
+<span class='curline'><a href='../S/185.html#L17059'>mem</a>              17059 libdb/sqlite3.c     assert( mem.pLast==pHdr );</span>
+<span class='curline'><a href='../S/185.html#L17060'>mem</a>              17060 libdb/sqlite3.c     mem.pLast = pHdr-&gt;pPrev;</span>
+<span class='curline'><a href='../S/185.html#L17068'>mem</a>              17068 libdb/sqlite3.c   sqlite3_mutex_leave(mem.mutex);  </span>
+<span class='curline'><a href='../S/185.html#L17083'>mem</a>              17083 libdb/sqlite3.c   assert( mem.disallow==0 );</span>
+<span class='curline'><a href='../S/185.html#L17180'>mem</a>              17180 libdb/sqlite3.c   mem.nBacktrace = depth;</span>
+<span class='curline'><a href='../S/185.html#L17184'>mem</a>              17184 libdb/sqlite3.c   mem.xBacktrace = xBacktrace;</span>
+<span class='curline'><a href='../S/185.html#L17192'>mem</a>              17192 libdb/sqlite3.c   sqlite3_mutex_enter(mem.mutex);</span>
+<span class='curline'><a href='../S/185.html#L17193'>mem</a>              17193 libdb/sqlite3.c   if( n&gt;=sizeof(mem.zTitle) ) n = sizeof(mem.zTitle)-1;</span>
+<span class='curline'><a href='../S/185.html#L17194'>mem</a>              17194 libdb/sqlite3.c   memcpy(mem.zTitle, zTitle, n);</span>
+<span class='curline'><a href='../S/185.html#L17195'>mem</a>              17195 libdb/sqlite3.c   mem.zTitle[n] = 0;</span>
+<span class='curline'><a href='../S/185.html#L17196'>mem</a>              17196 libdb/sqlite3.c   mem.nTitle = ROUND8(n);</span>
+<span class='curline'><a href='../S/185.html#L17197'>mem</a>              17197 libdb/sqlite3.c   sqlite3_mutex_leave(mem.mutex);</span>
+<span class='curline'><a href='../S/185.html#L17202'>mem</a>              17202 libdb/sqlite3.c   for(pHdr=mem.pFirst; pHdr; pHdr=pHdr-&gt;pNext){</span>
+<span class='curline'><a href='../S/185.html#L17205'>mem</a>              17205 libdb/sqlite3.c     mem.xBacktrace((int)pHdr-&gt;iSize, pHdr-&gt;nBacktrace-1, &amp;pBt[1]);</span>
+<span class='curline'><a href='../S/185.html#L17224'>mem</a>              17224 libdb/sqlite3.c   for(pHdr=mem.pFirst; pHdr; pHdr=pHdr-&gt;pNext){</span>
+<span class='curline'><a href='../S/185.html#L17239'>mem</a>              17239 libdb/sqlite3.c     if( mem.nAlloc[i] ){</span>
+<span class='curline'><a href='../S/185.html#L17241'>mem</a>              17241 libdb/sqlite3.c             i*8, mem.nAlloc[i], mem.nCurrent[i], mem.mxCurrent[i]);</span>
+<span class='curline'><a href='../S/185.html#L17244'>mem</a>              17244 libdb/sqlite3.c   if( mem.nAlloc[NCSIZE-1] ){</span>
+<span class='curline'><a href='../S/185.html#L17246'>mem</a>              17246 libdb/sqlite3.c              NCSIZE*8-8, mem.nAlloc[NCSIZE-1],</span>
+<span class='curline'><a href='../S/185.html#L17247'>mem</a>              17247 libdb/sqlite3.c              mem.nCurrent[NCSIZE-1], mem.mxCurrent[NCSIZE-1]);</span>
+<span class='curline'><a href='../S/185.html#L17259'>mem</a>              17259 libdb/sqlite3.c     nTotal += mem.nAlloc[i];</span>
+<span class='curline'><a href='../S/185.html#L101346'>mem</a>              101346 libdb/sqlite3.c   int mem = ++pParse-&gt;nMem;</span>
+<span class='curline'><a href='../S/185.html#L101351'>mem</a>              101351 libdb/sqlite3.c   sqlite3VdbeAddOp4(v, OP_Int64, 0, mem, 0, (char*)pI64, P4_INT64);</span>
+<span class='curline'><a href='../S/185.html#L101354'>mem</a>              101354 libdb/sqlite3.c   sqlite3VdbeAddOp2(v, OP_ResultRow, mem, 1);</span>
+<span class='curline'><a href='../S/185.html#L101507'>mem</a>              101507 libdb/sqlite3.c       int mem = ++pParse-&gt;nMem;</span>
+<span class='curline'><a href='../S/185.html#L101508'>mem</a>              101508 libdb/sqlite3.c       sqlite3VdbeAddOp4(v, OP_String8, 0, mem, 0, aFcntl[0], 0);</span>
+<span class='curline'><a href='../S/185.html#L101511'>mem</a>              101511 libdb/sqlite3.c       sqlite3VdbeAddOp2(v, OP_ResultRow, mem, 1);</span>
+<span class='curline'><a href='../S/206.html#L39'>mem</a>                39 libltdl/libltdl/lt__alloc.h #define REALLOC(tp, mem, n)	(tp*) lt__realloc((mem), (n) * sizeof(tp))</span>
+<span class='curline'><a href='../S/206.html#L40'>mem</a>                40 libltdl/libltdl/lt__alloc.h #define FREE(mem)				LT_STMT_START {	\</span>
+<span class='curline'><a href='../S/206.html#L41'>mem</a>                41 libltdl/libltdl/lt__alloc.h 	free (mem); mem = NULL;					} LT_STMT_END</span>
+<span class='curline'><a href='../S/206.html#L51'>mem</a>                51 libltdl/libltdl/lt__alloc.h LT_SCOPE void *lt__realloc (void *mem, size_t n);</span>
+<span class='curline'><a href='../S/206.html#L52'>mem</a>                52 libltdl/libltdl/lt__alloc.h LT_SCOPE void *lt__memdup (void const *mem, size_t n);</span>
+<span class='curline'><a href='../S/216.html#L101'>mem</a>               101 libltdl/loaders/loadlibrary.c #define LOCALFREE(mem)					     LT_STMT_START { \</span>
+<span class='curline'><a href='../S/216.html#L102'>mem</a>               102 libltdl/loaders/loadlibrary.c 	if (mem) { LocalFree ((void *)mem); mem = NULL; }    } LT_STMT_END</span>
+<span class='curline'><a href='../S/224.html#L53'>mem</a>                53 libltdl/lt__alloc.c   void *mem;</span>
+<span class='curline'><a href='../S/224.html#L55'>mem</a>                55 libltdl/lt__alloc.c   if (! (mem = malloc (n)))</span>
+<span class='curline'><a href='../S/224.html#L58'>mem</a>                58 libltdl/lt__alloc.c   return mem;</span>
+<span class='curline'><a href='../S/224.html#L64'>mem</a>                64 libltdl/lt__alloc.c   void *mem;</span>
+<span class='curline'><a href='../S/224.html#L66'>mem</a>                66 libltdl/lt__alloc.c   if ((mem = lt__malloc (n)))</span>
+<span class='curline'><a href='../S/224.html#L67'>mem</a>                67 libltdl/lt__alloc.c     memset (mem, 0, n);</span>
+<span class='curline'><a href='../S/224.html#L69'>mem</a>                69 libltdl/lt__alloc.c   return mem;</span>
+<span class='curline'><a href='../S/224.html#L73'>mem</a>                73 libltdl/lt__alloc.c lt__realloc (void *mem, size_t n)</span>
+<span class='curline'><a href='../S/224.html#L75'>mem</a>                75 libltdl/lt__alloc.c   if (! (mem = realloc (mem, n)))</span>
+<span class='curline'><a href='../S/224.html#L78'>mem</a>                78 libltdl/lt__alloc.c   return mem;</span>
+<span class='curline'><a href='../S/224.html#L82'>mem</a>                82 libltdl/lt__alloc.c lt__memdup (void const *mem, size_t n)</span>
+<span class='curline'><a href='../S/224.html#L87'>mem</a>                87 libltdl/lt__alloc.c     return memcpy (newmem, mem, n);</span>
+</pre>
+</body>
+</html>

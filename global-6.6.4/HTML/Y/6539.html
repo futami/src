@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>sCheck</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/185.html#L60507'>sCheck</a>           60507 libdb/sqlite3.c   IntegrityCk sCheck;</span>
+<span class='curline'><a href='../S/185.html#L60514'>sCheck</a>           60514 libdb/sqlite3.c   sCheck.pBt = pBt;</span>
+<span class='curline'><a href='../S/185.html#L60515'>sCheck</a>           60515 libdb/sqlite3.c   sCheck.pPager = pBt-&gt;pPager;</span>
+<span class='curline'><a href='../S/185.html#L60516'>sCheck</a>           60516 libdb/sqlite3.c   sCheck.nPage = btreePagecount(sCheck.pBt);</span>
+<span class='curline'><a href='../S/185.html#L60517'>sCheck</a>           60517 libdb/sqlite3.c   sCheck.mxErr = mxErr;</span>
+<span class='curline'><a href='../S/185.html#L60518'>sCheck</a>           60518 libdb/sqlite3.c   sCheck.nErr = 0;</span>
+<span class='curline'><a href='../S/185.html#L60519'>sCheck</a>           60519 libdb/sqlite3.c   sCheck.mallocFailed = 0;</span>
+<span class='curline'><a href='../S/185.html#L60520'>sCheck</a>           60520 libdb/sqlite3.c   sCheck.zPfx = 0;</span>
+<span class='curline'><a href='../S/185.html#L60521'>sCheck</a>           60521 libdb/sqlite3.c   sCheck.v1 = 0;</span>
+<span class='curline'><a href='../S/185.html#L60522'>sCheck</a>           60522 libdb/sqlite3.c   sCheck.v2 = 0;</span>
+<span class='curline'><a href='../S/185.html#L60524'>sCheck</a>           60524 libdb/sqlite3.c   if( sCheck.nPage==0 ){</span>
+<span class='curline'><a href='../S/185.html#L60529'>sCheck</a>           60529 libdb/sqlite3.c   sCheck.aPgRef = sqlite3MallocZero((sCheck.nPage / 8)+ 1);</span>
+<span class='curline'><a href='../S/185.html#L60530'>sCheck</a>           60530 libdb/sqlite3.c   if( !sCheck.aPgRef ){</span>
+<span class='curline'><a href='../S/185.html#L60536'>sCheck</a>           60536 libdb/sqlite3.c   if( i&lt;=sCheck.nPage ) setPageReferenced(&amp;sCheck, i);</span>
+<span class='curline'><a href='../S/185.html#L60537'>sCheck</a>           60537 libdb/sqlite3.c   sqlite3StrAccumInit(&amp;sCheck.errMsg, zErr, sizeof(zErr), SQLITE_MAX_LENGTH);</span>
+<span class='curline'><a href='../S/185.html#L60538'>sCheck</a>           60538 libdb/sqlite3.c   sCheck.errMsg.useMalloc = 2;</span>
+<span class='curline'><a href='../S/185.html#L60542'>sCheck</a>           60542 libdb/sqlite3.c   sCheck.zPfx = "Main freelist: ";</span>
+<span class='curline'><a href='../S/185.html#L60543'>sCheck</a>           60543 libdb/sqlite3.c   checkList(&amp;sCheck, 1, get4byte(&amp;pBt-&gt;pPage1-&gt;aData[32]),</span>
+<span class='curline'><a href='../S/185.html#L60545'>sCheck</a>           60545 libdb/sqlite3.c   sCheck.zPfx = 0;</span>
+<span class='curline'><a href='../S/185.html#L60549'>sCheck</a>           60549 libdb/sqlite3.c   for(i=0; (int)i&lt;nRoot &amp;&amp; sCheck.mxErr; i++){</span>
+<span class='curline'><a href='../S/185.html#L60553'>sCheck</a>           60553 libdb/sqlite3.c       checkPtrmap(&amp;sCheck, aRoot[i], PTRMAP_ROOTPAGE, 0);</span>
+<span class='curline'><a href='../S/185.html#L60556'>sCheck</a>           60556 libdb/sqlite3.c     sCheck.zPfx = "List of tree roots: ";</span>
+<span class='curline'><a href='../S/185.html#L60557'>sCheck</a>           60557 libdb/sqlite3.c     checkTreePage(&amp;sCheck, aRoot[i], NULL, NULL);</span>
+<span class='curline'><a href='../S/185.html#L60558'>sCheck</a>           60558 libdb/sqlite3.c     sCheck.zPfx = 0;</span>
+<span class='curline'><a href='../S/185.html#L60563'>sCheck</a>           60563 libdb/sqlite3.c   for(i=1; i&lt;=sCheck.nPage &amp;&amp; sCheck.mxErr; i++){</span>
+<span class='curline'><a href='../S/185.html#L60565'>sCheck</a>           60565 libdb/sqlite3.c     if( getPageReferenced(&amp;sCheck, i)==0 ){</span>
+<span class='curline'><a href='../S/185.html#L60566'>sCheck</a>           60566 libdb/sqlite3.c       checkAppendMsg(&amp;sCheck, "Page %d is never used", i);</span>
+<span class='curline'><a href='../S/185.html#L60572'>sCheck</a>           60572 libdb/sqlite3.c     if( getPageReferenced(&amp;sCheck, i)==0 &amp;&amp; </span>
+<span class='curline'><a href='../S/185.html#L60574'>sCheck</a>           60574 libdb/sqlite3.c       checkAppendMsg(&amp;sCheck, "Page %d is never used", i);</span>
+<span class='curline'><a href='../S/185.html#L60576'>sCheck</a>           60576 libdb/sqlite3.c     if( getPageReferenced(&amp;sCheck, i)!=0 &amp;&amp; </span>
+<span class='curline'><a href='../S/185.html#L60578'>sCheck</a>           60578 libdb/sqlite3.c       checkAppendMsg(&amp;sCheck, "Pointer map page %d is referenced", i);</span>
+<span class='curline'><a href='../S/185.html#L60588'>sCheck</a>           60588 libdb/sqlite3.c     checkAppendMsg(&amp;sCheck,</span>
+<span class='curline'><a href='../S/185.html#L60597'>sCheck</a>           60597 libdb/sqlite3.c   sqlite3_free(sCheck.aPgRef);</span>
+<span class='curline'><a href='../S/185.html#L60598'>sCheck</a>           60598 libdb/sqlite3.c   if( sCheck.mallocFailed ){</span>
+<span class='curline'><a href='../S/185.html#L60599'>sCheck</a>           60599 libdb/sqlite3.c     sqlite3StrAccumReset(&amp;sCheck.errMsg);</span>
+<span class='curline'><a href='../S/185.html#L60600'>sCheck</a>           60600 libdb/sqlite3.c     *pnErr = sCheck.nErr+1;</span>
+<span class='curline'><a href='../S/185.html#L60603'>sCheck</a>           60603 libdb/sqlite3.c   *pnErr = sCheck.nErr;</span>
+<span class='curline'><a href='../S/185.html#L60604'>sCheck</a>           60604 libdb/sqlite3.c   if( sCheck.nErr==0 ) sqlite3StrAccumReset(&amp;sCheck.errMsg);</span>
+<span class='curline'><a href='../S/185.html#L60605'>sCheck</a>           60605 libdb/sqlite3.c   return sqlite3StrAccumFinish(&amp;sCheck.errMsg);</span>
+</pre>
+</body>
+</html>

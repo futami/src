@@ -1,0 +1,175 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>htags/htags.h</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/399.html'>htags</a>/htags.h</h2>
+<em class='comment'>/* [&lt;][&gt;][^][v][top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'><a href='../J/48.html' title='Multiple included from 15 places.'>INCLUDED FROM</a></h2>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2011</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *  Tama Communications Corporation</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> *</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> * This file is part of GNU GLOBAL.</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> *</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> * This program is free software: you can redistribute it and/or modify</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * it under the terms of the GNU General Public License as published by</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * the Free Software Foundation, either version 3 of the License, or</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> * (at your option) any later version.</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> * </em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> * This program is distributed in the hope that it will be useful,</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> * GNU General Public License for more details.</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> * </em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> * You should have received a copy of the GNU General Public License</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> */</em>
+<a id='L20' name='L20'></a>  20 <em class='sharp'>#ifndef</em> <a href='../S/122.html#L21' title='Defined at 21 in htags/htags.h.'>_HTAGS_H_</a>
+<a id='L21' name='L21'></a>  21 <em class='sharp'>#define</em> <a href='../S/122.html#L20' title='Referred from 20 in htags/htags.h.'>_HTAGS_H_</a>
+<a id='L22' name='L22'></a>  22 
+<a id='L23' name='L23'></a>  23 <em class='sharp'>#include</em> "<a href='300.html'>gparam.h</a>"
+<a id='L24' name='L24'></a>  24 <em class='sharp'>#include</em> "<a href='305.html'>gtagsop.h</a>"
+<a id='L25' name='L25'></a>  25 
+<a id='L26' name='L26'></a>  26 <em class='sharp'>#if</em> <strong class='reserved'>defined</strong>(<a href='../Y/956.html' title='Multiple used in 117 places.'>_WIN32</a>) || <strong class='reserved'>defined</strong>(<a href='../Y/972.html' title='Multiple used in 73 places.'>__DJGPP__</a>)
+<a id='L27' name='L27'></a>  27 <em class='sharp'>#define</em> <a href='../S/121.html#L76' title='Referred from 76 in htags/htags.c.'>W32</a> 1
+<a id='L28' name='L28'></a>  28 <em class='sharp'>#else</em>
+<a id='L29' name='L29'></a>  29 <em class='sharp'>#define</em> <a href='../S/121.html#L76' title='Referred from 76 in htags/htags.c.'>W32</a> 0
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#endif</em>
+<a id='L31' name='L31'></a>  31 
+<a id='L32' name='L32'></a>  32 <em class='comment'>/*</em>
+<a id='L33' name='L33'></a>  33 <em class='comment'> * dumb CMD.EXE requires the entire popen command to be quoted</em>
+<a id='L34' name='L34'></a>  34 <em class='comment'> */</em>
+<a id='L35' name='L35'></a>  35 <em class='sharp'>#if</em> <strong class='reserved'>defined</strong>(<a href='../Y/956.html' title='Multiple used in 117 places.'>_WIN32</a>) &amp;&amp; !<strong class='reserved'>defined</strong>(<a href='../S/205.html#L95' title='Defined at 95 in libltdl/libltdl/lt_system.h.'>__CYGWIN__</a>)
+<a id='L36' name='L36'></a>  36 <em class='sharp'>#define</em> <a href='../R/1527.html' title='Multiple referred from 4 places.'>PQUOTE</a> "\""
+<a id='L37' name='L37'></a>  37 <em class='sharp'>#else</em>
+<a id='L38' name='L38'></a>  38 <em class='sharp'>#define</em> <a href='../R/1527.html' title='Multiple referred from 4 places.'>PQUOTE</a>
+<a id='L39' name='L39'></a>  39 <em class='sharp'>#endif</em>
+<a id='L40' name='L40'></a>  40 
+<a id='L41' name='L41'></a>  41 <em class='comment'>/*</em>
+<a id='L42' name='L42'></a>  42 <em class='comment'> * definition_header</em>
+<a id='L43' name='L43'></a>  43 <em class='comment'> */</em>
+<a id='L44' name='L44'></a>  44 <em class='sharp'>#define</em> <a href='../R/1045.html' title='Multiple referred from 2 places.'>NO_HEADER</a>   0
+<a id='L45' name='L45'></a>  45 <em class='sharp'>#define</em> <a href='../R/54.html' title='Multiple referred from 2 places.'>BEFORE_HEADER</a>   1
+<a id='L46' name='L46'></a>  46 <em class='sharp'>#define</em> <a href='../R/1736.html' title='Multiple referred from 3 places.'>RIGHT_HEADER</a>    2
+<a id='L47' name='L47'></a>  47 <em class='sharp'>#define</em> <a href='../R/3.html' title='Multiple referred from 4 places.'>AFTER_HEADER</a>    3
+<a id='L48' name='L48'></a>  48 
+<a id='L49' name='L49'></a>  49 <em class='comment'>/*</em>
+<a id='L50' name='L50'></a>  50 <em class='comment'> * Directory names.</em>
+<a id='L51' name='L51'></a>  51 <em class='comment'> */</em>
+<a id='L52' name='L52'></a>  52 <em class='sharp'>#define</em> <a href='../R/2433.html' title='Multiple referred from 13 places.'>SRCS</a>    "S"
+<a id='L53' name='L53'></a>  53 <em class='sharp'>#define</em> <a href='../R/382.html' title='Multiple referred from 5 places.'>DEFS</a>    "D"
+<a id='L54' name='L54'></a>  54 <em class='sharp'>#define</em> <a href='../R/1632.html' title='Multiple referred from 3 places.'>REFS</a>    "R"
+<a id='L55' name='L55'></a>  55 <em class='sharp'>#define</em> <a href='../R/681.html' title='Multiple referred from 3 places.'>INCS</a>    "I"
+<a id='L56' name='L56'></a>  56 <em class='sharp'>#define</em> <a href='../R/677.html' title='Multiple referred from 3 places.'>INCREFS</a> "J"
+<a id='L57' name='L57'></a>  57 <em class='sharp'>#define</em> <a href='../R/2503.html' title='Multiple referred from 3 places.'>SYMS</a>    "Y"
+<a id='L58' name='L58'></a>  58 
+<a id='L59' name='L59'></a>  59 <strong class='reserved'>extern</strong> <strong class='reserved'>int</strong> <a href='../Y/7452.html' title='Multiple used in 4 places.'>w32</a>;
+<a id='L60' name='L60'></a>  60 <strong class='reserved'>extern</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/7529.html' title='Multiple used in 5 places.'>www</a>;
+<a id='L61' name='L61'></a>  61 <strong class='reserved'>extern</strong> <strong class='reserved'>int</strong> <a href='../Y/3128.html' title='Multiple used in 18 places.'>html_count</a>;
+<a id='L62' name='L62'></a>  62 <strong class='reserved'>extern</strong> <strong class='reserved'>int</strong> <a href='../Y/6674.html' title='Multiple used in 66 places.'>sep</a>;
+<a id='L63' name='L63'></a>  63 <strong class='reserved'>extern</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/6591.html' title='Multiple used in 4 places.'>save_config</a>;
+<a id='L64' name='L64'></a>  64 <strong class='reserved'>extern</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/6589.html' title='Multiple used in 4 places.'>save_argv</a>;
+<a id='L65' name='L65'></a>  65 
+<a id='L66' name='L66'></a>  66 <strong class='reserved'>extern</strong> <strong class='reserved'>char</strong> <a href='../Y/2323.html' title='Multiple used in 13 places.'>cwdpath</a>[<a href='../S/300.html#L44' title='Defined at 44 in libutil/gparam.h.'>MAXPATHLEN</a>];
+<a id='L67' name='L67'></a>  67 <strong class='reserved'>extern</strong> <strong class='reserved'>char</strong> <a href='../Y/2370.html' title='Multiple used in 138 places.'>dbpath</a>[<a href='../S/300.html#L44' title='Defined at 44 in libutil/gparam.h.'>MAXPATHLEN</a>];
+<a id='L68' name='L68'></a>  68 <strong class='reserved'>extern</strong> <strong class='reserved'>char</strong> <a href='../Y/2477.html' title='Multiple used in 33 places.'>distpath</a>[<a href='../S/300.html#L44' title='Defined at 44 in libutil/gparam.h.'>MAXPATHLEN</a>];
+<a id='L69' name='L69'></a>  69 <strong class='reserved'>extern</strong> <strong class='reserved'>char</strong> <a href='../Y/3040.html' title='Multiple used in 3 places.'>gtagsconf</a>[<a href='../S/300.html#L44' title='Defined at 44 in libutil/gparam.h.'>MAXPATHLEN</a>];
+<a id='L70' name='L70'></a>  70 
+<a id='L71' name='L71'></a>  71 <strong class='reserved'>extern</strong> <strong class='reserved'>char</strong> <a href='../Y/3039.html' title='Multiple used in 8 places.'>gtags_path</a>[<a href='../S/300.html#L28' title='Defined at 28 in libutil/gparam.h.'>MAXFILLEN</a>];
+<a id='L72' name='L72'></a>  72 <strong class='reserved'>extern</strong> <strong class='reserved'>char</strong> <a href='../Y/3015.html' title='Multiple used in 8 places.'>global_path</a>[<a href='../S/300.html#L28' title='Defined at 28 in libutil/gparam.h.'>MAXFILLEN</a>];
+<a id='L73' name='L73'></a>  73 <strong class='reserved'>extern</strong> <strong class='reserved'>int</strong> <a href='../Y/3035.html' title='Multiple used in 7 places.'>gtags_exist</a>[<a href='../S/305.html#L44' title='Defined at 44 in libutil/gtagsop.h.'>GTAGLIM</a>];
+<a id='L74' name='L74'></a>  74 <strong class='reserved'>extern</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/4943.html' title='Multiple used in 2 places.'>null_device</a>;
+<a id='L75' name='L75'></a>  75 <strong class='reserved'>extern</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/7204.html' title='Multiple used in 12 places.'>tmpdir</a>;
+<a id='L76' name='L76'></a>  76 <strong class='reserved'>extern</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/7248.html' title='Multiple used in 7 places.'>tree_view_type</a>;
+<a id='L77' name='L77'></a>  77 
+<a id='L78' name='L78'></a>  78 <strong class='reserved'>extern</strong> <strong class='reserved'>int</strong> <a href='../Y/1440.html' title='Multiple used in 18 places.'>aflag</a>;
+<a id='L79' name='L79'></a>  79 <strong class='reserved'>extern</strong> <strong class='reserved'>int</strong> <a href='../Y/2807.html' title='Multiple used in 15 places.'>fflag</a>;
+<a id='L80' name='L80'></a>  80 <strong class='reserved'>extern</strong> <strong class='reserved'>int</strong> <a href='../Y/191.html' title='Multiple used in 26 places.'>Fflag</a>;
+<a id='L81' name='L81'></a>  81 <strong class='reserved'>extern</strong> <strong class='reserved'>int</strong> <a href='../Y/3005.html' title='Multiple used in 11 places.'>gflag</a>;
+<a id='L82' name='L82'></a>  82 <strong class='reserved'>extern</strong> <strong class='reserved'>int</strong> <a href='../Y/349.html' title='Multiple used in 34 places.'>Iflag</a>;
+<a id='L83' name='L83'></a>  83 <strong class='reserved'>extern</strong> <strong class='reserved'>int</strong> <a href='../Y/4875.html' title='Multiple used in 9 places.'>nflag</a>;
+<a id='L84' name='L84'></a>  84 <strong class='reserved'>extern</strong> <strong class='reserved'>int</strong> <a href='../Y/6250.html' title='Multiple used in 26 places.'>qflag</a>;
+<a id='L85' name='L85'></a>  85 <strong class='reserved'>extern</strong> <strong class='reserved'>int</strong> <a href='../Y/7432.html' title='Multiple used in 52 places.'>vflag</a>;
+<a id='L86' name='L86'></a>  86 <strong class='reserved'>extern</strong> <strong class='reserved'>int</strong> <a href='../Y/7483.html' title='Multiple used in 28 places.'>wflag</a>;
+<a id='L87' name='L87'></a>  87 <strong class='reserved'>extern</strong> <strong class='reserved'>int</strong> <a href='../Y/2373.html' title='Multiple used in 54 places.'>debug</a>;
+<a id='L88' name='L88'></a>  88 
+<a id='L89' name='L89'></a>  89 <strong class='reserved'>extern</strong> <strong class='reserved'>int</strong> <a href='../Y/6730.html' title='Multiple used in 10 places.'>show_help</a>;
+<a id='L90' name='L90'></a>  90 <strong class='reserved'>extern</strong> <strong class='reserved'>int</strong> <a href='../Y/6732.html' title='Multiple used in 13 places.'>show_version</a>;
+<a id='L91' name='L91'></a>  91 <strong class='reserved'>extern</strong> <strong class='reserved'>int</strong> <a href='../Y/2030.html' title='Multiple used in 4 places.'>caution</a>;
+<a id='L92' name='L92'></a>  92 <strong class='reserved'>extern</strong> <strong class='reserved'>int</strong> <a href='../Y/1631.html' title='Multiple used in 11 places.'>auto_completion</a>;
+<a id='L93' name='L93'></a>  93 <strong class='reserved'>extern</strong> <strong class='reserved'>int</strong> <a href='../Y/7247.html' title='Multiple used in 19 places.'>tree_view</a>;
+<a id='L94' name='L94'></a>  94 <strong class='reserved'>extern</strong> <strong class='reserved'>int</strong> <a href='../Y/2876.html' title='Multiple used in 5 places.'>fixed_guide</a>;
+<a id='L95' name='L95'></a>  95 <strong class='reserved'>extern</strong> <strong class='reserved'>int</strong> <a href='../Y/2546.html' title='Multiple used in 16 places.'>dynamic</a>;
+<a id='L96' name='L96'></a>  96 <strong class='reserved'>extern</strong> <strong class='reserved'>int</strong> <a href='../Y/7033.html' title='Multiple used in 34 places.'>symbol</a>;
+<a id='L97' name='L97'></a>  97 <strong class='reserved'>extern</strong> <strong class='reserved'>int</strong> <a href='../Y/6955.html' title='Multiple used in 8 places.'>statistics</a>;
+<a id='L98' name='L98'></a>  98 
+<a id='L99' name='L99'></a>  99 <strong class='reserved'>extern</strong> <strong class='reserved'>int</strong> <a href='../Y/4891.html' title='Multiple used in 20 places.'>no_order_list</a>;
+<a id='L100' name='L100'></a> 100 <strong class='reserved'>extern</strong> <strong class='reserved'>int</strong> <a href='../Y/5077.html' title='Multiple used in 12 places.'>other_files</a>;
+<a id='L101' name='L101'></a> 101 <strong class='reserved'>extern</strong> <strong class='reserved'>int</strong> <a href='../Y/2616.html' title='Multiple used in 5 places.'>enable_grep</a>;
+<a id='L102' name='L102'></a> 102 <strong class='reserved'>extern</strong> <strong class='reserved'>int</strong> <a href='../Y/2617.html' title='Multiple used in 4 places.'>enable_idutils</a>;
+<a id='L103' name='L103'></a> 103 <strong class='reserved'>extern</strong> <strong class='reserved'>int</strong> <a href='../Y/2619.html' title='Multiple used in 10 places.'>enable_xhtml</a>;
+<a id='L104' name='L104'></a> 104 
+<a id='L105' name='L105'></a> 105 <strong class='reserved'>extern</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/4149.html' title='Multiple used in 4 places.'>main_func</a>;
+<a id='L106' name='L106'></a> 106 <strong class='reserved'>extern</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/2320.html' title='Multiple used in 6 places.'>cvsweb_url</a>;
+<a id='L107' name='L107'></a> 107 <strong class='reserved'>extern</strong> <strong class='reserved'>int</strong> <a href='../Y/7369.html' title='Multiple used in 4 places.'>use_cvs_module</a>;
+<a id='L108' name='L108'></a> 108 <strong class='reserved'>extern</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/2319.html' title='Multiple used in 5 places.'>cvsweb_cvsroot</a>;
+<a id='L109' name='L109'></a> 109 <strong class='reserved'>extern</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/3041.html' title='Multiple used in 3 places.'>gtagslabel</a>;
+<a id='L110' name='L110'></a> 110 <strong class='reserved'>extern</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/7187.html' title='Multiple used in 40 places.'>title</a>;
+<a id='L111' name='L111'></a> 111 <strong class='reserved'>extern</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/3631.html' title='Multiple used in 10 places.'>insert_header</a>;
+<a id='L112' name='L112'></a> 112 <strong class='reserved'>extern</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/3630.html' title='Multiple used in 10 places.'>insert_footer</a>;
+<a id='L113' name='L113'></a> 113 <strong class='reserved'>extern</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/3132.html' title='Multiple used in 5 places.'>html_header</a>;
+<a id='L114' name='L114'></a> 114 <strong class='reserved'>extern</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/3879.html' title='Multiple used in 7 places.'>jscode</a>;
+<a id='L115' name='L115'></a> 115 
+<a id='L116' name='L116'></a> 116 <strong class='reserved'>extern</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/7191.html' title='Multiple used in 7 places.'>title_define_index</a>;
+<a id='L117' name='L117'></a> 117 <strong class='reserved'>extern</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/7193.html' title='Multiple used in 6 places.'>title_file_index</a>;
+<a id='L118' name='L118'></a> 118 <strong class='reserved'>extern</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/7189.html' title='Multiple used in 4 places.'>title_call_tree</a>;
+<a id='L119' name='L119'></a> 119 <strong class='reserved'>extern</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/7190.html' title='Multiple used in 4 places.'>title_callee_tree</a>;
+<a id='L120' name='L120'></a> 120 <strong class='reserved'>extern</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/7194.html' title='Multiple used in 3 places.'>title_included_from</a>;
+<a id='L121' name='L121'></a> 121 
+<a id='L122' name='L122'></a> 122 <strong class='reserved'>extern</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/1512.html' title='Multiple used in 6 places.'>anchor_label</a>[];
+<a id='L123' name='L123'></a> 123 <strong class='reserved'>extern</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/1510.html' title='Multiple used in 5 places.'>anchor_icons</a>[];
+<a id='L124' name='L124'></a> 124 <strong class='reserved'>extern</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/1508.html' title='Multiple used in 4 places.'>anchor_comment</a>[];
+<a id='L125' name='L125'></a> 125 <strong class='reserved'>extern</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/1513.html' title='Multiple used in 3 places.'>anchor_msg</a>[];
+<a id='L126' name='L126'></a> 126 <strong class='reserved'>extern</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/1805.html' title='Multiple used in 9 places.'>back_icon</a>;
+<a id='L127' name='L127'></a> 127 <strong class='reserved'>extern</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/2452.html' title='Multiple used in 3 places.'>dir_icon</a>;
+<a id='L128' name='L128'></a> 128 <strong class='reserved'>extern</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/1991.html' title='Multiple used in 3 places.'>c_icon</a>;
+<a id='L129' name='L129'></a> 129 <strong class='reserved'>extern</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/2825.html' title='Multiple used in 3 places.'>file_icon</a>;
+<a id='L130' name='L130'></a> 130 
+<a id='L131' name='L131'></a> 131 <strong class='reserved'>extern</strong> <strong class='reserved'>int</strong> <a href='../Y/4791.html' title='Multiple used in 6 places.'>ncol</a>;
+<a id='L132' name='L132'></a> 132 <strong class='reserved'>extern</strong> <strong class='reserved'>int</strong> <a href='../Y/7123.html' title='Multiple used in 8 places.'>tabs</a>;
+<a id='L133' name='L133'></a> 133 <strong class='reserved'>extern</strong> <strong class='reserved'>int</strong> <a href='../Y/2903.html' title='Multiple used in 6 places.'>flist_fields</a>;
+<a id='L134' name='L134'></a> 134 <strong class='reserved'>extern</strong> <strong class='reserved'>int</strong> <a href='../Y/2964.html' title='Multiple used in 6 places.'>full_path</a>;
+<a id='L135' name='L135'></a> 135 <strong class='reserved'>extern</strong> <strong class='reserved'>int</strong> <a href='../Y/4171.html' title='Multiple used in 6 places.'>map_file</a>;
+<a id='L136' name='L136'></a> 136 <strong class='reserved'>extern</strong> <strong class='reserved'>int</strong> <a href='../Y/2834.html' title='Multiple used in 5 places.'>filemap_file</a>;
+<a id='L137' name='L137'></a> 137 <strong class='reserved'>extern</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/3524.html' title='Multiple used in 4 places.'>icon_suffix</a>;
+<a id='L138' name='L138'></a> 138 <strong class='reserved'>extern</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/3523.html' title='Multiple used in 3 places.'>icon_spec</a>;
+<a id='L139' name='L139'></a> 139 <strong class='reserved'>extern</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/6181.html' title='Multiple used in 3 places.'>prolog_script</a>;
+<a id='L140' name='L140'></a> 140 <strong class='reserved'>extern</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/2679.html' title='Multiple used in 3 places.'>epilog_script</a>;
+<a id='L141' name='L141'></a> 141 <strong class='reserved'>extern</strong> <strong class='reserved'>int</strong> <a href='../Y/6731.html' title='Multiple used in 9 places.'>show_position</a>;
+<a id='L142' name='L142'></a> 142 <strong class='reserved'>extern</strong> <strong class='reserved'>int</strong> <a href='../Y/7121.html' title='Multiple used in 6 places.'>table_list</a>;
+<a id='L143' name='L143'></a> 143 <strong class='reserved'>extern</strong> <strong class='reserved'>int</strong> <a href='../Y/7120.html' title='Multiple used in 16 places.'>table_flist</a>;
+<a id='L144' name='L144'></a> 144 <strong class='reserved'>extern</strong> <strong class='reserved'>int</strong> <a href='../Y/2124.html' title='Multiple used in 9 places.'>colorize_warned_line</a>;
+<a id='L145' name='L145'></a> 145 <strong class='reserved'>extern</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/4910.html' title='Multiple used in 27 places.'>normal_suffix</a>;
+<a id='L146' name='L146'></a> 146 <strong class='reserved'>extern</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/325.html' title='Multiple used in 36 places.'>HTML</a>;
+<a id='L147' name='L147'></a> 147 <strong class='reserved'>extern</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/1362.html' title='Multiple used in 18 places.'>action</a>;
+<a id='L148' name='L148'></a> 148 <strong class='reserved'>extern</strong> <strong class='reserved'>int</strong> <a href='../Y/2397.html' title='Multiple used in 12 places.'>definition_header</a>;
+<a id='L149' name='L149'></a> 149 <strong class='reserved'>extern</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *htags_options;
+<a id='L150' name='L150'></a> 150 <strong class='reserved'>extern</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/3590.html' title='Multiple used in 4 places.'>include_file_suffixes</a>;
+<a id='L151' name='L151'></a> 151 <strong class='reserved'>extern</strong> <strong class='reserved'>int</strong> <a href='../Y/3031.html' title='Multiple used in 11 places.'>grtags_is_empty</a>;
+<a id='L152' name='L152'></a> 152 
+<a id='L153' name='L153'></a> 153 <em class='sharp'>#endif</em> <em class='comment'>/* _HTAGS_H_ */</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;][^][v]<a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

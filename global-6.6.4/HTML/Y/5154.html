@@ -1,0 +1,83 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>pBtree</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/185.html#L9023'>pBtree</a>           9023 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3BtreeSchemaLocked(Btree *pBtree);</span>
+<span class='curline'><a href='../S/185.html#L9024'>pBtree</a>           9024 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3BtreeLockTable(Btree *pBtree, int iTab, u8 isWriteLock);</span>
+<span class='curline'><a href='../S/185.html#L9051'>pBtree</a>           9051 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3BtreeGetMeta(Btree *pBtree, int idx, u32 *pValue);</span>
+<span class='curline'><a href='../S/185.html#L51541'>pBtree</a>           51541 libdb/sqlite3.c   Btree *pBtree;        /* Btree handle holding this lock */</span>
+<span class='curline'><a href='../S/185.html#L51720'>pBtree</a>           51720 libdb/sqlite3.c   Btree *pBtree;            /* The Btree to which this cursor belongs */</span>
+<span class='curline'><a href='../S/185.html#L52060'>pBtree</a>           52060 libdb/sqlite3.c   sqlite3BtreeEnter(pCur-&gt;pBtree);</span>
+<span class='curline'><a href='../S/185.html#L52063'>pBtree</a>           52063 libdb/sqlite3.c   sqlite3BtreeLeave(pCur-&gt;pBtree);</span>
+<span class='curline'><a href='../S/185.html#L52325'>pBtree</a>           52325 libdb/sqlite3.c   Btree *pBtree,         /* Handle that must hold lock */</span>
+<span class='curline'><a href='../S/185.html#L52330'>pBtree</a>           52330 libdb/sqlite3.c   Schema *pSchema = (Schema *)pBtree-&gt;pBt-&gt;pSchema;</span>
+<span class='curline'><a href='../S/185.html#L52338'>pBtree</a>           52338 libdb/sqlite3.c   if( (pBtree-&gt;sharable==0)</span>
+<span class='curline'><a href='../S/185.html#L52339'>pBtree</a>           52339 libdb/sqlite3.c    || (eLockType==READ_LOCK &amp;&amp; (pBtree-&gt;db-&gt;flags &amp; SQLITE_ReadUncommitted))</span>
+<span class='curline'><a href='../S/185.html#L52372'>pBtree</a>           52372 libdb/sqlite3.c   for(pLock=pBtree-&gt;pBt-&gt;pLock; pLock; pLock=pLock-&gt;pNext){</span>
+<span class='curline'><a href='../S/185.html#L52373'>pBtree</a>           52373 libdb/sqlite3.c     if( pLock-&gt;pBtree==pBtree </span>
+<span class='curline'><a href='../S/185.html#L52405'>pBtree</a>           52405 libdb/sqlite3.c static int hasReadConflicts(Btree *pBtree, Pgno iRoot){</span>
+<span class='curline'><a href='../S/185.html#L52407'>pBtree</a>           52407 libdb/sqlite3.c   for(p=pBtree-&gt;pBt-&gt;pCursor; p; p=p-&gt;pNext){</span>
+<span class='curline'><a href='../S/185.html#L52409'>pBtree</a>           52409 libdb/sqlite3.c      &amp;&amp; p-&gt;pBtree!=pBtree</span>
+<span class='curline'><a href='../S/185.html#L52410'>pBtree</a>           52410 libdb/sqlite3.c      &amp;&amp; 0==(p-&gt;pBtree-&gt;db-&gt;flags &amp; SQLITE_ReadUncommitted)</span>
+<span class='curline'><a href='../S/185.html#L52465'>pBtree</a>           52465 libdb/sqlite3.c     assert( eLock==READ_LOCK || pIter-&gt;pBtree==p || pIter-&gt;eLock==READ_LOCK);</span>
+<span class='curline'><a href='../S/185.html#L52466'>pBtree</a>           52466 libdb/sqlite3.c     if( pIter-&gt;pBtree!=p &amp;&amp; pIter-&gt;iTable==iTab &amp;&amp; pIter-&gt;eLock!=eLock ){</span>
+<span class='curline'><a href='../S/185.html#L52467'>pBtree</a>           52467 libdb/sqlite3.c       sqlite3ConnectionBlocked(p-&gt;db, pIter-&gt;pBtree-&gt;db);</span>
+<span class='curline'><a href='../S/185.html#L52519'>pBtree</a>           52519 libdb/sqlite3.c     if( pIter-&gt;iTable==iTable &amp;&amp; pIter-&gt;pBtree==p ){</span>
+<span class='curline'><a href='../S/185.html#L52534'>pBtree</a>           52534 libdb/sqlite3.c     pLock-&gt;pBtree = p;</span>
+<span class='curline'><a href='../S/185.html#L52571'>pBtree</a>           52571 libdb/sqlite3.c     assert( (pBt-&gt;btsFlags &amp; BTS_EXCLUSIVE)==0 || pBt-&gt;pWriter==pLock-&gt;pBtree );</span>
+<span class='curline'><a href='../S/185.html#L52572'>pBtree</a>           52572 libdb/sqlite3.c     assert( pLock-&gt;pBtree-&gt;inTrans&gt;=pLock-&gt;eLock );</span>
+<span class='curline'><a href='../S/185.html#L52573'>pBtree</a>           52573 libdb/sqlite3.c     if( pLock-&gt;pBtree==p ){</span>
+<span class='curline'><a href='../S/185.html#L52612'>pBtree</a>           52612 libdb/sqlite3.c       assert( pLock-&gt;eLock==READ_LOCK || pLock-&gt;pBtree==p );</span>
+<span class='curline'><a href='../S/185.html#L52666'>pBtree</a>           52666 libdb/sqlite3.c   Btree *pBtree,          /* The database file to check */</span>
+<span class='curline'><a href='../S/185.html#L52671'>pBtree</a>           52671 libdb/sqlite3.c   BtShared *pBt = pBtree-&gt;pBt;</span>
+<span class='curline'><a href='../S/185.html#L52672'>pBtree</a>           52672 libdb/sqlite3.c   assert( sqlite3BtreeHoldsMutex(pBtree) );</span>
+<span class='curline'><a href='../S/185.html#L54035'>pBtree</a>           54035 libdb/sqlite3.c   p-&gt;lock.pBtree = p;</span>
+<span class='curline'><a href='../S/185.html#L54349'>pBtree</a>           54349 libdb/sqlite3.c     if( pTmp-&gt;pBtree==p ){</span>
+<span class='curline'><a href='../S/185.html#L54962'>pBtree</a>           54962 libdb/sqlite3.c       if( pIter-&gt;pBtree!=p ){</span>
+<span class='curline'><a href='../S/185.html#L54963'>pBtree</a>           54963 libdb/sqlite3.c         pBlock = pIter-&gt;pBtree-&gt;db;</span>
+<span class='curline'><a href='../S/185.html#L55015'>pBtree</a>           55015 libdb/sqlite3.c         assert( p-&gt;lock.pBtree==p &amp;&amp; p-&gt;lock.iTable==1 );</span>
+<span class='curline'><a href='../S/185.html#L55666'>pBtree</a>           55666 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3BtreeTripAllCursors(Btree *pBtree, int errCode){</span>
+<span class='curline'><a href='../S/185.html#L55668'>pBtree</a>           55668 libdb/sqlite3.c   if( pBtree==0 ) return;</span>
+<span class='curline'><a href='../S/185.html#L55669'>pBtree</a>           55669 libdb/sqlite3.c   sqlite3BtreeEnter(pBtree);</span>
+<span class='curline'><a href='../S/185.html#L55670'>pBtree</a>           55670 libdb/sqlite3.c   for(p=pBtree-&gt;pBt-&gt;pCursor; p; p=p-&gt;pNext){</span>
+<span class='curline'><a href='../S/185.html#L55680'>pBtree</a>           55680 libdb/sqlite3.c   sqlite3BtreeLeave(pBtree);</span>
+<span class='curline'><a href='../S/185.html#L55885'>pBtree</a>           55885 libdb/sqlite3.c   pCur-&gt;pBtree = p;</span>
+<span class='curline'><a href='../S/185.html#L55940'>pBtree</a>           55940 libdb/sqlite3.c   Btree *pBtree = pCur-&gt;pBtree;</span>
+<span class='curline'><a href='../S/185.html#L55941'>pBtree</a>           55941 libdb/sqlite3.c   if( pBtree ){</span>
+<span class='curline'><a href='../S/185.html#L55944'>pBtree</a>           55944 libdb/sqlite3.c     sqlite3BtreeEnter(pBtree);</span>
+<span class='curline'><a href='../S/185.html#L55958'>pBtree</a>           55958 libdb/sqlite3.c     sqlite3DbFree(pBtree-&gt;db, pCur-&gt;aOverflow);</span>
+<span class='curline'><a href='../S/185.html#L55960'>pBtree</a>           55960 libdb/sqlite3.c     sqlite3BtreeLeave(pBtree);</span>
+<span class='curline'><a href='../S/185.html#L56275'>pBtree</a>           56275 libdb/sqlite3.c             pCur-&gt;pBtree-&gt;db, pCur-&gt;aOverflow, nOvfl*2*sizeof(Pgno)</span>
+<span class='curline'><a href='../S/185.html#L56472'>pBtree</a>           56472 libdb/sqlite3.c   assert( sqlite3_mutex_held(pCur-&gt;pBtree-&gt;db-&gt;mutex) );</span>
+<span class='curline'><a href='../S/185.html#L56637'>pBtree</a>           56637 libdb/sqlite3.c     rc = getAndInitPage(pCur-&gt;pBtree-&gt;pBt, pCur-&gt;pgnoRoot, &amp;pCur-&gt;apPage[0],</span>
+<span class='curline'><a href='../S/185.html#L56740'>pBtree</a>           56740 libdb/sqlite3.c   assert( sqlite3_mutex_held(pCur-&gt;pBtree-&gt;db-&gt;mutex) );</span>
+<span class='curline'><a href='../S/185.html#L56763'>pBtree</a>           56763 libdb/sqlite3.c   assert( sqlite3_mutex_held(pCur-&gt;pBtree-&gt;db-&gt;mutex) );</span>
+<span class='curline'><a href='../S/185.html#L56839'>pBtree</a>           56839 libdb/sqlite3.c   assert( sqlite3_mutex_held(pCur-&gt;pBtree-&gt;db-&gt;mutex) );</span>
+<span class='curline'><a href='../S/185.html#L56986'>pBtree</a>           56986 libdb/sqlite3.c          &amp;&amp; (pIdxKey-&gt;errCode!=SQLITE_NOMEM || pCur-&gt;pBtree-&gt;db-&gt;mallocFailed)</span>
+<span class='curline'><a href='../S/185.html#L59289'>pBtree</a>           59289 libdb/sqlite3.c   Btree *p = pCur-&gt;pBtree;</span>
+<span class='curline'><a href='../S/185.html#L59427'>pBtree</a>           59427 libdb/sqlite3.c   Btree *p = pCur-&gt;pBtree;</span>
+<span class='curline'><a href='../S/185.html#L59789'>pBtree</a>           59789 libdb/sqlite3.c   return sqlite3BtreeClearTable(pCur-&gt;pBtree, pCur-&gt;pgnoRoot, 0);</span>
+<span class='curline'><a href='../S/185.html#L59829'>pBtree</a>           59829 libdb/sqlite3.c     sqlite3ConnectionBlocked(p-&gt;db, pBt-&gt;pCursor-&gt;pBtree-&gt;db);</span>
+<span class='curline'><a href='../S/185.html#L60768'>pBtree</a>           60768 libdb/sqlite3.c   assert( sqlite3_mutex_held(pCsr-&gt;pBtree-&gt;db-&gt;mutex) );</span>
+<span class='curline'><a href='../S/185.html#L60803'>pBtree</a>           60803 libdb/sqlite3.c   assert( hasSharedCacheTableLock(pCsr-&gt;pBtree, pCsr-&gt;pgnoRoot, 0, 2) );</span>
+<span class='curline'><a href='../S/185.html#L60804'>pBtree</a>           60804 libdb/sqlite3.c   assert( !hasReadConflicts(pCsr-&gt;pBtree, pCsr-&gt;pgnoRoot) );</span>
+<span class='curline'><a href='../S/185.html#L60823'>pBtree</a>           60823 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3BtreeSetVersion(Btree *pBtree, int iVersion){</span>
+<span class='curline'><a href='../S/185.html#L60824'>pBtree</a>           60824 libdb/sqlite3.c   BtShared *pBt = pBtree-&gt;pBt;</span>
+<span class='curline'><a href='../S/185.html#L60835'>pBtree</a>           60835 libdb/sqlite3.c   rc = sqlite3BtreeBeginTrans(pBtree, 0);</span>
+<span class='curline'><a href='../S/185.html#L60839'>pBtree</a>           60839 libdb/sqlite3.c       rc = sqlite3BtreeBeginTrans(pBtree, 2);</span>
+<span class='curline'><a href='../S/185.html#L127966'>pBtree</a>           127966 libdb/sqlite3.c   Btree *pBtree;</span>
+<span class='curline'><a href='../S/185.html#L127969'>pBtree</a>           127969 libdb/sqlite3.c   pBtree = sqlite3DbNameToBtree(db, zDbName);</span>
+<span class='curline'><a href='../S/185.html#L127970'>pBtree</a>           127970 libdb/sqlite3.c   if( pBtree ){</span>
+<span class='curline'><a href='../S/185.html#L127973'>pBtree</a>           127973 libdb/sqlite3.c     sqlite3BtreeEnter(pBtree);</span>
+<span class='curline'><a href='../S/185.html#L127974'>pBtree</a>           127974 libdb/sqlite3.c     pPager = sqlite3BtreePager(pBtree);</span>
+<span class='curline'><a href='../S/185.html#L127986'>pBtree</a>           127986 libdb/sqlite3.c     sqlite3BtreeLeave(pBtree);</span>
+</pre>
+</body>
+</html>

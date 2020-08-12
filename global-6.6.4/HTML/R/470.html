@@ -1,0 +1,394 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>Expr</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/185.html#L8885'>Expr</a>             8885 libdb/sqlite3.c typedef struct Expr Expr;</span>
+<span class='curline'><a href='../S/185.html#L10919'>Expr</a>             10919 libdb/sqlite3.c   Expr *pDflt;     /* Default value of this column */</span>
+<span class='curline'><a href='../S/185.html#L11310'>Expr</a>             11310 libdb/sqlite3.c   Expr *pPartIdxWhere;     /* WHERE clause for partial indices */</span>
+<span class='curline'><a href='../S/185.html#L11399'>Expr</a>             11399 libdb/sqlite3.c     Expr *pExpr;             /* The original expression */</span>
+<span class='curline'><a href='../S/185.html#L11406'>Expr</a>             11406 libdb/sqlite3.c     Expr *pExpr;             /* Expression encoding the function */</span>
+<span class='curline'><a href='../S/185.html#L11507'>Expr</a>             11507 libdb/sqlite3.c   Expr *pLeft;           /* Left subnode */</span>
+<span class='curline'><a href='../S/185.html#L11508'>Expr</a>             11508 libdb/sqlite3.c   Expr *pRight;          /* Right subnode */</span>
+<span class='curline'><a href='../S/185.html#L11585'>Expr</a>             11585 libdb/sqlite3.c #define EXPR_FULLSIZE           sizeof(Expr)           /* Full size */</span>
+<span class='curline'><a href='../S/185.html#L11586'>Expr</a>             11586 libdb/sqlite3.c #define EXPR_REDUCEDSIZE        offsetof(Expr,iTable)  /* Common features */</span>
+<span class='curline'><a href='../S/185.html#L11587'>Expr</a>             11587 libdb/sqlite3.c #define EXPR_TOKENONLYSIZE      offsetof(Expr,pLeft)   /* Fewer features */</span>
+<span class='curline'><a href='../S/185.html#L11614'>Expr</a>             11614 libdb/sqlite3.c     Expr *pExpr;            /* The list of expressions */</span>
+<span class='curline'><a href='../S/185.html#L11637'>Expr</a>             11637 libdb/sqlite3.c   Expr *pExpr;          /* The expression parse tree */</span>
+<span class='curline'><a href='../S/185.html#L11726'>Expr</a>             11726 libdb/sqlite3.c     Expr *pOn;        /* The ON clause of a join */</span>
+<span class='curline'><a href='../S/185.html#L11849'>Expr</a>             11849 libdb/sqlite3.c   Expr *pWhere;          /* The WHERE clause */</span>
+<span class='curline'><a href='../S/185.html#L11851'>Expr</a>             11851 libdb/sqlite3.c   Expr *pHaving;         /* The HAVING clause */</span>
+<span class='curline'><a href='../S/185.html#L11855'>Expr</a>             11855 libdb/sqlite3.c   Expr *pLimit;          /* LIMIT expression. NULL means not used. */</span>
+<span class='curline'><a href='../S/185.html#L11856'>Expr</a>             11856 libdb/sqlite3.c   Expr *pOffset;         /* OFFSET expression. NULL means not used. */</span>
+<span class='curline'><a href='../S/185.html#L12218'>Expr</a>             12218 libdb/sqlite3.c   Expr *pWhen;            /* The WHEN clause of the expression (may be NULL) */</span>
+<span class='curline'><a href='../S/185.html#L12281'>Expr</a>             12281 libdb/sqlite3.c   Expr *pWhere;        /* The WHERE clause for DELETE or UPDATE steps */</span>
+<span class='curline'><a href='../S/185.html#L12412'>Expr</a>             12412 libdb/sqlite3.c   int (*xExprCallback)(Walker*, Expr*);     /* Callback for expressions */</span>
+<span class='curline'><a href='../S/185.html#L12426'>Expr</a>             12426 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3WalkExpr(Walker*, Expr*);</span>
+<span class='curline'><a href='../S/185.html#L12635'>Expr</a>             12635 libdb/sqlite3.c SQLITE_PRIVATE   void sqlite3TreeViewExpr(TreeView*, const Expr*, u8);</span>
+<span class='curline'><a href='../S/185.html#L12652'>Expr</a>             12652 libdb/sqlite3.c SQLITE_PRIVATE Expr *sqlite3ExprAlloc(sqlite3*,int,const Token*,int);</span>
+<span class='curline'><a href='../S/185.html#L12653'>Expr</a>             12653 libdb/sqlite3.c SQLITE_PRIVATE Expr *sqlite3Expr(sqlite3*,int,const char*);</span>
+<span class='curline'><a href='../S/185.html#L12654'>Expr</a>             12654 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3ExprAttachSubtrees(sqlite3*,Expr*,Expr*,Expr*);</span>
+<span class='curline'><a href='../S/185.html#L12655'>Expr</a>             12655 libdb/sqlite3.c SQLITE_PRIVATE Expr *sqlite3PExpr(Parse*, int, Expr*, Expr*, const Token*);</span>
+<span class='curline'><a href='../S/185.html#L12656'>Expr</a>             12656 libdb/sqlite3.c SQLITE_PRIVATE Expr *sqlite3ExprAnd(sqlite3*,Expr*, Expr*);</span>
+<span class='curline'><a href='../S/185.html#L12657'>Expr</a>             12657 libdb/sqlite3.c SQLITE_PRIVATE Expr *sqlite3ExprFunction(Parse*,ExprList*, Token*);</span>
+<span class='curline'><a href='../S/185.html#L12658'>Expr</a>             12658 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3ExprAssignVarNumber(Parse*, Expr*);</span>
+<span class='curline'><a href='../S/185.html#L12659'>Expr</a>             12659 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3ExprDelete(sqlite3*, Expr*);</span>
+<span class='curline'><a href='../S/185.html#L12660'>Expr</a>             12660 libdb/sqlite3.c SQLITE_PRIVATE ExprList *sqlite3ExprListAppend(Parse*,ExprList*,Expr*);</span>
+<span class='curline'><a href='../S/185.html#L12680'>Expr</a>             12680 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3AddCheckConstraint(Parse*, Expr*);</span>
+<span class='curline'><a href='../S/185.html#L12738'>Expr</a>             12738 libdb/sqlite3.c                                       Token*, Select*, Expr*, IdList*);</span>
+<span class='curline'><a href='../S/185.html#L12747'>Expr</a>             12747 libdb/sqlite3.c                           Expr*, int, int);</span>
+<span class='curline'><a href='../S/185.html#L12750'>Expr</a>             12750 libdb/sqlite3.c SQLITE_PRIVATE Select *sqlite3SelectNew(Parse*,ExprList*,SrcList*,Expr*,ExprList*,</span>
+<span class='curline'><a href='../S/185.html#L12751'>Expr</a>             12751 libdb/sqlite3.c                          Expr*,ExprList*,u16,Expr*,Expr*);</span>
+<span class='curline'><a href='../S/185.html#L12757'>Expr</a>             12757 libdb/sqlite3.c SQLITE_PRIVATE Expr *sqlite3LimitWhere(Parse*,SrcList*,Expr*,ExprList*,Expr*,Expr*,char*);</span>
+<span class='curline'><a href='../S/185.html#L12759'>Expr</a>             12759 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3DeleteFrom(Parse*, SrcList*, Expr*);</span>
+<span class='curline'><a href='../S/185.html#L12760'>Expr</a>             12760 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3Update(Parse*, SrcList*, ExprList*, Expr*, int);</span>
+<span class='curline'><a href='../S/185.html#L12761'>Expr</a>             12761 libdb/sqlite3.c SQLITE_PRIVATE WhereInfo *sqlite3WhereBegin(Parse*,SrcList*,Expr*,ExprList*,ExprList*,u16,int);</span>
+<span class='curline'><a href='../S/185.html#L12779'>Expr</a>             12779 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3ExprCode(Parse*, Expr*, int);</span>
+<span class='curline'><a href='../S/185.html#L12780'>Expr</a>             12780 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3ExprCodeFactorable(Parse*, Expr*, int);</span>
+<span class='curline'><a href='../S/185.html#L12781'>Expr</a>             12781 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3ExprCodeAtInit(Parse*, Expr*, int, u8);</span>
+<span class='curline'><a href='../S/185.html#L12782'>Expr</a>             12782 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3ExprCodeTemp(Parse*, Expr*, int*);</span>
+<span class='curline'><a href='../S/185.html#L12783'>Expr</a>             12783 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3ExprCodeTarget(Parse*, Expr*, int);</span>
+<span class='curline'><a href='../S/185.html#L12784'>Expr</a>             12784 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3ExprCodeAndCache(Parse*, Expr*, int);</span>
+<span class='curline'><a href='../S/185.html#L12788'>Expr</a>             12788 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3ExprIfTrue(Parse*, Expr*, int, int);</span>
+<span class='curline'><a href='../S/185.html#L12789'>Expr</a>             12789 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3ExprIfFalse(Parse*, Expr*, int, int);</span>
+<span class='curline'><a href='../S/185.html#L12799'>Expr</a>             12799 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3ExprCompare(Expr*, Expr*, int);</span>
+<span class='curline'><a href='../S/185.html#L12801'>Expr</a>             12801 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3ExprImpliesExpr(Expr*, Expr*, int);</span>
+<span class='curline'><a href='../S/185.html#L12802'>Expr</a>             12802 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3ExprAnalyzeAggregates(NameContext*, Expr*);</span>
+<span class='curline'><a href='../S/185.html#L12804'>Expr</a>             12804 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3FunctionUsesThisSrc(Expr*, SrcList*);</span>
+<span class='curline'><a href='../S/185.html#L12817'>Expr</a>             12817 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3ExprIsConstant(Expr*);</span>
+<span class='curline'><a href='../S/185.html#L12818'>Expr</a>             12818 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3ExprIsConstantNotJoin(Expr*);</span>
+<span class='curline'><a href='../S/185.html#L12819'>Expr</a>             12819 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3ExprIsConstantOrFunction(Expr*, u8);</span>
+<span class='curline'><a href='../S/185.html#L12820'>Expr</a>             12820 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3ExprIsInteger(Expr*, int*);</span>
+<span class='curline'><a href='../S/185.html#L12821'>Expr</a>             12821 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3ExprCanBeNull(const Expr*);</span>
+<span class='curline'><a href='../S/185.html#L12822'>Expr</a>             12822 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3ExprNeedsNoAffinityChange(const Expr*, char);</span>
+<span class='curline'><a href='../S/185.html#L12838'>Expr</a>             12838 libdb/sqlite3.c SQLITE_PRIVATE Expr *sqlite3ExprDup(sqlite3*,Expr*,int);</span>
+<span class='curline'><a href='../S/185.html#L12858'>Expr</a>             12858 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3MaterializeView(Parse*, Table*, Expr*, int);</span>
+<span class='curline'><a href='../S/185.html#L12863'>Expr</a>             12863 libdb/sqlite3.c                            Expr*,int, int);</span>
+<span class='curline'><a href='../S/185.html#L12872'>Expr</a>             12872 libdb/sqlite3.c   void sqliteViewTriggers(Parse*, Table*, Expr*, int, ExprList*);</span>
+<span class='curline'><a href='../S/185.html#L12877'>Expr</a>             12877 libdb/sqlite3.c SQLITE_PRIVATE   TriggerStep *sqlite3TriggerUpdateStep(sqlite3*,Token*,ExprList*, Expr*, u8);</span>
+<span class='curline'><a href='../S/185.html#L12878'>Expr</a>             12878 libdb/sqlite3.c SQLITE_PRIVATE   TriggerStep *sqlite3TriggerDeleteStep(sqlite3*,Token*, Expr*);</span>
+<span class='curline'><a href='../S/185.html#L12899'>Expr</a>             12899 libdb/sqlite3.c SQLITE_PRIVATE   void sqlite3AuthRead(Parse*,Expr*,Schema*,SrcList*);</span>
+<span class='curline'><a href='../S/185.html#L12910'>Expr</a>             12910 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3Attach(Parse*, Expr*, Expr*, Expr*);</span>
+<span class='curline'><a href='../S/185.html#L12911'>Expr</a>             12911 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3Detach(Parse*, Expr*);</span>
+<span class='curline'><a href='../S/185.html#L12915'>Expr</a>             12915 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3FixExpr(DbFixer*, Expr*);</span>
+<span class='curline'><a href='../S/185.html#L12957'>Expr</a>             12957 libdb/sqlite3.c SQLITE_PRIVATE char sqlite3CompareAffinity(Expr *pExpr, char aff2);</span>
+<span class='curline'><a href='../S/185.html#L12958'>Expr</a>             12958 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3IndexAffinityOk(Expr *pExpr, char idx_affinity);</span>
+<span class='curline'><a href='../S/185.html#L12959'>Expr</a>             12959 libdb/sqlite3.c SQLITE_PRIVATE char sqlite3ExprAffinity(Expr *pExpr);</span>
+<span class='curline'><a href='../S/185.html#L12976'>Expr</a>             12976 libdb/sqlite3.c SQLITE_PRIVATE CollSeq *sqlite3ExprCollSeq(Parse *pParse, Expr *pExpr);</span>
+<span class='curline'><a href='../S/185.html#L12977'>Expr</a>             12977 libdb/sqlite3.c SQLITE_PRIVATE Expr *sqlite3ExprAddCollateToken(Parse *pParse, Expr*, const Token*);</span>
+<span class='curline'><a href='../S/185.html#L12978'>Expr</a>             12978 libdb/sqlite3.c SQLITE_PRIVATE Expr *sqlite3ExprAddCollateString(Parse*,Expr*,const char*);</span>
+<span class='curline'><a href='../S/185.html#L12979'>Expr</a>             12979 libdb/sqlite3.c SQLITE_PRIVATE Expr *sqlite3ExprSkipCollate(Expr*);</span>
+<span class='curline'><a href='../S/185.html#L13002'>Expr</a>             13002 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3ValueFromExpr(sqlite3 *, Expr *, u8, u8, sqlite3_value **);</span>
+<span class='curline'><a href='../S/185.html#L13022'>Expr</a>             13022 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3CodeSubselect(Parse *, Expr *, int, int);</span>
+<span class='curline'><a href='../S/185.html#L13025'>Expr</a>             13025 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3ResolveExprNames(NameContext*, Expr*);</span>
+<span class='curline'><a href='../S/185.html#L13027'>Expr</a>             13027 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3ResolveSelfReference(Parse*,Table*,int,Expr*,ExprList*);</span>
+<span class='curline'><a href='../S/185.html#L13042'>Expr</a>             13042 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3IsLikeFunction(sqlite3*,Expr*,int*,char*);</span>
+<span class='curline'><a href='../S/185.html#L13069'>Expr</a>             13069 libdb/sqlite3.c SQLITE_PRIVATE Expr *sqlite3CreateColumnExpr(sqlite3 *, SrcList *, int, int);</span>
+<span class='curline'><a href='../S/185.html#L13076'>Expr</a>             13076 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3Stat4ProbeSetValue(Parse*,Index*,UnpackedRecord**,Expr*,u8,int,int*);</span>
+<span class='curline'><a href='../S/185.html#L13077'>Expr</a>             13077 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3Stat4ValueFromExpr(Parse*, Expr*, u8, sqlite3_value**);</span>
+<span class='curline'><a href='../S/185.html#L13143'>Expr</a>             13143 libdb/sqlite3.c SQLITE_PRIVATE FuncDef *sqlite3VtabOverloadFunction(sqlite3 *,FuncDef*, int nArg, Expr*);</span>
+<span class='curline'><a href='../S/185.html#L13151'>Expr</a>             13151 libdb/sqlite3.c SQLITE_PRIVATE CollSeq *sqlite3BinaryCompareCollSeq(Parse *, Expr *, Expr *);</span>
+<span class='curline'><a href='../S/185.html#L13230'>Expr</a>             13230 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3FindInIndex(Parse *, Expr *, u32, int*);</span>
+<span class='curline'><a href='../S/185.html#L13247'>Expr</a>             13247 libdb/sqlite3.c SQLITE_PRIVATE   void sqlite3ExprSetHeight(Parse *pParse, Expr *p);</span>
+<span class='curline'><a href='../S/185.html#L62767'>Expr</a>             62767 libdb/sqlite3.c   Expr *pExpr,                    /* The expression to evaluate */</span>
+<span class='curline'><a href='../S/185.html#L62890'>Expr</a>             62890 libdb/sqlite3.c   Expr *pExpr,              /* The expression to evaluate */</span>
+<span class='curline'><a href='../S/185.html#L62974'>Expr</a>             62974 libdb/sqlite3.c   Expr *pExpr,                    /* The expression to extract a value from */</span>
+<span class='curline'><a href='../S/185.html#L63050'>Expr</a>             63050 libdb/sqlite3.c   Expr *pExpr,                    /* The expression to extract a value from */</span>
+<span class='curline'><a href='../S/185.html#L63082'>Expr</a>             63082 libdb/sqlite3.c   Expr *pExpr,                    /* The expression to extract a value from */</span>
+<span class='curline'><a href='../S/185.html#L79019'>Expr</a>             79019 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3WalkExpr(Walker *pWalker, Expr *pExpr){</span>
+<span class='curline'><a href='../S/185.html#L79166'>Expr</a>             79166 libdb/sqlite3.c static int incrAggDepth(Walker *pWalker, Expr *pExpr){</span>
+<span class='curline'><a href='../S/185.html#L79170'>Expr</a>             79170 libdb/sqlite3.c static void incrAggFunctionDepth(Expr *pExpr, int N){</span>
+<span class='curline'><a href='../S/185.html#L79227'>Expr</a>             79227 libdb/sqlite3.c   Expr *pExpr,           /* Transform this into an alias to the result set */</span>
+<span class='curline'><a href='../S/185.html#L79231'>Expr</a>             79231 libdb/sqlite3.c   Expr *pOrig;           /* The iCol-th column of the result set */</span>
+<span class='curline'><a href='../S/185.html#L79232'>Expr</a>             79232 libdb/sqlite3.c   Expr *pDup;            /* Copy of pOrig */</span>
+<span class='curline'><a href='../S/185.html#L79354'>Expr</a>             79354 libdb/sqlite3.c   Expr *pExpr          /* Make this EXPR node point to the selected column */</span>
+<span class='curline'><a href='../S/185.html#L79553'>Expr</a>             79553 libdb/sqlite3.c           Expr *pOrig;</span>
+<span class='curline'><a href='../S/185.html#L79661'>Expr</a>             79661 libdb/sqlite3.c SQLITE_PRIVATE Expr *sqlite3CreateColumnExpr(sqlite3 *db, SrcList *pSrc, int iSrc, int iCol){</span>
+<span class='curline'><a href='../S/185.html#L79662'>Expr</a>             79662 libdb/sqlite3.c   Expr *p = sqlite3ExprAlloc(db, TK_COLUMN, 0, 0);</span>
+<span class='curline'><a href='../S/185.html#L79717'>Expr</a>             79717 libdb/sqlite3.c static int exprProbability(Expr *p){</span>
+<span class='curline'><a href='../S/185.html#L79737'>Expr</a>             79737 libdb/sqlite3.c static int resolveExprStep(Walker *pWalker, Expr *pExpr){</span>
+<span class='curline'><a href='../S/185.html#L79791'>Expr</a>             79791 libdb/sqlite3.c       Expr *pRight;</span>
+<span class='curline'><a href='../S/185.html#L79950'>Expr</a>             79950 libdb/sqlite3.c   Expr *pE           /* Expression we are trying to match */</span>
+<span class='curline'><a href='../S/185.html#L79989'>Expr</a>             79989 libdb/sqlite3.c   Expr *pE           /* The specific ORDER BY term */</span>
+<span class='curline'><a href='../S/185.html#L80093'>Expr</a>             80093 libdb/sqlite3.c       Expr *pE, *pDup;</span>
+<span class='curline'><a href='../S/185.html#L80115'>Expr</a>             80115 libdb/sqlite3.c         Expr *pNew = sqlite3Expr(db, TK_INTEGER, 0);</span>
+<span class='curline'><a href='../S/185.html#L80221'>Expr</a>             80221 libdb/sqlite3.c     Expr *pE = pItem-&gt;pExpr;</span>
+<span class='curline'><a href='../S/185.html#L80222'>Expr</a>             80222 libdb/sqlite3.c     Expr *pE2 = sqlite3ExprSkipCollate(pE);</span>
+<span class='curline'><a href='../S/185.html#L80353'>Expr</a>             80353 libdb/sqlite3.c       Expr *pX = pEList-&gt;a[i].pExpr;</span>
+<span class='curline'><a href='../S/185.html#L80492'>Expr</a>             80492 libdb/sqlite3.c   Expr *pExpr             /* The expression to be analyzed. */</span>
+<span class='curline'><a href='../S/185.html#L80572'>Expr</a>             80572 libdb/sqlite3.c   Expr *pExpr,        /* Expression to resolve.  May be NULL. */</span>
+<span class='curline'><a href='../S/185.html#L80632'>Expr</a>             80632 libdb/sqlite3.c SQLITE_PRIVATE char sqlite3ExprAffinity(Expr *pExpr){</span>
+<span class='curline'><a href='../S/185.html#L80668'>Expr</a>             80668 libdb/sqlite3.c SQLITE_PRIVATE Expr *sqlite3ExprAddCollateToken(</span>
+<span class='curline'><a href='../S/185.html#L80670'>Expr</a>             80670 libdb/sqlite3.c   Expr *pExpr,             /* Add the "COLLATE" clause to this expression */</span>
+<span class='curline'><a href='../S/185.html#L80674'>Expr</a>             80674 libdb/sqlite3.c     Expr *pNew = sqlite3ExprAlloc(pParse-&gt;db, TK_COLLATE, pCollName, 1);</span>
+<span class='curline'><a href='../S/185.html#L80683'>Expr</a>             80683 libdb/sqlite3.c SQLITE_PRIVATE Expr *sqlite3ExprAddCollateString(Parse *pParse, Expr *pExpr, const char *zC){</span>
+<span class='curline'><a href='../S/185.html#L80695'>Expr</a>             80695 libdb/sqlite3.c SQLITE_PRIVATE Expr *sqlite3ExprSkipCollate(Expr *pExpr){</span>
+<span class='curline'><a href='../S/185.html#L80719'>Expr</a>             80719 libdb/sqlite3.c SQLITE_PRIVATE CollSeq *sqlite3ExprCollSeq(Parse *pParse, Expr *pExpr){</span>
+<span class='curline'><a href='../S/185.html#L80722'>Expr</a>             80722 libdb/sqlite3.c   Expr *p = pExpr;</span>
+<span class='curline'><a href='../S/185.html#L80768'>Expr</a>             80768 libdb/sqlite3.c SQLITE_PRIVATE char sqlite3CompareAffinity(Expr *pExpr, char aff2){</span>
+<span class='curline'><a href='../S/185.html#L80795'>Expr</a>             80795 libdb/sqlite3.c static char comparisonAffinity(Expr *pExpr){</span>
+<span class='curline'><a href='../S/185.html#L80818'>Expr</a>             80818 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3IndexAffinityOk(Expr *pExpr, char idx_affinity){</span>
+<span class='curline'><a href='../S/185.html#L80834'>Expr</a>             80834 libdb/sqlite3.c static u8 binaryCompareP5(Expr *pExpr1, Expr *pExpr2, int jumpIfNull){</span>
+<span class='curline'><a href='../S/185.html#L80854'>Expr</a>             80854 libdb/sqlite3.c   Expr *pLeft, </span>
+<span class='curline'><a href='../S/185.html#L80855'>Expr</a>             80855 libdb/sqlite3.c   Expr *pRight</span>
+<span class='curline'><a href='../S/185.html#L80877'>Expr</a>             80877 libdb/sqlite3.c   Expr *pLeft,      /* The left operand */</span>
+<span class='curline'><a href='../S/185.html#L80878'>Expr</a>             80878 libdb/sqlite3.c   Expr *pRight,     /* The right operand */</span>
+<span class='curline'><a href='../S/185.html#L80923'>Expr</a>             80923 libdb/sqlite3.c static void heightOfExpr(Expr *p, int *pnHeight){</span>
+<span class='curline'><a href='../S/185.html#L80958'>Expr</a>             80958 libdb/sqlite3.c static void exprSetHeight(Expr *p){</span>
+<span class='curline'><a href='../S/185.html#L80975'>Expr</a>             80975 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3ExprSetHeight(Parse *pParse, Expr *p){</span>
+<span class='curline'><a href='../S/185.html#L81013'>Expr</a>             81013 libdb/sqlite3.c SQLITE_PRIVATE Expr *sqlite3ExprAlloc(</span>
+<span class='curline'><a href='../S/185.html#L81019'>Expr</a>             81019 libdb/sqlite3.c   Expr *pNew;</span>
+<span class='curline'><a href='../S/185.html#L81030'>Expr</a>             81030 libdb/sqlite3.c   pNew = sqlite3DbMallocZero(db, sizeof(Expr)+nExtra);</span>
+<span class='curline'><a href='../S/185.html#L81062'>Expr</a>             81062 libdb/sqlite3.c SQLITE_PRIVATE Expr *sqlite3Expr(</span>
+<span class='curline'><a href='../S/185.html#L81081'>Expr</a>             81081 libdb/sqlite3.c   Expr *pRoot,</span>
+<span class='curline'><a href='../S/185.html#L81082'>Expr</a>             81082 libdb/sqlite3.c   Expr *pLeft,</span>
+<span class='curline'><a href='../S/185.html#L81083'>Expr</a>             81083 libdb/sqlite3.c   Expr *pRight</span>
+<span class='curline'><a href='../S/185.html#L81109'>Expr</a>             81109 libdb/sqlite3.c SQLITE_PRIVATE Expr *sqlite3PExpr(</span>
+<span class='curline'><a href='../S/185.html#L81112'>Expr</a>             81112 libdb/sqlite3.c   Expr *pLeft,            /* Left operand */</span>
+<span class='curline'><a href='../S/185.html#L81113'>Expr</a>             81113 libdb/sqlite3.c   Expr *pRight,           /* Right operand */</span>
+<span class='curline'><a href='../S/185.html#L81116'>Expr</a>             81116 libdb/sqlite3.c   Expr *p;</span>
+<span class='curline'><a href='../S/185.html#L81144'>Expr</a>             81144 libdb/sqlite3.c static int exprAlwaysTrue(Expr *p){</span>
+<span class='curline'><a href='../S/185.html#L81150'>Expr</a>             81150 libdb/sqlite3.c static int exprAlwaysFalse(Expr *p){</span>
+<span class='curline'><a href='../S/185.html#L81165'>Expr</a>             81165 libdb/sqlite3.c SQLITE_PRIVATE Expr *sqlite3ExprAnd(sqlite3 *db, Expr *pLeft, Expr *pRight){</span>
+<span class='curline'><a href='../S/185.html#L81175'>Expr</a>             81175 libdb/sqlite3.c     Expr *pNew = sqlite3ExprAlloc(db, TK_AND, 0, 0);</span>
+<span class='curline'><a href='../S/185.html#L81185'>Expr</a>             81185 libdb/sqlite3.c SQLITE_PRIVATE Expr *sqlite3ExprFunction(Parse *pParse, ExprList *pList, Token *pToken){</span>
+<span class='curline'><a href='../S/185.html#L81186'>Expr</a>             81186 libdb/sqlite3.c   Expr *pNew;</span>
+<span class='curline'><a href='../S/185.html#L81216'>Expr</a>             81216 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3ExprAssignVarNumber(Parse *pParse, Expr *pExpr){</span>
+<span class='curline'><a href='../S/185.html#L81287'>Expr</a>             81287 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3ExprDelete(sqlite3 *db, Expr *p){</span>
+<span class='curline'><a href='../S/185.html#L81313'>Expr</a>             81313 libdb/sqlite3.c static int exprStructSize(Expr *p){</span>
+<span class='curline'><a href='../S/185.html#L81353'>Expr</a>             81353 libdb/sqlite3.c static int dupedExprStructSize(Expr *p, int flags){</span>
+<span class='curline'><a href='../S/185.html#L81380'>Expr</a>             81380 libdb/sqlite3.c static int dupedExprNodeSize(Expr *p, int flags){</span>
+<span class='curline'><a href='../S/185.html#L81401'>Expr</a>             81401 libdb/sqlite3.c static int dupedExprSize(Expr *p, int flags){</span>
+<span class='curline'><a href='../S/185.html#L81420'>Expr</a>             81420 libdb/sqlite3.c static Expr *exprDup(sqlite3 *db, Expr *p, int flags, u8 **pzBuffer){</span>
+<span class='curline'><a href='../S/185.html#L81421'>Expr</a>             81421 libdb/sqlite3.c   Expr *pNew = 0;                      /* Value to return */</span>
+<span class='curline'><a href='../S/185.html#L81436'>Expr</a>             81436 libdb/sqlite3.c     pNew = (Expr *)zAlloc;</span>
+<span class='curline'><a href='../S/185.html#L81547'>Expr</a>             81547 libdb/sqlite3.c SQLITE_PRIVATE Expr *sqlite3ExprDup(sqlite3 *db, Expr *p, int flags){</span>
+<span class='curline'><a href='../S/185.html#L81566'>Expr</a>             81566 libdb/sqlite3.c     Expr *pOldExpr = pOldItem-&gt;pExpr;</span>
+<span class='curline'><a href='../S/185.html#L81693'>Expr</a>             81693 libdb/sqlite3.c   Expr *pExpr             /* Expression to be appended. Might be NULL */</span>
+<span class='curline'><a href='../S/185.html#L81832'>Expr</a>             81832 libdb/sqlite3.c static int exprNodeIsConstant(Walker *pWalker, Expr *pExpr){</span>
+<span class='curline'><a href='../S/185.html#L81885'>Expr</a>             81885 libdb/sqlite3.c static int exprIsConst(Expr *p, int initFlag){</span>
+<span class='curline'><a href='../S/185.html#L81903'>Expr</a>             81903 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3ExprIsConstant(Expr *p){</span>
+<span class='curline'><a href='../S/185.html#L81913'>Expr</a>             81913 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3ExprIsConstantNotJoin(Expr *p){</span>
+<span class='curline'><a href='../S/185.html#L81926'>Expr</a>             81926 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3ExprIsConstantOrFunction(Expr *p, u8 isInit){</span>
+<span class='curline'><a href='../S/185.html#L81937'>Expr</a>             81937 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3ExprIsInteger(Expr *p, int *pValue){</span>
+<span class='curline'><a href='../S/185.html#L81982'>Expr</a>             81982 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3ExprCanBeNull(const Expr *p){</span>
+<span class='curline'><a href='../S/185.html#L82011'>Expr</a>             82011 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3ExprNeedsNoAffinityChange(const Expr *p, char aff){</span>
+<span class='curline'><a href='../S/185.html#L82125'>Expr</a>             82125 libdb/sqlite3.c static int sqlite3InRhsIsConstant(Expr *pIn){</span>
+<span class='curline'><a href='../S/185.html#L82126'>Expr</a>             82126 libdb/sqlite3.c   Expr *pLHS;</span>
+<span class='curline'><a href='../S/185.html#L82208'>Expr</a>             82208 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3FindInIndex(Parse *pParse, Expr *pX, u32 inFlags, int *prRhsHasNull){</span>
+<span class='curline'><a href='../S/185.html#L82226'>Expr</a>             82226 libdb/sqlite3.c     Expr *pExpr;                           /* Expression &lt;column&gt; */</span>
+<span class='curline'><a href='../S/185.html#L82362'>Expr</a>             82362 libdb/sqlite3.c   Expr *pExpr,            /* The IN, SELECT, or EXISTS operator */</span>
+<span class='curline'><a href='../S/185.html#L82400'>Expr</a>             82400 libdb/sqlite3.c       Expr *pLeft = pExpr-&gt;pLeft; /* the LHS of the IN operator */</span>
+<span class='curline'><a href='../S/185.html#L82477'>Expr</a>             82477 libdb/sqlite3.c           Expr *pE2 = pItem-&gt;pExpr;</span>
+<span class='curline'><a href='../S/185.html#L82591'>Expr</a>             82591 libdb/sqlite3.c   Expr *pExpr,          /* The IN expression */</span>
+<span class='curline'><a href='../S/185.html#L82779'>Expr</a>             82779 libdb/sqlite3.c static void codeInteger(Parse *pParse, Expr *pExpr, int negFlag, int iMem){</span>
+<span class='curline'><a href='../S/185.html#L83084'>Expr</a>             83084 libdb/sqlite3.c static void exprToRegister(Expr *p, int iReg){</span>
+<span class='curline'><a href='../S/185.html#L83102'>Expr</a>             83102 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3ExprCodeTarget(Parse *pParse, Expr *pExpr, int target){</span>
+<span class='curline'><a href='../S/185.html#L83110'>Expr</a>             83110 libdb/sqlite3.c   Expr tempX;               /* Temporary expression node */</span>
+<span class='curline'><a href='../S/185.html#L83292'>Expr</a>             83292 libdb/sqlite3.c       Expr *pLeft = pExpr-&gt;pLeft;</span>
+<span class='curline'><a href='../S/185.html#L83512'>Expr</a>             83512 libdb/sqlite3.c       Expr *pLeft = pExpr-&gt;pLeft;</span>
+<span class='curline'><a href='../S/185.html#L83514'>Expr</a>             83514 libdb/sqlite3.c       Expr *pRight = pLItem-&gt;pExpr;</span>
+<span class='curline'><a href='../S/185.html#L83624'>Expr</a>             83624 libdb/sqlite3.c       Expr opCompare;                   /* The X==Ei expression */</span>
+<span class='curline'><a href='../S/185.html#L83625'>Expr</a>             83625 libdb/sqlite3.c       Expr *pX;                         /* The X expression */</span>
+<span class='curline'><a href='../S/185.html#L83626'>Expr</a>             83626 libdb/sqlite3.c       Expr *pTest = 0;                  /* X==Ei (form A) or just Ei (form B) */</span>
+<span class='curline'><a href='../S/185.html#L83717'>Expr</a>             83717 libdb/sqlite3.c   Expr *pExpr,      /* The expression to code when the VDBE initializes */</span>
+<span class='curline'><a href='../S/185.html#L83747'>Expr</a>             83747 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3ExprCodeTemp(Parse *pParse, Expr *pExpr, int *pReg){</span>
+<span class='curline'><a href='../S/185.html#L83785'>Expr</a>             83785 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3ExprCode(Parse *pParse, Expr *pExpr, int target){</span>
+<span class='curline'><a href='../S/185.html#L83806'>Expr</a>             83806 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3ExprCodeFactorable(Parse *pParse, Expr *pExpr, int target){</span>
+<span class='curline'><a href='../S/185.html#L83826'>Expr</a>             83826 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3ExprCodeAndCache(Parse *pParse, Expr *pExpr, int target){</span>
+<span class='curline'><a href='../S/185.html#L83842'>Expr</a>             83842 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3TreeViewExpr(TreeView *pView, const Expr *pExpr, u8 moreToFollow){</span>
+<span class='curline'><a href='../S/185.html#L84010'>Expr</a>             84010 libdb/sqlite3.c       Expr *pX = pExpr-&gt;pLeft;</span>
+<span class='curline'><a href='../S/185.html#L84011'>Expr</a>             84011 libdb/sqlite3.c       Expr *pY = pExpr-&gt;x.pList-&gt;a[0].pExpr;</span>
+<span class='curline'><a href='../S/185.html#L84012'>Expr</a>             84012 libdb/sqlite3.c       Expr *pZ = pExpr-&gt;x.pList-&gt;a[1].pExpr;</span>
+<span class='curline'><a href='../S/185.html#L84127'>Expr</a>             84127 libdb/sqlite3.c     Expr *pExpr = pItem-&gt;pExpr;</span>
+<span class='curline'><a href='../S/185.html#L84164'>Expr</a>             84164 libdb/sqlite3.c   Expr *pExpr,      /* The BETWEEN expression */</span>
+<span class='curline'><a href='../S/185.html#L84169'>Expr</a>             84169 libdb/sqlite3.c   Expr exprAnd;     /* The AND operator in  x&gt;=y AND x&lt;=z  */</span>
+<span class='curline'><a href='../S/185.html#L84170'>Expr</a>             84170 libdb/sqlite3.c   Expr compLeft;    /* The  x&gt;=y  term */</span>
+<span class='curline'><a href='../S/185.html#L84171'>Expr</a>             84171 libdb/sqlite3.c   Expr compRight;   /* The  x&lt;=z  term */</span>
+<span class='curline'><a href='../S/185.html#L84172'>Expr</a>             84172 libdb/sqlite3.c   Expr exprX;       /* The  x  subexpression */</span>
+<span class='curline'><a href='../S/185.html#L84219'>Expr</a>             84219 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3ExprIfTrue(Parse *pParse, Expr *pExpr, int dest, int jumpIfNull){</span>
+<span class='curline'><a href='../S/185.html#L84344'>Expr</a>             84344 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3ExprIfFalse(Parse *pParse, Expr *pExpr, int dest, int jumpIfNull){</span>
+<span class='curline'><a href='../S/185.html#L84513'>Expr</a>             84513 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3ExprCompare(Expr *pA, Expr *pB, int iTab){</span>
+<span class='curline'><a href='../S/185.html#L84575'>Expr</a>             84575 libdb/sqlite3.c     Expr *pExprA = pA-&gt;a[i].pExpr;</span>
+<span class='curline'><a href='../S/185.html#L84576'>Expr</a>             84576 libdb/sqlite3.c     Expr *pExprB = pB-&gt;a[i].pExpr;</span>
+<span class='curline'><a href='../S/185.html#L84603'>Expr</a>             84603 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3ExprImpliesExpr(Expr *pE1, Expr *pE2, int iTab){</span>
+<span class='curline'><a href='../S/185.html#L84637'>Expr</a>             84637 libdb/sqlite3.c static int exprSrcCount(Walker *pWalker, Expr *pExpr){</span>
+<span class='curline'><a href='../S/185.html#L84665'>Expr</a>             84665 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3FunctionUsesThisSrc(Expr *pExpr, SrcList *pSrcList){</span>
+<span class='curline'><a href='../S/185.html#L84716'>Expr</a>             84716 libdb/sqlite3.c static int analyzeAggregate(Walker *pWalker, Expr *pExpr){</span>
+<span class='curline'><a href='../S/185.html#L84766'>Expr</a>             84766 libdb/sqlite3.c                   Expr *pE = pTerm-&gt;pExpr;</span>
+<span class='curline'><a href='../S/185.html#L84856'>Expr</a>             84856 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3ExprAnalyzeAggregates(NameContext *pNC, Expr *pExpr){</span>
+<span class='curline'><a href='../S/185.html#L85580'>Expr</a>             85580 libdb/sqlite3.c   Expr *pDflt;              /* Default value for the new column */</span>
+<span class='curline'><a href='../S/185.html#L87697'>Expr</a>             87697 libdb/sqlite3.c static int resolveAttachExpr(NameContext *pName, Expr *pExpr)</span>
+<span class='curline'><a href='../S/185.html#L87976'>Expr</a>             87976 libdb/sqlite3.c   Expr *pAuthArg,      /* Expression to pass to authorization callback */</span>
+<span class='curline'><a href='../S/185.html#L87977'>Expr</a>             87977 libdb/sqlite3.c   Expr *pFilename,     /* Name of database file */</span>
+<span class='curline'><a href='../S/185.html#L87978'>Expr</a>             87978 libdb/sqlite3.c   Expr *pDbname,       /* Name of the database to use internally */</span>
+<span class='curline'><a href='../S/185.html#L87979'>Expr</a>             87979 libdb/sqlite3.c   Expr *pKey           /* Database key for encryption extension */</span>
+<span class='curline'><a href='../S/185.html#L88046'>Expr</a>             88046 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3Detach(Parse *pParse, Expr *pDbname){</span>
+<span class='curline'><a href='../S/185.html#L88067'>Expr</a>             88067 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3Attach(Parse *pParse, Expr *p, Expr *pDbname, Expr *pKey){</span>
+<span class='curline'><a href='../S/185.html#L88186'>Expr</a>             88186 libdb/sqlite3.c   Expr *pExpr        /* The expression to be fixed to one database */</span>
+<span class='curline'><a href='../S/185.html#L88387'>Expr</a>             88387 libdb/sqlite3.c   Expr *pExpr,          /* The expression to check authorization on */</span>
+<span class='curline'><a href='../S/185.html#L89856'>Expr</a>             89856 libdb/sqlite3.c   Expr *pCheckExpr  /* The check expression */</span>
+<span class='curline'><a href='../S/185.html#L91327'>Expr</a>             91327 libdb/sqlite3.c   Expr *pPIWhere,    /* WHERE clause for partial indices */</span>
+<span class='curline'><a href='../S/185.html#L91511'>Expr</a>             91511 libdb/sqlite3.c     Expr *pExpr = pList-&gt;a[i].pExpr;</span>
+<span class='curline'><a href='../S/185.html#L92199'>Expr</a>             92199 libdb/sqlite3.c   Expr *pOn,              /* The ON clause of a join */</span>
+<span class='curline'><a href='../S/185.html#L93372'>Expr</a>             93372 libdb/sqlite3.c   Expr *pWhere,        /* Optional WHERE clause to be added */</span>
+<span class='curline'><a href='../S/185.html#L93405'>Expr</a>             93405 libdb/sqlite3.c SQLITE_PRIVATE Expr *sqlite3LimitWhere(</span>
+<span class='curline'><a href='../S/185.html#L93408'>Expr</a>             93408 libdb/sqlite3.c   Expr *pWhere,                /* The WHERE clause.  May be null */</span>
+<span class='curline'><a href='../S/185.html#L93410'>Expr</a>             93410 libdb/sqlite3.c   Expr *pLimit,                /* The LIMIT clause.  May be null */</span>
+<span class='curline'><a href='../S/185.html#L93411'>Expr</a>             93411 libdb/sqlite3.c   Expr *pOffset,               /* The OFFSET clause.  May be null */</span>
+<span class='curline'><a href='../S/185.html#L93414'>Expr</a>             93414 libdb/sqlite3.c   Expr *pWhereRowid = NULL;    /* WHERE rowid .. */</span>
+<span class='curline'><a href='../S/185.html#L93415'>Expr</a>             93415 libdb/sqlite3.c   Expr *pInClause = NULL;      /* WHERE rowid IN ( select ) */</span>
+<span class='curline'><a href='../S/185.html#L93416'>Expr</a>             93416 libdb/sqlite3.c   Expr *pSelectRowid = NULL;   /* SELECT rowid ... */</span>
+<span class='curline'><a href='../S/185.html#L93500'>Expr</a>             93500 libdb/sqlite3.c   Expr *pWhere           /* The WHERE clause.  May be null */</span>
+<span class='curline'><a href='../S/185.html#L95766'>Expr</a>             95766 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3IsLikeFunction(sqlite3 *db, Expr *pExpr, int *pIsNocase, char *aWc){</span>
+<span class='curline'><a href='../S/185.html#L96367'>Expr</a>             96367 libdb/sqlite3.c static Expr *exprTableRegister(</span>
+<span class='curline'><a href='../S/185.html#L96373'>Expr</a>             96373 libdb/sqlite3.c   Expr *pExpr;</span>
+<span class='curline'><a href='../S/185.html#L96399'>Expr</a>             96399 libdb/sqlite3.c static Expr *exprTableColumn(</span>
+<span class='curline'><a href='../S/185.html#L96405'>Expr</a>             96405 libdb/sqlite3.c   Expr *pExpr = sqlite3Expr(db, TK_COLUMN, 0);</span>
+<span class='curline'><a href='../S/185.html#L96454'>Expr</a>             96454 libdb/sqlite3.c   Expr *pWhere = 0;               /* WHERE clause to scan with */</span>
+<span class='curline'><a href='../S/185.html#L96479'>Expr</a>             96479 libdb/sqlite3.c     Expr *pLeft;                  /* Value from parent table row */</span>
+<span class='curline'><a href='../S/185.html#L96480'>Expr</a>             96480 libdb/sqlite3.c     Expr *pRight;                 /* Column ref to child table */</span>
+<span class='curline'><a href='../S/185.html#L96481'>Expr</a>             96481 libdb/sqlite3.c     Expr *pEq;                    /* Expression (pLeft = pRight) */</span>
+<span class='curline'><a href='../S/185.html#L96507'>Expr</a>             96507 libdb/sqlite3.c     Expr *pNe;                    /* Expression (pLeft != pRight) */</span>
+<span class='curline'><a href='../S/185.html#L96508'>Expr</a>             96508 libdb/sqlite3.c     Expr *pLeft;                  /* Value from parent table row */</span>
+<span class='curline'><a href='../S/185.html#L96509'>Expr</a>             96509 libdb/sqlite3.c     Expr *pRight;                 /* Column ref to child table */</span>
+<span class='curline'><a href='../S/185.html#L96515'>Expr</a>             96515 libdb/sqlite3.c       Expr *pEq, *pAll = 0;</span>
+<span class='curline'><a href='../S/185.html#L97038'>Expr</a>             97038 libdb/sqlite3.c     Expr *pWhere = 0;             /* WHERE clause of trigger step */</span>
+<span class='curline'><a href='../S/185.html#L97042'>Expr</a>             97042 libdb/sqlite3.c     Expr *pWhen = 0;              /* WHEN clause for the trigger */</span>
+<span class='curline'><a href='../S/185.html#L97053'>Expr</a>             97053 libdb/sqlite3.c       Expr *pEq;                  /* tFromCol = OLD.tToCol */</span>
+<span class='curline'><a href='../S/185.html#L97096'>Expr</a>             97096 libdb/sqlite3.c         Expr *pNew;</span>
+<span class='curline'><a href='../S/185.html#L97103'>Expr</a>             97103 libdb/sqlite3.c           Expr *pDflt = pFKey-&gt;pFrom-&gt;aCol[iFromCol].pDflt;</span>
+<span class='curline'><a href='../S/185.html#L97123'>Expr</a>             97123 libdb/sqlite3.c       Expr *pRaise; </span>
+<span class='curline'><a href='../S/185.html#L104112'>Expr</a>             104112 libdb/sqlite3.c   Expr *pWhere,         /* the WHERE clause */</span>
+<span class='curline'><a href='../S/185.html#L104114'>Expr</a>             104114 libdb/sqlite3.c   Expr *pHaving,        /* the HAVING clause */</span>
+<span class='curline'><a href='../S/185.html#L104117'>Expr</a>             104117 libdb/sqlite3.c   Expr *pLimit,         /* LIMIT value.  NULL means not used */</span>
+<span class='curline'><a href='../S/185.html#L104118'>Expr</a>             104118 libdb/sqlite3.c   Expr *pOffset         /* OFFSET value.  NULL means no offset */</span>
+<span class='curline'><a href='../S/185.html#L104326'>Expr</a>             104326 libdb/sqlite3.c   Expr **ppWhere                  /* IN/OUT: The WHERE clause to add to */</span>
+<span class='curline'><a href='../S/185.html#L104329'>Expr</a>             104329 libdb/sqlite3.c   Expr *pE1;</span>
+<span class='curline'><a href='../S/185.html#L104330'>Expr</a>             104330 libdb/sqlite3.c   Expr *pE2;</span>
+<span class='curline'><a href='../S/185.html#L104331'>Expr</a>             104331 libdb/sqlite3.c   Expr *pEq;</span>
+<span class='curline'><a href='../S/185.html#L104377'>Expr</a>             104377 libdb/sqlite3.c static void setJoinExpr(Expr *p, int iTable){</span>
+<span class='curline'><a href='../S/185.html#L105327'>Expr</a>             105327 libdb/sqlite3.c   Expr *pExpr,</span>
+<span class='curline'><a href='../S/185.html#L105340'>Expr</a>             105340 libdb/sqlite3.c   Expr *pExpr,</span>
+<span class='curline'><a href='../S/185.html#L105405'>Expr</a>             105405 libdb/sqlite3.c           Expr *p = pS-&gt;pEList-&gt;a[iCol].pExpr;</span>
+<span class='curline'><a href='../S/185.html#L105449'>Expr</a>             105449 libdb/sqlite3.c       Expr *p = pS-&gt;pEList-&gt;a[0].pExpr;</span>
+<span class='curline'><a href='../S/185.html#L105488'>Expr</a>             105488 libdb/sqlite3.c     Expr *p = pEList-&gt;a[i].pExpr;</span>
+<span class='curline'><a href='../S/185.html#L105539'>Expr</a>             105539 libdb/sqlite3.c     Expr *p;</span>
+<span class='curline'><a href='../S/185.html#L105604'>Expr</a>             105604 libdb/sqlite3.c   Expr *p;                    /* Expression for a single result column */</span>
+<span class='curline'><a href='../S/185.html#L105627'>Expr</a>             105627 libdb/sqlite3.c       Expr *pColExpr = p;  /* The expression that is the result column name */</span>
+<span class='curline'><a href='../S/185.html#L105706'>Expr</a>             105706 libdb/sqlite3.c   Expr *p;</span>
+<span class='curline'><a href='../S/185.html#L105902'>Expr</a>             105902 libdb/sqlite3.c       Expr *pTerm = pItem-&gt;pExpr;</span>
+<span class='curline'><a href='../S/185.html#L105979'>Expr</a>             105979 libdb/sqlite3.c   Expr *pLimit, *pOffset;       /* Saved LIMIT and OFFSET */</span>
+<span class='curline'><a href='../S/185.html#L106248'>Expr</a>             106248 libdb/sqlite3.c       Expr *pLimit, *pOffset; /* Saved values of p-&gt;nLimit and p-&gt;nOffset */</span>
+<span class='curline'><a href='../S/185.html#L106344'>Expr</a>             106344 libdb/sqlite3.c       Expr *pLimit, *pOffset;</span>
+<span class='curline'><a href='../S/185.html#L106795'>Expr</a>             106795 libdb/sqlite3.c         Expr *pNew = sqlite3Expr(db, TK_INTEGER, 0);</span>
+<span class='curline'><a href='../S/185.html#L107049'>Expr</a>             107049 libdb/sqlite3.c static Expr *substExpr(</span>
+<span class='curline'><a href='../S/185.html#L107051'>Expr</a>             107051 libdb/sqlite3.c   Expr *pExpr,        /* Expr in which substitution occurs */</span>
+<span class='curline'><a href='../S/185.html#L107060'>Expr</a>             107060 libdb/sqlite3.c       Expr *pNew;</span>
+<span class='curline'><a href='../S/185.html#L107269'>Expr</a>             107269 libdb/sqlite3.c   Expr *pWhere;                    /* The WHERE clause */</span>
+<span class='curline'><a href='../S/185.html#L107440'>Expr</a>             107440 libdb/sqlite3.c     Expr *pLimit = p-&gt;pLimit;</span>
+<span class='curline'><a href='../S/185.html#L107441'>Expr</a>             107441 libdb/sqlite3.c     Expr *pOffset = p-&gt;pOffset;</span>
+<span class='curline'><a href='../S/185.html#L107687'>Expr</a>             107687 libdb/sqlite3.c     Expr *pExpr = pAggInfo-&gt;aFunc[0].pExpr; /* Aggregate function */</span>
+<span class='curline'><a href='../S/185.html#L107720'>Expr</a>             107720 libdb/sqlite3.c   Expr *pExpr;</span>
+<span class='curline'><a href='../S/185.html#L108058'>Expr</a>             108058 libdb/sqlite3.c   Expr *pE, *pRight, *pExpr;</span>
+<span class='curline'><a href='../S/185.html#L108271'>Expr</a>             108271 libdb/sqlite3.c               Expr *pLeft;</span>
+<span class='curline'><a href='../S/185.html#L108333'>Expr</a>             108333 libdb/sqlite3.c static int exprWalkNoop(Walker *NotUsed, Expr *NotUsed2){</span>
+<span class='curline'><a href='../S/185.html#L108485'>Expr</a>             108485 libdb/sqlite3.c       Expr *pE = pFunc-&gt;pExpr;</span>
+<span class='curline'><a href='../S/185.html#L108647'>Expr</a>             108647 libdb/sqlite3.c   Expr *pWhere;          /* The WHERE clause.  May be NULL */</span>
+<span class='curline'><a href='../S/185.html#L108649'>Expr</a>             108649 libdb/sqlite3.c   Expr *pHaving;         /* The HAVING clause.  May be NULL */</span>
+<span class='curline'><a href='../S/185.html#L109821'>Expr</a>             109821 libdb/sqlite3.c   Expr *pWhen,        /* WHEN clause */</span>
+<span class='curline'><a href='../S/185.html#L110160'>Expr</a>             110160 libdb/sqlite3.c   Expr *pWhere,        /* The WHERE clause */</span>
+<span class='curline'><a href='../S/185.html#L110184'>Expr</a>             110184 libdb/sqlite3.c   Expr *pWhere            /* The WHERE clause */</span>
+<span class='curline'><a href='../S/185.html#L110550'>Expr</a>             110550 libdb/sqlite3.c   Expr *pWhen = 0;            /* Duplicate of trigger WHEN expression */</span>
+<span class='curline'><a href='../S/185.html#L110878'>Expr</a>             110878 libdb/sqlite3.c   Expr *pRowidExpr,    /* Expression used to recompute the rowid */</span>
+<span class='curline'><a href='../S/185.html#L110880'>Expr</a>             110880 libdb/sqlite3.c   Expr *pWhere,        /* WHERE clause of the UPDATE statement */</span>
+<span class='curline'><a href='../S/185.html#L110947'>Expr</a>             110947 libdb/sqlite3.c   Expr *pWhere,          /* The WHERE clause.  May be null */</span>
+<span class='curline'><a href='../S/185.html#L110970'>Expr</a>             110970 libdb/sqlite3.c   Expr *pRowidExpr = 0;  /* Expression defining the new record number */</span>
+<span class='curline'><a href='../S/185.html#L111559'>Expr</a>             111559 libdb/sqlite3.c   Expr *pRowid,        /* Expression used to recompute the rowid */</span>
+<span class='curline'><a href='../S/185.html#L111561'>Expr</a>             111561 libdb/sqlite3.c   Expr *pWhere,        /* WHERE clause of the UPDATE statement */</span>
+<span class='curline'><a href='../S/185.html#L111567'>Expr</a>             111567 libdb/sqlite3.c   Expr *pExpr;              /* Temporary expression */</span>
+<span class='curline'><a href='../S/185.html#L112965'>Expr</a>             112965 libdb/sqlite3.c   Expr *pExpr     /* First argument to the function */</span>
+<span class='curline'><a href='../S/185.html#L113363'>Expr</a>             113363 libdb/sqlite3.c   Expr *pExpr;            /* Pointer to the subexpression that is this term */</span>
+<span class='curline'><a href='../S/185.html#L113769'>Expr</a>             113769 libdb/sqlite3.c static int whereClauseInsert(WhereClause *pWC, Expr *p, u8 wtFlags){</span>
+<span class='curline'><a href='../S/185.html#L113820'>Expr</a>             113820 libdb/sqlite3.c static void whereSplit(WhereClause *pWC, Expr *pExpr, u8 op){</span>
+<span class='curline'><a href='../S/185.html#L113871'>Expr</a>             113871 libdb/sqlite3.c static Bitmask exprTableUsage(WhereMaskSet *pMaskSet, Expr *p){</span>
+<span class='curline'><a href='../S/185.html#L113943'>Expr</a>             113943 libdb/sqlite3.c static void exprCommute(Parse *pParse, Expr *pExpr){</span>
+<span class='curline'><a href='../S/185.html#L113960'>Expr</a>             113960 libdb/sqlite3.c   SWAP(Expr*,pExpr-&gt;pRight,pExpr-&gt;pLeft);</span>
+<span class='curline'><a href='../S/185.html#L114003'>Expr</a>             114003 libdb/sqlite3.c   Expr *pX;            /* An expression being tested */</span>
+<span class='curline'><a href='../S/185.html#L114197'>Expr</a>             114197 libdb/sqlite3.c   Expr *pExpr,      /* Test this expression */</span>
+<span class='curline'><a href='../S/185.html#L114198'>Expr</a>             114198 libdb/sqlite3.c   Expr **ppPrefix,  /* Pointer to TK_STRING expression with pattern prefix */</span>
+<span class='curline'><a href='../S/185.html#L114203'>Expr</a>             114203 libdb/sqlite3.c   Expr *pRight, *pLeft;      /* Right and left size of LIKE operator */</span>
+<span class='curline'><a href='../S/185.html#L114250'>Expr</a>             114250 libdb/sqlite3.c       Expr *pPrefix;</span>
+<span class='curline'><a href='../S/185.html#L114291'>Expr</a>             114291 libdb/sqlite3.c   Expr *pExpr      /* Test this expression */</span>
+<span class='curline'><a href='../S/185.html#L114316'>Expr</a>             114316 libdb/sqlite3.c static void transferJoinMarkings(Expr *pDerived, Expr *pBase){</span>
+<span class='curline'><a href='../S/185.html#L114409'>Expr</a>             114409 libdb/sqlite3.c   Expr *pExpr = pTerm-&gt;pExpr;             /* The expression of the term */</span>
+<span class='curline'><a href='../S/185.html#L114594'>Expr</a>             114594 libdb/sqlite3.c       Expr *pDup;            /* A transient duplicate expression */</span>
+<span class='curline'><a href='../S/185.html#L114596'>Expr</a>             114596 libdb/sqlite3.c       Expr *pLeft = 0;       /* The LHS of the IN operator */</span>
+<span class='curline'><a href='../S/185.html#L114597'>Expr</a>             114597 libdb/sqlite3.c       Expr *pNew;            /* The complete IN operator */</span>
+<span class='curline'><a href='../S/185.html#L114657'>Expr</a>             114657 libdb/sqlite3.c   Expr *pExpr;                     /* The expression to be analyzed */</span>
+<span class='curline'><a href='../S/185.html#L114661'>Expr</a>             114661 libdb/sqlite3.c   Expr *pStr1 = 0;                 /* RHS of LIKE/GLOB operator */</span>
+<span class='curline'><a href='../S/185.html#L114701'>Expr</a>             114701 libdb/sqlite3.c     Expr *pLeft = sqlite3ExprSkipCollate(pExpr-&gt;pLeft);</span>
+<span class='curline'><a href='../S/185.html#L114702'>Expr</a>             114702 libdb/sqlite3.c     Expr *pRight = sqlite3ExprSkipCollate(pExpr-&gt;pRight);</span>
+<span class='curline'><a href='../S/185.html#L114711'>Expr</a>             114711 libdb/sqlite3.c       Expr *pDup;</span>
+<span class='curline'><a href='../S/185.html#L114772'>Expr</a>             114772 libdb/sqlite3.c       Expr *pNewExpr;</span>
+<span class='curline'><a href='../S/185.html#L114813'>Expr</a>             114813 libdb/sqlite3.c     Expr *pLeft;       /* LHS of LIKE/GLOB operator */</span>
+<span class='curline'><a href='../S/185.html#L114814'>Expr</a>             114814 libdb/sqlite3.c     Expr *pStr2;       /* Copy of pStr1 - RHS of LIKE/GLOB operator */</span>
+<span class='curline'><a href='../S/185.html#L114815'>Expr</a>             114815 libdb/sqlite3.c     Expr *pNewExpr1;</span>
+<span class='curline'><a href='../S/185.html#L114816'>Expr</a>             114816 libdb/sqlite3.c     Expr *pNewExpr2;</span>
+<span class='curline'><a href='../S/185.html#L114875'>Expr</a>             114875 libdb/sqlite3.c     Expr *pRight, *pLeft;</span>
+<span class='curline'><a href='../S/185.html#L114884'>Expr</a>             114884 libdb/sqlite3.c       Expr *pNewExpr;</span>
+<span class='curline'><a href='../S/185.html#L114919'>Expr</a>             114919 libdb/sqlite3.c     Expr *pNewExpr;</span>
+<span class='curline'><a href='../S/185.html#L114920'>Expr</a>             114920 libdb/sqlite3.c     Expr *pLeft = pExpr-&gt;pLeft;</span>
+<span class='curline'><a href='../S/185.html#L114969'>Expr</a>             114969 libdb/sqlite3.c     Expr *p = sqlite3ExprSkipCollate(pList-&gt;a[i].pExpr);</span>
+<span class='curline'><a href='../S/185.html#L115014'>Expr</a>             115014 libdb/sqlite3.c     Expr *p = sqlite3ExprSkipCollate(pDistinct-&gt;a[i].pExpr);</span>
+<span class='curline'><a href='../S/185.html#L115231'>Expr</a>             115231 libdb/sqlite3.c         Expr *pX = pTerm-&gt;pExpr;</span>
+<span class='curline'><a href='../S/185.html#L115327'>Expr</a>             115327 libdb/sqlite3.c       Expr *pExpr = pOrderBy-&gt;a[i].pExpr;</span>
+<span class='curline'><a href='../S/185.html#L115387'>Expr</a>             115387 libdb/sqlite3.c     Expr *pExpr = pOrderBy-&gt;a[i].pExpr;</span>
+<span class='curline'><a href='../S/185.html#L115785'>Expr</a>             115785 libdb/sqlite3.c         Expr *pExpr = pLower-&gt;pExpr-&gt;pRight;</span>
+<span class='curline'><a href='../S/185.html#L115800'>Expr</a>             115800 libdb/sqlite3.c         Expr *pExpr = pUpper-&gt;pExpr-&gt;pRight;</span>
+<span class='curline'><a href='../S/185.html#L115881'>Expr</a>             115881 libdb/sqlite3.c   Expr *pExpr,         /* Expression for VALUE in the x=VALUE constraint */</span>
+<span class='curline'><a href='../S/185.html#L116073'>Expr</a>             116073 libdb/sqlite3.c   Expr *pX = pTerm-&gt;pExpr;</span>
+<span class='curline'><a href='../S/185.html#L116262'>Expr</a>             116262 libdb/sqlite3.c       Expr *pRight = pTerm-&gt;pExpr-&gt;pRight;</span>
+<span class='curline'><a href='../S/185.html#L116621'>Expr</a>             116621 libdb/sqlite3.c       Expr *pX;             /* The expression that defines the start bound */</span>
+<span class='curline'><a href='../S/185.html#L116658'>Expr</a>             116658 libdb/sqlite3.c       Expr *pX;</span>
+<span class='curline'><a href='../S/185.html#L116829'>Expr</a>             116829 libdb/sqlite3.c       Expr *pRight = pRangeStart-&gt;pExpr-&gt;pRight;</span>
+<span class='curline'><a href='../S/185.html#L116873'>Expr</a>             116873 libdb/sqlite3.c       Expr *pRight = pRangeEnd-&gt;pExpr-&gt;pRight;</span>
+<span class='curline'><a href='../S/185.html#L117007'>Expr</a>             117007 libdb/sqlite3.c     Expr *pAndExpr = 0;                /* An ".. AND (...)" expression */</span>
+<span class='curline'><a href='../S/185.html#L117083'>Expr</a>             117083 libdb/sqlite3.c         Expr *pExpr = pWC-&gt;a[iTerm].pExpr;</span>
+<span class='curline'><a href='../S/185.html#L117109'>Expr</a>             117109 libdb/sqlite3.c         Expr *pOrExpr = pOrTerm-&gt;pExpr; /* Current OR clause term */</span>
+<span class='curline'><a href='../S/185.html#L117259'>Expr</a>             117259 libdb/sqlite3.c     Expr *pE;</span>
+<span class='curline'><a href='../S/185.html#L117287'>Expr</a>             117287 libdb/sqlite3.c     Expr *pE, *pEAlt;</span>
+<span class='curline'><a href='../S/185.html#L117966'>Expr</a>             117966 libdb/sqlite3.c       Expr *pExpr = pTerm-&gt;pExpr;</span>
+<span class='curline'><a href='../S/185.html#L118034'>Expr</a>             118034 libdb/sqlite3.c           Expr *pExpr = pTerm-&gt;pExpr;</span>
+<span class='curline'><a href='../S/185.html#L118125'>Expr</a>             118125 libdb/sqlite3.c     Expr *pExpr = sqlite3ExprSkipCollate(pOB-&gt;a[ii].pExpr);</span>
+<span class='curline'><a href='../S/185.html#L118158'>Expr</a>             118158 libdb/sqlite3.c static int whereUsablePartialIndex(int iTab, WhereClause *pWC, Expr *pWhere){</span>
+<span class='curline'><a href='../S/185.html#L118771'>Expr</a>             118771 libdb/sqlite3.c   Expr *pOBExpr;        /* An expression from the ORDER BY clause */</span>
+<span class='curline'><a href='../S/185.html#L118963'>Expr</a>             118963 libdb/sqlite3.c         Expr *p;</span>
+<span class='curline'><a href='../S/185.html#L119589'>Expr</a>             119589 libdb/sqlite3.c   Expr *pWhere,         /* The WHERE clause */</span>
+<span class='curline'><a href='../S/185.html#L120207'>Expr</a>             120207 libdb/sqlite3.c   Expr *pLimit;    /* The LIMIT expression.  NULL if there is no limit */</span>
+<span class='curline'><a href='../S/185.html#L120208'>Expr</a>             120208 libdb/sqlite3.c   Expr *pOffset;   /* The OFFSET expression.  NULL if there is none */</span>
+<span class='curline'><a href='../S/185.html#L120287'>Expr</a>             120287 libdb/sqlite3.c   static void binaryToUnaryIfNull(Parse *pParse, Expr *pY, Expr *pA, int op){</span>
+<span class='curline'><a href='../S/185.html#L120371'>Expr</a>             120371 libdb/sqlite3.c   Expr* yy132;</span>
+<span class='curline'><a href='../S/185.html#L122674'>Expr</a>             122674 libdb/sqlite3.c   Expr *p = sqlite3Expr(pParse-&gt;db, TK_ALL, 0);</span>
+<span class='curline'><a href='../S/185.html#L122680'>Expr</a>             122680 libdb/sqlite3.c   Expr *pRight = sqlite3PExpr(pParse, TK_ALL, 0, 0, &amp;yymsp[0].minor.yy0);</span>
+<span class='curline'><a href='../S/185.html#L122681'>Expr</a>             122681 libdb/sqlite3.c   Expr *pLeft = sqlite3PExpr(pParse, TK_ID, 0, 0, &amp;yymsp[-2].minor.yy0);</span>
+<span class='curline'><a href='../S/185.html#L122682'>Expr</a>             122682 libdb/sqlite3.c   Expr *pDot = sqlite3PExpr(pParse, TK_DOT, pLeft, pRight, 0);</span>
+<span class='curline'><a href='../S/185.html#L122890'>Expr</a>             122890 libdb/sqlite3.c   Expr *temp1 = sqlite3PExpr(pParse, TK_ID, 0, 0, &amp;yymsp[-2].minor.yy0);</span>
+<span class='curline'><a href='../S/185.html#L122891'>Expr</a>             122891 libdb/sqlite3.c   Expr *temp2 = sqlite3PExpr(pParse, TK_ID, 0, 0, &amp;yymsp[0].minor.yy0);</span>
+<span class='curline'><a href='../S/185.html#L122898'>Expr</a>             122898 libdb/sqlite3.c   Expr *temp1 = sqlite3PExpr(pParse, TK_ID, 0, 0, &amp;yymsp[-4].minor.yy0);</span>
+<span class='curline'><a href='../S/185.html#L122899'>Expr</a>             122899 libdb/sqlite3.c   Expr *temp2 = sqlite3PExpr(pParse, TK_ID, 0, 0, &amp;yymsp[-2].minor.yy0);</span>
+<span class='curline'><a href='../S/185.html#L122900'>Expr</a>             122900 libdb/sqlite3.c   Expr *temp3 = sqlite3PExpr(pParse, TK_ID, 0, 0, &amp;yymsp[0].minor.yy0);</span>
+<span class='curline'><a href='../S/185.html#L122901'>Expr</a>             122901 libdb/sqlite3.c   Expr *temp4 = sqlite3PExpr(pParse, TK_DOT, temp2, temp3, 0);</span>
+<span class='curline'><a href='../S/185.html#L123077'>Expr</a>             123077 libdb/sqlite3.c       Expr *pRHS = yymsp[-1].minor.yy14-&gt;a[0].pExpr;</span>
+<span class='curline'><a href='../S/185.html#L123148'>Expr</a>             123148 libdb/sqlite3.c     Expr *p = yygotominor.yy346.pExpr = sqlite3PExpr(pParse, TK_EXISTS, 0, 0, 0);</span>
+<span class='curline'><a href='../S/185.html#L123208'>Expr</a>             123208 libdb/sqlite3.c   Expr *p = sqlite3ExprAddCollateToken(pParse, 0, &amp;yymsp[-1].minor.yy0);</span>
+<span class='curline'><a href='../S/185.html#L123217'>Expr</a>             123217 libdb/sqlite3.c   Expr *p = sqlite3ExprAddCollateToken(pParse, 0, &amp;yymsp[-1].minor.yy0);</span>
+</pre>
+</body>
+</html>

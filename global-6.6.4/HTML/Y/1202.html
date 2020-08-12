@@ -1,0 +1,39 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>aFrame</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/185.html#L48785'>aFrame</a>           48785 libdb/sqlite3.c   u8 *aFrame                      /* OUT: Write encoded frame here */</span>
+<span class='curline'><a href='../S/185.html#L48790'>aFrame</a>           48790 libdb/sqlite3.c   sqlite3Put4byte(&amp;aFrame[0], iPage);</span>
+<span class='curline'><a href='../S/185.html#L48791'>aFrame</a>           48791 libdb/sqlite3.c   sqlite3Put4byte(&amp;aFrame[4], nTruncate);</span>
+<span class='curline'><a href='../S/185.html#L48792'>aFrame</a>           48792 libdb/sqlite3.c   memcpy(&amp;aFrame[8], pWal-&gt;hdr.aSalt, 8);</span>
+<span class='curline'><a href='../S/185.html#L48795'>aFrame</a>           48795 libdb/sqlite3.c   walChecksumBytes(nativeCksum, aFrame, 8, aCksum, aCksum);</span>
+<span class='curline'><a href='../S/185.html#L48798'>aFrame</a>           48798 libdb/sqlite3.c   sqlite3Put4byte(&amp;aFrame[16], aCksum[0]);</span>
+<span class='curline'><a href='../S/185.html#L48799'>aFrame</a>           48799 libdb/sqlite3.c   sqlite3Put4byte(&amp;aFrame[20], aCksum[1]);</span>
+<span class='curline'><a href='../S/185.html#L48812'>aFrame</a>           48812 libdb/sqlite3.c   u8 *aFrame                      /* Frame data */</span>
+<span class='curline'><a href='../S/185.html#L48822'>aFrame</a>           48822 libdb/sqlite3.c   if( memcmp(&amp;pWal-&gt;hdr.aSalt, &amp;aFrame[8], 8)!=0 ){</span>
+<span class='curline'><a href='../S/185.html#L48828'>aFrame</a>           48828 libdb/sqlite3.c   pgno = sqlite3Get4byte(&amp;aFrame[0]);</span>
+<span class='curline'><a href='../S/185.html#L48839'>aFrame</a>           48839 libdb/sqlite3.c   walChecksumBytes(nativeCksum, aFrame, 8, aCksum, aCksum);</span>
+<span class='curline'><a href='../S/185.html#L48841'>aFrame</a>           48841 libdb/sqlite3.c   if( aCksum[0]!=sqlite3Get4byte(&amp;aFrame[16]) </span>
+<span class='curline'><a href='../S/185.html#L48842'>aFrame</a>           48842 libdb/sqlite3.c    || aCksum[1]!=sqlite3Get4byte(&amp;aFrame[20]) </span>
+<span class='curline'><a href='../S/185.html#L48852'>aFrame</a>           48852 libdb/sqlite3.c   *pnTruncate = sqlite3Get4byte(&amp;aFrame[4]);</span>
+<span class='curline'><a href='../S/185.html#L49205'>aFrame</a>           49205 libdb/sqlite3.c     u8 *aFrame = 0;               /* Malloc'd buffer to load entire frame */</span>
+<span class='curline'><a href='../S/185.html#L49260'>aFrame</a>           49260 libdb/sqlite3.c     aFrame = (u8 *)sqlite3_malloc(szFrame);</span>
+<span class='curline'><a href='../S/185.html#L49261'>aFrame</a>           49261 libdb/sqlite3.c     if( !aFrame ){</span>
+<span class='curline'><a href='../S/185.html#L49265'>aFrame</a>           49265 libdb/sqlite3.c     aData = &amp;aFrame[WAL_FRAME_HDRSIZE];</span>
+<span class='curline'><a href='../S/185.html#L49275'>aFrame</a>           49275 libdb/sqlite3.c       rc = sqlite3OsRead(pWal-&gt;pWalFd, aFrame, szFrame, iOffset);</span>
+<span class='curline'><a href='../S/185.html#L49277'>aFrame</a>           49277 libdb/sqlite3.c       isValid = walDecodeFrame(pWal, &amp;pgno, &amp;nTruncate, aData, aFrame);</span>
+<span class='curline'><a href='../S/185.html#L49294'>aFrame</a>           49294 libdb/sqlite3.c     sqlite3_free(aFrame);</span>
+<span class='curline'><a href='../S/185.html#L50809'>aFrame</a>           50809 libdb/sqlite3.c   u8 aFrame[WAL_FRAME_HDRSIZE];   /* Buffer to assemble frame-header in */</span>
+<span class='curline'><a href='../S/185.html#L50815'>aFrame</a>           50815 libdb/sqlite3.c   walEncodeFrame(p-&gt;pWal, pPage-&gt;pgno, nTruncate, pData, aFrame);</span>
+<span class='curline'><a href='../S/185.html#L50816'>aFrame</a>           50816 libdb/sqlite3.c   rc = walWriteToLog(p, aFrame, sizeof(aFrame), iOffset);</span>
+<span class='curline'><a href='../S/185.html#L50819'>aFrame</a>           50819 libdb/sqlite3.c   rc = walWriteToLog(p, pData, p-&gt;szPage, iOffset+sizeof(aFrame));</span>
+</pre>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>pOrTerm</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/185.html#L114412'>pOrTerm</a>          114412 libdb/sqlite3.c   WhereTerm *pOrTerm;       /* A Sub-term within the pOrWc */</span>
+<span class='curline'><a href='../S/185.html#L114439'>pOrTerm</a>          114439 libdb/sqlite3.c   for(i=pOrWc-&gt;nTerm-1, pOrTerm=pOrWc-&gt;a; i&gt;=0 &amp;&amp; indexable; i--, pOrTerm++){</span>
+<span class='curline'><a href='../S/185.html#L114440'>pOrTerm</a>          114440 libdb/sqlite3.c     if( (pOrTerm-&gt;eOperator &amp; WO_SINGLE)==0 ){</span>
+<span class='curline'><a href='../S/185.html#L114442'>pOrTerm</a>          114442 libdb/sqlite3.c       assert( (pOrTerm-&gt;wtFlags &amp; (TERM_ANDINFO|TERM_ORINFO))==0 );</span>
+<span class='curline'><a href='../S/185.html#L114450'>pOrTerm</a>          114450 libdb/sqlite3.c         pOrTerm-&gt;u.pAndInfo = pAndInfo;</span>
+<span class='curline'><a href='../S/185.html#L114451'>pOrTerm</a>          114451 libdb/sqlite3.c         pOrTerm-&gt;wtFlags |= TERM_ANDINFO;</span>
+<span class='curline'><a href='../S/185.html#L114452'>pOrTerm</a>          114452 libdb/sqlite3.c         pOrTerm-&gt;eOperator = WO_AND;</span>
+<span class='curline'><a href='../S/185.html#L114455'>pOrTerm</a>          114455 libdb/sqlite3.c         whereSplit(pAndWC, pOrTerm-&gt;pExpr, TK_AND);</span>
+<span class='curline'><a href='../S/185.html#L114469'>pOrTerm</a>          114469 libdb/sqlite3.c     }else if( pOrTerm-&gt;wtFlags &amp; TERM_COPIED ){</span>
+<span class='curline'><a href='../S/185.html#L114474'>pOrTerm</a>          114474 libdb/sqlite3.c       b = getMask(&amp;pWInfo-&gt;sMaskSet, pOrTerm-&gt;leftCursor);</span>
+<span class='curline'><a href='../S/185.html#L114475'>pOrTerm</a>          114475 libdb/sqlite3.c       if( pOrTerm-&gt;wtFlags &amp; TERM_VIRTUAL ){</span>
+<span class='curline'><a href='../S/185.html#L114476'>pOrTerm</a>          114476 libdb/sqlite3.c         WhereTerm *pOther = &amp;pOrWc-&gt;a[pOrTerm-&gt;iParent];</span>
+<span class='curline'><a href='../S/185.html#L114480'>pOrTerm</a>          114480 libdb/sqlite3.c       if( (pOrTerm-&gt;eOperator &amp; WO_EQ)==0 ){</span>
+<span class='curline'><a href='../S/185.html#L114529'>pOrTerm</a>          114529 libdb/sqlite3.c       pOrTerm = pOrWc-&gt;a;</span>
+<span class='curline'><a href='../S/185.html#L114530'>pOrTerm</a>          114530 libdb/sqlite3.c       for(i=pOrWc-&gt;nTerm-1; i&gt;=0; i--, pOrTerm++){</span>
+<span class='curline'><a href='../S/185.html#L114531'>pOrTerm</a>          114531 libdb/sqlite3.c         assert( pOrTerm-&gt;eOperator &amp; WO_EQ );</span>
+<span class='curline'><a href='../S/185.html#L114532'>pOrTerm</a>          114532 libdb/sqlite3.c         pOrTerm-&gt;wtFlags &amp;= ~TERM_OR_OK;</span>
+<span class='curline'><a href='../S/185.html#L114533'>pOrTerm</a>          114533 libdb/sqlite3.c         if( pOrTerm-&gt;leftCursor==iCursor ){</span>
+<span class='curline'><a href='../S/185.html#L114539'>pOrTerm</a>          114539 libdb/sqlite3.c         if( (chngToIN &amp; getMask(&amp;pWInfo-&gt;sMaskSet, pOrTerm-&gt;leftCursor))==0 ){</span>
+<span class='curline'><a href='../S/185.html#L114544'>pOrTerm</a>          114544 libdb/sqlite3.c           testcase( pOrTerm-&gt;wtFlags &amp; TERM_COPIED );</span>
+<span class='curline'><a href='../S/185.html#L114545'>pOrTerm</a>          114545 libdb/sqlite3.c           testcase( pOrTerm-&gt;wtFlags &amp; TERM_VIRTUAL );</span>
+<span class='curline'><a href='../S/185.html#L114546'>pOrTerm</a>          114546 libdb/sqlite3.c           assert( pOrTerm-&gt;wtFlags &amp; (TERM_COPIED|TERM_VIRTUAL) );</span>
+<span class='curline'><a href='../S/185.html#L114549'>pOrTerm</a>          114549 libdb/sqlite3.c         iColumn = pOrTerm-&gt;u.leftColumn;</span>
+<span class='curline'><a href='../S/185.html#L114550'>pOrTerm</a>          114550 libdb/sqlite3.c         iCursor = pOrTerm-&gt;leftCursor;</span>
+<span class='curline'><a href='../S/185.html#L114566'>pOrTerm</a>          114566 libdb/sqlite3.c       for(; i&gt;=0 &amp;&amp; okToChngToIN; i--, pOrTerm++){</span>
+<span class='curline'><a href='../S/185.html#L114567'>pOrTerm</a>          114567 libdb/sqlite3.c         assert( pOrTerm-&gt;eOperator &amp; WO_EQ );</span>
+<span class='curline'><a href='../S/185.html#L114568'>pOrTerm</a>          114568 libdb/sqlite3.c         if( pOrTerm-&gt;leftCursor!=iCursor ){</span>
+<span class='curline'><a href='../S/185.html#L114569'>pOrTerm</a>          114569 libdb/sqlite3.c           pOrTerm-&gt;wtFlags &amp;= ~TERM_OR_OK;</span>
+<span class='curline'><a href='../S/185.html#L114570'>pOrTerm</a>          114570 libdb/sqlite3.c         }else if( pOrTerm-&gt;u.leftColumn!=iColumn ){</span>
+<span class='curline'><a href='../S/185.html#L114578'>pOrTerm</a>          114578 libdb/sqlite3.c           affRight = sqlite3ExprAffinity(pOrTerm-&gt;pExpr-&gt;pRight);</span>
+<span class='curline'><a href='../S/185.html#L114579'>pOrTerm</a>          114579 libdb/sqlite3.c           affLeft = sqlite3ExprAffinity(pOrTerm-&gt;pExpr-&gt;pLeft);</span>
+<span class='curline'><a href='../S/185.html#L114583'>pOrTerm</a>          114583 libdb/sqlite3.c             pOrTerm-&gt;wtFlags |= TERM_OR_OK;</span>
+<span class='curline'><a href='../S/185.html#L114599'>pOrTerm</a>          114599 libdb/sqlite3.c       for(i=pOrWc-&gt;nTerm-1, pOrTerm=pOrWc-&gt;a; i&gt;=0; i--, pOrTerm++){</span>
+<span class='curline'><a href='../S/185.html#L114600'>pOrTerm</a>          114600 libdb/sqlite3.c         if( (pOrTerm-&gt;wtFlags &amp; TERM_OR_OK)==0 ) continue;</span>
+<span class='curline'><a href='../S/185.html#L114601'>pOrTerm</a>          114601 libdb/sqlite3.c         assert( pOrTerm-&gt;eOperator &amp; WO_EQ );</span>
+<span class='curline'><a href='../S/185.html#L114602'>pOrTerm</a>          114602 libdb/sqlite3.c         assert( pOrTerm-&gt;leftCursor==iCursor );</span>
+<span class='curline'><a href='../S/185.html#L114603'>pOrTerm</a>          114603 libdb/sqlite3.c         assert( pOrTerm-&gt;u.leftColumn==iColumn );</span>
+<span class='curline'><a href='../S/185.html#L114604'>pOrTerm</a>          114604 libdb/sqlite3.c         pDup = sqlite3ExprDup(db, pOrTerm-&gt;pExpr-&gt;pRight, 0);</span>
+<span class='curline'><a href='../S/185.html#L114606'>pOrTerm</a>          114606 libdb/sqlite3.c         pLeft = pOrTerm-&gt;pExpr-&gt;pLeft;</span>
+<span class='curline'><a href='../S/185.html#L117106'>pOrTerm</a>          117106 libdb/sqlite3.c       WhereTerm *pOrTerm = &amp;pOrWc-&gt;a[ii];</span>
+<span class='curline'><a href='../S/185.html#L117107'>pOrTerm</a>          117107 libdb/sqlite3.c       if( pOrTerm-&gt;leftCursor==iCur || (pOrTerm-&gt;eOperator &amp; WO_AND)!=0 ){</span>
+<span class='curline'><a href='../S/185.html#L117109'>pOrTerm</a>          117109 libdb/sqlite3.c         Expr *pOrExpr = pOrTerm-&gt;pExpr; /* Current OR clause term */</span>
+<span class='curline'><a href='../S/185.html#L118596'>pOrTerm</a>          118596 libdb/sqlite3.c       WhereTerm *pOrTerm;</span>
+<span class='curline'><a href='../S/185.html#L118605'>pOrTerm</a>          118605 libdb/sqlite3.c       for(pOrTerm=pOrWC-&gt;a; pOrTerm&lt;pOrWCEnd; pOrTerm++){</span>
+<span class='curline'><a href='../S/185.html#L118606'>pOrTerm</a>          118606 libdb/sqlite3.c         if( (pOrTerm-&gt;eOperator &amp; WO_AND)!=0 ){</span>
+<span class='curline'><a href='../S/185.html#L118607'>pOrTerm</a>          118607 libdb/sqlite3.c           sSubBuild.pWC = &amp;pOrTerm-&gt;u.pAndInfo-&gt;wc;</span>
+<span class='curline'><a href='../S/185.html#L118608'>pOrTerm</a>          118608 libdb/sqlite3.c         }else if( pOrTerm-&gt;leftCursor==iCur ){</span>
+<span class='curline'><a href='../S/185.html#L118613'>pOrTerm</a>          118613 libdb/sqlite3.c           tempWC.a = pOrTerm;</span>
+<span class='curline'><a href='../S/185.html#L118621'>pOrTerm</a>          118621 libdb/sqlite3.c                    (int)(pOrTerm-pOrWC-&gt;a), pTerm, sSubBuild.pWC-&gt;nTerm));</span>
+</pre>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>pRoot</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/185.html#L17414'>pRoot</a>            17414 libdb/sqlite3.c static void memsys3UnlinkFromList(u32 i, u32 *pRoot){</span>
+<span class='curline'><a href='../S/185.html#L17419'>pRoot</a>            17419 libdb/sqlite3.c     *pRoot = next;</span>
+<span class='curline'><a href='../S/185.html#L17454'>pRoot</a>            17454 libdb/sqlite3.c static void memsys3LinkIntoList(u32 i, u32 *pRoot){</span>
+<span class='curline'><a href='../S/185.html#L17456'>pRoot</a>            17456 libdb/sqlite3.c   mem3.aPool[i].u.list.next = *pRoot;</span>
+<span class='curline'><a href='../S/185.html#L17458'>pRoot</a>            17458 libdb/sqlite3.c   if( *pRoot ){</span>
+<span class='curline'><a href='../S/185.html#L17459'>pRoot</a>            17459 libdb/sqlite3.c     mem3.aPool[*pRoot].u.list.prev = i;</span>
+<span class='curline'><a href='../S/185.html#L17461'>pRoot</a>            17461 libdb/sqlite3.c   *pRoot = i;</span>
+<span class='curline'><a href='../S/185.html#L17582'>pRoot</a>            17582 libdb/sqlite3.c static void memsys3Merge(u32 *pRoot){</span>
+<span class='curline'><a href='../S/185.html#L17586'>pRoot</a>            17586 libdb/sqlite3.c   for(i=*pRoot; i&gt;0; i=iNext){</span>
+<span class='curline'><a href='../S/185.html#L17591'>pRoot</a>            17591 libdb/sqlite3.c       memsys3UnlinkFromList(i, pRoot);</span>
+<span class='curline'><a href='../S/185.html#L56616'>pRoot</a>            56616 libdb/sqlite3.c   MemPage *pRoot;</span>
+<span class='curline'><a href='../S/185.html#L56645'>pRoot</a>            56645 libdb/sqlite3.c   pRoot = pCur-&gt;apPage[0];</span>
+<span class='curline'><a href='../S/185.html#L56646'>pRoot</a>            56646 libdb/sqlite3.c   assert( pRoot-&gt;pgno==pCur-&gt;pgnoRoot );</span>
+<span class='curline'><a href='../S/185.html#L56658'>pRoot</a>            56658 libdb/sqlite3.c   assert( pRoot-&gt;intKey==1 || pRoot-&gt;intKey==0 );</span>
+<span class='curline'><a href='../S/185.html#L56659'>pRoot</a>            56659 libdb/sqlite3.c   if( pRoot-&gt;isInit==0 || (pCur-&gt;pKeyInfo==0)!=pRoot-&gt;intKey ){</span>
+<span class='curline'><a href='../S/185.html#L56667'>pRoot</a>            56667 libdb/sqlite3.c   if( pRoot-&gt;nCell&gt;0 ){</span>
+<span class='curline'><a href='../S/185.html#L56669'>pRoot</a>            56669 libdb/sqlite3.c   }else if( !pRoot-&gt;leaf ){</span>
+<span class='curline'><a href='../S/185.html#L56671'>pRoot</a>            56671 libdb/sqlite3.c     if( pRoot-&gt;pgno!=1 ) return SQLITE_CORRUPT_BKPT;</span>
+<span class='curline'><a href='../S/185.html#L56672'>pRoot</a>            56672 libdb/sqlite3.c     subpage = get4byte(&amp;pRoot-&gt;aData[pRoot-&gt;hdrOffset+8]);</span>
+<span class='curline'><a href='../S/185.html#L59084'>pRoot</a>            59084 libdb/sqlite3.c static int balance_deeper(MemPage *pRoot, MemPage **ppChild){</span>
+<span class='curline'><a href='../S/185.html#L59088'>pRoot</a>            59088 libdb/sqlite3.c   BtShared *pBt = pRoot-&gt;pBt;    /* The BTree */</span>
+<span class='curline'><a href='../S/185.html#L59090'>pRoot</a>            59090 libdb/sqlite3.c   assert( pRoot-&gt;nOverflow&gt;0 );</span>
+<span class='curline'><a href='../S/185.html#L59097'>pRoot</a>            59097 libdb/sqlite3.c   rc = sqlite3PagerWrite(pRoot-&gt;pDbPage);</span>
+<span class='curline'><a href='../S/185.html#L59099'>pRoot</a>            59099 libdb/sqlite3.c     rc = allocateBtreePage(pBt,&amp;pChild,&amp;pgnoChild,pRoot-&gt;pgno,0);</span>
+<span class='curline'><a href='../S/185.html#L59100'>pRoot</a>            59100 libdb/sqlite3.c     copyNodeContent(pRoot, pChild, &amp;rc);</span>
+<span class='curline'><a href='../S/185.html#L59102'>pRoot</a>            59102 libdb/sqlite3.c       ptrmapPut(pBt, pgnoChild, PTRMAP_BTREE, pRoot-&gt;pgno, &amp;rc);</span>
+<span class='curline'><a href='../S/185.html#L59111'>pRoot</a>            59111 libdb/sqlite3.c   assert( sqlite3PagerIswriteable(pRoot-&gt;pDbPage) );</span>
+<span class='curline'><a href='../S/185.html#L59112'>pRoot</a>            59112 libdb/sqlite3.c   assert( pChild-&gt;nCell==pRoot-&gt;nCell );</span>
+<span class='curline'><a href='../S/185.html#L59114'>pRoot</a>            59114 libdb/sqlite3.c   TRACE(("BALANCE: copy root %d into %d\n", pRoot-&gt;pgno, pChild-&gt;pgno));</span>
+<span class='curline'><a href='../S/185.html#L59117'>pRoot</a>            59117 libdb/sqlite3.c   memcpy(pChild-&gt;aiOvfl, pRoot-&gt;aiOvfl,</span>
+<span class='curline'><a href='../S/185.html#L59118'>pRoot</a>            59118 libdb/sqlite3.c          pRoot-&gt;nOverflow*sizeof(pRoot-&gt;aiOvfl[0]));</span>
+<span class='curline'><a href='../S/185.html#L59119'>pRoot</a>            59119 libdb/sqlite3.c   memcpy(pChild-&gt;apOvfl, pRoot-&gt;apOvfl,</span>
+<span class='curline'><a href='../S/185.html#L59120'>pRoot</a>            59120 libdb/sqlite3.c          pRoot-&gt;nOverflow*sizeof(pRoot-&gt;apOvfl[0]));</span>
+<span class='curline'><a href='../S/185.html#L59121'>pRoot</a>            59121 libdb/sqlite3.c   pChild-&gt;nOverflow = pRoot-&gt;nOverflow;</span>
+<span class='curline'><a href='../S/185.html#L59124'>pRoot</a>            59124 libdb/sqlite3.c   zeroPage(pRoot, pChild-&gt;aData[0] &amp; ~PTF_LEAF);</span>
+<span class='curline'><a href='../S/185.html#L59125'>pRoot</a>            59125 libdb/sqlite3.c   put4byte(&amp;pRoot-&gt;aData[pRoot-&gt;hdrOffset+8], pgnoChild);</span>
+<span class='curline'><a href='../S/185.html#L59551'>pRoot</a>            59551 libdb/sqlite3.c   MemPage *pRoot;</span>
+<span class='curline'><a href='../S/185.html#L59561'>pRoot</a>            59561 libdb/sqlite3.c   rc = allocateBtreePage(pBt, &amp;pRoot, &amp;pgnoRoot, 1, 0);</span>
+<span class='curline'><a href='../S/185.html#L59622'>pRoot</a>            59622 libdb/sqlite3.c       rc = btreeGetPage(pBt, pgnoRoot, &amp;pRoot, 0);</span>
+<span class='curline'><a href='../S/185.html#L59631'>pRoot</a>            59631 libdb/sqlite3.c         releasePage(pRoot);</span>
+<span class='curline'><a href='../S/185.html#L59636'>pRoot</a>            59636 libdb/sqlite3.c       rc = relocatePage(pBt, pRoot, eType, iPtrPage, pgnoMove, 0);</span>
+<span class='curline'><a href='../S/185.html#L59637'>pRoot</a>            59637 libdb/sqlite3.c       releasePage(pRoot);</span>
+<span class='curline'><a href='../S/185.html#L59643'>pRoot</a>            59643 libdb/sqlite3.c       rc = btreeGetPage(pBt, pgnoRoot, &amp;pRoot, 0);</span>
+<span class='curline'><a href='../S/185.html#L59647'>pRoot</a>            59647 libdb/sqlite3.c       rc = sqlite3PagerWrite(pRoot-&gt;pDbPage);</span>
+<span class='curline'><a href='../S/185.html#L59649'>pRoot</a>            59649 libdb/sqlite3.c         releasePage(pRoot);</span>
+<span class='curline'><a href='../S/185.html#L59653'>pRoot</a>            59653 libdb/sqlite3.c       pRoot = pPageMove;</span>
+<span class='curline'><a href='../S/185.html#L59659'>pRoot</a>            59659 libdb/sqlite3.c       releasePage(pRoot);</span>
+<span class='curline'><a href='../S/185.html#L59670'>pRoot</a>            59670 libdb/sqlite3.c       releasePage(pRoot);</span>
+<span class='curline'><a href='../S/185.html#L59675'>pRoot</a>            59675 libdb/sqlite3.c     rc = allocateBtreePage(pBt, &amp;pRoot, &amp;pgnoRoot, 1, 0);</span>
+<span class='curline'><a href='../S/185.html#L59679'>pRoot</a>            59679 libdb/sqlite3.c   assert( sqlite3PagerIswriteable(pRoot-&gt;pDbPage) );</span>
+<span class='curline'><a href='../S/185.html#L59685'>pRoot</a>            59685 libdb/sqlite3.c   zeroPage(pRoot, ptfFlags);</span>
+<span class='curline'><a href='../S/185.html#L59686'>pRoot</a>            59686 libdb/sqlite3.c   sqlite3PagerUnref(pRoot-&gt;pDbPage);</span>
+<span class='curline'><a href='../S/185.html#L78091'>pRoot</a>            78091 libdb/sqlite3.c   MergeEngine *pRoot,             /* Root of tree */</span>
+<span class='curline'><a href='../S/185.html#L78097'>pRoot</a>            78097 libdb/sqlite3.c   MergeEngine *p = pRoot;</span>
+<span class='curline'><a href='../S/185.html#L78166'>pRoot</a>            78166 libdb/sqlite3.c       MergeEngine *pRoot = 0;     /* Root node of tree for this task */</span>
+<span class='curline'><a href='../S/185.html#L78171'>pRoot</a>            78171 libdb/sqlite3.c         rc = vdbeMergeEngineLevel0(pTask, pTask-&gt;nPMA, &amp;iReadOff, &amp;pRoot);</span>
+<span class='curline'><a href='../S/185.html#L78175'>pRoot</a>            78175 libdb/sqlite3.c         pRoot = vdbeMergeEngineNew(SORTER_MAX_MERGE_COUNT);</span>
+<span class='curline'><a href='../S/185.html#L78176'>pRoot</a>            78176 libdb/sqlite3.c         if( pRoot==0 ) rc = SQLITE_NOMEM;</span>
+<span class='curline'><a href='../S/185.html#L78184'>pRoot</a>            78184 libdb/sqlite3.c             rc = vdbeSorterAddToTree(pTask, nDepth, iSeq++, pRoot, pMerger);</span>
+<span class='curline'><a href='../S/185.html#L78192'>pRoot</a>            78192 libdb/sqlite3.c           rc = vdbeIncrMergerNew(pTask, pRoot, &amp;pMain-&gt;aReadr[iTask].pIncr);</span>
+<span class='curline'><a href='../S/185.html#L78197'>pRoot</a>            78197 libdb/sqlite3.c           pMain = pRoot;</span>
+<span class='curline'><a href='../S/185.html#L78200'>pRoot</a>            78200 libdb/sqlite3.c         vdbeMergeEngineFree(pRoot);</span>
+<span class='curline'><a href='../S/185.html#L81081'>pRoot</a>            81081 libdb/sqlite3.c   Expr *pRoot,</span>
+<span class='curline'><a href='../S/185.html#L81085'>pRoot</a>            81085 libdb/sqlite3.c   if( pRoot==0 ){</span>
+<span class='curline'><a href='../S/185.html#L81091'>pRoot</a>            81091 libdb/sqlite3.c       pRoot-&gt;pRight = pRight;</span>
+<span class='curline'><a href='../S/185.html#L81092'>pRoot</a>            81092 libdb/sqlite3.c       pRoot-&gt;flags |= EP_Collate &amp; pRight-&gt;flags;</span>
+<span class='curline'><a href='../S/185.html#L81095'>pRoot</a>            81095 libdb/sqlite3.c       pRoot-&gt;pLeft = pLeft;</span>
+<span class='curline'><a href='../S/185.html#L81096'>pRoot</a>            81096 libdb/sqlite3.c       pRoot-&gt;flags |= EP_Collate &amp; pLeft-&gt;flags;</span>
+<span class='curline'><a href='../S/185.html#L81098'>pRoot</a>            81098 libdb/sqlite3.c     exprSetHeight(pRoot);</span>
+<span class='curline'><a href='../S/185.html#L110661'>pRoot</a>            110661 libdb/sqlite3.c   Parse *pRoot = sqlite3ParseToplevel(pParse);</span>
+<span class='curline'><a href='../S/185.html#L110670'>pRoot</a>            110670 libdb/sqlite3.c   for(pPrg=pRoot-&gt;pTriggerPrg; </span>
+<span class='curline'><a href='../S/185.html#L134156'>pRoot</a>            134156 libdb/sqlite3.c   Fts3Expr *pRoot;                /* Root of NEAR/AND cluster */</span>
+<span class='curline'><a href='../S/185.html#L134170'>pRoot</a>            134170 libdb/sqlite3.c   Fts3Expr *pRoot,                /* Root of current AND/NEAR cluster */</span>
+<span class='curline'><a href='../S/185.html#L134184'>pRoot</a>            134184 libdb/sqlite3.c         pTC-&gt;pRoot = pRoot;</span>
+<span class='curline'><a href='../S/185.html#L134196'>pRoot</a>            134196 libdb/sqlite3.c         pRoot = pExpr-&gt;pLeft;</span>
+<span class='curline'><a href='../S/185.html#L134197'>pRoot</a>            134197 libdb/sqlite3.c         **ppOr = pRoot;</span>
+<span class='curline'><a href='../S/185.html#L134200'>pRoot</a>            134200 libdb/sqlite3.c       fts3EvalTokenCosts(pCsr, pRoot, pExpr-&gt;pLeft, ppTC, ppOr, pRc);</span>
+<span class='curline'><a href='../S/185.html#L134202'>pRoot</a>            134202 libdb/sqlite3.c         pRoot = pExpr-&gt;pRight;</span>
+<span class='curline'><a href='../S/185.html#L134203'>pRoot</a>            134203 libdb/sqlite3.c         **ppOr = pRoot;</span>
+<span class='curline'><a href='../S/185.html#L134206'>pRoot</a>            134206 libdb/sqlite3.c       fts3EvalTokenCosts(pCsr, pRoot, pExpr-&gt;pRight, ppTC, ppOr, pRc);</span>
+<span class='curline'><a href='../S/185.html#L134285'>pRoot</a>            134285 libdb/sqlite3.c   Fts3Expr *pRoot,                /* Consider tokens with this root node */</span>
+<span class='curline'><a href='../S/185.html#L134312'>pRoot</a>            134312 libdb/sqlite3.c     if( aTC[ii].pRoot==pRoot ){</span>
+<span class='curline'><a href='../S/185.html#L134352'>pRoot</a>            134352 libdb/sqlite3.c       if( aTC[iTC].pToken &amp;&amp; aTC[iTC].pRoot==pRoot </span>
+<span class='curline'><a href='../S/185.html#L135054'>pRoot</a>            135054 libdb/sqlite3.c     Fts3Expr *pRoot;                /* Root of NEAR expression */</span>
+<span class='curline'><a href='../S/185.html#L135062'>pRoot</a>            135062 libdb/sqlite3.c     pRoot = pExpr;</span>
+<span class='curline'><a href='../S/185.html#L135063'>pRoot</a>            135063 libdb/sqlite3.c     while( pRoot-&gt;pParent &amp;&amp; pRoot-&gt;pParent-&gt;eType==FTSQUERY_NEAR ){</span>
+<span class='curline'><a href='../S/185.html#L135064'>pRoot</a>            135064 libdb/sqlite3.c       pRoot = pRoot-&gt;pParent;</span>
+<span class='curline'><a href='../S/185.html#L135066'>pRoot</a>            135066 libdb/sqlite3.c     iDocid = pRoot-&gt;iDocid;</span>
+<span class='curline'><a href='../S/185.html#L135067'>pRoot</a>            135067 libdb/sqlite3.c     bEof = pRoot-&gt;bEof;</span>
+<span class='curline'><a href='../S/185.html#L135068'>pRoot</a>            135068 libdb/sqlite3.c     assert( pRoot-&gt;bStart );</span>
+<span class='curline'><a href='../S/185.html#L135071'>pRoot</a>            135071 libdb/sqlite3.c     for(p=pRoot; p; p=p-&gt;pLeft){</span>
+<span class='curline'><a href='../S/185.html#L135079'>pRoot</a>            135079 libdb/sqlite3.c     fts3EvalRestart(pCsr, pRoot, &amp;rc);</span>
+<span class='curline'><a href='../S/185.html#L135089'>pRoot</a>            135089 libdb/sqlite3.c         fts3EvalNextRow(pCsr, pRoot, &amp;rc);</span>
+<span class='curline'><a href='../S/185.html#L135090'>pRoot</a>            135090 libdb/sqlite3.c         pCsr-&gt;isEof = pRoot-&gt;bEof;</span>
+<span class='curline'><a href='../S/185.html#L135093'>pRoot</a>            135093 libdb/sqlite3.c         pCsr-&gt;iPrevId = pRoot-&gt;iDocid;</span>
+<span class='curline'><a href='../S/185.html#L135095'>pRoot</a>            135095 libdb/sqlite3.c            &amp;&amp; pRoot-&gt;eType==FTSQUERY_NEAR </span>
+<span class='curline'><a href='../S/185.html#L135100'>pRoot</a>            135100 libdb/sqlite3.c         fts3EvalUpdateCounts(pRoot);</span>
+<span class='curline'><a href='../S/185.html#L135108'>pRoot</a>            135108 libdb/sqlite3.c       pRoot-&gt;bEof = bEof;</span>
+<span class='curline'><a href='../S/185.html#L135116'>pRoot</a>            135116 libdb/sqlite3.c       fts3EvalRestart(pCsr, pRoot, &amp;rc);</span>
+<span class='curline'><a href='../S/185.html#L135118'>pRoot</a>            135118 libdb/sqlite3.c         fts3EvalNextRow(pCsr, pRoot, &amp;rc);</span>
+<span class='curline'><a href='../S/185.html#L135119'>pRoot</a>            135119 libdb/sqlite3.c         assert( pRoot-&gt;bEof==0 );</span>
+<span class='curline'><a href='../S/185.html#L135120'>pRoot</a>            135120 libdb/sqlite3.c       }while( pRoot-&gt;iDocid!=iDocid &amp;&amp; rc==SQLITE_OK );</span>
+<span class='curline'><a href='../S/185.html#L136730'>pRoot</a>            136730 libdb/sqlite3.c   Fts3Expr *pRoot = *pp;          /* Initial root node */</span>
+<span class='curline'><a href='../S/185.html#L136732'>pRoot</a>            136732 libdb/sqlite3.c   int eType = pRoot-&gt;eType;       /* Type of node in this tree */</span>
+<span class='curline'><a href='../S/185.html#L136752'>pRoot</a>            136752 libdb/sqlite3.c       for(p=pRoot; p-&gt;eType==eType; p=p-&gt;pLeft){</span>
+<span class='curline'><a href='../S/185.html#L136767'>pRoot</a>            136767 libdb/sqlite3.c           pRoot = 0;</span>
+<span class='curline'><a href='../S/185.html#L136807'>pRoot</a>            136807 libdb/sqlite3.c           assert( pParent==pRoot );</span>
+<span class='curline'><a href='../S/185.html#L136808'>pRoot</a>            136808 libdb/sqlite3.c           pRoot = pParent-&gt;pRight;</span>
+<span class='curline'><a href='../S/185.html#L136837'>pRoot</a>            136837 libdb/sqlite3.c         pRoot = p;</span>
+<span class='curline'><a href='../S/185.html#L136858'>pRoot</a>            136858 libdb/sqlite3.c     sqlite3Fts3ExprFree(pRoot);</span>
+<span class='curline'><a href='../S/185.html#L136859'>pRoot</a>            136859 libdb/sqlite3.c     pRoot = 0;</span>
+<span class='curline'><a href='../S/185.html#L136861'>pRoot</a>            136861 libdb/sqlite3.c   *pp = pRoot;</span>
+<span class='curline'><a href='../S/185.html#L143468'>pRoot</a>            143468 libdb/sqlite3.c   NodeWriter *pRoot;              /* NodeWriter for root node */</span>
+<span class='curline'><a href='../S/185.html#L143513'>pRoot</a>            143513 libdb/sqlite3.c   pRoot = &amp;pWriter-&gt;aNodeWriter[iRoot];</span>
+<span class='curline'><a href='../S/185.html#L143534'>pRoot</a>            143534 libdb/sqlite3.c         pRoot-&gt;block.a, pRoot-&gt;block.n      /* root */</span>
+<span class='curline'><a href='../S/185.html#L143537'>pRoot</a>            143537 libdb/sqlite3.c   sqlite3_free(pRoot-&gt;block.a);</span>
+<span class='curline'><a href='../S/185.html#L143538'>pRoot</a>            143538 libdb/sqlite3.c   sqlite3_free(pRoot-&gt;key.a);</span>
+<span class='curline'><a href='../S/185.html#L148930'>pRoot</a>            148930 libdb/sqlite3.c   RtreeNode *pRoot = 0;</span>
+<span class='curline'><a href='../S/185.html#L148967'>pRoot</a>            148967 libdb/sqlite3.c     rc = nodeAcquire(pRtree, 1, 0, &amp;pRoot);</span>
+<span class='curline'><a href='../S/185.html#L149012'>pRoot</a>            149012 libdb/sqlite3.c       pCsr-&gt;aNode[0] = pRoot;</span>
+<span class='curline'><a href='../S/185.html#L149013'>pRoot</a>            149013 libdb/sqlite3.c       pRoot = 0;</span>
+<span class='curline'><a href='../S/185.html#L149019'>pRoot</a>            149019 libdb/sqlite3.c   nodeRelease(pRtree, pRoot);</span>
+<span class='curline'><a href='../S/185.html#L150086'>pRoot</a>            150086 libdb/sqlite3.c   RtreeNode *pRoot;               /* Root node of rtree structure */</span>
+<span class='curline'><a href='../S/185.html#L150090'>pRoot</a>            150090 libdb/sqlite3.c   rc = nodeAcquire(pRtree, 1, 0, &amp;pRoot);</span>
+<span class='curline'><a href='../S/185.html#L150127'>pRoot</a>            150127 libdb/sqlite3.c   if( rc==SQLITE_OK &amp;&amp; pRtree-&gt;iDepth&gt;0 &amp;&amp; NCELL(pRoot)==1 ){</span>
+<span class='curline'><a href='../S/185.html#L150130'>pRoot</a>            150130 libdb/sqlite3.c     i64 iChild = nodeGetRowid(pRtree, pRoot, 0);</span>
+<span class='curline'><a href='../S/185.html#L150131'>pRoot</a>            150131 libdb/sqlite3.c     rc = nodeAcquire(pRtree, iChild, pRoot, &amp;pChild);</span>
+<span class='curline'><a href='../S/185.html#L150139'>pRoot</a>            150139 libdb/sqlite3.c       writeInt16(pRoot-&gt;zData, pRtree-&gt;iDepth);</span>
+<span class='curline'><a href='../S/185.html#L150140'>pRoot</a>            150140 libdb/sqlite3.c       pRoot-&gt;isDirty = 1;</span>
+<span class='curline'><a href='../S/185.html#L150155'>pRoot</a>            150155 libdb/sqlite3.c     rc = nodeRelease(pRtree, pRoot);</span>
+<span class='curline'><a href='../S/185.html#L150157'>pRoot</a>            150157 libdb/sqlite3.c     nodeRelease(pRtree, pRoot);</span>
+</pre>
+</body>
+</html>

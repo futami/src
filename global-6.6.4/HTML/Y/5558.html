@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>pReadr</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/185.html#L76399'>pReadr</a>           76399 libdb/sqlite3.c static void vdbePmaReaderClear(PmaReader *pReadr){</span>
+<span class='curline'><a href='../S/185.html#L76400'>pReadr</a>           76400 libdb/sqlite3.c   sqlite3_free(pReadr-&gt;aAlloc);</span>
+<span class='curline'><a href='../S/185.html#L76401'>pReadr</a>           76401 libdb/sqlite3.c   sqlite3_free(pReadr-&gt;aBuffer);</span>
+<span class='curline'><a href='../S/185.html#L76402'>pReadr</a>           76402 libdb/sqlite3.c   if( pReadr-&gt;aMap ) sqlite3OsUnfetch(pReadr-&gt;pFd, 0, pReadr-&gt;aMap);</span>
+<span class='curline'><a href='../S/185.html#L76403'>pReadr</a>           76403 libdb/sqlite3.c   vdbeIncrFree(pReadr-&gt;pIncr);</span>
+<span class='curline'><a href='../S/185.html#L76404'>pReadr</a>           76404 libdb/sqlite3.c   memset(pReadr, 0, sizeof(PmaReader));</span>
+<span class='curline'><a href='../S/185.html#L76562'>pReadr</a>           76562 libdb/sqlite3.c   PmaReader *pReadr,              /* Reader whose cursor is to be moved */</span>
+<span class='curline'><a href='../S/185.html#L76568'>pReadr</a>           76568 libdb/sqlite3.c   assert( pReadr-&gt;pIncr==0 || pReadr-&gt;pIncr-&gt;bEof==0 );</span>
+<span class='curline'><a href='../S/185.html#L76571'>pReadr</a>           76571 libdb/sqlite3.c   if( pReadr-&gt;aMap ){</span>
+<span class='curline'><a href='../S/185.html#L76572'>pReadr</a>           76572 libdb/sqlite3.c     sqlite3OsUnfetch(pReadr-&gt;pFd, 0, pReadr-&gt;aMap);</span>
+<span class='curline'><a href='../S/185.html#L76573'>pReadr</a>           76573 libdb/sqlite3.c     pReadr-&gt;aMap = 0;</span>
+<span class='curline'><a href='../S/185.html#L76575'>pReadr</a>           76575 libdb/sqlite3.c   pReadr-&gt;iReadOff = iOff;</span>
+<span class='curline'><a href='../S/185.html#L76576'>pReadr</a>           76576 libdb/sqlite3.c   pReadr-&gt;iEof = pFile-&gt;iEof;</span>
+<span class='curline'><a href='../S/185.html#L76577'>pReadr</a>           76577 libdb/sqlite3.c   pReadr-&gt;pFd = pFile-&gt;pFd;</span>
+<span class='curline'><a href='../S/185.html#L76579'>pReadr</a>           76579 libdb/sqlite3.c   rc = vdbeSorterMapFile(pTask, pFile, &amp;pReadr-&gt;aMap);</span>
+<span class='curline'><a href='../S/185.html#L76580'>pReadr</a>           76580 libdb/sqlite3.c   if( rc==SQLITE_OK &amp;&amp; pReadr-&gt;aMap==0 ){</span>
+<span class='curline'><a href='../S/185.html#L76582'>pReadr</a>           76582 libdb/sqlite3.c     int iBuf = pReadr-&gt;iReadOff % pgsz;</span>
+<span class='curline'><a href='../S/185.html#L76583'>pReadr</a>           76583 libdb/sqlite3.c     if( pReadr-&gt;aBuffer==0 ){</span>
+<span class='curline'><a href='../S/185.html#L76584'>pReadr</a>           76584 libdb/sqlite3.c       pReadr-&gt;aBuffer = (u8*)sqlite3Malloc(pgsz);</span>
+<span class='curline'><a href='../S/185.html#L76585'>pReadr</a>           76585 libdb/sqlite3.c       if( pReadr-&gt;aBuffer==0 ) rc = SQLITE_NOMEM;</span>
+<span class='curline'><a href='../S/185.html#L76586'>pReadr</a>           76586 libdb/sqlite3.c       pReadr-&gt;nBuffer = pgsz;</span>
+<span class='curline'><a href='../S/185.html#L76590'>pReadr</a>           76590 libdb/sqlite3.c       if( (pReadr-&gt;iReadOff + nRead) &gt; pReadr-&gt;iEof ){</span>
+<span class='curline'><a href='../S/185.html#L76591'>pReadr</a>           76591 libdb/sqlite3.c         nRead = (int)(pReadr-&gt;iEof - pReadr-&gt;iReadOff);</span>
+<span class='curline'><a href='../S/185.html#L76594'>pReadr</a>           76594 libdb/sqlite3.c           pReadr-&gt;pFd, &amp;pReadr-&gt;aBuffer[iBuf], nRead, pReadr-&gt;iReadOff</span>
+<span class='curline'><a href='../S/185.html#L76607'>pReadr</a>           76607 libdb/sqlite3.c static int vdbePmaReaderNext(PmaReader *pReadr){</span>
+<span class='curline'><a href='../S/185.html#L76612'>pReadr</a>           76612 libdb/sqlite3.c   if( pReadr-&gt;iReadOff&gt;=pReadr-&gt;iEof ){</span>
+<span class='curline'><a href='../S/185.html#L76613'>pReadr</a>           76613 libdb/sqlite3.c     IncrMerger *pIncr = pReadr-&gt;pIncr;</span>
+<span class='curline'><a href='../S/185.html#L76619'>pReadr</a>           76619 libdb/sqlite3.c             pIncr-&gt;pTask, pReadr, &amp;pIncr-&gt;aFile[0], pIncr-&gt;iStartOff</span>
+<span class='curline'><a href='../S/185.html#L76627'>pReadr</a>           76627 libdb/sqlite3.c       vdbePmaReaderClear(pReadr);</span>
+<span class='curline'><a href='../S/185.html#L76634'>pReadr</a>           76634 libdb/sqlite3.c     rc = vdbePmaReadVarint(pReadr, &amp;nRec);</span>
+<span class='curline'><a href='../S/185.html#L76637'>pReadr</a>           76637 libdb/sqlite3.c     pReadr-&gt;nKey = (int)nRec;</span>
+<span class='curline'><a href='../S/185.html#L76638'>pReadr</a>           76638 libdb/sqlite3.c     rc = vdbePmaReadBlob(pReadr, (int)nRec, &amp;pReadr-&gt;aKey);</span>
+<span class='curline'><a href='../S/185.html#L76658'>pReadr</a>           76658 libdb/sqlite3.c   PmaReader *pReadr,              /* PmaReader to populate */</span>
+<span class='curline'><a href='../S/185.html#L76664'>pReadr</a>           76664 libdb/sqlite3.c   assert( pReadr-&gt;aAlloc==0 &amp;&amp; pReadr-&gt;nAlloc==0 );</span>
+<span class='curline'><a href='../S/185.html#L76665'>pReadr</a>           76665 libdb/sqlite3.c   assert( pReadr-&gt;aBuffer==0 );</span>
+<span class='curline'><a href='../S/185.html#L76666'>pReadr</a>           76666 libdb/sqlite3.c   assert( pReadr-&gt;aMap==0 );</span>
+<span class='curline'><a href='../S/185.html#L76668'>pReadr</a>           76668 libdb/sqlite3.c   rc = vdbePmaReaderSeek(pTask, pReadr, pFile, iStart);</span>
+<span class='curline'><a href='../S/185.html#L76671'>pReadr</a>           76671 libdb/sqlite3.c     rc = vdbePmaReadVarint(pReadr, &amp;nByte);</span>
+<span class='curline'><a href='../S/185.html#L76672'>pReadr</a>           76672 libdb/sqlite3.c     pReadr-&gt;iEof = pReadr-&gt;iReadOff + nByte;</span>
+<span class='curline'><a href='../S/185.html#L76677'>pReadr</a>           76677 libdb/sqlite3.c     rc = vdbePmaReaderNext(pReadr);</span>
+<span class='curline'><a href='../S/185.html#L77838'>pReadr</a>           77838 libdb/sqlite3.c static int vdbePmaReaderIncrMergeInit(PmaReader *pReadr, int eMode);</span>
+<span class='curline'><a href='../S/185.html#L77931'>pReadr</a>           77931 libdb/sqlite3.c static int vdbePmaReaderIncrMergeInit(PmaReader *pReadr, int eMode){</span>
+<span class='curline'><a href='../S/185.html#L77933'>pReadr</a>           77933 libdb/sqlite3.c   IncrMerger *pIncr = pReadr-&gt;pIncr;</span>
+<span class='curline'><a href='../S/185.html#L77984'>pReadr</a>           77984 libdb/sqlite3.c       rc = vdbePmaReaderNext(pReadr);</span>
+<span class='curline'><a href='../S/185.html#L78012'>pReadr</a>           78012 libdb/sqlite3.c static int vdbePmaReaderBgIncrInit(PmaReader *pReadr){</span>
+<span class='curline'><a href='../S/185.html#L78013'>pReadr</a>           78013 libdb/sqlite3.c   void *pCtx = (void*)pReadr;</span>
+<span class='curline'><a href='../S/185.html#L78014'>pReadr</a>           78014 libdb/sqlite3.c   return vdbeSorterCreateThread(pReadr-&gt;pIncr-&gt;pTask, vdbePmaReaderBgInit, pCtx);</span>
+<span class='curline'><a href='../S/185.html#L78046'>pReadr</a>           78046 libdb/sqlite3.c     PmaReader *pReadr = &amp;pNew-&gt;aReadr[i];</span>
+<span class='curline'><a href='../S/185.html#L78047'>pReadr</a>           78047 libdb/sqlite3.c     rc = vdbePmaReaderInit(pTask, &amp;pTask-&gt;file, iOff, pReadr, &amp;nDummy);</span>
+<span class='curline'><a href='../S/185.html#L78048'>pReadr</a>           78048 libdb/sqlite3.c     iOff = pReadr-&gt;iEof;</span>
+<span class='curline'><a href='../S/185.html#L78108'>pReadr</a>           78108 libdb/sqlite3.c     PmaReader *pReadr = &amp;p-&gt;aReadr[iIter];</span>
+<span class='curline'><a href='../S/185.html#L78110'>pReadr</a>           78110 libdb/sqlite3.c     if( pReadr-&gt;pIncr==0 ){</span>
+<span class='curline'><a href='../S/185.html#L78115'>pReadr</a>           78115 libdb/sqlite3.c         rc = vdbeIncrMergerNew(pTask, pNew, &amp;pReadr-&gt;pIncr);</span>
+<span class='curline'><a href='../S/185.html#L78119'>pReadr</a>           78119 libdb/sqlite3.c       p = pReadr-&gt;pIncr-&gt;pMerger;</span>
+<span class='curline'><a href='../S/185.html#L78236'>pReadr</a>           78236 libdb/sqlite3.c       PmaReader *pReadr = 0;</span>
+<span class='curline'><a href='../S/185.html#L78240'>pReadr</a>           78240 libdb/sqlite3.c         pReadr = (PmaReader*)sqlite3DbMallocZero(db, sizeof(PmaReader));</span>
+<span class='curline'><a href='../S/185.html#L78241'>pReadr</a>           78241 libdb/sqlite3.c         pSorter-&gt;pReader = pReadr;</span>
+<span class='curline'><a href='../S/185.html#L78242'>pReadr</a>           78242 libdb/sqlite3.c         if( pReadr==0 ) rc = SQLITE_NOMEM;</span>
+<span class='curline'><a href='../S/185.html#L78245'>pReadr</a>           78245 libdb/sqlite3.c         rc = vdbeIncrMergerNew(pLast, pMain, &amp;pReadr-&gt;pIncr);</span>
+<span class='curline'><a href='../S/185.html#L78247'>pReadr</a>           78247 libdb/sqlite3.c           vdbeIncrMergerSetThreads(pReadr-&gt;pIncr);</span>
+<span class='curline'><a href='../S/185.html#L78270'>pReadr</a>           78270 libdb/sqlite3.c         rc = vdbePmaReaderIncrMergeInit(pReadr, INCRINIT_ROOT);</span>
+</pre>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>bp</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/181.html#L146'>bp</a>                146 libdb/mpool.c  	BKT *bp;</span>
+<span class='curline'><a href='../S/181.html#L160'>bp</a>                160 libdb/mpool.c  	if ((bp = mpool_bkt(mp)) == NULL)</span>
+<span class='curline'><a href='../S/181.html#L162'>bp</a>                162 libdb/mpool.c  	*pgnoaddr = bp-&gt;pgno = mp-&gt;npages++;</span>
+<span class='curline'><a href='../S/181.html#L163'>bp</a>                163 libdb/mpool.c  	bp-&gt;flags = MPOOL_PINNED;</span>
+<span class='curline'><a href='../S/181.html#L165'>bp</a>                165 libdb/mpool.c  	head = &amp;mp-&gt;hqh[HASHKEY(bp-&gt;pgno)];</span>
+<span class='curline'><a href='../S/181.html#L166'>bp</a>                166 libdb/mpool.c  	CIRCLEQ_INSERT_HEAD(head, bp, hq);</span>
+<span class='curline'><a href='../S/181.html#L167'>bp</a>                167 libdb/mpool.c  	CIRCLEQ_INSERT_TAIL(&amp;mp-&gt;lqh, bp, q);</span>
+<span class='curline'><a href='../S/181.html#L168'>bp</a>                168 libdb/mpool.c  	return (bp-&gt;page);</span>
+<span class='curline'><a href='../S/181.html#L186'>bp</a>                186 libdb/mpool.c  	BKT *bp;</span>
+<span class='curline'><a href='../S/181.html#L201'>bp</a>                201 libdb/mpool.c  	if ((bp = mpool_look(mp, pgno)) != NULL) {</span>
+<span class='curline'><a href='../S/181.html#L203'>bp</a>                203 libdb/mpool.c  		if (bp-&gt;flags &amp; MPOOL_PINNED) {</span>
+<span class='curline'><a href='../S/181.html#L205'>bp</a>                205 libdb/mpool.c  			    "mpool_get: page %d already pinned\n", bp-&gt;pgno);</span>
+<span class='curline'><a href='../S/181.html#L213'>bp</a>                213 libdb/mpool.c  		head = &amp;mp-&gt;hqh[HASHKEY(bp-&gt;pgno)];</span>
+<span class='curline'><a href='../S/181.html#L214'>bp</a>                214 libdb/mpool.c  		CIRCLEQ_REMOVE(head, bp, hq);</span>
+<span class='curline'><a href='../S/181.html#L215'>bp</a>                215 libdb/mpool.c  		CIRCLEQ_INSERT_HEAD(head, bp, hq);</span>
+<span class='curline'><a href='../S/181.html#L216'>bp</a>                216 libdb/mpool.c  		CIRCLEQ_REMOVE(&amp;mp-&gt;lqh, bp, q);</span>
+<span class='curline'><a href='../S/181.html#L217'>bp</a>                217 libdb/mpool.c  		CIRCLEQ_INSERT_TAIL(&amp;mp-&gt;lqh, bp, q);</span>
+<span class='curline'><a href='../S/181.html#L220'>bp</a>                220 libdb/mpool.c  		bp-&gt;flags |= MPOOL_PINNED;</span>
+<span class='curline'><a href='../S/181.html#L221'>bp</a>                221 libdb/mpool.c  		return (bp-&gt;page);</span>
+<span class='curline'><a href='../S/181.html#L225'>bp</a>                225 libdb/mpool.c  	if ((bp = mpool_bkt(mp)) == NULL)</span>
+<span class='curline'><a href='../S/181.html#L252'>bp</a>                252 libdb/mpool.c  	if ((nr = pread(mp-&gt;fd, bp-&gt;page, mp-&gt;pagesize, off)) != mp-&gt;pagesize) {</span>
+<span class='curline'><a href='../S/181.html#L260'>bp</a>                260 libdb/mpool.c  	if ((nr = read(mp-&gt;fd, bp-&gt;page, mp-&gt;pagesize)) != mp-&gt;pagesize) {</span>
+<span class='curline'><a href='../S/181.html#L268'>bp</a>                268 libdb/mpool.c  	bp-&gt;pgno = pgno;</span>
+<span class='curline'><a href='../S/181.html#L269'>bp</a>                269 libdb/mpool.c  	bp-&gt;flags = MPOOL_PINNED;</span>
+<span class='curline'><a href='../S/181.html#L275'>bp</a>                275 libdb/mpool.c  	head = &amp;mp-&gt;hqh[HASHKEY(bp-&gt;pgno)];</span>
+<span class='curline'><a href='../S/181.html#L276'>bp</a>                276 libdb/mpool.c  	CIRCLEQ_INSERT_HEAD(head, bp, hq);</span>
+<span class='curline'><a href='../S/181.html#L277'>bp</a>                277 libdb/mpool.c  	CIRCLEQ_INSERT_TAIL(&amp;mp-&gt;lqh, bp, q);</span>
+<span class='curline'><a href='../S/181.html#L281'>bp</a>                281 libdb/mpool.c  		(mp-&gt;pgin)(mp-&gt;pgcookie, bp-&gt;pgno, bp-&gt;page);</span>
+<span class='curline'><a href='../S/181.html#L283'>bp</a>                283 libdb/mpool.c  	return (bp-&gt;page);</span>
+<span class='curline'><a href='../S/181.html#L300'>bp</a>                300 libdb/mpool.c  	BKT *bp;</span>
+<span class='curline'><a href='../S/181.html#L305'>bp</a>                305 libdb/mpool.c  	bp = (BKT *)((char *)page - sizeof(BKT));</span>
+<span class='curline'><a href='../S/181.html#L307'>bp</a>                307 libdb/mpool.c  	if (!(bp-&gt;flags &amp; MPOOL_PINNED)) {</span>
+<span class='curline'><a href='../S/181.html#L309'>bp</a>                309 libdb/mpool.c  		    "mpool_put: page %d not pinned\n", bp-&gt;pgno);</span>
+<span class='curline'><a href='../S/181.html#L313'>bp</a>                313 libdb/mpool.c  	bp-&gt;flags &amp;= ~MPOOL_PINNED;</span>
+<span class='curline'><a href='../S/181.html#L314'>bp</a>                314 libdb/mpool.c  	bp-&gt;flags |= flags &amp; MPOOL_DIRTY;</span>
+<span class='curline'><a href='../S/181.html#L328'>bp</a>                328 libdb/mpool.c  	BKT *bp;</span>
+<span class='curline'><a href='../S/181.html#L331'>bp</a>                331 libdb/mpool.c  	while ((bp = mp-&gt;lqh.cqh_first) != (void *)&amp;mp-&gt;lqh) {</span>
+<span class='curline'><a href='../S/181.html#L333'>bp</a>                333 libdb/mpool.c  		free(bp);</span>
+<span class='curline'><a href='../S/181.html#L351'>bp</a>                351 libdb/mpool.c  	BKT *bp;</span>
+<span class='curline'><a href='../S/181.html#L354'>bp</a>                354 libdb/mpool.c  	for (bp = mp-&gt;lqh.cqh_first;</span>
+<span class='curline'><a href='../S/181.html#L355'>bp</a>                355 libdb/mpool.c  	    bp != (void *)&amp;mp-&gt;lqh; bp = bp-&gt;q.cqe_next)</span>
+<span class='curline'><a href='../S/181.html#L356'>bp</a>                356 libdb/mpool.c  		if (bp-&gt;flags &amp; MPOOL_DIRTY &amp;&amp;</span>
+<span class='curline'><a href='../S/181.html#L357'>bp</a>                357 libdb/mpool.c  		    mpool_write(mp, bp) == RET_ERROR)</span>
+<span class='curline'><a href='../S/181.html#L375'>bp</a>                375 libdb/mpool.c  	BKT *bp;</span>
+<span class='curline'><a href='../S/181.html#L387'>bp</a>                387 libdb/mpool.c  	for (bp = mp-&gt;lqh.cqh_first;</span>
+<span class='curline'><a href='../S/181.html#L388'>bp</a>                388 libdb/mpool.c  	    bp != (void *)&amp;mp-&gt;lqh; bp = bp-&gt;q.cqe_next)</span>
+<span class='curline'><a href='../S/181.html#L389'>bp</a>                389 libdb/mpool.c  		if (!(bp-&gt;flags &amp; MPOOL_PINNED)) {</span>
+<span class='curline'><a href='../S/181.html#L391'>bp</a>                391 libdb/mpool.c  			if (bp-&gt;flags &amp; MPOOL_DIRTY &amp;&amp;</span>
+<span class='curline'><a href='../S/181.html#L392'>bp</a>                392 libdb/mpool.c  			    mpool_write(mp, bp) == RET_ERROR)</span>
+<span class='curline'><a href='../S/181.html#L398'>bp</a>                398 libdb/mpool.c  			head = &amp;mp-&gt;hqh[HASHKEY(bp-&gt;pgno)];</span>
+<span class='curline'><a href='../S/181.html#L399'>bp</a>                399 libdb/mpool.c  			CIRCLEQ_REMOVE(head, bp, hq);</span>
+<span class='curline'><a href='../S/181.html#L400'>bp</a>                400 libdb/mpool.c  			CIRCLEQ_REMOVE(&amp;mp-&gt;lqh, bp, q);</span>
+<span class='curline'><a href='../S/181.html#L403'>bp</a>                403 libdb/mpool.c  				spage = bp-&gt;page;</span>
+<span class='curline'><a href='../S/181.html#L404'>bp</a>                404 libdb/mpool.c  				memset(bp, 0xff, sizeof(BKT) + mp-&gt;pagesize);</span>
+<span class='curline'><a href='../S/181.html#L405'>bp</a>                405 libdb/mpool.c  				bp-&gt;page = spage;</span>
+<span class='curline'><a href='../S/181.html#L408'>bp</a>                408 libdb/mpool.c  			return (bp);</span>
+<span class='curline'><a href='../S/181.html#L411'>bp</a>                411 libdb/mpool.c  new:	if ((bp = (BKT *)malloc(sizeof(BKT) + mp-&gt;pagesize)) == NULL)</span>
+<span class='curline'><a href='../S/181.html#L417'>bp</a>                417 libdb/mpool.c  	memset(bp, 0xff, sizeof(BKT) + mp-&gt;pagesize);</span>
+<span class='curline'><a href='../S/181.html#L419'>bp</a>                419 libdb/mpool.c  	bp-&gt;page = (char *)bp + sizeof(BKT);</span>
+<span class='curline'><a href='../S/181.html#L421'>bp</a>                421 libdb/mpool.c  	return (bp);</span>
+<span class='curline'><a href='../S/181.html#L432'>bp</a>                432 libdb/mpool.c  mpool_write(mp, bp)</span>
+<span class='curline'><a href='../S/181.html#L434'>bp</a>                434 libdb/mpool.c  	BKT *bp;</span>
+<span class='curline'><a href='../S/181.html#L444'>bp</a>                444 libdb/mpool.c  		(mp-&gt;pgout)(mp-&gt;pgcookie, bp-&gt;pgno, bp-&gt;page);</span>
+<span class='curline'><a href='../S/181.html#L447'>bp</a>                447 libdb/mpool.c  	off = mp-&gt;pagesize * (off_t)bp-&gt;pgno;</span>
+<span class='curline'><a href='../S/181.html#L450'>bp</a>                450 libdb/mpool.c  	if (pwrite(mp-&gt;fd, bp-&gt;page, mp-&gt;pagesize, off) != mp-&gt;pagesize)</span>
+<span class='curline'><a href='../S/181.html#L455'>bp</a>                455 libdb/mpool.c  	if (write(mp-&gt;fd, bp-&gt;page, mp-&gt;pagesize) != mp-&gt;pagesize)</span>
+<span class='curline'><a href='../S/181.html#L459'>bp</a>                459 libdb/mpool.c  	bp-&gt;flags &amp;= ~MPOOL_DIRTY;</span>
+<span class='curline'><a href='../S/181.html#L476'>bp</a>                476 libdb/mpool.c  	BKT *bp;</span>
+<span class='curline'><a href='../S/181.html#L479'>bp</a>                479 libdb/mpool.c  	for (bp = head-&gt;cqh_first; bp != (void *)head; bp = bp-&gt;hq.cqe_next)</span>
+<span class='curline'><a href='../S/181.html#L480'>bp</a>                480 libdb/mpool.c  		if (bp-&gt;pgno == pgno) {</span>
+<span class='curline'><a href='../S/181.html#L484'>bp</a>                484 libdb/mpool.c  			return (bp);</span>
+<span class='curline'><a href='../S/181.html#L503'>bp</a>                503 libdb/mpool.c  	BKT *bp;</span>
+<span class='curline'><a href='../S/181.html#L525'>bp</a>                525 libdb/mpool.c  	for (bp = mp-&gt;lqh.cqh_first;</span>
+<span class='curline'><a href='../S/181.html#L526'>bp</a>                526 libdb/mpool.c  	    bp != (void *)&amp;mp-&gt;lqh; bp = bp-&gt;q.cqe_next) {</span>
+<span class='curline'><a href='../S/181.html#L527'>bp</a>                527 libdb/mpool.c  		(void)fprintf(stderr, "%s%d", sep, bp-&gt;pgno);</span>
+<span class='curline'><a href='../S/181.html#L528'>bp</a>                528 libdb/mpool.c  		if (bp-&gt;flags &amp; MPOOL_DIRTY)</span>
+<span class='curline'><a href='../S/181.html#L530'>bp</a>                530 libdb/mpool.c  		if (bp-&gt;flags &amp; MPOOL_PINNED)</span>
+<span class='curline'><a href='../S/264.html#L363'>bp</a>                363 libutil/abs2rel.c 	const char *pp, *bp, *branch, *branch_b;</span>
+<span class='curline'><a href='../S/264.html#L389'>bp</a>                389 libutil/abs2rel.c 	for (pp = path, bp = base; *pp &amp;&amp; *bp; pp++, bp++) {</span>
+<span class='curline'><a href='../S/264.html#L404'>bp</a>                404 libutil/abs2rel.c 		if (PATHCHAR(*pp) != PATHCHAR(*bp))</span>
+<span class='curline'><a href='../S/264.html#L408'>bp</a>                408 libutil/abs2rel.c 			branch_b = bp;</span>
+<span class='curline'><a href='../S/264.html#L412'>bp</a>                412 libutil/abs2rel.c 	    (*bp == 0 || (*bp == '/' &amp;&amp; *(bp + 1) == 0))) {</span>
+<span class='curline'><a href='../S/264.html#L436'>bp</a>                436 libutil/abs2rel.c 	if ((*pp == 0 &amp;&amp; *bp == '/') || (*pp == '/' &amp;&amp; *bp == 0)) {</span>
+<span class='curline'><a href='../S/264.html#L438'>bp</a>                438 libutil/abs2rel.c 		branch_b = bp;</span>
+<span class='curline'><a href='../S/264.html#L444'>bp</a>                444 libutil/abs2rel.c 	for (bp = branch_b; *bp; bp++)</span>
+<span class='curline'><a href='../S/264.html#L445'>bp</a>                445 libutil/abs2rel.c 		if (*bp == '/' &amp;&amp; *(bp + 1) != 0) {</span>
+<span class='curline'><a href='../S/264.html#L498'>bp</a>                498 libutil/abs2rel.c 	const char *pp, *bp;</span>
+<span class='curline'><a href='../S/264.html#L547'>bp</a>                547 libutil/abs2rel.c 	bp = base + length;</span>
+<span class='curline'><a href='../S/264.html#L548'>bp</a>                548 libutil/abs2rel.c 	if (*(bp - 1) == '/')</span>
+<span class='curline'><a href='../S/264.html#L549'>bp</a>                549 libutil/abs2rel.c 		--bp;</span>
+<span class='curline'><a href='../S/264.html#L556'>bp</a>                556 libutil/abs2rel.c 			while (bp &gt; base &amp;&amp; *--bp != '/')</span>
+<span class='curline'><a href='../S/264.html#L562'>bp</a>                562 libutil/abs2rel.c 			while (bp &gt; base &amp;&amp; *--bp != '/')</span>
+<span class='curline'><a href='../S/264.html#L570'>bp</a>                570 libutil/abs2rel.c 	length = bp - base;</span>
+</pre>
+</body>
+</html>

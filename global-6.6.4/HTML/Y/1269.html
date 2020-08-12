@@ -1,0 +1,89 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>aPool</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/185.html#L17373'>aPool</a>            17373 libdb/sqlite3.c   Mem3Block *aPool;</span>
+<span class='curline'><a href='../S/185.html#L17415'>aPool</a>            17415 libdb/sqlite3.c   u32 next = mem3.aPool[i].u.list.next;</span>
+<span class='curline'><a href='../S/185.html#L17416'>aPool</a>            17416 libdb/sqlite3.c   u32 prev = mem3.aPool[i].u.list.prev;</span>
+<span class='curline'><a href='../S/185.html#L17421'>aPool</a>            17421 libdb/sqlite3.c     mem3.aPool[prev].u.list.next = next;</span>
+<span class='curline'><a href='../S/185.html#L17424'>aPool</a>            17424 libdb/sqlite3.c     mem3.aPool[next].u.list.prev = prev;</span>
+<span class='curline'><a href='../S/185.html#L17426'>aPool</a>            17426 libdb/sqlite3.c   mem3.aPool[i].u.list.next = 0;</span>
+<span class='curline'><a href='../S/185.html#L17427'>aPool</a>            17427 libdb/sqlite3.c   mem3.aPool[i].u.list.prev = 0;</span>
+<span class='curline'><a href='../S/185.html#L17437'>aPool</a>            17437 libdb/sqlite3.c   assert( (mem3.aPool[i-1].u.hdr.size4x &amp; 1)==0 );</span>
+<span class='curline'><a href='../S/185.html#L17439'>aPool</a>            17439 libdb/sqlite3.c   size = mem3.aPool[i-1].u.hdr.size4x/4;</span>
+<span class='curline'><a href='../S/185.html#L17440'>aPool</a>            17440 libdb/sqlite3.c   assert( size==mem3.aPool[i+size-1].u.hdr.prevSize );</span>
+<span class='curline'><a href='../S/185.html#L17456'>aPool</a>            17456 libdb/sqlite3.c   mem3.aPool[i].u.list.next = *pRoot;</span>
+<span class='curline'><a href='../S/185.html#L17457'>aPool</a>            17457 libdb/sqlite3.c   mem3.aPool[i].u.list.prev = 0;</span>
+<span class='curline'><a href='../S/185.html#L17459'>aPool</a>            17459 libdb/sqlite3.c     mem3.aPool[*pRoot].u.list.prev = i;</span>
+<span class='curline'><a href='../S/185.html#L17472'>aPool</a>            17472 libdb/sqlite3.c   assert( (mem3.aPool[i-1].u.hdr.size4x &amp; 1)==0 );</span>
+<span class='curline'><a href='../S/185.html#L17473'>aPool</a>            17473 libdb/sqlite3.c   size = mem3.aPool[i-1].u.hdr.size4x/4;</span>
+<span class='curline'><a href='../S/185.html#L17474'>aPool</a>            17474 libdb/sqlite3.c   assert( size==mem3.aPool[i+size-1].u.hdr.prevSize );</span>
+<span class='curline'><a href='../S/185.html#L17523'>aPool</a>            17523 libdb/sqlite3.c   assert( mem3.aPool[i-1].u.hdr.size4x/4==nBlock );</span>
+<span class='curline'><a href='../S/185.html#L17524'>aPool</a>            17524 libdb/sqlite3.c   assert( mem3.aPool[i+nBlock-1].u.hdr.prevSize==nBlock );</span>
+<span class='curline'><a href='../S/185.html#L17525'>aPool</a>            17525 libdb/sqlite3.c   x = mem3.aPool[i-1].u.hdr.size4x;</span>
+<span class='curline'><a href='../S/185.html#L17526'>aPool</a>            17526 libdb/sqlite3.c   mem3.aPool[i-1].u.hdr.size4x = nBlock*4 | 1 | (x&amp;2);</span>
+<span class='curline'><a href='../S/185.html#L17527'>aPool</a>            17527 libdb/sqlite3.c   mem3.aPool[i+nBlock-1].u.hdr.prevSize = nBlock;</span>
+<span class='curline'><a href='../S/185.html#L17528'>aPool</a>            17528 libdb/sqlite3.c   mem3.aPool[i+nBlock-1].u.hdr.size4x |= 2;</span>
+<span class='curline'><a href='../S/185.html#L17529'>aPool</a>            17529 libdb/sqlite3.c   return &amp;mem3.aPool[i];</span>
+<span class='curline'><a href='../S/185.html#L17552'>aPool</a>            17552 libdb/sqlite3.c     mem3.aPool[mem3.iMaster+mem3.szMaster-1].u.hdr.prevSize = nBlock;</span>
+<span class='curline'><a href='../S/185.html#L17553'>aPool</a>            17553 libdb/sqlite3.c     mem3.aPool[mem3.iMaster+mem3.szMaster-1].u.hdr.size4x |= 2;</span>
+<span class='curline'><a href='../S/185.html#L17554'>aPool</a>            17554 libdb/sqlite3.c     mem3.aPool[newi-1].u.hdr.size4x = nBlock*4 + 1;</span>
+<span class='curline'><a href='../S/185.html#L17556'>aPool</a>            17556 libdb/sqlite3.c     mem3.aPool[newi-1].u.hdr.prevSize = mem3.szMaster;</span>
+<span class='curline'><a href='../S/185.html#L17557'>aPool</a>            17557 libdb/sqlite3.c     x = mem3.aPool[mem3.iMaster-1].u.hdr.size4x &amp; 2;</span>
+<span class='curline'><a href='../S/185.html#L17558'>aPool</a>            17558 libdb/sqlite3.c     mem3.aPool[mem3.iMaster-1].u.hdr.size4x = mem3.szMaster*4 | x;</span>
+<span class='curline'><a href='../S/185.html#L17562'>aPool</a>            17562 libdb/sqlite3.c     return (void*)&amp;mem3.aPool[newi];</span>
+<span class='curline'><a href='../S/185.html#L17587'>aPool</a>            17587 libdb/sqlite3.c     iNext = mem3.aPool[i].u.list.next;</span>
+<span class='curline'><a href='../S/185.html#L17588'>aPool</a>            17588 libdb/sqlite3.c     size = mem3.aPool[i-1].u.hdr.size4x;</span>
+<span class='curline'><a href='../S/185.html#L17592'>aPool</a>            17592 libdb/sqlite3.c       assert( i &gt; mem3.aPool[i-1].u.hdr.prevSize );</span>
+<span class='curline'><a href='../S/185.html#L17593'>aPool</a>            17593 libdb/sqlite3.c       prev = i - mem3.aPool[i-1].u.hdr.prevSize;</span>
+<span class='curline'><a href='../S/185.html#L17595'>aPool</a>            17595 libdb/sqlite3.c         iNext = mem3.aPool[prev].u.list.next;</span>
+<span class='curline'><a href='../S/185.html#L17599'>aPool</a>            17599 libdb/sqlite3.c       x = mem3.aPool[prev-1].u.hdr.size4x &amp; 2;</span>
+<span class='curline'><a href='../S/185.html#L17600'>aPool</a>            17600 libdb/sqlite3.c       mem3.aPool[prev-1].u.hdr.size4x = size*4 | x;</span>
+<span class='curline'><a href='../S/185.html#L17601'>aPool</a>            17601 libdb/sqlite3.c       mem3.aPool[prev+size-1].u.hdr.prevSize = size;</span>
+<span class='curline'><a href='../S/185.html#L17648'>aPool</a>            17648 libdb/sqlite3.c     for(i=mem3.aiHash[hash]; i&gt;0; i=mem3.aPool[i].u.list.next){</span>
+<span class='curline'><a href='../S/185.html#L17649'>aPool</a>            17649 libdb/sqlite3.c       if( mem3.aPool[i-1].u.hdr.size4x/4==nBlock ){</span>
+<span class='curline'><a href='../S/185.html#L17708'>aPool</a>            17708 libdb/sqlite3.c   assert( p&gt;mem3.aPool &amp;&amp; p&lt;&amp;mem3.aPool[mem3.nPool] );</span>
+<span class='curline'><a href='../S/185.html#L17709'>aPool</a>            17709 libdb/sqlite3.c   i = p - mem3.aPool;</span>
+<span class='curline'><a href='../S/185.html#L17710'>aPool</a>            17710 libdb/sqlite3.c   assert( (mem3.aPool[i-1].u.hdr.size4x&amp;1)==1 );</span>
+<span class='curline'><a href='../S/185.html#L17711'>aPool</a>            17711 libdb/sqlite3.c   size = mem3.aPool[i-1].u.hdr.size4x/4;</span>
+<span class='curline'><a href='../S/185.html#L17713'>aPool</a>            17713 libdb/sqlite3.c   mem3.aPool[i-1].u.hdr.size4x &amp;= ~1;</span>
+<span class='curline'><a href='../S/185.html#L17714'>aPool</a>            17714 libdb/sqlite3.c   mem3.aPool[i+size-1].u.hdr.prevSize = size;</span>
+<span class='curline'><a href='../S/185.html#L17715'>aPool</a>            17715 libdb/sqlite3.c   mem3.aPool[i+size-1].u.hdr.size4x &amp;= ~2;</span>
+<span class='curline'><a href='../S/185.html#L17720'>aPool</a>            17720 libdb/sqlite3.c     while( (mem3.aPool[mem3.iMaster-1].u.hdr.size4x&amp;2)==0 ){</span>
+<span class='curline'><a href='../S/185.html#L17721'>aPool</a>            17721 libdb/sqlite3.c       size = mem3.aPool[mem3.iMaster-1].u.hdr.prevSize;</span>
+<span class='curline'><a href='../S/185.html#L17725'>aPool</a>            17725 libdb/sqlite3.c       x = mem3.aPool[mem3.iMaster-1].u.hdr.size4x &amp; 2;</span>
+<span class='curline'><a href='../S/185.html#L17726'>aPool</a>            17726 libdb/sqlite3.c       mem3.aPool[mem3.iMaster-1].u.hdr.size4x = mem3.szMaster*4 | x;</span>
+<span class='curline'><a href='../S/185.html#L17727'>aPool</a>            17727 libdb/sqlite3.c       mem3.aPool[mem3.iMaster+mem3.szMaster-1].u.hdr.prevSize = mem3.szMaster;</span>
+<span class='curline'><a href='../S/185.html#L17729'>aPool</a>            17729 libdb/sqlite3.c     x = mem3.aPool[mem3.iMaster-1].u.hdr.size4x &amp; 2;</span>
+<span class='curline'><a href='../S/185.html#L17730'>aPool</a>            17730 libdb/sqlite3.c     while( (mem3.aPool[mem3.iMaster+mem3.szMaster-1].u.hdr.size4x&amp;1)==0 ){</span>
+<span class='curline'><a href='../S/185.html#L17732'>aPool</a>            17732 libdb/sqlite3.c       mem3.szMaster += mem3.aPool[mem3.iMaster+mem3.szMaster-1].u.hdr.size4x/4;</span>
+<span class='curline'><a href='../S/185.html#L17733'>aPool</a>            17733 libdb/sqlite3.c       mem3.aPool[mem3.iMaster-1].u.hdr.size4x = mem3.szMaster*4 | x;</span>
+<span class='curline'><a href='../S/185.html#L17734'>aPool</a>            17734 libdb/sqlite3.c       mem3.aPool[mem3.iMaster+mem3.szMaster-1].u.hdr.prevSize = mem3.szMaster;</span>
+<span class='curline'><a href='../S/185.html#L17827'>aPool</a>            17827 libdb/sqlite3.c   mem3.aPool = (Mem3Block *)sqlite3GlobalConfig.pHeap;</span>
+<span class='curline'><a href='../S/185.html#L17834'>aPool</a>            17834 libdb/sqlite3.c   mem3.aPool[0].u.hdr.size4x = (mem3.szMaster&lt;&lt;2) + 2;</span>
+<span class='curline'><a href='../S/185.html#L17835'>aPool</a>            17835 libdb/sqlite3.c   mem3.aPool[mem3.nPool].u.hdr.prevSize = mem3.nPool;</span>
+<span class='curline'><a href='../S/185.html#L17836'>aPool</a>            17836 libdb/sqlite3.c   mem3.aPool[mem3.nPool].u.hdr.size4x = 1;</span>
+<span class='curline'><a href='../S/185.html#L17874'>aPool</a>            17874 libdb/sqlite3.c     size = mem3.aPool[i-1].u.hdr.size4x;</span>
+<span class='curline'><a href='../S/185.html#L17876'>aPool</a>            17876 libdb/sqlite3.c       fprintf(out, "%p size error\n", &amp;mem3.aPool[i]);</span>
+<span class='curline'><a href='../S/185.html#L17880'>aPool</a>            17880 libdb/sqlite3.c     if( (size&amp;1)==0 &amp;&amp; mem3.aPool[i+size/4-1].u.hdr.prevSize!=size/4 ){</span>
+<span class='curline'><a href='../S/185.html#L17881'>aPool</a>            17881 libdb/sqlite3.c       fprintf(out, "%p tail size does not match\n", &amp;mem3.aPool[i]);</span>
+<span class='curline'><a href='../S/185.html#L17885'>aPool</a>            17885 libdb/sqlite3.c     if( ((mem3.aPool[i+size/4-1].u.hdr.size4x&amp;2)&gt;&gt;1)!=(size&amp;1) ){</span>
+<span class='curline'><a href='../S/185.html#L17886'>aPool</a>            17886 libdb/sqlite3.c       fprintf(out, "%p tail checkout bit is incorrect\n", &amp;mem3.aPool[i]);</span>
+<span class='curline'><a href='../S/185.html#L17891'>aPool</a>            17891 libdb/sqlite3.c       fprintf(out, "%p %6d bytes checked out\n", &amp;mem3.aPool[i], (size/4)*8-8);</span>
+<span class='curline'><a href='../S/185.html#L17893'>aPool</a>            17893 libdb/sqlite3.c       fprintf(out, "%p %6d bytes free%s\n", &amp;mem3.aPool[i], (size/4)*8-8,</span>
+<span class='curline'><a href='../S/185.html#L17900'>aPool</a>            17900 libdb/sqlite3.c     for(j = mem3.aiSmall[i]; j&gt;0; j=mem3.aPool[j].u.list.next){</span>
+<span class='curline'><a href='../S/185.html#L17901'>aPool</a>            17901 libdb/sqlite3.c       fprintf(out, " %p(%d)", &amp;mem3.aPool[j],</span>
+<span class='curline'><a href='../S/185.html#L17902'>aPool</a>            17902 libdb/sqlite3.c               (mem3.aPool[j-1].u.hdr.size4x/4)*8-8);</span>
+<span class='curline'><a href='../S/185.html#L17909'>aPool</a>            17909 libdb/sqlite3.c     for(j = mem3.aiHash[i]; j&gt;0; j=mem3.aPool[j].u.list.next){</span>
+<span class='curline'><a href='../S/185.html#L17910'>aPool</a>            17910 libdb/sqlite3.c       fprintf(out, " %p(%d)", &amp;mem3.aPool[j],</span>
+<span class='curline'><a href='../S/185.html#L17911'>aPool</a>            17911 libdb/sqlite3.c               (mem3.aPool[j-1].u.hdr.size4x/4)*8-8);</span>
+</pre>
+</body>
+</html>

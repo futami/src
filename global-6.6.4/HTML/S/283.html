@@ -1,0 +1,164 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>libutil/dbop.h</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/406.html'>libutil</a>/dbop.h</h2>
+<em class='comment'>/* [&lt;][&gt;][^][v][top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'><a href='../J/154.html' title='Multiple included from 7 places.'>INCLUDED FROM</a></h2>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2006, 2009, 2010,</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *  2014</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> *  Tama Communications Corporation</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> *</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> * This file is part of GNU GLOBAL.</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> *</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * This program is free software: you can redistribute it and/or modify</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * it under the terms of the GNU General Public License as published by</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> * the Free Software Foundation, either version 3 of the License, or</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> * (at your option) any later version.</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> * </em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * This program is distributed in the hope that it will be useful,</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> * GNU General Public License for more details.</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> * </em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * You should have received a copy of the GNU General Public License</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> */</em>
+<a id='L21' name='L21'></a>  21 <em class='sharp'>#ifndef</em> <a href='../S/283.html#L22' title='Defined at 22 in libutil/dbop.h.'>_DBOP_H_</a>
+<a id='L22' name='L22'></a>  22 <em class='sharp'>#define</em> <a href='../S/283.html#L21' title='Referred from 21 in libutil/dbop.h.'>_DBOP_H_</a>
+<a id='L23' name='L23'></a>  23 
+<a id='L24' name='L24'></a>  24 <em class='sharp'>#include</em> "<a href='300.html'>gparam.h</a>"
+<a id='L25' name='L25'></a>  25 <em class='sharp'>#ifdef</em> <a href='../Y/835.html' title='Multiple used in 4 places.'>USE_DB185_COMPAT</a>
+<a id='L26' name='L26'></a>  26 <em class='sharp'>#include</em> &lt;db_185.h&gt;
+<a id='L27' name='L27'></a>  27 <em class='sharp'>#else</em>
+<a id='L28' name='L28'></a>  28 <em class='sharp'>#include</em> "<a href='177.html'>db.h</a>"
+<a id='L29' name='L29'></a>  29 <em class='sharp'>#endif</em>
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#ifdef</em> <a href='../Y/842.html' title='Multiple used in 28 places.'>USE_SQLITE3</a>
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#include</em> &lt;<a href='186.html'>sqlite3.h</a>&gt;
+<a id='L32' name='L32'></a>  32 <em class='sharp'>#endif</em>
+<a id='L33' name='L33'></a>  33 <em class='sharp'>#include</em> "<a href='200.html'>regex.h</a>"
+<a id='L34' name='L34'></a>  34 <em class='sharp'>#include</em> "<a href='341.html'>strbuf.h</a>"
+<a id='L35' name='L35'></a>  35 
+<a id='L36' name='L36'></a>  36 <em class='sharp'>#if</em> <strong class='reserved'>defined</strong>(<a href='../Y/956.html' title='Multiple used in 117 places.'>_WIN32</a>) &amp;&amp; !<strong class='reserved'>defined</strong>(<a href='../S/205.html#L95' title='Defined at 95 in libltdl/libltdl/lt_system.h.'>__CYGWIN__</a>)
+<a id='L37' name='L37'></a>  37 <strong class='reserved'>typedef</strong> <strong class='reserved'>void</strong>* <a href='../R/649.html' title='Multiple referred from 71 places.'>HANDLE</a>;
+<a id='L38' name='L38'></a>  38 <em class='sharp'>#endif</em>
+<a id='L39' name='L39'></a>  39 
+<a id='L40' name='L40'></a>  40 <em class='sharp'>#define</em> <a href='../R/338.html' title='Multiple referred from 5 places.'>DBOP_PAGESIZE</a>   8192
+<a id='L41' name='L41'></a>  41 <em class='sharp'>#ifdef</em> <a href='../Y/842.html' title='Multiple used in 28 places.'>USE_SQLITE3</a>
+<a id='L42' name='L42'></a>  42 <em class='sharp'>#define</em> <a href='../S/282.html#L1078' title='Referred from 1078 in libutil/dbop.c.'>DBOP_COMMIT_THRESHOLD</a>   800
+<a id='L43' name='L43'></a>  43 <em class='sharp'>#endif</em>
+<a id='L44' name='L44'></a>  44 <em class='sharp'>#define</em> <a href='../R/2812.html' title='Multiple referred from 2 places.'>VERSIONKEY</a>  " __.VERSION"
+<a id='L45' name='L45'></a>  45 
+<a id='L46' name='L46'></a>  46 <strong class='reserved'>typedef</strong> <strong class='reserved'>struct</strong> <em class='brace'>{</em>
+<a id='L47' name='L47'></a>  47     <em class='comment'>/*</em>
+<a id='L48' name='L48'></a>  48 <em class='comment'>     * (1) COMMON PART</em>
+<a id='L49' name='L49'></a>  49 <em class='comment'>     */</em>
+<a id='L50' name='L50'></a>  50     <strong class='reserved'>int</strong> <a href='../Y/4268.html' title='Multiple used in 73 places.'>mode</a>;           <em class='comment'>/**&lt; 0:read, 1:create, 2:modify */</em>
+<a id='L51' name='L51'></a>  51     <strong class='reserved'>int</strong> <a href='../Y/5042.html' title='Multiple used in 36 places.'>openflags</a>;          <em class='comment'>/**&lt; flags of xxxx_open() */</em>
+<a id='L52' name='L52'></a>  52     <strong class='reserved'>int</strong> <a href='../Y/3651.html' title='Multiple used in 9 places.'>ioflags</a>;            <em class='comment'>/**&lt; flags of xxxx_first() */</em>
+<a id='L53' name='L53'></a>  53     <strong class='reserved'>char</strong> *<a href='../Y/3936.html' title='Multiple used in 25 places.'>lastdat</a>;          <em class='comment'>/**&lt; the data of last located record */</em>
+<a id='L54' name='L54'></a>  54     <strong class='reserved'>int</strong> <a href='../Y/3945.html' title='Multiple used in 18 places.'>lastsize</a>;           <em class='comment'>/**&lt; the size of the lastdat */</em>
+<a id='L55' name='L55'></a>  55     <strong class='reserved'>char</strong> *<a href='../Y/3940.html' title='Multiple used in 12 places.'>lastkey</a>;          <em class='comment'>/**&lt; the key of last located record */</em>
+<a id='L56' name='L56'></a>  56     <strong class='reserved'>int</strong> <a href='../Y/3941.html' title='Multiple used in 5 places.'>lastkeysize</a>;        <em class='comment'>/**&lt; the size of the key */</em>
+<a id='L57' name='L57'></a>  57     <a href='../S/200.html#L391' title='Defined at 391 in libglibc/regex.h.'>regex_t</a> *<a href='../Y/6132.html' title='Multiple used in 74 places.'>preg</a>;          <em class='comment'>/**&lt; compiled regular expression */</em>
+<a id='L58' name='L58'></a>  58     <strong class='reserved'>int</strong> <a href='../Y/7333.html' title='Multiple used in 9 places.'>unread</a>;         <em class='comment'>/**&lt; leave record to read again */</em>
+<a id='L59' name='L59'></a>  59     <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/6217.html' title='Multiple used in 3 places.'>put_errmsg</a>;     <em class='comment'>/**&lt; error message for put_xxx() */</em>
+<a id='L60' name='L60'></a>  60 
+<a id='L61' name='L61'></a>  61     <em class='comment'>/*</em>
+<a id='L62' name='L62'></a>  62 <em class='comment'>     * (2) DB185 PART</em>
+<a id='L63' name='L63'></a>  63 <em class='comment'>     */</em>
+<a id='L64' name='L64'></a>  64     <a href='../S/177.html#L138' title='Defined at 138 in libdb/db.h.'>DB</a> *<a href='../Y/2344.html' title='Multiple used in 3948 places.'>db</a>;             <em class='comment'>/**&lt; descripter of DB */</em>
+<a id='L65' name='L65'></a>  65     <strong class='reserved'>char</strong> <a href='../S/304.html#L313' title='Defined at 313 in libutil/gtagsop.c.'>dbname</a>[<a href='../S/300.html#L44' title='Defined at 44 in libutil/gparam.h.'>MAXPATHLEN</a>];    <em class='comment'>/**&lt; dbname */</em>
+<a id='L66' name='L66'></a>  66     <strong class='reserved'>char</strong> <a href='../Y/3891.html' title='Multiple used in 332 places.'>key</a>[<a href='../D/994.html' title='Multiple defined in 2 places.'>MAXKEYLEN</a>];        <em class='comment'>/**&lt; key */</em>
+<a id='L67' name='L67'></a>  67     <strong class='reserved'>int</strong> <a href='../Y/3894.html' title='Multiple used in 10 places.'>keylen</a>;         <em class='comment'>/**&lt; key length */</em>
+<a id='L68' name='L68'></a>  68     <strong class='reserved'>char</strong> <a href='../Y/6148.html' title='Multiple used in 83 places.'>prev</a>[<a href='../D/994.html' title='Multiple defined in 2 places.'>MAXKEYLEN</a>];       <em class='comment'>/**&lt; previous key value */</em>
+<a id='L69' name='L69'></a>  69     <strong class='reserved'>int</strong> <a href='../Y/5854.html' title='Multiple used in 11 places.'>perm</a>;           <em class='comment'>/**&lt; file permission */</em>
+<a id='L70' name='L70'></a>  70 
+<a id='L71' name='L71'></a>  71     <em class='comment'>/*</em>
+<a id='L72' name='L72'></a>  72 <em class='comment'>     * (3) sorted write</em>
+<a id='L73' name='L73'></a>  73 <em class='comment'>     */</em>
+<a id='L74' name='L74'></a>  74     <a href='../Y/154.html' title='Multiple used in 271 places.'>FILE</a> *<a href='../Y/6785.html' title='Multiple used in 13 places.'>sortout</a>;          <em class='comment'>/**&lt; write to sort command */</em>
+<a id='L75' name='L75'></a>  75     <a href='../Y/154.html' title='Multiple used in 271 places.'>FILE</a> *<a href='../Y/6781.html' title='Multiple used in 7 places.'>sortin</a>;           <em class='comment'>/**&lt; read from sort command */</em>
+<a id='L76' name='L76'></a>  76 <em class='sharp'>#if</em> <strong class='reserved'>defined</strong>(<a href='../Y/956.html' title='Multiple used in 117 places.'>_WIN32</a>) &amp;&amp; !<strong class='reserved'>defined</strong>(<a href='../S/205.html#L95' title='Defined at 95 in libltdl/libltdl/lt_system.h.'>__CYGWIN__</a>)
+<a id='L77' name='L77'></a>  77     <a href='../S/283.html#L37' title='Defined at 37 in libutil/dbop.h.'>HANDLE</a> <a href='../Y/5960.html' title='Multiple used in 40 places.'>pid</a>;
+<a id='L78' name='L78'></a>  78 <em class='sharp'>#else</em>
+<a id='L79' name='L79'></a>  79     <strong class='reserved'>int</strong> <a href='../Y/5960.html' title='Multiple used in 40 places.'>pid</a>;            <em class='comment'>/**&lt; sort process id */</em>
+<a id='L80' name='L80'></a>  80 <em class='sharp'>#endif</em>
+<a id='L81' name='L81'></a>  81 <em class='sharp'>#ifdef</em> <a href='../Y/842.html' title='Multiple used in 28 places.'>USE_SQLITE3</a>
+<a id='L82' name='L82'></a>  82     <em class='comment'>/*</em>
+<a id='L83' name='L83'></a>  83 <em class='comment'>     * (4) sqlite3 part</em>
+<a id='L84' name='L84'></a>  84 <em class='comment'>     */</em>
+<a id='L85' name='L85'></a>  85     <a href='../D/5864.html' title='Multiple defined in 3 places.'>sqlite3</a> *<a href='../Y/2346.html' title='Multiple used in 29 places.'>db3</a>;
+<a id='L86' name='L86'></a>  86     <a href='../S/341.html#L64' title='Defined at 64 in libutil/strbuf.h.'>STRBUF</a> *<a href='../Y/6629.html' title='Multiple used in 1265 places.'>sb</a>;
+<a id='L87' name='L87'></a>  87     <strong class='reserved'>int</strong> <a href='../Y/2504.html' title='Multiple used in 53 places.'>done</a>;
+<a id='L88' name='L88'></a>  88     <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/7139.html' title='Multiple used in 17 places.'>tblname</a>;
+<a id='L89' name='L89'></a>  89     <a href='../D/7002.html' title='Multiple defined in 2 places.'>sqlite3_stmt</a> *<a href='../Y/6969.html' title='Multiple used in 20 places.'>stmt</a>;
+<a id='L90' name='L90'></a>  90     <a href='../D/7002.html' title='Multiple defined in 2 places.'>sqlite3_stmt</a> *<a href='../Y/6971.html' title='Multiple used in 11 places.'>stmt_put3</a>;
+<a id='L91' name='L91'></a>  91     <a href='../D/6917.html' title='Multiple defined in 2 places.'>sqlite3_int64</a> <a href='../Y/3944.html' title='Multiple used in 4 places.'>lastrowid</a>;
+<a id='L92' name='L92'></a>  92     <strong class='reserved'>char</strong> *<a href='../Y/3938.html' title='Multiple used in 17 places.'>lastflag</a>;
+<a id='L93' name='L93'></a>  93 <em class='sharp'>#endif</em>
+<a id='L94' name='L94'></a>  94     <em class='comment'>/** statistics */</em>
+<a id='L95' name='L95'></a>  95     <strong class='reserved'>int</strong> <a href='../Y/6329.html' title='Multiple used in 11 places.'>readcount</a>;
+<a id='L96' name='L96'></a>  96 <em class='sharp'>#ifdef</em> <a href='../Y/842.html' title='Multiple used in 28 places.'>USE_SQLITE3</a>
+<a id='L97' name='L97'></a>  97     <em class='comment'>/** for commit */</em>
+<a id='L98' name='L98'></a>  98     <strong class='reserved'>int</strong> <a href='../Y/7519.html' title='Multiple used in 3 places.'>writecount</a>;
+<a id='L99' name='L99'></a>  99 <em class='sharp'>#endif</em>
+<a id='L100' name='L100'></a> 100 <em class='brace'>}</em> <a href='../R/334.html' title='Multiple referred from 72 places.'>DBOP</a>;
+<a id='L101' name='L101'></a> 101 
+<a id='L102' name='L102'></a> 102 <em class='comment'>/*</em>
+<a id='L103' name='L103'></a> 103 <em class='comment'> * openflags</em>
+<a id='L104' name='L104'></a> 104 <em class='comment'> */</em>
+<a id='L105' name='L105'></a> 105             <em class='comment'>/** allow duplicate records */</em>
+<a id='L106' name='L106'></a> 106 <em class='sharp'>#define</em> <a href='../R/336.html' title='Multiple referred from 4 places.'>DBOP_DUP</a>        1
+<a id='L107' name='L107'></a> 107 <em class='sharp'>#ifdef</em> <a href='../Y/842.html' title='Multiple used in 28 places.'>USE_SQLITE3</a>
+<a id='L108' name='L108'></a> 108             <em class='comment'>/** use sqlite3 database        */</em>
+<a id='L109' name='L109'></a> 109 <em class='sharp'>#define</em> <a href='../R/342.html' title='Multiple referred from 15 places.'>DBOP_SQLITE3</a>        2
+<a id='L110' name='L110'></a> 110 <em class='sharp'>#endif</em>
+<a id='L111' name='L111'></a> 111             <em class='comment'>/** raw read */</em>
+<a id='L112' name='L112'></a> 112 <em class='sharp'>#define</em> <a href='../R/340.html' title='Multiple referred from 6 places.'>DBOP_RAW</a>        4
+<a id='L113' name='L113'></a> 113             <em class='comment'>/** sorted write */</em>
+<a id='L114' name='L114'></a> 114 <em class='sharp'>#define</em> <a href='../R/341.html' title='Multiple referred from 2 places.'>DBOP_SORTED_WRITE</a>   8
+<a id='L115' name='L115'></a> 115 
+<a id='L116' name='L116'></a> 116 <em class='comment'>/*</em>
+<a id='L117' name='L117'></a> 117 <em class='comment'> * ioflags</em>
+<a id='L118' name='L118'></a> 118 <em class='comment'> */</em>
+<a id='L119' name='L119'></a> 119             <em class='comment'>/** read key part */</em>
+<a id='L120' name='L120'></a> 120 <em class='sharp'>#define</em> <a href='../R/337.html' title='Multiple referred from 12 places.'>DBOP_KEY</a>        1
+<a id='L121' name='L121'></a> 121             <em class='comment'>/** prefixed read */</em>
+<a id='L122' name='L122'></a> 122 <em class='sharp'>#define</em> <a href='../R/339.html' title='Multiple referred from 14 places.'>DBOP_PREFIX</a>     2
+<a id='L123' name='L123'></a> 123 
+<a id='L124' name='L124'></a> 124 <a href='../S/283.html#L100' title='Defined at 100 in libutil/dbop.h.'>DBOP</a> *<a href='../S/282.html#L224' title='Defined at 224 in libutil/dbop.c.'>dbop_open</a>(<strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *, <strong class='reserved'>int</strong>, <strong class='reserved'>int</strong>, <strong class='reserved'>int</strong>);
+<a id='L125' name='L125'></a> 125 <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../S/282.html#L322' title='Defined at 322 in libutil/dbop.c.'>dbop_get</a>(<a href='../S/283.html#L100' title='Defined at 100 in libutil/dbop.h.'>DBOP</a> *, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *);
+<a id='L126' name='L126'></a> 126 <strong class='reserved'>void</strong> <a href='../S/282.html#L356' title='Defined at 356 in libutil/dbop.c.'>dbop_put</a>(<a href='../S/283.html#L100' title='Defined at 100 in libutil/dbop.h.'>DBOP</a> *, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *);
+<a id='L127' name='L127'></a> 127 <strong class='reserved'>void</strong> <a href='../S/282.html#L403' title='Defined at 403 in libutil/dbop.c.'>dbop_put_tag</a>(<a href='../S/283.html#L100' title='Defined at 100 in libutil/dbop.h.'>DBOP</a> *, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *);
+<a id='L128' name='L128'></a> 128 <strong class='reserved'>void</strong> <a href='../S/282.html#L446' title='Defined at 446 in libutil/dbop.c.'>dbop_put_path</a>(<a href='../S/283.html#L100' title='Defined at 100 in libutil/dbop.h.'>DBOP</a> *, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *);
+<a id='L129' name='L129'></a> 129 <strong class='reserved'>void</strong> <a href='../S/282.html#L489' title='Defined at 489 in libutil/dbop.c.'>dbop_delete</a>(<a href='../S/283.html#L100' title='Defined at 100 in libutil/dbop.h.'>DBOP</a> *, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *);
+<a id='L130' name='L130'></a> 130 <strong class='reserved'>void</strong> <a href='../S/282.html#L518' title='Defined at 518 in libutil/dbop.c.'>dbop_update</a>(<a href='../S/283.html#L100' title='Defined at 100 in libutil/dbop.h.'>DBOP</a> *, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *);
+<a id='L131' name='L131'></a> 131 <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../S/282.html#L540' title='Defined at 540 in libutil/dbop.c.'>dbop_first</a>(<a href='../S/283.html#L100' title='Defined at 100 in libutil/dbop.h.'>DBOP</a> *, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *, <a href='../S/200.html#L391' title='Defined at 391 in libglibc/regex.h.'>regex_t</a> *, <strong class='reserved'>int</strong>);
+<a id='L132' name='L132'></a> 132 <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../S/282.html#L623' title='Defined at 623 in libutil/dbop.c.'>dbop_next</a>(<a href='../S/283.html#L100' title='Defined at 100 in libutil/dbop.h.'>DBOP</a> *);
+<a id='L133' name='L133'></a> 133 <strong class='reserved'>void</strong> <a href='../S/282.html#L682' title='Defined at 682 in libutil/dbop.c.'>dbop_unread</a>(<a href='../S/283.html#L100' title='Defined at 100 in libutil/dbop.h.'>DBOP</a> *);
+<a id='L134' name='L134'></a> 134 <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../S/282.html#L694' title='Defined at 694 in libutil/dbop.c.'>dbop_lastdat</a>(<a href='../S/283.html#L100' title='Defined at 100 in libutil/dbop.h.'>DBOP</a> *, <strong class='reserved'>int</strong> *);
+<a id='L135' name='L135'></a> 135 <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../S/282.html#L706' title='Defined at 706 in libutil/dbop.c.'>dbop_getflag</a>(<a href='../S/283.html#L100' title='Defined at 100 in libutil/dbop.h.'>DBOP</a> *);
+<a id='L136' name='L136'></a> 136 <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../S/282.html#L734' title='Defined at 734 in libutil/dbop.c.'>dbop_getoption</a>(<a href='../S/283.html#L100' title='Defined at 100 in libutil/dbop.h.'>DBOP</a> *, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *);
+<a id='L137' name='L137'></a> 137 <strong class='reserved'>void</strong> <a href='../S/282.html#L754' title='Defined at 754 in libutil/dbop.c.'>dbop_putoption</a>(<a href='../S/283.html#L100' title='Defined at 100 in libutil/dbop.h.'>DBOP</a> *, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *);
+<a id='L138' name='L138'></a> 138 <strong class='reserved'>int</strong> <a href='../S/282.html#L768' title='Defined at 768 in libutil/dbop.c.'>dbop_getversion</a>(<a href='../S/283.html#L100' title='Defined at 100 in libutil/dbop.h.'>DBOP</a> *);
+<a id='L139' name='L139'></a> 139 <strong class='reserved'>void</strong> <a href='../S/282.html#L781' title='Defined at 781 in libutil/dbop.c.'>dbop_putversion</a>(<a href='../S/283.html#L100' title='Defined at 100 in libutil/dbop.h.'>DBOP</a> *, <strong class='reserved'>int</strong>);
+<a id='L140' name='L140'></a> 140 <strong class='reserved'>void</strong> <a href='../S/282.html#L794' title='Defined at 794 in libutil/dbop.c.'>dbop_close</a>(<a href='../S/283.html#L100' title='Defined at 100 in libutil/dbop.h.'>DBOP</a> *);
+<a id='L141' name='L141'></a> 141 
+<a id='L142' name='L142'></a> 142 <em class='sharp'>#endif</em> <em class='comment'>/* _DBOP_H_ */</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;][^][v]<a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

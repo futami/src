@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>pTree</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/185.html#L40614'>pTree</a>            40614 libdb/sqlite3.c     struct RowSetEntry *pTree = p-&gt;pForest-&gt;pLeft;</span>
+<span class='curline'><a href='../S/185.html#L40615'>pTree</a>            40615 libdb/sqlite3.c     if( pTree ){</span>
+<span class='curline'><a href='../S/185.html#L40617'>pTree</a>            40617 libdb/sqlite3.c       rowSetTreeToList(pTree, &amp;pHead, &amp;pTail);</span>
+<span class='curline'><a href='../S/185.html#L40662'>pTree</a>            40662 libdb/sqlite3.c   struct RowSetEntry *p, *pTree;</span>
+<span class='curline'><a href='../S/185.html#L40676'>pTree</a>            40676 libdb/sqlite3.c       for(pTree = pRowSet-&gt;pForest; pTree; pTree=pTree-&gt;pRight){</span>
+<span class='curline'><a href='../S/185.html#L40677'>pTree</a>            40677 libdb/sqlite3.c         ppPrevTree = &amp;pTree-&gt;pRight;</span>
+<span class='curline'><a href='../S/185.html#L40678'>pTree</a>            40678 libdb/sqlite3.c         if( pTree-&gt;pLeft==0 ){</span>
+<span class='curline'><a href='../S/185.html#L40679'>pTree</a>            40679 libdb/sqlite3.c           pTree-&gt;pLeft = rowSetListToTree(p);</span>
+<span class='curline'><a href='../S/185.html#L40683'>pTree</a>            40683 libdb/sqlite3.c           rowSetTreeToList(pTree-&gt;pLeft, &amp;pAux, &amp;pTail);</span>
+<span class='curline'><a href='../S/185.html#L40684'>pTree</a>            40684 libdb/sqlite3.c           pTree-&gt;pLeft = 0;</span>
+<span class='curline'><a href='../S/185.html#L40688'>pTree</a>            40688 libdb/sqlite3.c       if( pTree==0 ){</span>
+<span class='curline'><a href='../S/185.html#L40689'>pTree</a>            40689 libdb/sqlite3.c         *ppPrevTree = pTree = rowSetEntryAlloc(pRowSet);</span>
+<span class='curline'><a href='../S/185.html#L40690'>pTree</a>            40690 libdb/sqlite3.c         if( pTree ){</span>
+<span class='curline'><a href='../S/185.html#L40691'>pTree</a>            40691 libdb/sqlite3.c           pTree-&gt;v = 0;</span>
+<span class='curline'><a href='../S/185.html#L40692'>pTree</a>            40692 libdb/sqlite3.c           pTree-&gt;pRight = 0;</span>
+<span class='curline'><a href='../S/185.html#L40693'>pTree</a>            40693 libdb/sqlite3.c           pTree-&gt;pLeft = rowSetListToTree(p);</span>
+<span class='curline'><a href='../S/185.html#L40706'>pTree</a>            40706 libdb/sqlite3.c   for(pTree = pRowSet-&gt;pForest; pTree; pTree=pTree-&gt;pRight){</span>
+<span class='curline'><a href='../S/185.html#L40707'>pTree</a>            40707 libdb/sqlite3.c     p = pTree-&gt;pLeft;</span>
+<span class='curline'><a href='../S/185.html#L139641'>pTree</a>            139641 libdb/sqlite3.c   SegmentNode *pTree;             /* Pointer to interior tree structure */</span>
+<span class='curline'><a href='../S/185.html#L141440'>pTree</a>            141440 libdb/sqlite3.c   SegmentNode *pTree = *ppTree;</span>
+<span class='curline'><a href='../S/185.html#L141447'>pTree</a>            141447 libdb/sqlite3.c   if( pTree ){</span>
+<span class='curline'><a href='../S/185.html#L141448'>pTree</a>            141448 libdb/sqlite3.c     int nData = pTree-&gt;nData;     /* Current size of node in bytes */</span>
+<span class='curline'><a href='../S/185.html#L141453'>pTree</a>            141453 libdb/sqlite3.c     nPrefix = fts3PrefixCompress(pTree-&gt;zTerm, pTree-&gt;nTerm, zTerm, nTerm);</span>
+<span class='curline'><a href='../S/185.html#L141457'>pTree</a>            141457 libdb/sqlite3.c     if( nReq&lt;=p-&gt;nNodeSize || !pTree-&gt;zTerm ){</span>
+<span class='curline'><a href='../S/185.html#L141467'>pTree</a>            141467 libdb/sqlite3.c         assert( pTree-&gt;aData==(char *)&amp;pTree[1] );</span>
+<span class='curline'><a href='../S/185.html#L141468'>pTree</a>            141468 libdb/sqlite3.c         pTree-&gt;aData = (char *)sqlite3_malloc(nReq);</span>
+<span class='curline'><a href='../S/185.html#L141469'>pTree</a>            141469 libdb/sqlite3.c         if( !pTree-&gt;aData ){</span>
+<span class='curline'><a href='../S/185.html#L141474'>pTree</a>            141474 libdb/sqlite3.c       if( pTree-&gt;zTerm ){</span>
+<span class='curline'><a href='../S/185.html#L141476'>pTree</a>            141476 libdb/sqlite3.c         nData += sqlite3Fts3PutVarint(&amp;pTree-&gt;aData[nData], nPrefix);</span>
+<span class='curline'><a href='../S/185.html#L141479'>pTree</a>            141479 libdb/sqlite3.c       nData += sqlite3Fts3PutVarint(&amp;pTree-&gt;aData[nData], nSuffix);</span>
+<span class='curline'><a href='../S/185.html#L141480'>pTree</a>            141480 libdb/sqlite3.c       memcpy(&amp;pTree-&gt;aData[nData], &amp;zTerm[nPrefix], nSuffix);</span>
+<span class='curline'><a href='../S/185.html#L141481'>pTree</a>            141481 libdb/sqlite3.c       pTree-&gt;nData = nData + nSuffix;</span>
+<span class='curline'><a href='../S/185.html#L141482'>pTree</a>            141482 libdb/sqlite3.c       pTree-&gt;nEntry++;</span>
+<span class='curline'><a href='../S/185.html#L141485'>pTree</a>            141485 libdb/sqlite3.c         if( pTree-&gt;nMalloc&lt;nTerm ){</span>
+<span class='curline'><a href='../S/185.html#L141486'>pTree</a>            141486 libdb/sqlite3.c           char *zNew = sqlite3_realloc(pTree-&gt;zMalloc, nTerm*2);</span>
+<span class='curline'><a href='../S/185.html#L141490'>pTree</a>            141490 libdb/sqlite3.c           pTree-&gt;nMalloc = nTerm*2;</span>
+<span class='curline'><a href='../S/185.html#L141491'>pTree</a>            141491 libdb/sqlite3.c           pTree-&gt;zMalloc = zNew;</span>
+<span class='curline'><a href='../S/185.html#L141493'>pTree</a>            141493 libdb/sqlite3.c         pTree-&gt;zTerm = pTree-&gt;zMalloc;</span>
+<span class='curline'><a href='../S/185.html#L141494'>pTree</a>            141494 libdb/sqlite3.c         memcpy(pTree-&gt;zTerm, zTerm, nTerm);</span>
+<span class='curline'><a href='../S/185.html#L141495'>pTree</a>            141495 libdb/sqlite3.c         pTree-&gt;nTerm = nTerm;</span>
+<span class='curline'><a href='../S/185.html#L141497'>pTree</a>            141497 libdb/sqlite3.c         pTree-&gt;zTerm = (char *)zTerm;</span>
+<span class='curline'><a href='../S/185.html#L141498'>pTree</a>            141498 libdb/sqlite3.c         pTree-&gt;nTerm = nTerm;</span>
+<span class='curline'><a href='../S/185.html#L141520'>pTree</a>            141520 libdb/sqlite3.c   if( pTree ){</span>
+<span class='curline'><a href='../S/185.html#L141521'>pTree</a>            141521 libdb/sqlite3.c     SegmentNode *pParent = pTree-&gt;pParent;</span>
+<span class='curline'><a href='../S/185.html#L141523'>pTree</a>            141523 libdb/sqlite3.c     if( pTree-&gt;pParent==0 ){</span>
+<span class='curline'><a href='../S/185.html#L141524'>pTree</a>            141524 libdb/sqlite3.c       pTree-&gt;pParent = pParent;</span>
+<span class='curline'><a href='../S/185.html#L141526'>pTree</a>            141526 libdb/sqlite3.c     pTree-&gt;pRight = pNew;</span>
+<span class='curline'><a href='../S/185.html#L141527'>pTree</a>            141527 libdb/sqlite3.c     pNew-&gt;pLeftmost = pTree-&gt;pLeftmost;</span>
+<span class='curline'><a href='../S/185.html#L141529'>pTree</a>            141529 libdb/sqlite3.c     pNew-&gt;zMalloc = pTree-&gt;zMalloc;</span>
+<span class='curline'><a href='../S/185.html#L141530'>pTree</a>            141530 libdb/sqlite3.c     pNew-&gt;nMalloc = pTree-&gt;nMalloc;</span>
+<span class='curline'><a href='../S/185.html#L141531'>pTree</a>            141531 libdb/sqlite3.c     pTree-&gt;zMalloc = 0;</span>
+<span class='curline'><a href='../S/185.html#L141545'>pTree</a>            141545 libdb/sqlite3.c   SegmentNode *pTree, </span>
+<span class='curline'><a href='../S/185.html#L141552'>pTree</a>            141552 libdb/sqlite3.c   pTree-&gt;aData[nStart] = (char)iHeight;</span>
+<span class='curline'><a href='../S/185.html#L141553'>pTree</a>            141553 libdb/sqlite3.c   sqlite3Fts3PutVarint(&amp;pTree-&gt;aData[nStart+1], iLeftChild);</span>
+<span class='curline'><a href='../S/185.html#L141572'>pTree</a>            141572 libdb/sqlite3.c   SegmentNode *pTree,             /* SegmentNode handle */</span>
+<span class='curline'><a href='../S/185.html#L141582'>pTree</a>            141582 libdb/sqlite3.c   if( !pTree-&gt;pParent ){</span>
+<span class='curline'><a href='../S/185.html#L141584'>pTree</a>            141584 libdb/sqlite3.c     int nStart = fts3TreeFinishNode(pTree, iHeight, iLeaf);</span>
+<span class='curline'><a href='../S/185.html#L141586'>pTree</a>            141586 libdb/sqlite3.c     *pnRoot = pTree-&gt;nData - nStart;</span>
+<span class='curline'><a href='../S/185.html#L141587'>pTree</a>            141587 libdb/sqlite3.c     *paRoot = &amp;pTree-&gt;aData[nStart];</span>
+<span class='curline'><a href='../S/185.html#L141592'>pTree</a>            141592 libdb/sqlite3.c     for(pIter=pTree-&gt;pLeftmost; pIter &amp;&amp; rc==SQLITE_OK; pIter=pIter-&gt;pRight){</span>
+<span class='curline'><a href='../S/185.html#L141603'>pTree</a>            141603 libdb/sqlite3.c           p, pTree-&gt;pParent, iHeight+1, iFree, iNextFree, piLast, paRoot, pnRoot</span>
+<span class='curline'><a href='../S/185.html#L141614'>pTree</a>            141614 libdb/sqlite3.c static void fts3NodeFree(SegmentNode *pTree){</span>
+<span class='curline'><a href='../S/185.html#L141615'>pTree</a>            141615 libdb/sqlite3.c   if( pTree ){</span>
+<span class='curline'><a href='../S/185.html#L141616'>pTree</a>            141616 libdb/sqlite3.c     SegmentNode *p = pTree-&gt;pLeftmost;</span>
+<span class='curline'><a href='../S/185.html#L141712'>pTree</a>            141712 libdb/sqlite3.c     rc = fts3NodeAddTerm(p, &amp;pWriter-&gt;pTree, isCopyTerm, zTerm, nPrefix+1);</span>
+<span class='curline'><a href='../S/185.html#L141788'>pTree</a>            141788 libdb/sqlite3.c   if( pWriter-&gt;pTree ){</span>
+<span class='curline'><a href='../S/185.html#L141797'>pTree</a>            141797 libdb/sqlite3.c       rc = fts3NodeWrite(p, pWriter-&gt;pTree, 1,</span>
+<span class='curline'><a href='../S/185.html#L141821'>pTree</a>            141821 libdb/sqlite3.c     fts3NodeFree(pWriter-&gt;pTree);</span>
+</pre>
+</body>
+</html>

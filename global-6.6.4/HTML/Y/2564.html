@@ -1,0 +1,89 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>eLock</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/185.html#L41505'>eLock</a>            41505 libdb/sqlite3.c   u8 eLock;                   /* Current lock held on database file */</span>
+<span class='curline'><a href='../S/185.html#L41714'>eLock</a>            41714 libdb/sqlite3.c   assert( p-&gt;tempFile==0 || p-&gt;eLock==EXCLUSIVE_LOCK );</span>
+<span class='curline'><a href='../S/185.html#L41743'>eLock</a>            41743 libdb/sqlite3.c   assert( pPager-&gt;changeCountDone==0 || pPager-&gt;eLock&gt;=RESERVED_LOCK );</span>
+<span class='curline'><a href='../S/185.html#L41744'>eLock</a>            41744 libdb/sqlite3.c   assert( p-&gt;eLock!=PENDING_LOCK );</span>
+<span class='curline'><a href='../S/185.html#L41755'>eLock</a>            41755 libdb/sqlite3.c       assert( p-&gt;eLock!=UNKNOWN_LOCK );</span>
+<span class='curline'><a href='../S/185.html#L41756'>eLock</a>            41756 libdb/sqlite3.c       assert( p-&gt;eLock&gt;=SHARED_LOCK );</span>
+<span class='curline'><a href='../S/185.html#L41760'>eLock</a>            41760 libdb/sqlite3.c       assert( p-&gt;eLock!=UNKNOWN_LOCK );</span>
+<span class='curline'><a href='../S/185.html#L41763'>eLock</a>            41763 libdb/sqlite3.c         assert( p-&gt;eLock&gt;=RESERVED_LOCK );</span>
+<span class='curline'><a href='../S/185.html#L41772'>eLock</a>            41772 libdb/sqlite3.c       assert( p-&gt;eLock!=UNKNOWN_LOCK );</span>
+<span class='curline'><a href='../S/185.html#L41780'>eLock</a>            41780 libdb/sqlite3.c         assert( p-&gt;eLock&gt;=RESERVED_LOCK );</span>
+<span class='curline'><a href='../S/185.html#L41791'>eLock</a>            41791 libdb/sqlite3.c       assert( p-&gt;eLock==EXCLUSIVE_LOCK );</span>
+<span class='curline'><a href='../S/185.html#L41794'>eLock</a>            41794 libdb/sqlite3.c       assert( p-&gt;eLock&gt;=EXCLUSIVE_LOCK );</span>
+<span class='curline'><a href='../S/185.html#L41803'>eLock</a>            41803 libdb/sqlite3.c       assert( p-&gt;eLock==EXCLUSIVE_LOCK );</span>
+<span class='curline'><a href='../S/185.html#L41856'>eLock</a>            41856 libdb/sqlite3.c       , p-&gt;eLock==NO_LOCK         ? "NO_LOCK" :</span>
+<span class='curline'><a href='../S/185.html#L41857'>eLock</a>            41857 libdb/sqlite3.c         p-&gt;eLock==RESERVED_LOCK   ? "RESERVED" :</span>
+<span class='curline'><a href='../S/185.html#L41858'>eLock</a>            41858 libdb/sqlite3.c         p-&gt;eLock==EXCLUSIVE_LOCK  ? "EXCLUSIVE" :</span>
+<span class='curline'><a href='../S/185.html#L41859'>eLock</a>            41859 libdb/sqlite3.c         p-&gt;eLock==SHARED_LOCK     ? "SHARED" :</span>
+<span class='curline'><a href='../S/185.html#L41860'>eLock</a>            41860 libdb/sqlite3.c         p-&gt;eLock==UNKNOWN_LOCK    ? "UNKNOWN" : "?error?"</span>
+<span class='curline'><a href='../S/185.html#L41948'>eLock</a>            41948 libdb/sqlite3.c static int pagerUnlockDb(Pager *pPager, int eLock){</span>
+<span class='curline'><a href='../S/185.html#L41951'>eLock</a>            41951 libdb/sqlite3.c   assert( !pPager-&gt;exclusiveMode || pPager-&gt;eLock==eLock );</span>
+<span class='curline'><a href='../S/185.html#L41952'>eLock</a>            41952 libdb/sqlite3.c   assert( eLock==NO_LOCK || eLock==SHARED_LOCK );</span>
+<span class='curline'><a href='../S/185.html#L41953'>eLock</a>            41953 libdb/sqlite3.c   assert( eLock!=NO_LOCK || pagerUseWal(pPager)==0 );</span>
+<span class='curline'><a href='../S/185.html#L41955'>eLock</a>            41955 libdb/sqlite3.c     assert( pPager-&gt;eLock&gt;=eLock );</span>
+<span class='curline'><a href='../S/185.html#L41956'>eLock</a>            41956 libdb/sqlite3.c     rc = pPager-&gt;noLock ? SQLITE_OK : sqlite3OsUnlock(pPager-&gt;fd, eLock);</span>
+<span class='curline'><a href='../S/185.html#L41957'>eLock</a>            41957 libdb/sqlite3.c     if( pPager-&gt;eLock!=UNKNOWN_LOCK ){</span>
+<span class='curline'><a href='../S/185.html#L41958'>eLock</a>            41958 libdb/sqlite3.c       pPager-&gt;eLock = (u8)eLock;</span>
+<span class='curline'><a href='../S/185.html#L41960'>eLock</a>            41960 libdb/sqlite3.c     IOTRACE(("UNLOCK %p %d\n", pPager, eLock))</span>
+<span class='curline'><a href='../S/185.html#L41975'>eLock</a>            41975 libdb/sqlite3.c static int pagerLockDb(Pager *pPager, int eLock){</span>
+<span class='curline'><a href='../S/185.html#L41978'>eLock</a>            41978 libdb/sqlite3.c   assert( eLock==SHARED_LOCK || eLock==RESERVED_LOCK || eLock==EXCLUSIVE_LOCK );</span>
+<span class='curline'><a href='../S/185.html#L41979'>eLock</a>            41979 libdb/sqlite3.c   if( pPager-&gt;eLock&lt;eLock || pPager-&gt;eLock==UNKNOWN_LOCK ){</span>
+<span class='curline'><a href='../S/185.html#L41980'>eLock</a>            41980 libdb/sqlite3.c     rc = pPager-&gt;noLock ? SQLITE_OK : sqlite3OsLock(pPager-&gt;fd, eLock);</span>
+<span class='curline'><a href='../S/185.html#L41981'>eLock</a>            41981 libdb/sqlite3.c     if( rc==SQLITE_OK &amp;&amp; (pPager-&gt;eLock!=UNKNOWN_LOCK||eLock==EXCLUSIVE_LOCK) ){</span>
+<span class='curline'><a href='../S/185.html#L41982'>eLock</a>            41982 libdb/sqlite3.c       pPager-&gt;eLock = (u8)eLock;</span>
+<span class='curline'><a href='../S/185.html#L41983'>eLock</a>            41983 libdb/sqlite3.c       IOTRACE(("LOCK %p %d\n", pPager, eLock))</span>
+<span class='curline'><a href='../S/185.html#L42648'>eLock</a>            42648 libdb/sqlite3.c       pPager-&gt;eLock = UNKNOWN_LOCK;</span>
+<span class='curline'><a href='../S/185.html#L42787'>eLock</a>            42787 libdb/sqlite3.c   if( pPager-&gt;eState&lt;PAGER_WRITER_LOCKED &amp;&amp; pPager-&gt;eLock&lt;RESERVED_LOCK ){</span>
+<span class='curline'><a href='../S/185.html#L42869'>eLock</a>            42869 libdb/sqlite3.c     assert( pPager-&gt;eLock==EXCLUSIVE_LOCK );</span>
+<span class='curline'><a href='../S/185.html#L43034'>eLock</a>            43034 libdb/sqlite3.c        || (pPager-&gt;eState==PAGER_OPEN &amp;&amp; pPager-&gt;eLock==EXCLUSIVE_LOCK)</span>
+<span class='curline'><a href='../S/185.html#L43388'>eLock</a>            43388 libdb/sqlite3.c     assert( pPager-&gt;eLock==EXCLUSIVE_LOCK );</span>
+<span class='curline'><a href='../S/185.html#L44003'>eLock</a>            44003 libdb/sqlite3.c   assert( pPager-&gt;eLock&gt;=SHARED_LOCK );</span>
+<span class='curline'><a href='../S/185.html#L44058'>eLock</a>            44058 libdb/sqlite3.c   assert( pPager-&gt;eLock&gt;=SHARED_LOCK );</span>
+<span class='curline'><a href='../S/185.html#L44636'>eLock</a>            44636 libdb/sqlite3.c   assert( (pPager-&gt;eLock&gt;=locktype)</span>
+<span class='curline'><a href='../S/185.html#L44637'>eLock</a>            44637 libdb/sqlite3.c        || (pPager-&gt;eLock==NO_LOCK &amp;&amp; locktype==SHARED_LOCK)</span>
+<span class='curline'><a href='../S/185.html#L44638'>eLock</a>            44638 libdb/sqlite3.c        || (pPager-&gt;eLock==RESERVED_LOCK &amp;&amp; locktype==EXCLUSIVE_LOCK)</span>
+<span class='curline'><a href='../S/185.html#L45076'>eLock</a>            45076 libdb/sqlite3.c   assert( pPager-&gt;eLock==EXCLUSIVE_LOCK );</span>
+<span class='curline'><a href='../S/185.html#L45583'>eLock</a>            45583 libdb/sqlite3.c     pPager-&gt;eLock = EXCLUSIVE_LOCK;    /* Pretend we are in EXCLUSIVE locking mode */</span>
+<span class='curline'><a href='../S/185.html#L45866'>eLock</a>            45866 libdb/sqlite3.c       assert( pPager-&gt;eLock==NO_LOCK || pPager-&gt;eLock==UNKNOWN_LOCK );</span>
+<span class='curline'><a href='../S/185.html#L45873'>eLock</a>            45873 libdb/sqlite3.c     if( pPager-&gt;eLock&lt;=SHARED_LOCK ){</span>
+<span class='curline'><a href='../S/185.html#L45977'>eLock</a>            45977 libdb/sqlite3.c       assert( (pPager-&gt;eLock==SHARED_LOCK)</span>
+<span class='curline'><a href='../S/185.html#L45978'>eLock</a>            45978 libdb/sqlite3.c            || (pPager-&gt;exclusiveMode &amp;&amp; pPager-&gt;eLock&gt;SHARED_LOCK)</span>
+<span class='curline'><a href='../S/185.html#L47833'>eLock</a>            47833 libdb/sqlite3.c       if( pPager-&gt;eLock&gt;=RESERVED_LOCK ){</span>
+<span class='curline'><a href='../S/185.html#L47955'>eLock</a>            47955 libdb/sqlite3.c   assert( pPager-&gt;eLock==SHARED_LOCK || pPager-&gt;eLock==EXCLUSIVE_LOCK );</span>
+<span class='curline'><a href='../S/185.html#L47976'>eLock</a>            47976 libdb/sqlite3.c   assert( pPager-&gt;eLock==SHARED_LOCK || pPager-&gt;eLock==EXCLUSIVE_LOCK );</span>
+<span class='curline'><a href='../S/185.html#L51543'>eLock</a>            51543 libdb/sqlite3.c   u8 eLock;             /* READ_LOCK or WRITE_LOCK */</span>
+<span class='curline'><a href='../S/185.html#L52374'>eLock</a>            52374 libdb/sqlite3.c      &amp;&amp; (pLock-&gt;iTable==iTab || (pLock-&gt;eLock==WRITE_LOCK &amp;&amp; pLock-&gt;iTable==1))</span>
+<span class='curline'><a href='../S/185.html#L52375'>eLock</a>            52375 libdb/sqlite3.c      &amp;&amp; pLock-&gt;eLock&gt;=eLockType </span>
+<span class='curline'><a href='../S/185.html#L52425'>eLock</a>            52425 libdb/sqlite3.c static int querySharedCacheTableLock(Btree *p, Pgno iTab, u8 eLock){</span>
+<span class='curline'><a href='../S/185.html#L52430'>eLock</a>            52430 libdb/sqlite3.c   assert( eLock==READ_LOCK || eLock==WRITE_LOCK );</span>
+<span class='curline'><a href='../S/185.html#L52432'>eLock</a>            52432 libdb/sqlite3.c   assert( !(p-&gt;db-&gt;flags&amp;SQLITE_ReadUncommitted)||eLock==WRITE_LOCK||iTab==1 );</span>
+<span class='curline'><a href='../S/185.html#L52438'>eLock</a>            52438 libdb/sqlite3.c   assert( eLock==READ_LOCK || (p==pBt-&gt;pWriter &amp;&amp; p-&gt;inTrans==TRANS_WRITE) );</span>
+<span class='curline'><a href='../S/185.html#L52439'>eLock</a>            52439 libdb/sqlite3.c   assert( eLock==READ_LOCK || pBt-&gt;inTransaction==TRANS_WRITE );</span>
+<span class='curline'><a href='../S/185.html#L52464'>eLock</a>            52464 libdb/sqlite3.c     assert( pIter-&gt;eLock==READ_LOCK || pIter-&gt;eLock==WRITE_LOCK );</span>
+<span class='curline'><a href='../S/185.html#L52465'>eLock</a>            52465 libdb/sqlite3.c     assert( eLock==READ_LOCK || pIter-&gt;pBtree==p || pIter-&gt;eLock==READ_LOCK);</span>
+<span class='curline'><a href='../S/185.html#L52466'>eLock</a>            52466 libdb/sqlite3.c     if( pIter-&gt;pBtree!=p &amp;&amp; pIter-&gt;iTable==iTab &amp;&amp; pIter-&gt;eLock!=eLock ){</span>
+<span class='curline'><a href='../S/185.html#L52468'>eLock</a>            52468 libdb/sqlite3.c       if( eLock==WRITE_LOCK ){</span>
+<span class='curline'><a href='../S/185.html#L52497'>eLock</a>            52497 libdb/sqlite3.c static int setSharedCacheTableLock(Btree *p, Pgno iTable, u8 eLock){</span>
+<span class='curline'><a href='../S/185.html#L52503'>eLock</a>            52503 libdb/sqlite3.c   assert( eLock==READ_LOCK || eLock==WRITE_LOCK );</span>
+<span class='curline'><a href='../S/185.html#L52510'>eLock</a>            52510 libdb/sqlite3.c   assert( 0==(p-&gt;db-&gt;flags&amp;SQLITE_ReadUncommitted) || eLock==WRITE_LOCK );</span>
+<span class='curline'><a href='../S/185.html#L52515'>eLock</a>            52515 libdb/sqlite3.c   assert( SQLITE_OK==querySharedCacheTableLock(p, iTable, eLock) );</span>
+<span class='curline'><a href='../S/185.html#L52544'>eLock</a>            52544 libdb/sqlite3.c   if( eLock&gt;pLock-&gt;eLock ){</span>
+<span class='curline'><a href='../S/185.html#L52545'>eLock</a>            52545 libdb/sqlite3.c     pLock-&gt;eLock = eLock;</span>
+<span class='curline'><a href='../S/185.html#L52572'>eLock</a>            52572 libdb/sqlite3.c     assert( pLock-&gt;pBtree-&gt;inTrans&gt;=pLock-&gt;eLock );</span>
+<span class='curline'><a href='../S/185.html#L52612'>eLock</a>            52612 libdb/sqlite3.c       assert( pLock-&gt;eLock==READ_LOCK || pLock-&gt;pBtree==p );</span>
+<span class='curline'><a href='../S/185.html#L52613'>eLock</a>            52613 libdb/sqlite3.c       pLock-&gt;eLock = READ_LOCK;</span>
+<span class='curline'><a href='../S/185.html#L55016'>eLock</a>            55016 libdb/sqlite3.c         p-&gt;lock.eLock = READ_LOCK;</span>
+</pre>
+</body>
+</html>

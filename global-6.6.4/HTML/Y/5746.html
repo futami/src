@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>pWalker</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/185.html#L79019'>pWalker</a>          79019 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3WalkExpr(Walker *pWalker, Expr *pExpr){</span>
+<span class='curline'><a href='../S/185.html#L79024'>pWalker</a>          79024 libdb/sqlite3.c   rc = pWalker-&gt;xExprCallback(pWalker, pExpr);</span>
+<span class='curline'><a href='../S/185.html#L79027'>pWalker</a>          79027 libdb/sqlite3.c     if( sqlite3WalkExpr(pWalker, pExpr-&gt;pLeft) ) return WRC_Abort;</span>
+<span class='curline'><a href='../S/185.html#L79028'>pWalker</a>          79028 libdb/sqlite3.c     if( sqlite3WalkExpr(pWalker, pExpr-&gt;pRight) ) return WRC_Abort;</span>
+<span class='curline'><a href='../S/185.html#L79030'>pWalker</a>          79030 libdb/sqlite3.c       if( sqlite3WalkSelect(pWalker, pExpr-&gt;x.pSelect) ) return WRC_Abort;</span>
+<span class='curline'><a href='../S/185.html#L79032'>pWalker</a>          79032 libdb/sqlite3.c       if( sqlite3WalkExprList(pWalker, pExpr-&gt;x.pList) ) return WRC_Abort;</span>
+<span class='curline'><a href='../S/185.html#L79042'>pWalker</a>          79042 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3WalkExprList(Walker *pWalker, ExprList *p){</span>
+<span class='curline'><a href='../S/185.html#L79047'>pWalker</a>          79047 libdb/sqlite3.c       if( sqlite3WalkExpr(pWalker, pItem-&gt;pExpr) ) return WRC_Abort;</span>
+<span class='curline'><a href='../S/185.html#L79059'>pWalker</a>          79059 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3WalkSelectExpr(Walker *pWalker, Select *p){</span>
+<span class='curline'><a href='../S/185.html#L79060'>pWalker</a>          79060 libdb/sqlite3.c   if( sqlite3WalkExprList(pWalker, p-&gt;pEList) ) return WRC_Abort;</span>
+<span class='curline'><a href='../S/185.html#L79061'>pWalker</a>          79061 libdb/sqlite3.c   if( sqlite3WalkExpr(pWalker, p-&gt;pWhere) ) return WRC_Abort;</span>
+<span class='curline'><a href='../S/185.html#L79062'>pWalker</a>          79062 libdb/sqlite3.c   if( sqlite3WalkExprList(pWalker, p-&gt;pGroupBy) ) return WRC_Abort;</span>
+<span class='curline'><a href='../S/185.html#L79063'>pWalker</a>          79063 libdb/sqlite3.c   if( sqlite3WalkExpr(pWalker, p-&gt;pHaving) ) return WRC_Abort;</span>
+<span class='curline'><a href='../S/185.html#L79064'>pWalker</a>          79064 libdb/sqlite3.c   if( sqlite3WalkExprList(pWalker, p-&gt;pOrderBy) ) return WRC_Abort;</span>
+<span class='curline'><a href='../S/185.html#L79065'>pWalker</a>          79065 libdb/sqlite3.c   if( sqlite3WalkExpr(pWalker, p-&gt;pLimit) ) return WRC_Abort;</span>
+<span class='curline'><a href='../S/185.html#L79066'>pWalker</a>          79066 libdb/sqlite3.c   if( sqlite3WalkExpr(pWalker, p-&gt;pOffset) ) return WRC_Abort;</span>
+<span class='curline'><a href='../S/185.html#L79077'>pWalker</a>          79077 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3WalkSelectFrom(Walker *pWalker, Select *p){</span>
+<span class='curline'><a href='../S/185.html#L79085'>pWalker</a>          79085 libdb/sqlite3.c       if( sqlite3WalkSelect(pWalker, pItem-&gt;pSelect) ){</span>
+<span class='curline'><a href='../S/185.html#L79109'>pWalker</a>          79109 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3WalkSelect(Walker *pWalker, Select *p){</span>
+<span class='curline'><a href='../S/185.html#L79111'>pWalker</a>          79111 libdb/sqlite3.c   if( p==0 || (pWalker-&gt;xSelectCallback==0 &amp;&amp; pWalker-&gt;xSelectCallback2==0) ){</span>
+<span class='curline'><a href='../S/185.html#L79115'>pWalker</a>          79115 libdb/sqlite3.c   pWalker-&gt;walkerDepth++;</span>
+<span class='curline'><a href='../S/185.html#L79117'>pWalker</a>          79117 libdb/sqlite3.c     if( pWalker-&gt;xSelectCallback ){</span>
+<span class='curline'><a href='../S/185.html#L79118'>pWalker</a>          79118 libdb/sqlite3.c        rc = pWalker-&gt;xSelectCallback(pWalker, p);</span>
+<span class='curline'><a href='../S/185.html#L79121'>pWalker</a>          79121 libdb/sqlite3.c     if( sqlite3WalkSelectExpr(pWalker, p)</span>
+<span class='curline'><a href='../S/185.html#L79122'>pWalker</a>          79122 libdb/sqlite3.c      || sqlite3WalkSelectFrom(pWalker, p)</span>
+<span class='curline'><a href='../S/185.html#L79124'>pWalker</a>          79124 libdb/sqlite3.c       pWalker-&gt;walkerDepth--;</span>
+<span class='curline'><a href='../S/185.html#L79127'>pWalker</a>          79127 libdb/sqlite3.c     if( pWalker-&gt;xSelectCallback2 ){</span>
+<span class='curline'><a href='../S/185.html#L79128'>pWalker</a>          79128 libdb/sqlite3.c       pWalker-&gt;xSelectCallback2(pWalker, p);</span>
+<span class='curline'><a href='../S/185.html#L79132'>pWalker</a>          79132 libdb/sqlite3.c   pWalker-&gt;walkerDepth--;</span>
+<span class='curline'><a href='../S/185.html#L79166'>pWalker</a>          79166 libdb/sqlite3.c static int incrAggDepth(Walker *pWalker, Expr *pExpr){</span>
+<span class='curline'><a href='../S/185.html#L79167'>pWalker</a>          79167 libdb/sqlite3.c   if( pExpr-&gt;op==TK_AGG_FUNCTION ) pExpr-&gt;op2 += pWalker-&gt;u.i;</span>
+<span class='curline'><a href='../S/185.html#L79737'>pWalker</a>          79737 libdb/sqlite3.c static int resolveExprStep(Walker *pWalker, Expr *pExpr){</span>
+<span class='curline'><a href='../S/185.html#L79741'>pWalker</a>          79741 libdb/sqlite3.c   pNC = pWalker-&gt;u.pNC;</span>
+<span class='curline'><a href='../S/185.html#L79744'>pWalker</a>          79744 libdb/sqlite3.c   assert( pParse==pWalker-&gt;pParse );</span>
+<span class='curline'><a href='../S/185.html#L79885'>pWalker</a>          79885 libdb/sqlite3.c       sqlite3WalkExprList(pWalker, pList);</span>
+<span class='curline'><a href='../S/185.html#L79918'>pWalker</a>          79918 libdb/sqlite3.c         sqlite3WalkSelect(pWalker, pExpr-&gt;x.pSelect);</span>
+<span class='curline'><a href='../S/185.html#L80263'>pWalker</a>          80263 libdb/sqlite3.c static int resolveSelectStep(Walker *pWalker, Select *p){</span>
+<span class='curline'><a href='../S/185.html#L80280'>pWalker</a>          80280 libdb/sqlite3.c   pOuterNC = pWalker-&gt;u.pNC;</span>
+<span class='curline'><a href='../S/185.html#L80281'>pWalker</a>          80281 libdb/sqlite3.c   pParse = pWalker-&gt;pParse;</span>
+<span class='curline'><a href='../S/185.html#L81832'>pWalker</a>          81832 libdb/sqlite3.c static int exprNodeIsConstant(Walker *pWalker, Expr *pExpr){</span>
+<span class='curline'><a href='../S/185.html#L81837'>pWalker</a>          81837 libdb/sqlite3.c   if( pWalker-&gt;u.i==2 &amp;&amp; ExprHasProperty(pExpr, EP_FromJoin) ){</span>
+<span class='curline'><a href='../S/185.html#L81838'>pWalker</a>          81838 libdb/sqlite3.c     pWalker-&gt;u.i = 0;</span>
+<span class='curline'><a href='../S/185.html#L81847'>pWalker</a>          81847 libdb/sqlite3.c       if( pWalker-&gt;u.i&gt;=3 || ExprHasProperty(pExpr,EP_Constant) ){</span>
+<span class='curline'><a href='../S/185.html#L81859'>pWalker</a>          81859 libdb/sqlite3.c       pWalker-&gt;u.i = 0;</span>
+<span class='curline'><a href='../S/185.html#L81862'>pWalker</a>          81862 libdb/sqlite3.c       if( pWalker-&gt;u.i==4 ){</span>
+<span class='curline'><a href='../S/185.html#L81867'>pWalker</a>          81867 libdb/sqlite3.c       }else if( pWalker-&gt;u.i==3 ){</span>
+<span class='curline'><a href='../S/185.html#L81870'>pWalker</a>          81870 libdb/sqlite3.c         pWalker-&gt;u.i = 0;</span>
+<span class='curline'><a href='../S/185.html#L81880'>pWalker</a>          81880 libdb/sqlite3.c static int selectNodeIsConstant(Walker *pWalker, Select *NotUsed){</span>
+<span class='curline'><a href='../S/185.html#L81882'>pWalker</a>          81882 libdb/sqlite3.c   pWalker-&gt;u.i = 0;</span>
+<span class='curline'><a href='../S/185.html#L84637'>pWalker</a>          84637 libdb/sqlite3.c static int exprSrcCount(Walker *pWalker, Expr *pExpr){</span>
+<span class='curline'><a href='../S/185.html#L84645'>pWalker</a>          84645 libdb/sqlite3.c     struct SrcCount *p = pWalker-&gt;u.pSrcCount;</span>
+<span class='curline'><a href='../S/185.html#L84716'>pWalker</a>          84716 libdb/sqlite3.c static int analyzeAggregate(Walker *pWalker, Expr *pExpr){</span>
+<span class='curline'><a href='../S/185.html#L84718'>pWalker</a>          84718 libdb/sqlite3.c   NameContext *pNC = pWalker-&gt;u.pNC;</span>
+<span class='curline'><a href='../S/185.html#L84795'>pWalker</a>          84795 libdb/sqlite3.c        &amp;&amp; pWalker-&gt;walkerDepth==pExpr-&gt;op2</span>
+<span class='curline'><a href='../S/185.html#L84841'>pWalker</a>          84841 libdb/sqlite3.c static int analyzeAggregatesInSelect(Walker *pWalker, Select *pSelect){</span>
+<span class='curline'><a href='../S/185.html#L84842'>pWalker</a>          84842 libdb/sqlite3.c   UNUSED_PARAMETER(pWalker);</span>
+<span class='curline'><a href='../S/185.html#L107788'>pWalker</a>          107788 libdb/sqlite3.c static int convertCompoundSelectToSubquery(Walker *pWalker, Select *p){</span>
+<span class='curline'><a href='../S/185.html#L107810'>pWalker</a>          107810 libdb/sqlite3.c   pParse = pWalker-&gt;pParse;</span>
+<span class='curline'><a href='../S/185.html#L107902'>pWalker</a>          107902 libdb/sqlite3.c   Walker *pWalker, </span>
+<span class='curline'><a href='../S/185.html#L107905'>pWalker</a>          107905 libdb/sqlite3.c   Parse *pParse = pWalker-&gt;pParse;</span>
+<span class='curline'><a href='../S/185.html#L107974'>pWalker</a>          107974 libdb/sqlite3.c     sqlite3WalkSelect(pWalker, bMayRecursive ? pSel-&gt;pPrior : pSel);</span>
+<span class='curline'><a href='../S/185.html#L107996'>pWalker</a>          107996 libdb/sqlite3.c       sqlite3WalkSelect(pWalker, pSel);</span>
+<span class='curline'><a href='../S/185.html#L108015'>pWalker</a>          108015 libdb/sqlite3.c static void selectPopWith(Walker *pWalker, Select *p){</span>
+<span class='curline'><a href='../S/185.html#L108016'>pWalker</a>          108016 libdb/sqlite3.c   Parse *pParse = pWalker-&gt;pParse;</span>
+<span class='curline'><a href='../S/185.html#L108051'>pWalker</a>          108051 libdb/sqlite3.c static int selectExpander(Walker *pWalker, Select *p){</span>
+<span class='curline'><a href='../S/185.html#L108052'>pWalker</a>          108052 libdb/sqlite3.c   Parse *pParse = pWalker-&gt;pParse;</span>
+<span class='curline'><a href='../S/185.html#L108090'>pWalker</a>          108090 libdb/sqlite3.c       selectPopWith(pWalker, p);</span>
+<span class='curline'><a href='../S/185.html#L108095'>pWalker</a>          108095 libdb/sqlite3.c     if( withExpand(pWalker, pFrom) ) return WRC_Abort;</span>
+<span class='curline'><a href='../S/185.html#L108104'>pWalker</a>          108104 libdb/sqlite3.c       sqlite3WalkSelect(pWalker, pSel);</span>
+<span class='curline'><a href='../S/185.html#L108134'>pWalker</a>          108134 libdb/sqlite3.c         sqlite3WalkSelect(pWalker, pFrom-&gt;pSelect);</span>
+<span class='curline'><a href='../S/185.html#L108380'>pWalker</a>          108380 libdb/sqlite3.c static void selectAddSubqueryTypeInfo(Walker *pWalker, Select *p){</span>
+<span class='curline'><a href='../S/185.html#L108389'>pWalker</a>          108389 libdb/sqlite3.c     pParse = pWalker-&gt;pParse;</span>
+</pre>
+</body>
+</html>

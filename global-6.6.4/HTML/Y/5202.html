@@ -1,0 +1,764 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>pCsr</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/185.html#L60765'>pCsr</a>             60765 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3BtreePutData(BtCursor *pCsr, u32 offset, u32 amt, void *z){</span>
+<span class='curline'><a href='../S/185.html#L60767'>pCsr</a>             60767 libdb/sqlite3.c   assert( cursorHoldsMutex(pCsr) );</span>
+<span class='curline'><a href='../S/185.html#L60768'>pCsr</a>             60768 libdb/sqlite3.c   assert( sqlite3_mutex_held(pCsr-&gt;pBtree-&gt;db-&gt;mutex) );</span>
+<span class='curline'><a href='../S/185.html#L60769'>pCsr</a>             60769 libdb/sqlite3.c   assert( pCsr-&gt;curFlags &amp; BTCF_Incrblob );</span>
+<span class='curline'><a href='../S/185.html#L60771'>pCsr</a>             60771 libdb/sqlite3.c   rc = restoreCursorPosition(pCsr);</span>
+<span class='curline'><a href='../S/185.html#L60775'>pCsr</a>             60775 libdb/sqlite3.c   assert( pCsr-&gt;eState!=CURSOR_REQUIRESEEK );</span>
+<span class='curline'><a href='../S/185.html#L60776'>pCsr</a>             60776 libdb/sqlite3.c   if( pCsr-&gt;eState!=CURSOR_VALID ){</span>
+<span class='curline'><a href='../S/185.html#L60788'>pCsr</a>             60788 libdb/sqlite3.c   VVA_ONLY(rc =) saveAllCursors(pCsr-&gt;pBt, pCsr-&gt;pgnoRoot, pCsr);</span>
+<span class='curline'><a href='../S/185.html#L60798'>pCsr</a>             60798 libdb/sqlite3.c   if( (pCsr-&gt;curFlags &amp; BTCF_WriteFlag)==0 ){</span>
+<span class='curline'><a href='../S/185.html#L60801'>pCsr</a>             60801 libdb/sqlite3.c   assert( (pCsr-&gt;pBt-&gt;btsFlags &amp; BTS_READ_ONLY)==0</span>
+<span class='curline'><a href='../S/185.html#L60802'>pCsr</a>             60802 libdb/sqlite3.c               &amp;&amp; pCsr-&gt;pBt-&gt;inTransaction==TRANS_WRITE );</span>
+<span class='curline'><a href='../S/185.html#L60803'>pCsr</a>             60803 libdb/sqlite3.c   assert( hasSharedCacheTableLock(pCsr-&gt;pBtree, pCsr-&gt;pgnoRoot, 0, 2) );</span>
+<span class='curline'><a href='../S/185.html#L60804'>pCsr</a>             60804 libdb/sqlite3.c   assert( !hasReadConflicts(pCsr-&gt;pBtree, pCsr-&gt;pgnoRoot) );</span>
+<span class='curline'><a href='../S/185.html#L60805'>pCsr</a>             60805 libdb/sqlite3.c   assert( pCsr-&gt;apPage[pCsr-&gt;iPage]-&gt;intKey );</span>
+<span class='curline'><a href='../S/185.html#L60807'>pCsr</a>             60807 libdb/sqlite3.c   return accessPayload(pCsr, offset, amt, (unsigned char *)z, 1);</span>
+<span class='curline'><a href='../S/185.html#L60858'>pCsr</a>             60858 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3BtreeCursorHints(BtCursor *pCsr, unsigned int mask){</span>
+<span class='curline'><a href='../S/185.html#L60860'>pCsr</a>             60860 libdb/sqlite3.c   pCsr-&gt;hints = mask;</span>
+<span class='curline'><a href='../S/185.html#L75504'>pCsr</a>             75504 libdb/sqlite3.c   BtCursor *pCsr;         /* Cursor pointing at blob row */</span>
+<span class='curline'><a href='../S/185.html#L75553'>pCsr</a>             75553 libdb/sqlite3.c       p-&gt;pCsr =  pC-&gt;pCursor;</span>
+<span class='curline'><a href='../S/185.html#L75554'>pCsr</a>             75554 libdb/sqlite3.c       sqlite3BtreeIncrblobCursor(p-&gt;pCsr);</span>
+<span class='curline'><a href='../S/185.html#L75859'>pCsr</a>             75859 libdb/sqlite3.c     sqlite3BtreeEnterCursor(p-&gt;pCsr);</span>
+<span class='curline'><a href='../S/185.html#L75860'>pCsr</a>             75860 libdb/sqlite3.c     rc = xCall(p-&gt;pCsr, iOffset+p-&gt;iOffset, n, z);</span>
+<span class='curline'><a href='../S/185.html#L75861'>pCsr</a>             75861 libdb/sqlite3.c     sqlite3BtreeLeaveCursor(p-&gt;pCsr);</span>
+<span class='curline'><a href='../S/185.html#L76730'>pCsr</a>             76730 libdb/sqlite3.c   VdbeCursor *pCsr                /* Cursor that holds the new sorter */</span>
+<span class='curline'><a href='../S/185.html#L76763'>pCsr</a>             76763 libdb/sqlite3.c   assert( pCsr-&gt;pKeyInfo &amp;&amp; pCsr-&gt;pBt==0 );</span>
+<span class='curline'><a href='../S/185.html#L76764'>pCsr</a>             76764 libdb/sqlite3.c   szKeyInfo = sizeof(KeyInfo) + (pCsr-&gt;pKeyInfo-&gt;nField-1)*sizeof(CollSeq*);</span>
+<span class='curline'><a href='../S/185.html#L76768'>pCsr</a>             76768 libdb/sqlite3.c   pCsr-&gt;pSorter = pSorter;</span>
+<span class='curline'><a href='../S/185.html#L76773'>pCsr</a>             76773 libdb/sqlite3.c     memcpy(pKeyInfo, pCsr-&gt;pKeyInfo, szKeyInfo);</span>
+<span class='curline'><a href='../S/185.html#L77047'>pCsr</a>             77047 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3VdbeSorterClose(sqlite3 *db, VdbeCursor *pCsr){</span>
+<span class='curline'><a href='../S/185.html#L77048'>pCsr</a>             77048 libdb/sqlite3.c   VdbeSorter *pSorter = pCsr-&gt;pSorter;</span>
+<span class='curline'><a href='../S/185.html#L77053'>pCsr</a>             77053 libdb/sqlite3.c     pCsr-&gt;pSorter = 0;</span>
+<span class='curline'><a href='../S/185.html#L77532'>pCsr</a>             77532 libdb/sqlite3.c   const VdbeCursor *pCsr,         /* Sorter cursor */</span>
+<span class='curline'><a href='../S/185.html#L77535'>pCsr</a>             77535 libdb/sqlite3.c   VdbeSorter *pSorter = pCsr-&gt;pSorter;</span>
+<span class='curline'><a href='../S/185.html#L78293'>pCsr</a>             78293 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3VdbeSorterRewind(const VdbeCursor *pCsr, int *pbEof){</span>
+<span class='curline'><a href='../S/185.html#L78294'>pCsr</a>             78294 libdb/sqlite3.c   VdbeSorter *pSorter = pCsr-&gt;pSorter;</span>
+<span class='curline'><a href='../S/185.html#L78339'>pCsr</a>             78339 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3VdbeSorterNext(sqlite3 *db, const VdbeCursor *pCsr, int *pbEof){</span>
+<span class='curline'><a href='../S/185.html#L78340'>pCsr</a>             78340 libdb/sqlite3.c   VdbeSorter *pSorter = pCsr-&gt;pSorter;</span>
+<span class='curline'><a href='../S/185.html#L78400'>pCsr</a>             78400 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3VdbeSorterRowkey(const VdbeCursor *pCsr, Mem *pOut){</span>
+<span class='curline'><a href='../S/185.html#L78401'>pCsr</a>             78401 libdb/sqlite3.c   VdbeSorter *pSorter = pCsr-&gt;pSorter;</span>
+<span class='curline'><a href='../S/185.html#L78432'>pCsr</a>             78432 libdb/sqlite3.c   const VdbeCursor *pCsr,         /* Sorter cursor */</span>
+<span class='curline'><a href='../S/185.html#L78437'>pCsr</a>             78437 libdb/sqlite3.c   VdbeSorter *pSorter = pCsr-&gt;pSorter;</span>
+<span class='curline'><a href='../S/185.html#L78439'>pCsr</a>             78439 libdb/sqlite3.c   KeyInfo *pKeyInfo = pCsr-&gt;pKeyInfo;</span>
+<span class='curline'><a href='../S/185.html#L129186'>pCsr</a>             129186 libdb/sqlite3.c   int (*xLanguageid)(sqlite3_tokenizer_cursor *pCsr, int iLangid);</span>
+<span class='curline'><a href='../S/185.html#L129865'>pCsr</a>             129865 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3Fts3MsrIncrRestart(Fts3MultiSegReader *pCsr);</span>
+<span class='curline'><a href='../S/185.html#L129899'>pCsr</a>             129899 libdb/sqlite3.c static int fts3EvalNext(Fts3Cursor *pCsr);</span>
+<span class='curline'><a href='../S/185.html#L129900'>pCsr</a>             129900 libdb/sqlite3.c static int fts3EvalStart(Fts3Cursor *pCsr);</span>
+<span class='curline'><a href='../S/185.html#L131206'>pCsr</a>             131206 libdb/sqlite3.c   sqlite3_vtab_cursor *pCsr;               /* Allocated cursor */</span>
+<span class='curline'><a href='../S/185.html#L131214'>pCsr</a>             131214 libdb/sqlite3.c   *ppCsr = pCsr = (sqlite3_vtab_cursor *)sqlite3_malloc(sizeof(Fts3Cursor));</span>
+<span class='curline'><a href='../S/185.html#L131215'>pCsr</a>             131215 libdb/sqlite3.c   if( !pCsr ){</span>
+<span class='curline'><a href='../S/185.html#L131218'>pCsr</a>             131218 libdb/sqlite3.c   memset(pCsr, 0, sizeof(Fts3Cursor));</span>
+<span class='curline'><a href='../S/185.html#L131227'>pCsr</a>             131227 libdb/sqlite3.c   Fts3Cursor *pCsr = (Fts3Cursor *)pCursor;</span>
+<span class='curline'><a href='../S/185.html#L131228'>pCsr</a>             131228 libdb/sqlite3.c   assert( ((Fts3Table *)pCsr-&gt;base.pVtab)-&gt;pSegments==0 );</span>
+<span class='curline'><a href='../S/185.html#L131229'>pCsr</a>             131229 libdb/sqlite3.c   sqlite3_finalize(pCsr-&gt;pStmt);</span>
+<span class='curline'><a href='../S/185.html#L131230'>pCsr</a>             131230 libdb/sqlite3.c   sqlite3Fts3ExprFree(pCsr-&gt;pExpr);</span>
+<span class='curline'><a href='../S/185.html#L131231'>pCsr</a>             131231 libdb/sqlite3.c   sqlite3Fts3FreeDeferredTokens(pCsr);</span>
+<span class='curline'><a href='../S/185.html#L131232'>pCsr</a>             131232 libdb/sqlite3.c   sqlite3_free(pCsr-&gt;aDoclist);</span>
+<span class='curline'><a href='../S/185.html#L131233'>pCsr</a>             131233 libdb/sqlite3.c   sqlite3_free(pCsr-&gt;aMatchinfo);</span>
+<span class='curline'><a href='../S/185.html#L131234'>pCsr</a>             131234 libdb/sqlite3.c   assert( ((Fts3Table *)pCsr-&gt;base.pVtab)-&gt;pSegments==0 );</span>
+<span class='curline'><a href='../S/185.html#L131235'>pCsr</a>             131235 libdb/sqlite3.c   sqlite3_free(pCsr);</span>
+<span class='curline'><a href='../S/185.html#L131250'>pCsr</a>             131250 libdb/sqlite3.c static int fts3CursorSeekStmt(Fts3Cursor *pCsr, sqlite3_stmt **ppStmt){</span>
+<span class='curline'><a href='../S/185.html#L131252'>pCsr</a>             131252 libdb/sqlite3.c   if( pCsr-&gt;pStmt==0 ){</span>
+<span class='curline'><a href='../S/185.html#L131253'>pCsr</a>             131253 libdb/sqlite3.c     Fts3Table *p = (Fts3Table *)pCsr-&gt;base.pVtab;</span>
+<span class='curline'><a href='../S/185.html#L131257'>pCsr</a>             131257 libdb/sqlite3.c     rc = sqlite3_prepare_v2(p-&gt;db, zSql, -1, &amp;pCsr-&gt;pStmt, 0);</span>
+<span class='curline'><a href='../S/185.html#L131260'>pCsr</a>             131260 libdb/sqlite3.c   *ppStmt = pCsr-&gt;pStmt;</span>
+<span class='curline'><a href='../S/185.html#L131269'>pCsr</a>             131269 libdb/sqlite3.c static int fts3CursorSeek(sqlite3_context *pContext, Fts3Cursor *pCsr){</span>
+<span class='curline'><a href='../S/185.html#L131271'>pCsr</a>             131271 libdb/sqlite3.c   if( pCsr-&gt;isRequireSeek ){</span>
+<span class='curline'><a href='../S/185.html#L131274'>pCsr</a>             131274 libdb/sqlite3.c     rc = fts3CursorSeekStmt(pCsr, &amp;pStmt);</span>
+<span class='curline'><a href='../S/185.html#L131276'>pCsr</a>             131276 libdb/sqlite3.c       sqlite3_bind_int64(pCsr-&gt;pStmt, 1, pCsr-&gt;iPrevId);</span>
+<span class='curline'><a href='../S/185.html#L131277'>pCsr</a>             131277 libdb/sqlite3.c       pCsr-&gt;isRequireSeek = 0;</span>
+<span class='curline'><a href='../S/185.html#L131278'>pCsr</a>             131278 libdb/sqlite3.c       if( SQLITE_ROW==sqlite3_step(pCsr-&gt;pStmt) ){</span>
+<span class='curline'><a href='../S/185.html#L131281'>pCsr</a>             131281 libdb/sqlite3.c         rc = sqlite3_reset(pCsr-&gt;pStmt);</span>
+<span class='curline'><a href='../S/185.html#L131282'>pCsr</a>             131282 libdb/sqlite3.c         if( rc==SQLITE_OK &amp;&amp; ((Fts3Table *)pCsr-&gt;base.pVtab)-&gt;zContentTbl==0 ){</span>
+<span class='curline'><a href='../S/185.html#L131287'>pCsr</a>             131287 libdb/sqlite3.c           pCsr-&gt;isEof = 1;</span>
+<span class='curline'><a href='../S/185.html#L132305'>pCsr</a>             132305 libdb/sqlite3.c   Fts3MultiSegReader *pCsr, </span>
+<span class='curline'><a href='../S/185.html#L132308'>pCsr</a>             132308 libdb/sqlite3.c   if( (pCsr-&gt;nSegment%16)==0 ){</span>
+<span class='curline'><a href='../S/185.html#L132310'>pCsr</a>             132310 libdb/sqlite3.c     int nByte = (pCsr-&gt;nSegment + 16)*sizeof(Fts3SegReader*);</span>
+<span class='curline'><a href='../S/185.html#L132311'>pCsr</a>             132311 libdb/sqlite3.c     apNew = (Fts3SegReader **)sqlite3_realloc(pCsr-&gt;apSegment, nByte);</span>
+<span class='curline'><a href='../S/185.html#L132316'>pCsr</a>             132316 libdb/sqlite3.c     pCsr-&gt;apSegment = apNew;</span>
+<span class='curline'><a href='../S/185.html#L132318'>pCsr</a>             132318 libdb/sqlite3.c   pCsr-&gt;apSegment[pCsr-&gt;nSegment++] = pNew;</span>
+<span class='curline'><a href='../S/185.html#L132338'>pCsr</a>             132338 libdb/sqlite3.c   Fts3MultiSegReader *pCsr        /* Cursor object to populate */</span>
+<span class='curline'><a href='../S/185.html#L132354'>pCsr</a>             132354 libdb/sqlite3.c       rc = fts3SegReaderCursorAppend(pCsr, pSeg);</span>
+<span class='curline'><a href='../S/185.html#L132382'>pCsr</a>             132382 libdb/sqlite3.c       rc = sqlite3Fts3SegReaderNew(pCsr-&gt;nSegment+1, </span>
+<span class='curline'><a href='../S/185.html#L132388'>pCsr</a>             132388 libdb/sqlite3.c       rc = fts3SegReaderCursorAppend(pCsr, pSeg);</span>
+<span class='curline'><a href='../S/185.html#L132412'>pCsr</a>             132412 libdb/sqlite3.c   Fts3MultiSegReader *pCsr       /* Cursor object to populate */</span>
+<span class='curline'><a href='../S/185.html#L132423'>pCsr</a>             132423 libdb/sqlite3.c   memset(pCsr, 0, sizeof(Fts3MultiSegReader));</span>
+<span class='curline'><a href='../S/185.html#L132425'>pCsr</a>             132425 libdb/sqlite3.c       p, iLangid, iIndex, iLevel, zTerm, nTerm, isPrefix, isScan, pCsr</span>
+<span class='curline'><a href='../S/185.html#L132440'>pCsr</a>             132440 libdb/sqlite3.c   Fts3MultiSegReader *pCsr        /* Fts3MultiSegReader to modify */</span>
+<span class='curline'><a href='../S/185.html#L132443'>pCsr</a>             132443 libdb/sqlite3.c       iLangid, 0, FTS3_SEGCURSOR_ALL, zTerm, nTerm, 0, 0,pCsr</span>
+<span class='curline'><a href='../S/185.html#L132461'>pCsr</a>             132461 libdb/sqlite3.c   Fts3Cursor *pCsr,               /* Virtual table cursor handle */</span>
+<span class='curline'><a href='../S/185.html#L132474'>pCsr</a>             132474 libdb/sqlite3.c     Fts3Table *p = (Fts3Table *)pCsr-&gt;base.pVtab;</span>
+<span class='curline'><a href='../S/185.html#L132480'>pCsr</a>             132480 libdb/sqlite3.c           rc = sqlite3Fts3SegReaderCursor(p, pCsr-&gt;iLangid, </span>
+<span class='curline'><a href='../S/185.html#L132490'>pCsr</a>             132490 libdb/sqlite3.c           rc = sqlite3Fts3SegReaderCursor(p, pCsr-&gt;iLangid, </span>
+<span class='curline'><a href='../S/185.html#L132495'>pCsr</a>             132495 libdb/sqlite3.c                 p, pCsr-&gt;iLangid, zTerm, nTerm, pSegcsr</span>
+<span class='curline'><a href='../S/185.html#L132503'>pCsr</a>             132503 libdb/sqlite3.c       rc = sqlite3Fts3SegReaderCursor(p, pCsr-&gt;iLangid, </span>
+<span class='curline'><a href='../S/185.html#L132611'>pCsr</a>             132611 libdb/sqlite3.c   Fts3Cursor *pCsr = (Fts3Cursor *)pCursor;</span>
+<span class='curline'><a href='../S/185.html#L132612'>pCsr</a>             132612 libdb/sqlite3.c   if( pCsr-&gt;eSearch==FTS3_DOCID_SEARCH || pCsr-&gt;eSearch==FTS3_FULLSCAN_SEARCH ){</span>
+<span class='curline'><a href='../S/185.html#L132613'>pCsr</a>             132613 libdb/sqlite3.c     if( SQLITE_ROW!=sqlite3_step(pCsr-&gt;pStmt) ){</span>
+<span class='curline'><a href='../S/185.html#L132614'>pCsr</a>             132614 libdb/sqlite3.c       pCsr-&gt;isEof = 1;</span>
+<span class='curline'><a href='../S/185.html#L132615'>pCsr</a>             132615 libdb/sqlite3.c       rc = sqlite3_reset(pCsr-&gt;pStmt);</span>
+<span class='curline'><a href='../S/185.html#L132617'>pCsr</a>             132617 libdb/sqlite3.c       pCsr-&gt;iPrevId = sqlite3_column_int64(pCsr-&gt;pStmt, 0);</span>
+<span class='curline'><a href='../S/185.html#L132623'>pCsr</a>             132623 libdb/sqlite3.c   assert( ((Fts3Table *)pCsr-&gt;base.pVtab)-&gt;pSegments==0 );</span>
+<span class='curline'><a href='../S/185.html#L132681'>pCsr</a>             132681 libdb/sqlite3.c   Fts3Cursor *pCsr = (Fts3Cursor *)pCursor;</span>
+<span class='curline'><a href='../S/185.html#L132705'>pCsr</a>             132705 libdb/sqlite3.c   sqlite3_finalize(pCsr-&gt;pStmt);</span>
+<span class='curline'><a href='../S/185.html#L132706'>pCsr</a>             132706 libdb/sqlite3.c   sqlite3_free(pCsr-&gt;aDoclist);</span>
+<span class='curline'><a href='../S/185.html#L132707'>pCsr</a>             132707 libdb/sqlite3.c   sqlite3_free(pCsr-&gt;aMatchinfo);</span>
+<span class='curline'><a href='../S/185.html#L132708'>pCsr</a>             132708 libdb/sqlite3.c   sqlite3Fts3ExprFree(pCsr-&gt;pExpr);</span>
+<span class='curline'><a href='../S/185.html#L132712'>pCsr</a>             132712 libdb/sqlite3.c   pCsr-&gt;iMinDocid = fts3DocidRange(pDocidGe, SMALLEST_INT64);</span>
+<span class='curline'><a href='../S/185.html#L132713'>pCsr</a>             132713 libdb/sqlite3.c   pCsr-&gt;iMaxDocid = fts3DocidRange(pDocidLe, LARGEST_INT64);</span>
+<span class='curline'><a href='../S/185.html#L132716'>pCsr</a>             132716 libdb/sqlite3.c     pCsr-&gt;bDesc = (idxStr[0]=='D');</span>
+<span class='curline'><a href='../S/185.html#L132718'>pCsr</a>             132718 libdb/sqlite3.c     pCsr-&gt;bDesc = p-&gt;bDescIdx;</span>
+<span class='curline'><a href='../S/185.html#L132720'>pCsr</a>             132720 libdb/sqlite3.c   pCsr-&gt;eSearch = (i16)eSearch;</span>
+<span class='curline'><a href='../S/185.html#L132730'>pCsr</a>             132730 libdb/sqlite3.c     pCsr-&gt;iLangid = 0;</span>
+<span class='curline'><a href='../S/185.html#L132731'>pCsr</a>             132731 libdb/sqlite3.c     if( pLangid ) pCsr-&gt;iLangid = sqlite3_value_int(pLangid);</span>
+<span class='curline'><a href='../S/185.html#L132734'>pCsr</a>             132734 libdb/sqlite3.c     rc = sqlite3Fts3ExprParse(p-&gt;pTokenizer, pCsr-&gt;iLangid,</span>
+<span class='curline'><a href='../S/185.html#L132735'>pCsr</a>             132735 libdb/sqlite3.c         p-&gt;azColumn, p-&gt;bFts4, p-&gt;nColumn, iCol, zQuery, -1, &amp;pCsr-&gt;pExpr, </span>
+<span class='curline'><a href='../S/185.html#L132742'>pCsr</a>             132742 libdb/sqlite3.c     rc = fts3EvalStart(pCsr);</span>
+<span class='curline'><a href='../S/185.html#L132745'>pCsr</a>             132745 libdb/sqlite3.c     pCsr-&gt;pNextId = pCsr-&gt;aDoclist;</span>
+<span class='curline'><a href='../S/185.html#L132746'>pCsr</a>             132746 libdb/sqlite3.c     pCsr-&gt;iPrevId = 0;</span>
+<span class='curline'><a href='../S/185.html#L132757'>pCsr</a>             132757 libdb/sqlite3.c         p-&gt;zReadExprlist, (pCsr-&gt;bDesc ? "DESC" : "ASC")</span>
+<span class='curline'><a href='../S/185.html#L132760'>pCsr</a>             132760 libdb/sqlite3.c       rc = sqlite3_prepare_v2(p-&gt;db, zSql, -1, &amp;pCsr-&gt;pStmt, 0);</span>
+<span class='curline'><a href='../S/185.html#L132766'>pCsr</a>             132766 libdb/sqlite3.c     rc = fts3CursorSeekStmt(pCsr, &amp;pCsr-&gt;pStmt);</span>
+<span class='curline'><a href='../S/185.html#L132768'>pCsr</a>             132768 libdb/sqlite3.c       rc = sqlite3_bind_value(pCsr-&gt;pStmt, 1, pCons);</span>
+<span class='curline'><a href='../S/185.html#L132791'>pCsr</a>             132791 libdb/sqlite3.c   Fts3Cursor *pCsr = (Fts3Cursor *) pCursor;</span>
+<span class='curline'><a href='../S/185.html#L132792'>pCsr</a>             132792 libdb/sqlite3.c   *pRowid = pCsr-&gt;iPrevId;</span>
+<span class='curline'><a href='../S/185.html#L132813'>pCsr</a>             132813 libdb/sqlite3.c   Fts3Cursor *pCsr = (Fts3Cursor *) pCursor;</span>
+<span class='curline'><a href='../S/185.html#L132823'>pCsr</a>             132823 libdb/sqlite3.c     sqlite3_result_int64(pCtx, pCsr-&gt;iPrevId);</span>
+<span class='curline'><a href='../S/185.html#L132827'>pCsr</a>             132827 libdb/sqlite3.c     sqlite3_result_blob(pCtx, &amp;pCsr, sizeof(pCsr), SQLITE_TRANSIENT);</span>
+<span class='curline'><a href='../S/185.html#L132828'>pCsr</a>             132828 libdb/sqlite3.c   }else if( iCol==p-&gt;nColumn+2 &amp;&amp; pCsr-&gt;pExpr ){</span>
+<span class='curline'><a href='../S/185.html#L132829'>pCsr</a>             132829 libdb/sqlite3.c     sqlite3_result_int64(pCtx, pCsr-&gt;iLangid);</span>
+<span class='curline'><a href='../S/185.html#L132833'>pCsr</a>             132833 libdb/sqlite3.c     rc = fts3CursorSeek(0, pCsr);</span>
+<span class='curline'><a href='../S/185.html#L132839'>pCsr</a>             132839 libdb/sqlite3.c           iLangid = sqlite3_column_int(pCsr-&gt;pStmt, p-&gt;nColumn+1);</span>
+<span class='curline'><a href='../S/185.html#L132842'>pCsr</a>             132842 libdb/sqlite3.c       }else if( sqlite3_data_count(pCsr-&gt;pStmt)&gt;(iCol+1) ){</span>
+<span class='curline'><a href='../S/185.html#L132843'>pCsr</a>             132843 libdb/sqlite3.c         sqlite3_result_value(pCtx, sqlite3_column_value(pCsr-&gt;pStmt, iCol+1));</span>
+<span class='curline'><a href='../S/185.html#L132848'>pCsr</a>             132848 libdb/sqlite3.c   assert( ((Fts3Table *)pCsr-&gt;base.pVtab)-&gt;pSegments==0 );</span>
+<span class='curline'><a href='../S/185.html#L133041'>pCsr</a>             133041 libdb/sqlite3.c   Fts3Cursor *pCsr;               /* Cursor handle passed through apVal[0] */</span>
+<span class='curline'><a href='../S/185.html#L133058'>pCsr</a>             133058 libdb/sqlite3.c   if( fts3FunctionArg(pContext, "snippet", apVal[0], &amp;pCsr) ) return;</span>
+<span class='curline'><a href='../S/185.html#L133069'>pCsr</a>             133069 libdb/sqlite3.c   }else if( SQLITE_OK==fts3CursorSeek(pContext, pCsr) ){</span>
+<span class='curline'><a href='../S/185.html#L133070'>pCsr</a>             133070 libdb/sqlite3.c     sqlite3Fts3Snippet(pContext, pCsr, zStart, zEnd, zEllipsis, iCol, nToken);</span>
+<span class='curline'><a href='../S/185.html#L133082'>pCsr</a>             133082 libdb/sqlite3.c   Fts3Cursor *pCsr;               /* Cursor handle passed through apVal[0] */</span>
+<span class='curline'><a href='../S/185.html#L133087'>pCsr</a>             133087 libdb/sqlite3.c   if( fts3FunctionArg(pContext, "offsets", apVal[0], &amp;pCsr) ) return;</span>
+<span class='curline'><a href='../S/185.html#L133088'>pCsr</a>             133088 libdb/sqlite3.c   assert( pCsr );</span>
+<span class='curline'><a href='../S/185.html#L133089'>pCsr</a>             133089 libdb/sqlite3.c   if( SQLITE_OK==fts3CursorSeek(pContext, pCsr) ){</span>
+<span class='curline'><a href='../S/185.html#L133090'>pCsr</a>             133090 libdb/sqlite3.c     sqlite3Fts3Offsets(pContext, pCsr);</span>
+<span class='curline'><a href='../S/185.html#L133142'>pCsr</a>             133142 libdb/sqlite3.c   Fts3Cursor *pCsr;               /* Cursor handle passed through apVal[0] */</span>
+<span class='curline'><a href='../S/185.html#L133144'>pCsr</a>             133144 libdb/sqlite3.c   if( SQLITE_OK==fts3FunctionArg(pContext, "matchinfo", apVal[0], &amp;pCsr) ){</span>
+<span class='curline'><a href='../S/185.html#L133149'>pCsr</a>             133149 libdb/sqlite3.c     sqlite3Fts3Matchinfo(pContext, pCsr, zArg);</span>
+<span class='curline'><a href='../S/185.html#L133466'>pCsr</a>             133466 libdb/sqlite3.c   Fts3Cursor *pCsr,               /* FTS cursor handle */</span>
+<span class='curline'><a href='../S/185.html#L133479'>pCsr</a>             133479 libdb/sqlite3.c         int rc = fts3TermSegReaderCursor(pCsr, </span>
+<span class='curline'><a href='../S/185.html#L133491'>pCsr</a>             133491 libdb/sqlite3.c       fts3EvalAllocateReaders(pCsr, pExpr-&gt;pLeft, pnToken, pnOr, pRc);</span>
+<span class='curline'><a href='../S/185.html#L133492'>pCsr</a>             133492 libdb/sqlite3.c       fts3EvalAllocateReaders(pCsr, pExpr-&gt;pRight, pnToken, pnOr, pRc);</span>
+<span class='curline'><a href='../S/185.html#L133566'>pCsr</a>             133566 libdb/sqlite3.c   Fts3Cursor *pCsr,               /* FTS Cursor handle */</span>
+<span class='curline'><a href='../S/185.html#L133569'>pCsr</a>             133569 libdb/sqlite3.c   Fts3Table *pTab = (Fts3Table *)pCsr-&gt;base.pVtab;</span>
+<span class='curline'><a href='../S/185.html#L133601'>pCsr</a>             133601 libdb/sqlite3.c static int fts3EvalDeferredPhrase(Fts3Cursor *pCsr, Fts3Phrase *pPhrase){</span>
+<span class='curline'><a href='../S/185.html#L133655'>pCsr</a>             133655 libdb/sqlite3.c       pPhrase-&gt;doclist.iDocid = pCsr-&gt;iPrevId;</span>
+<span class='curline'><a href='../S/185.html#L133713'>pCsr</a>             133713 libdb/sqlite3.c static int fts3EvalPhraseStart(Fts3Cursor *pCsr, int bOptOk, Fts3Phrase *p){</span>
+<span class='curline'><a href='../S/185.html#L133714'>pCsr</a>             133714 libdb/sqlite3.c   Fts3Table *pTab = (Fts3Table *)pCsr-&gt;base.pVtab;</span>
+<span class='curline'><a href='../S/185.html#L133725'>pCsr</a>             133725 libdb/sqlite3.c    &amp;&amp; pCsr-&gt;bDesc==pTab-&gt;bDescIdx </span>
+<span class='curline'><a href='../S/185.html#L133753'>pCsr</a>             133753 libdb/sqlite3.c     rc = fts3EvalPhraseLoad(pCsr, p);</span>
+<span class='curline'><a href='../S/185.html#L133979'>pCsr</a>             133979 libdb/sqlite3.c   Fts3Cursor *pCsr,               /* FTS Cursor handle */</span>
+<span class='curline'><a href='../S/185.html#L133985'>pCsr</a>             133985 libdb/sqlite3.c   Fts3Table *pTab = (Fts3Table *)pCsr-&gt;base.pVtab;</span>
+<span class='curline'><a href='../S/185.html#L133998'>pCsr</a>             133998 libdb/sqlite3.c     int bDescDoclist = pCsr-&gt;bDesc;</span>
+<span class='curline'><a href='../S/185.html#L134079'>pCsr</a>             134079 libdb/sqlite3.c   Fts3Cursor *pCsr,               /* FTS Cursor handle */</span>
+<span class='curline'><a href='../S/185.html#L134085'>pCsr</a>             134085 libdb/sqlite3.c   Fts3Table *pTab = (Fts3Table *)pCsr-&gt;base.pVtab;</span>
+<span class='curline'><a href='../S/185.html#L134088'>pCsr</a>             134088 libdb/sqlite3.c     rc = fts3EvalIncrPhraseNext(pCsr, p, pbEof);</span>
+<span class='curline'><a href='../S/185.html#L134089'>pCsr</a>             134089 libdb/sqlite3.c   }else if( pCsr-&gt;bDesc!=pTab-&gt;bDescIdx &amp;&amp; pDL-&gt;nAll ){</span>
+<span class='curline'><a href='../S/185.html#L134118'>pCsr</a>             134118 libdb/sqlite3.c   Fts3Cursor *pCsr,               /* FTS Cursor handle */</span>
+<span class='curline'><a href='../S/185.html#L134130'>pCsr</a>             134130 libdb/sqlite3.c       *pRc = fts3EvalPhraseStart(pCsr, 1, pExpr-&gt;pPhrase);</span>
+<span class='curline'><a href='../S/185.html#L134132'>pCsr</a>             134132 libdb/sqlite3.c       fts3EvalStartReaders(pCsr, pExpr-&gt;pLeft, pRc);</span>
+<span class='curline'><a href='../S/185.html#L134133'>pCsr</a>             134133 libdb/sqlite3.c       fts3EvalStartReaders(pCsr, pExpr-&gt;pRight, pRc);</span>
+<span class='curline'><a href='../S/185.html#L134169'>pCsr</a>             134169 libdb/sqlite3.c   Fts3Cursor *pCsr,               /* FTS Cursor handle */</span>
+<span class='curline'><a href='../S/185.html#L134187'>pCsr</a>             134187 libdb/sqlite3.c         *pRc = sqlite3Fts3MsrOvfl(pCsr, pTC-&gt;pToken-&gt;pSegcsr, &amp;pTC-&gt;nOvfl);</span>
+<span class='curline'><a href='../S/185.html#L134200'>pCsr</a>             134200 libdb/sqlite3.c       fts3EvalTokenCosts(pCsr, pRoot, pExpr-&gt;pLeft, ppTC, ppOr, pRc);</span>
+<span class='curline'><a href='../S/185.html#L134206'>pCsr</a>             134206 libdb/sqlite3.c       fts3EvalTokenCosts(pCsr, pRoot, pExpr-&gt;pRight, ppTC, ppOr, pRc);</span>
+<span class='curline'><a href='../S/185.html#L134222'>pCsr</a>             134222 libdb/sqlite3.c static int fts3EvalAverageDocsize(Fts3Cursor *pCsr, int *pnPage){</span>
+<span class='curline'><a href='../S/185.html#L134223'>pCsr</a>             134223 libdb/sqlite3.c   if( pCsr-&gt;nRowAvg==0 ){</span>
+<span class='curline'><a href='../S/185.html#L134236'>pCsr</a>             134236 libdb/sqlite3.c     Fts3Table *p = (Fts3Table*)pCsr-&gt;base.pVtab;</span>
+<span class='curline'><a href='../S/185.html#L134258'>pCsr</a>             134258 libdb/sqlite3.c     pCsr-&gt;nDoc = nDoc;</span>
+<span class='curline'><a href='../S/185.html#L134259'>pCsr</a>             134259 libdb/sqlite3.c     pCsr-&gt;nRowAvg = (int)(((nByte / nDoc) + p-&gt;nPgsz) / p-&gt;nPgsz);</span>
+<span class='curline'><a href='../S/185.html#L134260'>pCsr</a>             134260 libdb/sqlite3.c     assert( pCsr-&gt;nRowAvg&gt;0 ); </span>
+<span class='curline'><a href='../S/185.html#L134265'>pCsr</a>             134265 libdb/sqlite3.c   *pnPage = pCsr-&gt;nRowAvg;</span>
+<span class='curline'><a href='../S/185.html#L134284'>pCsr</a>             134284 libdb/sqlite3.c   Fts3Cursor *pCsr,               /* FTS Cursor handle */</span>
+<span class='curline'><a href='../S/185.html#L134289'>pCsr</a>             134289 libdb/sqlite3.c   Fts3Table *pTab = (Fts3Table *)pCsr-&gt;base.pVtab;</span>
+<span class='curline'><a href='../S/185.html#L134320'>pCsr</a>             134320 libdb/sqlite3.c   rc = fts3EvalAverageDocsize(pCsr, &amp;nDocSize);</span>
+<span class='curline'><a href='../S/185.html#L134366'>pCsr</a>             134366 libdb/sqlite3.c       rc = sqlite3Fts3DeferToken(pCsr, pToken, pTC-&gt;iCol);</span>
+<span class='curline'><a href='../S/185.html#L134412'>pCsr</a>             134412 libdb/sqlite3.c static int fts3EvalStart(Fts3Cursor *pCsr){</span>
+<span class='curline'><a href='../S/185.html#L134413'>pCsr</a>             134413 libdb/sqlite3.c   Fts3Table *pTab = (Fts3Table *)pCsr-&gt;base.pVtab;</span>
+<span class='curline'><a href='../S/185.html#L134419'>pCsr</a>             134419 libdb/sqlite3.c   fts3EvalAllocateReaders(pCsr, pCsr-&gt;pExpr, &amp;nToken, &amp;nOr, &amp;rc);</span>
+<span class='curline'><a href='../S/185.html#L134439'>pCsr</a>             134439 libdb/sqlite3.c       fts3EvalTokenCosts(pCsr, 0, pCsr-&gt;pExpr, &amp;pTC, &amp;ppOr, &amp;rc);</span>
+<span class='curline'><a href='../S/185.html#L134444'>pCsr</a>             134444 libdb/sqlite3.c         rc = fts3EvalSelectDeferred(pCsr, 0, aTC, nToken);</span>
+<span class='curline'><a href='../S/185.html#L134446'>pCsr</a>             134446 libdb/sqlite3.c           rc = fts3EvalSelectDeferred(pCsr, apOr[ii], aTC, nToken);</span>
+<span class='curline'><a href='../S/185.html#L134455'>pCsr</a>             134455 libdb/sqlite3.c   fts3EvalStartReaders(pCsr, pCsr-&gt;pExpr, &amp;rc);</span>
+<span class='curline'><a href='../S/185.html#L134568'>pCsr</a>             134568 libdb/sqlite3.c   Fts3Cursor *pCsr,               /* FTS Cursor handle */</span>
+<span class='curline'><a href='../S/185.html#L134573'>pCsr</a>             134573 libdb/sqlite3.c     int bDescDoclist = pCsr-&gt;bDesc;         /* Used by DOCID_CMP() macro */</span>
+<span class='curline'><a href='../S/185.html#L134587'>pCsr</a>             134587 libdb/sqlite3.c           fts3EvalNextRow(pCsr, pRight, pRc);</span>
+<span class='curline'><a href='../S/185.html#L134593'>pCsr</a>             134593 libdb/sqlite3.c           fts3EvalNextRow(pCsr, pLeft, pRc);</span>
+<span class='curline'><a href='../S/185.html#L134598'>pCsr</a>             134598 libdb/sqlite3.c           fts3EvalNextRow(pCsr, pLeft, pRc);</span>
+<span class='curline'><a href='../S/185.html#L134599'>pCsr</a>             134599 libdb/sqlite3.c           fts3EvalNextRow(pCsr, pRight, pRc);</span>
+<span class='curline'><a href='../S/185.html#L134604'>pCsr</a>             134604 libdb/sqlite3.c               fts3EvalNextRow(pCsr, pLeft, pRc);</span>
+<span class='curline'><a href='../S/185.html#L134606'>pCsr</a>             134606 libdb/sqlite3.c               fts3EvalNextRow(pCsr, pRight, pRc);</span>
+<span class='curline'><a href='../S/185.html#L134624'>pCsr</a>             134624 libdb/sqlite3.c           fts3EvalNextRow(pCsr, pLeft, pRc);</span>
+<span class='curline'><a href='../S/185.html#L134626'>pCsr</a>             134626 libdb/sqlite3.c           fts3EvalNextRow(pCsr, pRight, pRc);</span>
+<span class='curline'><a href='../S/185.html#L134628'>pCsr</a>             134628 libdb/sqlite3.c           fts3EvalNextRow(pCsr, pLeft, pRc);</span>
+<span class='curline'><a href='../S/185.html#L134629'>pCsr</a>             134629 libdb/sqlite3.c           fts3EvalNextRow(pCsr, pRight, pRc);</span>
+<span class='curline'><a href='../S/185.html#L134648'>pCsr</a>             134648 libdb/sqlite3.c           fts3EvalNextRow(pCsr, pRight, pRc);</span>
+<span class='curline'><a href='../S/185.html#L134652'>pCsr</a>             134652 libdb/sqlite3.c         fts3EvalNextRow(pCsr, pLeft, pRc);</span>
+<span class='curline'><a href='../S/185.html#L134658'>pCsr</a>             134658 libdb/sqlite3.c             fts3EvalNextRow(pCsr, pRight, pRc);</span>
+<span class='curline'><a href='../S/185.html#L134669'>pCsr</a>             134669 libdb/sqlite3.c         *pRc = fts3EvalPhraseNext(pCsr, pPhrase, &amp;pExpr-&gt;bEof);</span>
+<span class='curline'><a href='../S/185.html#L134779'>pCsr</a>             134779 libdb/sqlite3.c   Fts3Cursor *pCsr,               /* FTS cursor handle */</span>
+<span class='curline'><a href='../S/185.html#L134789'>pCsr</a>             134789 libdb/sqlite3.c             fts3EvalTestExpr(pCsr, pExpr-&gt;pLeft, pRc)</span>
+<span class='curline'><a href='../S/185.html#L134790'>pCsr</a>             134790 libdb/sqlite3.c          &amp;&amp; fts3EvalTestExpr(pCsr, pExpr-&gt;pRight, pRc)</span>
+<span class='curline'><a href='../S/185.html#L134815'>pCsr</a>             134815 libdb/sqlite3.c             if( p-&gt;pRight-&gt;iDocid==pCsr-&gt;iPrevId ){</span>
+<span class='curline'><a href='../S/185.html#L134819'>pCsr</a>             134819 libdb/sqlite3.c           if( p-&gt;iDocid==pCsr-&gt;iPrevId ){</span>
+<span class='curline'><a href='../S/185.html#L134827'>pCsr</a>             134827 libdb/sqlite3.c         int bHit1 = fts3EvalTestExpr(pCsr, pExpr-&gt;pLeft, pRc);</span>
+<span class='curline'><a href='../S/185.html#L134828'>pCsr</a>             134828 libdb/sqlite3.c         int bHit2 = fts3EvalTestExpr(pCsr, pExpr-&gt;pRight, pRc);</span>
+<span class='curline'><a href='../S/185.html#L134835'>pCsr</a>             134835 libdb/sqlite3.c             fts3EvalTestExpr(pCsr, pExpr-&gt;pLeft, pRc)</span>
+<span class='curline'><a href='../S/185.html#L134836'>pCsr</a>             134836 libdb/sqlite3.c          &amp;&amp; !fts3EvalTestExpr(pCsr, pExpr-&gt;pRight, pRc)</span>
+<span class='curline'><a href='../S/185.html#L134842'>pCsr</a>             134842 libdb/sqlite3.c         if( pCsr-&gt;pDeferred </span>
+<span class='curline'><a href='../S/185.html#L134843'>pCsr</a>             134843 libdb/sqlite3.c          &amp;&amp; (pExpr-&gt;iDocid==pCsr-&gt;iPrevId || pExpr-&gt;bDeferred)</span>
+<span class='curline'><a href='../S/185.html#L134850'>pCsr</a>             134850 libdb/sqlite3.c           *pRc = fts3EvalDeferredPhrase(pCsr, pPhrase);</span>
+<span class='curline'><a href='../S/185.html#L134852'>pCsr</a>             134852 libdb/sqlite3.c           pExpr-&gt;iDocid = pCsr-&gt;iPrevId;</span>
+<span class='curline'><a href='../S/185.html#L134856'>pCsr</a>             134856 libdb/sqlite3.c           bHit = (pExpr-&gt;bEof==0 &amp;&amp; pExpr-&gt;iDocid==pCsr-&gt;iPrevId);</span>
+<span class='curline'><a href='../S/185.html#L134889'>pCsr</a>             134889 libdb/sqlite3.c static int fts3EvalTestDeferredAndNear(Fts3Cursor *pCsr, int *pRc){</span>
+<span class='curline'><a href='../S/185.html#L134900'>pCsr</a>             134900 libdb/sqlite3.c     if( pCsr-&gt;pDeferred ){</span>
+<span class='curline'><a href='../S/185.html#L134901'>pCsr</a>             134901 libdb/sqlite3.c       rc = fts3CursorSeek(0, pCsr);</span>
+<span class='curline'><a href='../S/185.html#L134903'>pCsr</a>             134903 libdb/sqlite3.c         rc = sqlite3Fts3CacheDeferredDoclists(pCsr);</span>
+<span class='curline'><a href='../S/185.html#L134906'>pCsr</a>             134906 libdb/sqlite3.c     bMiss = (0==fts3EvalTestExpr(pCsr, pCsr-&gt;pExpr, &amp;rc));</span>
+<span class='curline'><a href='../S/185.html#L134909'>pCsr</a>             134909 libdb/sqlite3.c     sqlite3Fts3FreeDeferredDoclists(pCsr);</span>
+<span class='curline'><a href='../S/185.html#L134919'>pCsr</a>             134919 libdb/sqlite3.c static int fts3EvalNext(Fts3Cursor *pCsr){</span>
+<span class='curline'><a href='../S/185.html#L134921'>pCsr</a>             134921 libdb/sqlite3.c   Fts3Expr *pExpr = pCsr-&gt;pExpr;</span>
+<span class='curline'><a href='../S/185.html#L134922'>pCsr</a>             134922 libdb/sqlite3.c   assert( pCsr-&gt;isEof==0 );</span>
+<span class='curline'><a href='../S/185.html#L134924'>pCsr</a>             134924 libdb/sqlite3.c     pCsr-&gt;isEof = 1;</span>
+<span class='curline'><a href='../S/185.html#L134927'>pCsr</a>             134927 libdb/sqlite3.c       if( pCsr-&gt;isRequireSeek==0 ){</span>
+<span class='curline'><a href='../S/185.html#L134928'>pCsr</a>             134928 libdb/sqlite3.c         sqlite3_reset(pCsr-&gt;pStmt);</span>
+<span class='curline'><a href='../S/185.html#L134930'>pCsr</a>             134930 libdb/sqlite3.c       assert( sqlite3_data_count(pCsr-&gt;pStmt)==0 );</span>
+<span class='curline'><a href='../S/185.html#L134931'>pCsr</a>             134931 libdb/sqlite3.c       fts3EvalNextRow(pCsr, pExpr, &amp;rc);</span>
+<span class='curline'><a href='../S/185.html#L134932'>pCsr</a>             134932 libdb/sqlite3.c       pCsr-&gt;isEof = pExpr-&gt;bEof;</span>
+<span class='curline'><a href='../S/185.html#L134933'>pCsr</a>             134933 libdb/sqlite3.c       pCsr-&gt;isRequireSeek = 1;</span>
+<span class='curline'><a href='../S/185.html#L134934'>pCsr</a>             134934 libdb/sqlite3.c       pCsr-&gt;isMatchinfoNeeded = 1;</span>
+<span class='curline'><a href='../S/185.html#L134935'>pCsr</a>             134935 libdb/sqlite3.c       pCsr-&gt;iPrevId = pExpr-&gt;iDocid;</span>
+<span class='curline'><a href='../S/185.html#L134936'>pCsr</a>             134936 libdb/sqlite3.c     }while( pCsr-&gt;isEof==0 &amp;&amp; fts3EvalTestDeferredAndNear(pCsr, &amp;rc) );</span>
+<span class='curline'><a href='../S/185.html#L134942'>pCsr</a>             134942 libdb/sqlite3.c         (pCsr-&gt;bDesc==0 &amp;&amp; pCsr-&gt;iPrevId&gt;pCsr-&gt;iMaxDocid)</span>
+<span class='curline'><a href='../S/185.html#L134943'>pCsr</a>             134943 libdb/sqlite3.c      || (pCsr-&gt;bDesc!=0 &amp;&amp; pCsr-&gt;iPrevId&lt;pCsr-&gt;iMinDocid)</span>
+<span class='curline'><a href='../S/185.html#L134945'>pCsr</a>             134945 libdb/sqlite3.c     pCsr-&gt;isEof = 1;</span>
+<span class='curline'><a href='../S/185.html#L134961'>pCsr</a>             134961 libdb/sqlite3.c   Fts3Cursor *pCsr,</span>
+<span class='curline'><a href='../S/185.html#L134979'>pCsr</a>             134979 libdb/sqlite3.c         *pRc = fts3EvalPhraseStart(pCsr, 0, pPhrase);</span>
+<span class='curline'><a href='../S/185.html#L134989'>pCsr</a>             134989 libdb/sqlite3.c     fts3EvalRestart(pCsr, pExpr-&gt;pLeft, pRc);</span>
+<span class='curline'><a href='../S/185.html#L134990'>pCsr</a>             134990 libdb/sqlite3.c     fts3EvalRestart(pCsr, pExpr-&gt;pRight, pRc);</span>
+<span class='curline'><a href='../S/185.html#L135046'>pCsr</a>             135046 libdb/sqlite3.c   Fts3Cursor *pCsr,               /* Cursor object */</span>
+<span class='curline'><a href='../S/185.html#L135053'>pCsr</a>             135053 libdb/sqlite3.c     Fts3Table *pTab = (Fts3Table *)pCsr-&gt;base.pVtab;</span>
+<span class='curline'><a href='../S/185.html#L135057'>pCsr</a>             135057 libdb/sqlite3.c     sqlite3_int64 iPrevId = pCsr-&gt;iPrevId;</span>
+<span class='curline'><a href='../S/185.html#L135079'>pCsr</a>             135079 libdb/sqlite3.c     fts3EvalRestart(pCsr, pRoot, &amp;rc);</span>
+<span class='curline'><a href='../S/185.html#L135081'>pCsr</a>             135081 libdb/sqlite3.c     while( pCsr-&gt;isEof==0 &amp;&amp; rc==SQLITE_OK ){</span>
+<span class='curline'><a href='../S/185.html#L135085'>pCsr</a>             135085 libdb/sqlite3.c         if( pCsr-&gt;isRequireSeek==0 ) sqlite3_reset(pCsr-&gt;pStmt);</span>
+<span class='curline'><a href='../S/185.html#L135086'>pCsr</a>             135086 libdb/sqlite3.c         assert( sqlite3_data_count(pCsr-&gt;pStmt)==0 );</span>
+<span class='curline'><a href='../S/185.html#L135089'>pCsr</a>             135089 libdb/sqlite3.c         fts3EvalNextRow(pCsr, pRoot, &amp;rc);</span>
+<span class='curline'><a href='../S/185.html#L135090'>pCsr</a>             135090 libdb/sqlite3.c         pCsr-&gt;isEof = pRoot-&gt;bEof;</span>
+<span class='curline'><a href='../S/185.html#L135091'>pCsr</a>             135091 libdb/sqlite3.c         pCsr-&gt;isRequireSeek = 1;</span>
+<span class='curline'><a href='../S/185.html#L135092'>pCsr</a>             135092 libdb/sqlite3.c         pCsr-&gt;isMatchinfoNeeded = 1;</span>
+<span class='curline'><a href='../S/185.html#L135093'>pCsr</a>             135093 libdb/sqlite3.c         pCsr-&gt;iPrevId = pRoot-&gt;iDocid;</span>
+<span class='curline'><a href='../S/185.html#L135094'>pCsr</a>             135094 libdb/sqlite3.c       }while( pCsr-&gt;isEof==0 </span>
+<span class='curline'><a href='../S/185.html#L135096'>pCsr</a>             135096 libdb/sqlite3.c            &amp;&amp; fts3EvalTestDeferredAndNear(pCsr, &amp;rc) </span>
+<span class='curline'><a href='../S/185.html#L135099'>pCsr</a>             135099 libdb/sqlite3.c       if( rc==SQLITE_OK &amp;&amp; pCsr-&gt;isEof==0 ){</span>
+<span class='curline'><a href='../S/185.html#L135104'>pCsr</a>             135104 libdb/sqlite3.c     pCsr-&gt;isEof = 0;</span>
+<span class='curline'><a href='../S/185.html#L135105'>pCsr</a>             135105 libdb/sqlite3.c     pCsr-&gt;iPrevId = iPrevId;</span>
+<span class='curline'><a href='../S/185.html#L135116'>pCsr</a>             135116 libdb/sqlite3.c       fts3EvalRestart(pCsr, pRoot, &amp;rc);</span>
+<span class='curline'><a href='../S/185.html#L135118'>pCsr</a>             135118 libdb/sqlite3.c         fts3EvalNextRow(pCsr, pRoot, &amp;rc);</span>
+<span class='curline'><a href='../S/185.html#L135121'>pCsr</a>             135121 libdb/sqlite3.c       fts3EvalTestDeferredAndNear(pCsr, &amp;rc);</span>
+<span class='curline'><a href='../S/185.html#L135158'>pCsr</a>             135158 libdb/sqlite3.c   Fts3Cursor *pCsr,               /* FTS cursor handle */</span>
+<span class='curline'><a href='../S/185.html#L135162'>pCsr</a>             135162 libdb/sqlite3.c   Fts3Table *pTab = (Fts3Table *)pCsr-&gt;base.pVtab;</span>
+<span class='curline'><a href='../S/185.html#L135167'>pCsr</a>             135167 libdb/sqlite3.c     assert( pCsr-&gt;nDoc&gt;0 );</span>
+<span class='curline'><a href='../S/185.html#L135169'>pCsr</a>             135169 libdb/sqlite3.c       aiOut[iCol*3 + 1] = (u32)pCsr-&gt;nDoc;</span>
+<span class='curline'><a href='../S/185.html#L135170'>pCsr</a>             135170 libdb/sqlite3.c       aiOut[iCol*3 + 2] = (u32)pCsr-&gt;nDoc;</span>
+<span class='curline'><a href='../S/185.html#L135173'>pCsr</a>             135173 libdb/sqlite3.c     rc = fts3EvalGatherStats(pCsr, pExpr);</span>
+<span class='curline'><a href='../S/185.html#L135206'>pCsr</a>             135206 libdb/sqlite3.c   Fts3Cursor *pCsr,               /* FTS3 cursor object */</span>
+<span class='curline'><a href='../S/185.html#L135212'>pCsr</a>             135212 libdb/sqlite3.c   Fts3Table *pTab = (Fts3Table *)pCsr-&gt;base.pVtab;</span>
+<span class='curline'><a href='../S/185.html#L135227'>pCsr</a>             135227 libdb/sqlite3.c   if( iDocid!=pCsr-&gt;iPrevId || pExpr-&gt;bEof ){</span>
+<span class='curline'><a href='../S/185.html#L135255'>pCsr</a>             135255 libdb/sqlite3.c       fts3EvalRestart(pCsr, pExpr, &amp;rc);</span>
+<span class='curline'><a href='../S/185.html#L135257'>pCsr</a>             135257 libdb/sqlite3.c         fts3EvalNextRow(pCsr, pExpr, &amp;rc);</span>
+<span class='curline'><a href='../S/185.html#L135265'>pCsr</a>             135265 libdb/sqlite3.c     iMul = ((pCsr-&gt;bDesc==bDescDoclist) ? 1 : -1);</span>
+<span class='curline'><a href='../S/185.html#L135268'>pCsr</a>             135268 libdb/sqlite3.c         &amp;&amp; (DOCID_CMP(pNear-&gt;iDocid, pCsr-&gt;iPrevId) * iMul)&lt;0</span>
+<span class='curline'><a href='../S/185.html#L135271'>pCsr</a>             135271 libdb/sqlite3.c       fts3EvalNextRow(pCsr, pExpr, &amp;rc);</span>
+<span class='curline'><a href='../S/185.html#L135279'>pCsr</a>             135279 libdb/sqlite3.c     assert( pCsr-&gt;bDesc==0 || pCsr-&gt;bDesc==1 );</span>
+<span class='curline'><a href='../S/185.html#L135282'>pCsr</a>             135282 libdb/sqlite3.c       if( pCsr-&gt;bDesc==bDescDoclist ){</span>
+<span class='curline'><a href='../S/185.html#L135300'>pCsr</a>             135300 libdb/sqlite3.c         while( (pIter==0 || DOCID_CMP(iDocid, pCsr-&gt;iPrevId)&gt;0 ) &amp;&amp; bEof==0 ){</span>
+<span class='curline'><a href='../S/185.html#L135311'>pCsr</a>             135311 libdb/sqlite3.c         while( (pIter==0 || DOCID_CMP(iDocid, pCsr-&gt;iPrevId)&lt;0 ) &amp;&amp; bEof==0 ){</span>
+<span class='curline'><a href='../S/185.html#L135320'>pCsr</a>             135320 libdb/sqlite3.c     if( bEof || iDocid!=pCsr-&gt;iPrevId ) pIter = 0;</span>
+<span class='curline'><a href='../S/185.html#L135610'>pCsr</a>             135610 libdb/sqlite3.c   Fts3auxCursor *pCsr;            /* Pointer to cursor object to return */</span>
+<span class='curline'><a href='../S/185.html#L135614'>pCsr</a>             135614 libdb/sqlite3.c   pCsr = (Fts3auxCursor *)sqlite3_malloc(sizeof(Fts3auxCursor));</span>
+<span class='curline'><a href='../S/185.html#L135615'>pCsr</a>             135615 libdb/sqlite3.c   if( !pCsr ) return SQLITE_NOMEM;</span>
+<span class='curline'><a href='../S/185.html#L135616'>pCsr</a>             135616 libdb/sqlite3.c   memset(pCsr, 0, sizeof(Fts3auxCursor));</span>
+<span class='curline'><a href='../S/185.html#L135618'>pCsr</a>             135618 libdb/sqlite3.c   *ppCsr = (sqlite3_vtab_cursor *)pCsr;</span>
+<span class='curline'><a href='../S/185.html#L135627'>pCsr</a>             135627 libdb/sqlite3.c   Fts3auxCursor *pCsr = (Fts3auxCursor *)pCursor;</span>
+<span class='curline'><a href='../S/185.html#L135630'>pCsr</a>             135630 libdb/sqlite3.c   sqlite3Fts3SegReaderFinish(&amp;pCsr-&gt;csr);</span>
+<span class='curline'><a href='../S/185.html#L135631'>pCsr</a>             135631 libdb/sqlite3.c   sqlite3_free((void *)pCsr-&gt;filter.zTerm);</span>
+<span class='curline'><a href='../S/185.html#L135632'>pCsr</a>             135632 libdb/sqlite3.c   sqlite3_free(pCsr-&gt;zStop);</span>
+<span class='curline'><a href='../S/185.html#L135633'>pCsr</a>             135633 libdb/sqlite3.c   sqlite3_free(pCsr-&gt;aStat);</span>
+<span class='curline'><a href='../S/185.html#L135634'>pCsr</a>             135634 libdb/sqlite3.c   sqlite3_free(pCsr);</span>
+<span class='curline'><a href='../S/185.html#L135638'>pCsr</a>             135638 libdb/sqlite3.c static int fts3auxGrowStatArray(Fts3auxCursor *pCsr, int nSize){</span>
+<span class='curline'><a href='../S/185.html#L135639'>pCsr</a>             135639 libdb/sqlite3.c   if( nSize&gt;pCsr-&gt;nStat ){</span>
+<span class='curline'><a href='../S/185.html#L135641'>pCsr</a>             135641 libdb/sqlite3.c     aNew = (struct Fts3auxColstats *)sqlite3_realloc(pCsr-&gt;aStat, </span>
+<span class='curline'><a href='../S/185.html#L135645'>pCsr</a>             135645 libdb/sqlite3.c     memset(&amp;aNew[pCsr-&gt;nStat], 0, </span>
+<span class='curline'><a href='../S/185.html#L135646'>pCsr</a>             135646 libdb/sqlite3.c         sizeof(struct Fts3auxColstats) * (nSize - pCsr-&gt;nStat)</span>
+<span class='curline'><a href='../S/185.html#L135648'>pCsr</a>             135648 libdb/sqlite3.c     pCsr-&gt;aStat = aNew;</span>
+<span class='curline'><a href='../S/185.html#L135649'>pCsr</a>             135649 libdb/sqlite3.c     pCsr-&gt;nStat = nSize;</span>
+<span class='curline'><a href='../S/185.html#L135658'>pCsr</a>             135658 libdb/sqlite3.c   Fts3auxCursor *pCsr = (Fts3auxCursor *)pCursor;</span>
+<span class='curline'><a href='../S/185.html#L135663'>pCsr</a>             135663 libdb/sqlite3.c   pCsr-&gt;iRowid++;</span>
+<span class='curline'><a href='../S/185.html#L135665'>pCsr</a>             135665 libdb/sqlite3.c   for(pCsr-&gt;iCol++; pCsr-&gt;iCol&lt;pCsr-&gt;nStat; pCsr-&gt;iCol++){</span>
+<span class='curline'><a href='../S/185.html#L135666'>pCsr</a>             135666 libdb/sqlite3.c     if( pCsr-&gt;aStat[pCsr-&gt;iCol].nDoc&gt;0 ) return SQLITE_OK;</span>
+<span class='curline'><a href='../S/185.html#L135669'>pCsr</a>             135669 libdb/sqlite3.c   rc = sqlite3Fts3SegReaderStep(pFts3, &amp;pCsr-&gt;csr);</span>
+<span class='curline'><a href='../S/185.html#L135672'>pCsr</a>             135672 libdb/sqlite3.c     int nDoclist = pCsr-&gt;csr.nDoclist;</span>
+<span class='curline'><a href='../S/185.html#L135673'>pCsr</a>             135673 libdb/sqlite3.c     char *aDoclist = pCsr-&gt;csr.aDoclist;</span>
+<span class='curline'><a href='../S/185.html#L135678'>pCsr</a>             135678 libdb/sqlite3.c     if( pCsr-&gt;zStop ){</span>
+<span class='curline'><a href='../S/185.html#L135679'>pCsr</a>             135679 libdb/sqlite3.c       int n = (pCsr-&gt;nStop&lt;pCsr-&gt;csr.nTerm) ? pCsr-&gt;nStop : pCsr-&gt;csr.nTerm;</span>
+<span class='curline'><a href='../S/185.html#L135680'>pCsr</a>             135680 libdb/sqlite3.c       int mc = memcmp(pCsr-&gt;zStop, pCsr-&gt;csr.zTerm, n);</span>
+<span class='curline'><a href='../S/185.html#L135681'>pCsr</a>             135681 libdb/sqlite3.c       if( mc&lt;0 || (mc==0 &amp;&amp; pCsr-&gt;csr.nTerm&gt;pCsr-&gt;nStop) ){</span>
+<span class='curline'><a href='../S/185.html#L135682'>pCsr</a>             135682 libdb/sqlite3.c         pCsr-&gt;isEof = 1;</span>
+<span class='curline'><a href='../S/185.html#L135687'>pCsr</a>             135687 libdb/sqlite3.c     if( fts3auxGrowStatArray(pCsr, 2) ) return SQLITE_NOMEM;</span>
+<span class='curline'><a href='../S/185.html#L135688'>pCsr</a>             135688 libdb/sqlite3.c     memset(pCsr-&gt;aStat, 0, sizeof(struct Fts3auxColstats) * pCsr-&gt;nStat);</span>
+<span class='curline'><a href='../S/185.html#L135698'>pCsr</a>             135698 libdb/sqlite3.c           pCsr-&gt;aStat[0].nDoc++;</span>
+<span class='curline'><a href='../S/185.html#L135714'>pCsr</a>             135714 libdb/sqlite3.c             pCsr-&gt;aStat[1].nDoc++;</span>
+<span class='curline'><a href='../S/185.html#L135725'>pCsr</a>             135725 libdb/sqlite3.c             pCsr-&gt;aStat[iCol+1].nOcc++;</span>
+<span class='curline'><a href='../S/185.html#L135726'>pCsr</a>             135726 libdb/sqlite3.c             pCsr-&gt;aStat[0].nOcc++;</span>
+<span class='curline'><a href='../S/185.html#L135733'>pCsr</a>             135733 libdb/sqlite3.c           if( fts3auxGrowStatArray(pCsr, iCol+2) ) return SQLITE_NOMEM;</span>
+<span class='curline'><a href='../S/185.html#L135734'>pCsr</a>             135734 libdb/sqlite3.c           pCsr-&gt;aStat[iCol+1].nDoc++;</span>
+<span class='curline'><a href='../S/185.html#L135740'>pCsr</a>             135740 libdb/sqlite3.c     pCsr-&gt;iCol = 0;</span>
+<span class='curline'><a href='../S/185.html#L135743'>pCsr</a>             135743 libdb/sqlite3.c     pCsr-&gt;isEof = 1;</span>
+<span class='curline'><a href='../S/185.html#L135758'>pCsr</a>             135758 libdb/sqlite3.c   Fts3auxCursor *pCsr = (Fts3auxCursor *)pCursor;</span>
+<span class='curline'><a href='../S/185.html#L135795'>pCsr</a>             135795 libdb/sqlite3.c   testcase(pCsr-&gt;filter.zTerm);</span>
+<span class='curline'><a href='../S/185.html#L135796'>pCsr</a>             135796 libdb/sqlite3.c   sqlite3Fts3SegReaderFinish(&amp;pCsr-&gt;csr);</span>
+<span class='curline'><a href='../S/185.html#L135797'>pCsr</a>             135797 libdb/sqlite3.c   sqlite3_free((void *)pCsr-&gt;filter.zTerm);</span>
+<span class='curline'><a href='../S/185.html#L135798'>pCsr</a>             135798 libdb/sqlite3.c   sqlite3_free(pCsr-&gt;aStat);</span>
+<span class='curline'><a href='../S/185.html#L135799'>pCsr</a>             135799 libdb/sqlite3.c   memset(&amp;pCsr-&gt;csr, 0, ((u8*)&amp;pCsr[1]) - (u8*)&amp;pCsr-&gt;csr);</span>
+<span class='curline'><a href='../S/185.html#L135801'>pCsr</a>             135801 libdb/sqlite3.c   pCsr-&gt;filter.flags = FTS3_SEGMENT_REQUIRE_POS|FTS3_SEGMENT_IGNORE_EMPTY;</span>
+<span class='curline'><a href='../S/185.html#L135802'>pCsr</a>             135802 libdb/sqlite3.c   if( isScan ) pCsr-&gt;filter.flags |= FTS3_SEGMENT_SCAN;</span>
+<span class='curline'><a href='../S/185.html#L135808'>pCsr</a>             135808 libdb/sqlite3.c       pCsr-&gt;filter.zTerm = sqlite3_mprintf("%s", zStr);</span>
+<span class='curline'><a href='../S/185.html#L135809'>pCsr</a>             135809 libdb/sqlite3.c       pCsr-&gt;filter.nTerm = sqlite3_value_bytes(apVal[0]);</span>
+<span class='curline'><a href='../S/185.html#L135810'>pCsr</a>             135810 libdb/sqlite3.c       if( pCsr-&gt;filter.zTerm==0 ) return SQLITE_NOMEM;</span>
+<span class='curline'><a href='../S/185.html#L135815'>pCsr</a>             135815 libdb/sqlite3.c     pCsr-&gt;zStop = sqlite3_mprintf("%s", sqlite3_value_text(apVal[iLe]));</span>
+<span class='curline'><a href='../S/185.html#L135816'>pCsr</a>             135816 libdb/sqlite3.c     pCsr-&gt;nStop = sqlite3_value_bytes(apVal[iLe]);</span>
+<span class='curline'><a href='../S/185.html#L135817'>pCsr</a>             135817 libdb/sqlite3.c     if( pCsr-&gt;zStop==0 ) return SQLITE_NOMEM;</span>
+<span class='curline'><a href='../S/185.html#L135830'>pCsr</a>             135830 libdb/sqlite3.c   pCsr-&gt;iLangid = iLangVal;</span>
+<span class='curline'><a href='../S/185.html#L135833'>pCsr</a>             135833 libdb/sqlite3.c       pCsr-&gt;filter.zTerm, pCsr-&gt;filter.nTerm, 0, isScan, &amp;pCsr-&gt;csr</span>
+<span class='curline'><a href='../S/185.html#L135836'>pCsr</a>             135836 libdb/sqlite3.c     rc = sqlite3Fts3SegReaderStart(pFts3, &amp;pCsr-&gt;csr, &amp;pCsr-&gt;filter);</span>
+<span class='curline'><a href='../S/185.html#L135847'>pCsr</a>             135847 libdb/sqlite3.c   Fts3auxCursor *pCsr = (Fts3auxCursor *)pCursor;</span>
+<span class='curline'><a href='../S/185.html#L135848'>pCsr</a>             135848 libdb/sqlite3.c   return pCsr-&gt;isEof;</span>
+<span class='curline'><a href='../S/185.html#L135899'>pCsr</a>             135899 libdb/sqlite3.c   Fts3auxCursor *pCsr = (Fts3auxCursor *)pCursor;</span>
+<span class='curline'><a href='../S/185.html#L135900'>pCsr</a>             135900 libdb/sqlite3.c   *pRowid = pCsr-&gt;iRowid;</span>
+<span class='curline'><a href='../S/185.html#L136081'>pCsr</a>             136081 libdb/sqlite3.c   sqlite3_tokenizer_cursor *pCsr = 0;</span>
+<span class='curline'><a href='../S/185.html#L136084'>pCsr</a>             136084 libdb/sqlite3.c   rc = pModule-&gt;xOpen(pTokenizer, z, n, &amp;pCsr);</span>
+<span class='curline'><a href='../S/185.html#L136085'>pCsr</a>             136085 libdb/sqlite3.c   assert( rc==SQLITE_OK || pCsr==0 );</span>
+<span class='curline'><a href='../S/185.html#L136087'>pCsr</a>             136087 libdb/sqlite3.c     pCsr-&gt;pTokenizer = pTokenizer;</span>
+<span class='curline'><a href='../S/185.html#L136089'>pCsr</a>             136089 libdb/sqlite3.c       rc = pModule-&gt;xLanguageid(pCsr, iLangid);</span>
+<span class='curline'><a href='../S/185.html#L136091'>pCsr</a>             136091 libdb/sqlite3.c         pModule-&gt;xClose(pCsr);</span>
+<span class='curline'><a href='../S/185.html#L136092'>pCsr</a>             136092 libdb/sqlite3.c         pCsr = 0;</span>
+<span class='curline'><a href='../S/185.html#L136096'>pCsr</a>             136096 libdb/sqlite3.c   *ppCsr = pCsr;</span>
+<span class='curline'><a href='../S/185.html#L138516'>pCsr</a>             138516 libdb/sqlite3.c   sqlite3_tokenizer_cursor *pCsr = 0;</span>
+<span class='curline'><a href='../S/185.html#L138568'>pCsr</a>             138568 libdb/sqlite3.c   if( sqlite3Fts3OpenTokenizer(pTokenizer, 0, zInput, nInput, &amp;pCsr) ){</span>
+<span class='curline'><a href='../S/185.html#L138573'>pCsr</a>             138573 libdb/sqlite3.c   while( SQLITE_OK==p-&gt;xNext(pCsr, &amp;zToken, &amp;nToken, &amp;iStart, &amp;iEnd, &amp;iPos) ){</span>
+<span class='curline'><a href='../S/185.html#L138581'>pCsr</a>             138581 libdb/sqlite3.c   if( SQLITE_OK!=p-&gt;xClose(pCsr) ){</span>
+<span class='curline'><a href='../S/185.html#L139064'>pCsr</a>             139064 libdb/sqlite3.c   sqlite3_tokenizer_cursor *pCsr; /* Cursor to iterate through zInput */</span>
+<span class='curline'><a href='../S/185.html#L139262'>pCsr</a>             139262 libdb/sqlite3.c   Fts3tokCursor *pCsr;</span>
+<span class='curline'><a href='../S/185.html#L139265'>pCsr</a>             139265 libdb/sqlite3.c   pCsr = (Fts3tokCursor *)sqlite3_malloc(sizeof(Fts3tokCursor));</span>
+<span class='curline'><a href='../S/185.html#L139266'>pCsr</a>             139266 libdb/sqlite3.c   if( pCsr==0 ){</span>
+<span class='curline'><a href='../S/185.html#L139269'>pCsr</a>             139269 libdb/sqlite3.c   memset(pCsr, 0, sizeof(Fts3tokCursor));</span>
+<span class='curline'><a href='../S/185.html#L139271'>pCsr</a>             139271 libdb/sqlite3.c   *ppCsr = (sqlite3_vtab_cursor *)pCsr;</span>
+<span class='curline'><a href='../S/185.html#L139279'>pCsr</a>             139279 libdb/sqlite3.c static void fts3tokResetCursor(Fts3tokCursor *pCsr){</span>
+<span class='curline'><a href='../S/185.html#L139280'>pCsr</a>             139280 libdb/sqlite3.c   if( pCsr-&gt;pCsr ){</span>
+<span class='curline'><a href='../S/185.html#L139281'>pCsr</a>             139281 libdb/sqlite3.c     Fts3tokTable *pTab = (Fts3tokTable *)(pCsr-&gt;base.pVtab);</span>
+<span class='curline'><a href='../S/185.html#L139282'>pCsr</a>             139282 libdb/sqlite3.c     pTab-&gt;pMod-&gt;xClose(pCsr-&gt;pCsr);</span>
+<span class='curline'><a href='../S/185.html#L139283'>pCsr</a>             139283 libdb/sqlite3.c     pCsr-&gt;pCsr = 0;</span>
+<span class='curline'><a href='../S/185.html#L139285'>pCsr</a>             139285 libdb/sqlite3.c   sqlite3_free(pCsr-&gt;zInput);</span>
+<span class='curline'><a href='../S/185.html#L139286'>pCsr</a>             139286 libdb/sqlite3.c   pCsr-&gt;zInput = 0;</span>
+<span class='curline'><a href='../S/185.html#L139287'>pCsr</a>             139287 libdb/sqlite3.c   pCsr-&gt;zToken = 0;</span>
+<span class='curline'><a href='../S/185.html#L139288'>pCsr</a>             139288 libdb/sqlite3.c   pCsr-&gt;nToken = 0;</span>
+<span class='curline'><a href='../S/185.html#L139289'>pCsr</a>             139289 libdb/sqlite3.c   pCsr-&gt;iStart = 0;</span>
+<span class='curline'><a href='../S/185.html#L139290'>pCsr</a>             139290 libdb/sqlite3.c   pCsr-&gt;iEnd = 0;</span>
+<span class='curline'><a href='../S/185.html#L139291'>pCsr</a>             139291 libdb/sqlite3.c   pCsr-&gt;iPos = 0;</span>
+<span class='curline'><a href='../S/185.html#L139292'>pCsr</a>             139292 libdb/sqlite3.c   pCsr-&gt;iRowid = 0;</span>
+<span class='curline'><a href='../S/185.html#L139299'>pCsr</a>             139299 libdb/sqlite3.c   Fts3tokCursor *pCsr = (Fts3tokCursor *)pCursor;</span>
+<span class='curline'><a href='../S/185.html#L139301'>pCsr</a>             139301 libdb/sqlite3.c   fts3tokResetCursor(pCsr);</span>
+<span class='curline'><a href='../S/185.html#L139302'>pCsr</a>             139302 libdb/sqlite3.c   sqlite3_free(pCsr);</span>
+<span class='curline'><a href='../S/185.html#L139310'>pCsr</a>             139310 libdb/sqlite3.c   Fts3tokCursor *pCsr = (Fts3tokCursor *)pCursor;</span>
+<span class='curline'><a href='../S/185.html#L139314'>pCsr</a>             139314 libdb/sqlite3.c   pCsr-&gt;iRowid++;</span>
+<span class='curline'><a href='../S/185.html#L139315'>pCsr</a>             139315 libdb/sqlite3.c   rc = pTab-&gt;pMod-&gt;xNext(pCsr-&gt;pCsr,</span>
+<span class='curline'><a href='../S/185.html#L139316'>pCsr</a>             139316 libdb/sqlite3.c       &amp;pCsr-&gt;zToken, &amp;pCsr-&gt;nToken,</span>
+<span class='curline'><a href='../S/185.html#L139317'>pCsr</a>             139317 libdb/sqlite3.c       &amp;pCsr-&gt;iStart, &amp;pCsr-&gt;iEnd, &amp;pCsr-&gt;iPos</span>
+<span class='curline'><a href='../S/185.html#L139321'>pCsr</a>             139321 libdb/sqlite3.c     fts3tokResetCursor(pCsr);</span>
+<span class='curline'><a href='../S/185.html#L139339'>pCsr</a>             139339 libdb/sqlite3.c   Fts3tokCursor *pCsr = (Fts3tokCursor *)pCursor;</span>
+<span class='curline'><a href='../S/185.html#L139344'>pCsr</a>             139344 libdb/sqlite3.c   fts3tokResetCursor(pCsr);</span>
+<span class='curline'><a href='../S/185.html#L139348'>pCsr</a>             139348 libdb/sqlite3.c     pCsr-&gt;zInput = sqlite3_malloc(nByte+1);</span>
+<span class='curline'><a href='../S/185.html#L139349'>pCsr</a>             139349 libdb/sqlite3.c     if( pCsr-&gt;zInput==0 ){</span>
+<span class='curline'><a href='../S/185.html#L139352'>pCsr</a>             139352 libdb/sqlite3.c       memcpy(pCsr-&gt;zInput, zByte, nByte);</span>
+<span class='curline'><a href='../S/185.html#L139353'>pCsr</a>             139353 libdb/sqlite3.c       pCsr-&gt;zInput[nByte] = 0;</span>
+<span class='curline'><a href='../S/185.html#L139354'>pCsr</a>             139354 libdb/sqlite3.c       rc = pTab-&gt;pMod-&gt;xOpen(pTab-&gt;pTok, pCsr-&gt;zInput, nByte, &amp;pCsr-&gt;pCsr);</span>
+<span class='curline'><a href='../S/185.html#L139356'>pCsr</a>             139356 libdb/sqlite3.c         pCsr-&gt;pCsr-&gt;pTokenizer = pTab-&gt;pTok;</span>
+<span class='curline'><a href='../S/185.html#L139369'>pCsr</a>             139369 libdb/sqlite3.c   Fts3tokCursor *pCsr = (Fts3tokCursor *)pCursor;</span>
+<span class='curline'><a href='../S/185.html#L139370'>pCsr</a>             139370 libdb/sqlite3.c   return (pCsr-&gt;zToken==0);</span>
+<span class='curline'><a href='../S/185.html#L139381'>pCsr</a>             139381 libdb/sqlite3.c   Fts3tokCursor *pCsr = (Fts3tokCursor *)pCursor;</span>
+<span class='curline'><a href='../S/185.html#L139386'>pCsr</a>             139386 libdb/sqlite3.c       sqlite3_result_text(pCtx, pCsr-&gt;zInput, -1, SQLITE_TRANSIENT);</span>
+<span class='curline'><a href='../S/185.html#L139389'>pCsr</a>             139389 libdb/sqlite3.c       sqlite3_result_text(pCtx, pCsr-&gt;zToken, pCsr-&gt;nToken, SQLITE_TRANSIENT);</span>
+<span class='curline'><a href='../S/185.html#L139392'>pCsr</a>             139392 libdb/sqlite3.c       sqlite3_result_int(pCtx, pCsr-&gt;iStart);</span>
+<span class='curline'><a href='../S/185.html#L139395'>pCsr</a>             139395 libdb/sqlite3.c       sqlite3_result_int(pCtx, pCsr-&gt;iEnd);</span>
+<span class='curline'><a href='../S/185.html#L139399'>pCsr</a>             139399 libdb/sqlite3.c       sqlite3_result_int(pCtx, pCsr-&gt;iPos);</span>
+<span class='curline'><a href='../S/185.html#L139412'>pCsr</a>             139412 libdb/sqlite3.c   Fts3tokCursor *pCsr = (Fts3tokCursor *)pCursor;</span>
+<span class='curline'><a href='../S/185.html#L139413'>pCsr</a>             139413 libdb/sqlite3.c   *pRowid = (sqlite3_int64)pCsr-&gt;iRowid;</span>
+<span class='curline'><a href='../S/185.html#L140256'>pCsr</a>             140256 libdb/sqlite3.c   sqlite3_tokenizer_cursor *pCsr;</span>
+<span class='curline'><a href='../S/185.html#L140270'>pCsr</a>             140270 libdb/sqlite3.c   rc = sqlite3Fts3OpenTokenizer(pTokenizer, iLangid, zText, -1, &amp;pCsr);</span>
+<span class='curline'><a href='../S/185.html#L140277'>pCsr</a>             140277 libdb/sqlite3.c       &amp;&amp; SQLITE_OK==(rc = xNext(pCsr, &amp;zToken, &amp;nToken, &amp;iStart, &amp;iEnd, &amp;iPos))</span>
+<span class='curline'><a href='../S/185.html#L140306'>pCsr</a>             140306 libdb/sqlite3.c   pModule-&gt;xClose(pCsr);</span>
+<span class='curline'><a href='../S/185.html#L140984'>pCsr</a>             140984 libdb/sqlite3.c   Fts3Cursor *pCsr, </span>
+<span class='curline'><a href='../S/185.html#L140988'>pCsr</a>             140988 libdb/sqlite3.c   Fts3Table *p = (Fts3Table*)pCsr-&gt;base.pVtab;</span>
+<span class='curline'><a href='../S/185.html#L142148'>pCsr</a>             142148 libdb/sqlite3.c   Fts3MultiSegReader *pCsr,       /* Cursor object */</span>
+<span class='curline'><a href='../S/185.html#L142153'>pCsr</a>             142153 libdb/sqlite3.c   int nSeg = pCsr-&gt;nSegment;</span>
+<span class='curline'><a href='../S/185.html#L142161'>pCsr</a>             142161 libdb/sqlite3.c   for(i=0; pCsr-&gt;bRestart==0 &amp;&amp; i&lt;pCsr-&gt;nSegment; i++){</span>
+<span class='curline'><a href='../S/185.html#L142163'>pCsr</a>             142163 libdb/sqlite3.c     Fts3SegReader *pSeg = pCsr-&gt;apSegment[i];</span>
+<span class='curline'><a href='../S/185.html#L142173'>pCsr</a>             142173 libdb/sqlite3.c   fts3SegReaderSort(pCsr-&gt;apSegment, nSeg, nSeg, fts3SegReaderCmp);</span>
+<span class='curline'><a href='../S/185.html#L142180'>pCsr</a>             142180 libdb/sqlite3.c   Fts3MultiSegReader *pCsr,       /* Cursor object */</span>
+<span class='curline'><a href='../S/185.html#L142183'>pCsr</a>             142183 libdb/sqlite3.c   pCsr-&gt;pFilter = pFilter;</span>
+<span class='curline'><a href='../S/185.html#L142184'>pCsr</a>             142184 libdb/sqlite3.c   return fts3SegReaderStart(p, pCsr, pFilter-&gt;zTerm, pFilter-&gt;nTerm);</span>
+<span class='curline'><a href='../S/185.html#L142189'>pCsr</a>             142189 libdb/sqlite3.c   Fts3MultiSegReader *pCsr,       /* Cursor object */</span>
+<span class='curline'><a href='../S/185.html#L142196'>pCsr</a>             142196 libdb/sqlite3.c   int nSegment = pCsr-&gt;nSegment;</span>
+<span class='curline'><a href='../S/185.html#L142201'>pCsr</a>             142201 libdb/sqlite3.c   assert( pCsr-&gt;pFilter==0 );</span>
+<span class='curline'><a href='../S/185.html#L142205'>pCsr</a>             142205 libdb/sqlite3.c   rc = fts3SegReaderStart(p, pCsr, zTerm, nTerm);</span>
+<span class='curline'><a href='../S/185.html#L142210'>pCsr</a>             142210 libdb/sqlite3.c     Fts3SegReader *pSeg = pCsr-&gt;apSegment[i];</span>
+<span class='curline'><a href='../S/185.html#L142215'>pCsr</a>             142215 libdb/sqlite3.c   pCsr-&gt;nAdvance = i;</span>
+<span class='curline'><a href='../S/185.html#L142218'>pCsr</a>             142218 libdb/sqlite3.c   for(i=0; i&lt;pCsr-&gt;nAdvance; i++){</span>
+<span class='curline'><a href='../S/185.html#L142219'>pCsr</a>             142219 libdb/sqlite3.c     rc = fts3SegReaderFirstDocid(p, pCsr-&gt;apSegment[i]);</span>
+<span class='curline'><a href='../S/185.html#L142222'>pCsr</a>             142222 libdb/sqlite3.c   fts3SegReaderSort(pCsr-&gt;apSegment, i, i, xCmp);</span>
+<span class='curline'><a href='../S/185.html#L142225'>pCsr</a>             142225 libdb/sqlite3.c   pCsr-&gt;iColFilter = iCol;</span>
+<span class='curline'><a href='../S/185.html#L142242'>pCsr</a>             142242 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3Fts3MsrIncrRestart(Fts3MultiSegReader *pCsr){</span>
+<span class='curline'><a href='../S/185.html#L142245'>pCsr</a>             142245 libdb/sqlite3.c   assert( pCsr-&gt;zTerm==0 );</span>
+<span class='curline'><a href='../S/185.html#L142246'>pCsr</a>             142246 libdb/sqlite3.c   assert( pCsr-&gt;nTerm==0 );</span>
+<span class='curline'><a href='../S/185.html#L142247'>pCsr</a>             142247 libdb/sqlite3.c   assert( pCsr-&gt;aDoclist==0 );</span>
+<span class='curline'><a href='../S/185.html#L142248'>pCsr</a>             142248 libdb/sqlite3.c   assert( pCsr-&gt;nDoclist==0 );</span>
+<span class='curline'><a href='../S/185.html#L142250'>pCsr</a>             142250 libdb/sqlite3.c   pCsr-&gt;nAdvance = 0;</span>
+<span class='curline'><a href='../S/185.html#L142251'>pCsr</a>             142251 libdb/sqlite3.c   pCsr-&gt;bRestart = 1;</span>
+<span class='curline'><a href='../S/185.html#L142252'>pCsr</a>             142252 libdb/sqlite3.c   for(i=0; i&lt;pCsr-&gt;nSegment; i++){</span>
+<span class='curline'><a href='../S/185.html#L142253'>pCsr</a>             142253 libdb/sqlite3.c     pCsr-&gt;apSegment[i]-&gt;pOffsetList = 0;</span>
+<span class='curline'><a href='../S/185.html#L142254'>pCsr</a>             142254 libdb/sqlite3.c     pCsr-&gt;apSegment[i]-&gt;nOffsetList = 0;</span>
+<span class='curline'><a href='../S/185.html#L142255'>pCsr</a>             142255 libdb/sqlite3.c     pCsr-&gt;apSegment[i]-&gt;iDocid = 0;</span>
+<span class='curline'><a href='../S/185.html#L142264'>pCsr</a>             142264 libdb/sqlite3.c   Fts3MultiSegReader *pCsr        /* Cursor object */</span>
+<span class='curline'><a href='../S/185.html#L142268'>pCsr</a>             142268 libdb/sqlite3.c   int isIgnoreEmpty =  (pCsr-&gt;pFilter-&gt;flags &amp; FTS3_SEGMENT_IGNORE_EMPTY);</span>
+<span class='curline'><a href='../S/185.html#L142269'>pCsr</a>             142269 libdb/sqlite3.c   int isRequirePos =   (pCsr-&gt;pFilter-&gt;flags &amp; FTS3_SEGMENT_REQUIRE_POS);</span>
+<span class='curline'><a href='../S/185.html#L142270'>pCsr</a>             142270 libdb/sqlite3.c   int isColFilter =    (pCsr-&gt;pFilter-&gt;flags &amp; FTS3_SEGMENT_COLUMN_FILTER);</span>
+<span class='curline'><a href='../S/185.html#L142271'>pCsr</a>             142271 libdb/sqlite3.c   int isPrefix =       (pCsr-&gt;pFilter-&gt;flags &amp; FTS3_SEGMENT_PREFIX);</span>
+<span class='curline'><a href='../S/185.html#L142272'>pCsr</a>             142272 libdb/sqlite3.c   int isScan =         (pCsr-&gt;pFilter-&gt;flags &amp; FTS3_SEGMENT_SCAN);</span>
+<span class='curline'><a href='../S/185.html#L142273'>pCsr</a>             142273 libdb/sqlite3.c   int isFirst =        (pCsr-&gt;pFilter-&gt;flags &amp; FTS3_SEGMENT_FIRST);</span>
+<span class='curline'><a href='../S/185.html#L142275'>pCsr</a>             142275 libdb/sqlite3.c   Fts3SegReader **apSegment = pCsr-&gt;apSegment;</span>
+<span class='curline'><a href='../S/185.html#L142276'>pCsr</a>             142276 libdb/sqlite3.c   int nSegment = pCsr-&gt;nSegment;</span>
+<span class='curline'><a href='../S/185.html#L142277'>pCsr</a>             142277 libdb/sqlite3.c   Fts3SegFilter *pFilter = pCsr-&gt;pFilter;</span>
+<span class='curline'><a href='../S/185.html#L142282'>pCsr</a>             142282 libdb/sqlite3.c   if( pCsr-&gt;nSegment==0 ) return SQLITE_OK;</span>
+<span class='curline'><a href='../S/185.html#L142291'>pCsr</a>             142291 libdb/sqlite3.c     for(i=0; i&lt;pCsr-&gt;nAdvance; i++){</span>
+<span class='curline'><a href='../S/185.html#L142300'>pCsr</a>             142300 libdb/sqlite3.c     fts3SegReaderSort(apSegment, nSegment, pCsr-&gt;nAdvance, fts3SegReaderCmp);</span>
+<span class='curline'><a href='../S/185.html#L142301'>pCsr</a>             142301 libdb/sqlite3.c     pCsr-&gt;nAdvance = 0;</span>
+<span class='curline'><a href='../S/185.html#L142307'>pCsr</a>             142307 libdb/sqlite3.c     pCsr-&gt;nTerm = apSegment[0]-&gt;nTerm;</span>
+<span class='curline'><a href='../S/185.html#L142308'>pCsr</a>             142308 libdb/sqlite3.c     pCsr-&gt;zTerm = apSegment[0]-&gt;zTerm;</span>
+<span class='curline'><a href='../S/185.html#L142318'>pCsr</a>             142318 libdb/sqlite3.c       if( pCsr-&gt;nTerm&lt;pFilter-&gt;nTerm </span>
+<span class='curline'><a href='../S/185.html#L142319'>pCsr</a>             142319 libdb/sqlite3.c        || (!isPrefix &amp;&amp; pCsr-&gt;nTerm&gt;pFilter-&gt;nTerm)</span>
+<span class='curline'><a href='../S/185.html#L142320'>pCsr</a>             142320 libdb/sqlite3.c        || memcmp(pCsr-&gt;zTerm, pFilter-&gt;zTerm, pFilter-&gt;nTerm) </span>
+<span class='curline'><a href='../S/185.html#L142329'>pCsr</a>             142329 libdb/sqlite3.c         &amp;&amp; apSegment[nMerge]-&gt;nTerm==pCsr-&gt;nTerm </span>
+<span class='curline'><a href='../S/185.html#L142330'>pCsr</a>             142330 libdb/sqlite3.c         &amp;&amp; 0==memcmp(pCsr-&gt;zTerm, apSegment[nMerge]-&gt;zTerm, pCsr-&gt;nTerm)</span>
+<span class='curline'><a href='../S/185.html#L142341'>pCsr</a>             142341 libdb/sqlite3.c       pCsr-&gt;nDoclist = apSegment[0]-&gt;nDoclist;</span>
+<span class='curline'><a href='../S/185.html#L142343'>pCsr</a>             142343 libdb/sqlite3.c         rc = fts3MsrBufferData(pCsr, apSegment[0]-&gt;aDoclist, pCsr-&gt;nDoclist);</span>
+<span class='curline'><a href='../S/185.html#L142344'>pCsr</a>             142344 libdb/sqlite3.c         pCsr-&gt;aDoclist = pCsr-&gt;aBuffer;</span>
+<span class='curline'><a href='../S/185.html#L142346'>pCsr</a>             142346 libdb/sqlite3.c         pCsr-&gt;aDoclist = apSegment[0]-&gt;aDoclist;</span>
+<span class='curline'><a href='../S/185.html#L142395'>pCsr</a>             142395 libdb/sqlite3.c           if( nDoclist+nByte&gt;pCsr-&gt;nBuffer ){</span>
+<span class='curline'><a href='../S/185.html#L142397'>pCsr</a>             142397 libdb/sqlite3.c             pCsr-&gt;nBuffer = (nDoclist+nByte)*2;</span>
+<span class='curline'><a href='../S/185.html#L142398'>pCsr</a>             142398 libdb/sqlite3.c             aNew = sqlite3_realloc(pCsr-&gt;aBuffer, pCsr-&gt;nBuffer);</span>
+<span class='curline'><a href='../S/185.html#L142402'>pCsr</a>             142402 libdb/sqlite3.c             pCsr-&gt;aBuffer = aNew;</span>
+<span class='curline'><a href='../S/185.html#L142406'>pCsr</a>             142406 libdb/sqlite3.c             char *a = &amp;pCsr-&gt;aBuffer[nDoclist];</span>
+<span class='curline'><a href='../S/185.html#L142415'>pCsr</a>             142415 libdb/sqlite3.c             nDoclist += sqlite3Fts3PutVarint(&amp;pCsr-&gt;aBuffer[nDoclist], iDelta);</span>
+<span class='curline'><a href='../S/185.html#L142418'>pCsr</a>             142418 libdb/sqlite3.c               memcpy(&amp;pCsr-&gt;aBuffer[nDoclist], pList, nList);</span>
+<span class='curline'><a href='../S/185.html#L142420'>pCsr</a>             142420 libdb/sqlite3.c               pCsr-&gt;aBuffer[nDoclist++] = '\0';</span>
+<span class='curline'><a href='../S/185.html#L142428'>pCsr</a>             142428 libdb/sqlite3.c         pCsr-&gt;aDoclist = pCsr-&gt;aBuffer;</span>
+<span class='curline'><a href='../S/185.html#L142429'>pCsr</a>             142429 libdb/sqlite3.c         pCsr-&gt;nDoclist = nDoclist;</span>
+<span class='curline'><a href='../S/185.html#L142433'>pCsr</a>             142433 libdb/sqlite3.c     pCsr-&gt;nAdvance = nMerge;</span>
+<span class='curline'><a href='../S/185.html#L142441'>pCsr</a>             142441 libdb/sqlite3.c   Fts3MultiSegReader *pCsr       /* Cursor object */</span>
+<span class='curline'><a href='../S/185.html#L142443'>pCsr</a>             142443 libdb/sqlite3.c   if( pCsr ){</span>
+<span class='curline'><a href='../S/185.html#L142445'>pCsr</a>             142445 libdb/sqlite3.c     for(i=0; i&lt;pCsr-&gt;nSegment; i++){</span>
+<span class='curline'><a href='../S/185.html#L142446'>pCsr</a>             142446 libdb/sqlite3.c       sqlite3Fts3SegReaderFree(pCsr-&gt;apSegment[i]);</span>
+<span class='curline'><a href='../S/185.html#L142448'>pCsr</a>             142448 libdb/sqlite3.c     sqlite3_free(pCsr-&gt;apSegment);</span>
+<span class='curline'><a href='../S/185.html#L142449'>pCsr</a>             142449 libdb/sqlite3.c     sqlite3_free(pCsr-&gt;aBuffer);</span>
+<span class='curline'><a href='../S/185.html#L142451'>pCsr</a>             142451 libdb/sqlite3.c     pCsr-&gt;nSegment = 0;</span>
+<span class='curline'><a href='../S/185.html#L142452'>pCsr</a>             142452 libdb/sqlite3.c     pCsr-&gt;apSegment = 0;</span>
+<span class='curline'><a href='../S/185.html#L142453'>pCsr</a>             142453 libdb/sqlite3.c     pCsr-&gt;aBuffer = 0;</span>
+<span class='curline'><a href='../S/185.html#L143015'>pCsr</a>             143015 libdb/sqlite3.c   Fts3MultiSegReader *pCsr        /* Cursor object to populate */</span>
+<span class='curline'><a href='../S/185.html#L143022'>pCsr</a>             143022 libdb/sqlite3.c   memset(pCsr, 0, sizeof(*pCsr));</span>
+<span class='curline'><a href='../S/185.html#L143024'>pCsr</a>             143024 libdb/sqlite3.c   pCsr-&gt;apSegment = (Fts3SegReader **)sqlite3_malloc(nByte);</span>
+<span class='curline'><a href='../S/185.html#L143026'>pCsr</a>             143026 libdb/sqlite3.c   if( pCsr-&gt;apSegment==0 ){</span>
+<span class='curline'><a href='../S/185.html#L143029'>pCsr</a>             143029 libdb/sqlite3.c     memset(pCsr-&gt;apSegment, 0, nByte);</span>
+<span class='curline'><a href='../S/185.html#L143036'>pCsr</a>             143036 libdb/sqlite3.c     assert( pCsr-&gt;nSegment==0 );</span>
+<span class='curline'><a href='../S/185.html#L143044'>pCsr</a>             143044 libdb/sqlite3.c           &amp;pCsr-&gt;apSegment[i]</span>
+<span class='curline'><a href='../S/185.html#L143046'>pCsr</a>             143046 libdb/sqlite3.c       pCsr-&gt;nSegment++;</span>
+<span class='curline'><a href='../S/185.html#L143379'>pCsr</a>             143379 libdb/sqlite3.c   Fts3MultiSegReader *pCsr        /* Cursor containing term and doclist */</span>
+<span class='curline'><a href='../S/185.html#L143381'>pCsr</a>             143381 libdb/sqlite3.c   const char *zTerm = pCsr-&gt;zTerm;</span>
+<span class='curline'><a href='../S/185.html#L143382'>pCsr</a>             143382 libdb/sqlite3.c   int nTerm = pCsr-&gt;nTerm;</span>
+<span class='curline'><a href='../S/185.html#L143383'>pCsr</a>             143383 libdb/sqlite3.c   const char *aDoclist = pCsr-&gt;aDoclist;</span>
+<span class='curline'><a href='../S/185.html#L143384'>pCsr</a>             143384 libdb/sqlite3.c   int nDoclist = pCsr-&gt;nDoclist;</span>
+<span class='curline'><a href='../S/185.html#L143789'>pCsr</a>             143789 libdb/sqlite3.c   Fts3MultiSegReader *pCsr,       /* Cursor that data will be read from */</span>
+<span class='curline'><a href='../S/185.html#L143802'>pCsr</a>             143802 libdb/sqlite3.c     sqlite3_bind_int64(pLeafEst, 2, pCsr-&gt;nSegment);</span>
+<span class='curline'><a href='../S/185.html#L144092'>pCsr</a>             144092 libdb/sqlite3.c   Fts3MultiSegReader *pCsr,       /* Chomp all segments opened by this cursor */</span>
+<span class='curline'><a href='../S/185.html#L144099'>pCsr</a>             144099 libdb/sqlite3.c   for(i=pCsr-&gt;nSegment-1; i&gt;=0 &amp;&amp; rc==SQLITE_OK; i--){</span>
+<span class='curline'><a href='../S/185.html#L144105'>pCsr</a>             144105 libdb/sqlite3.c     for(j=0; ALWAYS(j&lt;pCsr-&gt;nSegment); j++){</span>
+<span class='curline'><a href='../S/185.html#L144106'>pCsr</a>             144106 libdb/sqlite3.c       pSeg = pCsr-&gt;apSegment[j];</span>
+<span class='curline'><a href='../S/185.html#L144109'>pCsr</a>             144109 libdb/sqlite3.c     assert( j&lt;pCsr-&gt;nSegment &amp;&amp; pSeg-&gt;iIdx==i );</span>
+<span class='curline'><a href='../S/185.html#L144129'>pCsr</a>             144129 libdb/sqlite3.c   if( rc==SQLITE_OK &amp;&amp; nRem!=pCsr-&gt;nSegment ){</span>
+<span class='curline'><a href='../S/185.html#L144249'>pCsr</a>             144249 libdb/sqlite3.c   Fts3MultiSegReader *pCsr;       /* Cursor used to read input data */</span>
+<span class='curline'><a href='../S/185.html#L144258'>pCsr</a>             144258 libdb/sqlite3.c   const int nAlloc = sizeof(*pCsr) + sizeof(*pFilter) + sizeof(*pWriter);</span>
+<span class='curline'><a href='../S/185.html#L144262'>pCsr</a>             144262 libdb/sqlite3.c   pCsr = (Fts3MultiSegReader *)&amp;pFilter[1];</span>
+<span class='curline'><a href='../S/185.html#L144337'>pCsr</a>             144337 libdb/sqlite3.c       rc = fts3IncrmergeCsr(p, iAbsLevel, nSeg, pCsr);</span>
+<span class='curline'><a href='../S/185.html#L144339'>pCsr</a>             144339 libdb/sqlite3.c     if( SQLITE_OK==rc &amp;&amp; pCsr-&gt;nSegment==nSeg</span>
+<span class='curline'><a href='../S/185.html#L144340'>pCsr</a>             144340 libdb/sqlite3.c      &amp;&amp; SQLITE_OK==(rc = sqlite3Fts3SegReaderStart(p, pCsr, pFilter))</span>
+<span class='curline'><a href='../S/185.html#L144341'>pCsr</a>             144341 libdb/sqlite3.c      &amp;&amp; SQLITE_ROW==(rc = sqlite3Fts3SegReaderStep(p, pCsr))</span>
+<span class='curline'><a href='../S/185.html#L144344'>pCsr</a>             144344 libdb/sqlite3.c         const char *zKey = pCsr-&gt;zTerm;</span>
+<span class='curline'><a href='../S/185.html#L144345'>pCsr</a>             144345 libdb/sqlite3.c         int nKey = pCsr-&gt;nTerm;</span>
+<span class='curline'><a href='../S/185.html#L144348'>pCsr</a>             144348 libdb/sqlite3.c         rc = fts3IncrmergeWriter(p, iAbsLevel, iIdx, pCsr, pWriter);</span>
+<span class='curline'><a href='../S/185.html#L144354'>pCsr</a>             144354 libdb/sqlite3.c           rc = fts3IncrmergeAppend(p, pWriter, pCsr);</span>
+<span class='curline'><a href='../S/185.html#L144355'>pCsr</a>             144355 libdb/sqlite3.c           if( rc==SQLITE_OK ) rc = sqlite3Fts3SegReaderStep(p, pCsr);</span>
+<span class='curline'><a href='../S/185.html#L144362'>pCsr</a>             144362 libdb/sqlite3.c           rc = fts3IncrmergeChomp(p, iAbsLevel, pCsr, &amp;nSeg);</span>
+<span class='curline'><a href='../S/185.html#L144379'>pCsr</a>             144379 libdb/sqlite3.c     sqlite3Fts3SegReaderFinish(pCsr);</span>
+<span class='curline'><a href='../S/185.html#L144542'>pCsr</a>             144542 libdb/sqlite3.c       char *pCsr = csr.aDoclist;</span>
+<span class='curline'><a href='../S/185.html#L144543'>pCsr</a>             144543 libdb/sqlite3.c       char *pEnd = &amp;pCsr[csr.nDoclist];</span>
+<span class='curline'><a href='../S/185.html#L144549'>pCsr</a>             144549 libdb/sqlite3.c       pCsr += sqlite3Fts3GetVarint(pCsr, &amp;iDocid);</span>
+<span class='curline'><a href='../S/185.html#L144550'>pCsr</a>             144550 libdb/sqlite3.c       while( pCsr&lt;pEnd ){</span>
+<span class='curline'><a href='../S/185.html#L144552'>pCsr</a>             144552 libdb/sqlite3.c         pCsr += sqlite3Fts3GetVarint(pCsr, &amp;iVal);</span>
+<span class='curline'><a href='../S/185.html#L144553'>pCsr</a>             144553 libdb/sqlite3.c         if( pCsr&lt;pEnd ){</span>
+<span class='curline'><a href='../S/185.html#L144558'>pCsr</a>             144558 libdb/sqlite3.c               pCsr += sqlite3Fts3GetVarint(pCsr, &amp;iCol);</span>
+<span class='curline'><a href='../S/185.html#L144560'>pCsr</a>             144560 libdb/sqlite3.c               pCsr += sqlite3Fts3GetVarint(pCsr, &amp;iVal);</span>
+<span class='curline'><a href='../S/185.html#L144761'>pCsr</a>             144761 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3Fts3FreeDeferredDoclists(Fts3Cursor *pCsr){</span>
+<span class='curline'><a href='../S/185.html#L144763'>pCsr</a>             144763 libdb/sqlite3.c   for(pDef=pCsr-&gt;pDeferred; pDef; pDef=pDef-&gt;pNext){</span>
+<span class='curline'><a href='../S/185.html#L144773'>pCsr</a>             144773 libdb/sqlite3.c SQLITE_PRIVATE void sqlite3Fts3FreeDeferredTokens(Fts3Cursor *pCsr){</span>
+<span class='curline'><a href='../S/185.html#L144776'>pCsr</a>             144776 libdb/sqlite3.c   for(pDef=pCsr-&gt;pDeferred; pDef; pDef=pNext){</span>
+<span class='curline'><a href='../S/185.html#L144781'>pCsr</a>             144781 libdb/sqlite3.c   pCsr-&gt;pDeferred = 0;</span>
+<span class='curline'><a href='../S/185.html#L144792'>pCsr</a>             144792 libdb/sqlite3.c SQLITE_PRIVATE int sqlite3Fts3CacheDeferredDoclists(Fts3Cursor *pCsr){</span>
+<span class='curline'><a href='../S/185.html#L144794'>pCsr</a>             144794 libdb/sqlite3.c   if( pCsr-&gt;pDeferred ){</span>
+<span class='curline'><a href='../S/185.html#L144799'>pCsr</a>             144799 libdb/sqlite3.c     Fts3Table *p = (Fts3Table *)pCsr-&gt;base.pVtab;</span>
+<span class='curline'><a href='../S/185.html#L144803'>pCsr</a>             144803 libdb/sqlite3.c     assert( pCsr-&gt;isRequireSeek==0 );</span>
+<span class='curline'><a href='../S/185.html#L144804'>pCsr</a>             144804 libdb/sqlite3.c     iDocid = sqlite3_column_int64(pCsr-&gt;pStmt, 0);</span>
+<span class='curline'><a href='../S/185.html#L144808'>pCsr</a>             144808 libdb/sqlite3.c         const char *zText = (const char *)sqlite3_column_text(pCsr-&gt;pStmt, i+1);</span>
+<span class='curline'><a href='../S/185.html#L144811'>pCsr</a>             144811 libdb/sqlite3.c         rc = sqlite3Fts3OpenTokenizer(pT, pCsr-&gt;iLangid, zText, -1, &amp;pTC);</span>
+<span class='curline'><a href='../S/185.html#L144819'>pCsr</a>             144819 libdb/sqlite3.c           for(pDef=pCsr-&gt;pDeferred; pDef &amp;&amp; rc==SQLITE_OK; pDef=pDef-&gt;pNext){</span>
+<span class='curline'><a href='../S/185.html#L144835'>pCsr</a>             144835 libdb/sqlite3.c     for(pDef=pCsr-&gt;pDeferred; pDef &amp;&amp; rc==SQLITE_OK; pDef=pDef-&gt;pNext){</span>
+<span class='curline'><a href='../S/185.html#L144876'>pCsr</a>             144876 libdb/sqlite3.c   Fts3Cursor *pCsr,               /* Fts3 table cursor */</span>
+<span class='curline'><a href='../S/185.html#L144887'>pCsr</a>             144887 libdb/sqlite3.c   pDeferred-&gt;pNext = pCsr-&gt;pDeferred; </span>
+<span class='curline'><a href='../S/185.html#L144889'>pCsr</a>             144889 libdb/sqlite3.c   pCsr-&gt;pDeferred = pDeferred;</span>
+<span class='curline'><a href='../S/185.html#L145160'>pCsr</a>             145160 libdb/sqlite3.c   Fts3Cursor *pCsr;               /* FTS3 Cursor */</span>
+<span class='curline'><a href='../S/185.html#L145174'>pCsr</a>             145174 libdb/sqlite3.c   Fts3Cursor *pCsr;               /* Cursor snippet is being generated from */</span>
+<span class='curline'><a href='../S/185.html#L145325'>pCsr</a>             145325 libdb/sqlite3.c   Fts3Cursor *pCsr,               /* Fts3 cursor for current query */</span>
+<span class='curline'><a href='../S/185.html#L145331'>pCsr</a>             145331 libdb/sqlite3.c   sCtx.pCsr = pCsr;</span>
+<span class='curline'><a href='../S/185.html#L145332'>pCsr</a>             145332 libdb/sqlite3.c   rc = fts3ExprIterate(pCsr-&gt;pExpr, fts3ExprLoadDoclistsCb, (void *)&amp;sCtx);</span>
+<span class='curline'><a href='../S/185.html#L145440'>pCsr</a>             145440 libdb/sqlite3.c       char *pCsr = pPhrase-&gt;pTail;</span>
+<span class='curline'><a href='../S/185.html#L145459'>pCsr</a>             145459 libdb/sqlite3.c         if( 0==(*pCsr &amp; 0x0FE) ) break;</span>
+<span class='curline'><a href='../S/185.html#L145460'>pCsr</a>             145460 libdb/sqlite3.c         fts3GetDeltaPosition(&amp;pCsr, &amp;iCsr);</span>
+<span class='curline'><a href='../S/185.html#L145479'>pCsr</a>             145479 libdb/sqlite3.c   char *pCsr;</span>
+<span class='curline'><a href='../S/185.html#L145483'>pCsr</a>             145483 libdb/sqlite3.c   rc = sqlite3Fts3EvalPhrasePoslist(p-&gt;pCsr, pExpr, p-&gt;iCol, &amp;pCsr);</span>
+<span class='curline'><a href='../S/185.html#L145484'>pCsr</a>             145484 libdb/sqlite3.c   assert( rc==SQLITE_OK || pCsr==0 );</span>
+<span class='curline'><a href='../S/185.html#L145485'>pCsr</a>             145485 libdb/sqlite3.c   if( pCsr ){</span>
+<span class='curline'><a href='../S/185.html#L145487'>pCsr</a>             145487 libdb/sqlite3.c     pPhrase-&gt;pList = pCsr;</span>
+<span class='curline'><a href='../S/185.html#L145488'>pCsr</a>             145488 libdb/sqlite3.c     fts3GetDeltaPosition(&amp;pCsr, &amp;iFirst);</span>
+<span class='curline'><a href='../S/185.html#L145490'>pCsr</a>             145490 libdb/sqlite3.c     pPhrase-&gt;pHead = pCsr;</span>
+<span class='curline'><a href='../S/185.html#L145491'>pCsr</a>             145491 libdb/sqlite3.c     pPhrase-&gt;pTail = pCsr;</span>
+<span class='curline'><a href='../S/185.html#L145520'>pCsr</a>             145520 libdb/sqlite3.c   Fts3Cursor *pCsr,               /* Cursor to create snippet for */</span>
+<span class='curline'><a href='../S/185.html#L145539'>pCsr</a>             145539 libdb/sqlite3.c   rc = fts3ExprLoadDoclists(pCsr, &amp;nList, 0);</span>
+<span class='curline'><a href='../S/185.html#L145557'>pCsr</a>             145557 libdb/sqlite3.c   sIter.pCsr = pCsr;</span>
+<span class='curline'><a href='../S/185.html#L145562'>pCsr</a>             145562 libdb/sqlite3.c   (void)fts3ExprIterate(pCsr-&gt;pExpr, fts3SnippetFindPositions, (void *)&amp;sIter);</span>
+<span class='curline'><a href='../S/185.html#L145719'>pCsr</a>             145719 libdb/sqlite3.c   Fts3Cursor *pCsr,               /* FTS3 Cursor */</span>
+<span class='curline'><a href='../S/185.html#L145729'>pCsr</a>             145729 libdb/sqlite3.c   Fts3Table *pTab = (Fts3Table *)pCsr-&gt;base.pVtab;</span>
+<span class='curline'><a href='../S/185.html#L145742'>pCsr</a>             145742 libdb/sqlite3.c   zDoc = (const char *)sqlite3_column_text(pCsr-&gt;pStmt, iCol);</span>
+<span class='curline'><a href='../S/185.html#L145744'>pCsr</a>             145744 libdb/sqlite3.c     if( sqlite3_column_type(pCsr-&gt;pStmt, iCol)!=SQLITE_NULL ){</span>
+<span class='curline'><a href='../S/185.html#L145749'>pCsr</a>             145749 libdb/sqlite3.c   nDoc = sqlite3_column_bytes(pCsr-&gt;pStmt, iCol);</span>
+<span class='curline'><a href='../S/185.html#L145753'>pCsr</a>             145753 libdb/sqlite3.c   rc = sqlite3Fts3OpenTokenizer(pTab-&gt;pTokenizer, pCsr-&gt;iLangid, zDoc,nDoc,&amp;pC);</span>
+<span class='curline'><a href='../S/185.html#L145792'>pCsr</a>             145792 libdb/sqlite3.c           pTab, pCsr-&gt;iLangid, nSnippet, &amp;zDoc[iBegin], n, &amp;iPos, &amp;hlmask</span>
+<span class='curline'><a href='../S/185.html#L145911'>pCsr</a>             145911 libdb/sqlite3.c     char *pCsr;</span>
+<span class='curline'><a href='../S/185.html#L145912'>pCsr</a>             145912 libdb/sqlite3.c     rc = sqlite3Fts3EvalPhrasePoslist(p-&gt;pCursor, pExpr, i, &amp;pCsr);</span>
+<span class='curline'><a href='../S/185.html#L145913'>pCsr</a>             145913 libdb/sqlite3.c     if( pCsr ){</span>
+<span class='curline'><a href='../S/185.html#L145914'>pCsr</a>             145914 libdb/sqlite3.c       p-&gt;aMatchinfo[iStart+i*3] = fts3ColumnlistCount(&amp;pCsr);</span>
+<span class='curline'><a href='../S/185.html#L146056'>pCsr</a>             146056 libdb/sqlite3.c static int fts3MatchinfoLcs(Fts3Cursor *pCsr, MatchInfo *pInfo){</span>
+<span class='curline'><a href='../S/185.html#L146065'>pCsr</a>             146065 libdb/sqlite3.c   aIter = sqlite3_malloc(sizeof(LcsIterator) * pCsr-&gt;nPhrase);</span>
+<span class='curline'><a href='../S/185.html#L146067'>pCsr</a>             146067 libdb/sqlite3.c   memset(aIter, 0, sizeof(LcsIterator) * pCsr-&gt;nPhrase);</span>
+<span class='curline'><a href='../S/185.html#L146068'>pCsr</a>             146068 libdb/sqlite3.c   (void)fts3ExprIterate(pCsr-&gt;pExpr, fts3MatchinfoLcsCb, (void*)aIter);</span>
+<span class='curline'><a href='../S/185.html#L146083'>pCsr</a>             146083 libdb/sqlite3.c       rc = sqlite3Fts3EvalPhrasePoslist(pCsr, pIt-&gt;pExpr, iCol, &amp;pIt-&gt;pRead);</span>
+<span class='curline'><a href='../S/185.html#L146141'>pCsr</a>             146141 libdb/sqlite3.c   Fts3Cursor *pCsr,               /* FTS3 cursor object */</span>
+<span class='curline'><a href='../S/185.html#L146148'>pCsr</a>             146148 libdb/sqlite3.c   Fts3Table *pTab = (Fts3Table *)pCsr-&gt;base.pVtab;</span>
+<span class='curline'><a href='../S/185.html#L146191'>pCsr</a>             146191 libdb/sqlite3.c         rc = sqlite3Fts3SelectDocsize(pTab, pCsr-&gt;iPrevId, &amp;pSelectDocsize);</span>
+<span class='curline'><a href='../S/185.html#L146206'>pCsr</a>             146206 libdb/sqlite3.c         rc = fts3ExprLoadDoclists(pCsr, 0, 0);</span>
+<span class='curline'><a href='../S/185.html#L146208'>pCsr</a>             146208 libdb/sqlite3.c           rc = fts3MatchinfoLcs(pCsr, pInfo);</span>
+<span class='curline'><a href='../S/185.html#L146215'>pCsr</a>             146215 libdb/sqlite3.c         pExpr = pCsr-&gt;pExpr;</span>
+<span class='curline'><a href='../S/185.html#L146216'>pCsr</a>             146216 libdb/sqlite3.c         rc = fts3ExprLoadDoclists(pCsr, 0, 0);</span>
+<span class='curline'><a href='../S/185.html#L146219'>pCsr</a>             146219 libdb/sqlite3.c           if( pCsr-&gt;pDeferred ){</span>
+<span class='curline'><a href='../S/185.html#L146244'>pCsr</a>             146244 libdb/sqlite3.c   Fts3Cursor *pCsr,               /* FTS3 Cursor object */</span>
+<span class='curline'><a href='../S/185.html#L146248'>pCsr</a>             146248 libdb/sqlite3.c   Fts3Table *pTab = (Fts3Table *)pCsr-&gt;base.pVtab;</span>
+<span class='curline'><a href='../S/185.html#L146253'>pCsr</a>             146253 libdb/sqlite3.c   sInfo.pCursor = pCsr;</span>
+<span class='curline'><a href='../S/185.html#L146259'>pCsr</a>             146259 libdb/sqlite3.c   if( pCsr-&gt;zMatchinfo &amp;&amp; strcmp(pCsr-&gt;zMatchinfo, zArg) ){</span>
+<span class='curline'><a href='../S/185.html#L146260'>pCsr</a>             146260 libdb/sqlite3.c     assert( pCsr-&gt;aMatchinfo );</span>
+<span class='curline'><a href='../S/185.html#L146261'>pCsr</a>             146261 libdb/sqlite3.c     sqlite3_free(pCsr-&gt;aMatchinfo);</span>
+<span class='curline'><a href='../S/185.html#L146262'>pCsr</a>             146262 libdb/sqlite3.c     pCsr-&gt;zMatchinfo = 0;</span>
+<span class='curline'><a href='../S/185.html#L146263'>pCsr</a>             146263 libdb/sqlite3.c     pCsr-&gt;aMatchinfo = 0;</span>
+<span class='curline'><a href='../S/185.html#L146271'>pCsr</a>             146271 libdb/sqlite3.c   if( pCsr-&gt;aMatchinfo==0 ){</span>
+<span class='curline'><a href='../S/185.html#L146277'>pCsr</a>             146277 libdb/sqlite3.c     pCsr-&gt;nPhrase = fts3ExprPhraseCount(pCsr-&gt;pExpr);</span>
+<span class='curline'><a href='../S/185.html#L146278'>pCsr</a>             146278 libdb/sqlite3.c     sInfo.nPhrase = pCsr-&gt;nPhrase;</span>
+<span class='curline'><a href='../S/185.html#L146287'>pCsr</a>             146287 libdb/sqlite3.c     pCsr-&gt;aMatchinfo = (u32 *)sqlite3_malloc(sizeof(u32)*nMatchinfo + nArg + 1);</span>
+<span class='curline'><a href='../S/185.html#L146288'>pCsr</a>             146288 libdb/sqlite3.c     if( !pCsr-&gt;aMatchinfo ) return SQLITE_NOMEM;</span>
+<span class='curline'><a href='../S/185.html#L146290'>pCsr</a>             146290 libdb/sqlite3.c     pCsr-&gt;zMatchinfo = (char *)&amp;pCsr-&gt;aMatchinfo[nMatchinfo];</span>
+<span class='curline'><a href='../S/185.html#L146291'>pCsr</a>             146291 libdb/sqlite3.c     pCsr-&gt;nMatchinfo = nMatchinfo;</span>
+<span class='curline'><a href='../S/185.html#L146292'>pCsr</a>             146292 libdb/sqlite3.c     memcpy(pCsr-&gt;zMatchinfo, zArg, nArg+1);</span>
+<span class='curline'><a href='../S/185.html#L146293'>pCsr</a>             146293 libdb/sqlite3.c     memset(pCsr-&gt;aMatchinfo, 0, sizeof(u32)*nMatchinfo);</span>
+<span class='curline'><a href='../S/185.html#L146294'>pCsr</a>             146294 libdb/sqlite3.c     pCsr-&gt;isMatchinfoNeeded = 1;</span>
+<span class='curline'><a href='../S/185.html#L146298'>pCsr</a>             146298 libdb/sqlite3.c   sInfo.aMatchinfo = pCsr-&gt;aMatchinfo;</span>
+<span class='curline'><a href='../S/185.html#L146299'>pCsr</a>             146299 libdb/sqlite3.c   sInfo.nPhrase = pCsr-&gt;nPhrase;</span>
+<span class='curline'><a href='../S/185.html#L146300'>pCsr</a>             146300 libdb/sqlite3.c   if( pCsr-&gt;isMatchinfoNeeded ){</span>
+<span class='curline'><a href='../S/185.html#L146301'>pCsr</a>             146301 libdb/sqlite3.c     rc = fts3MatchinfoValues(pCsr, bGlobal, &amp;sInfo, zArg);</span>
+<span class='curline'><a href='../S/185.html#L146302'>pCsr</a>             146302 libdb/sqlite3.c     pCsr-&gt;isMatchinfoNeeded = 0;</span>
+<span class='curline'><a href='../S/185.html#L146313'>pCsr</a>             146313 libdb/sqlite3.c   Fts3Cursor *pCsr,               /* Cursor object */</span>
+<span class='curline'><a href='../S/185.html#L146320'>pCsr</a>             146320 libdb/sqlite3.c   Fts3Table *pTab = (Fts3Table *)pCsr-&gt;base.pVtab;</span>
+<span class='curline'><a href='../S/185.html#L146337'>pCsr</a>             146337 libdb/sqlite3.c   if( !pCsr-&gt;pExpr ){</span>
+<span class='curline'><a href='../S/185.html#L146371'>pCsr</a>             146371 libdb/sqlite3.c         rc = fts3BestSnippet(nFToken, pCsr, iRead, mCovered, &amp;mSeen, &amp;sF, &amp;iS);</span>
+<span class='curline'><a href='../S/185.html#L146394'>pCsr</a>             146394 libdb/sqlite3.c     rc = fts3SnippetText(pCsr, &amp;aSnippet[i], </span>
+<span class='curline'><a href='../S/185.html#L146420'>pCsr</a>             146420 libdb/sqlite3.c   Fts3Cursor *pCsr;</span>
+<span class='curline'><a href='../S/185.html#L146439'>pCsr</a>             146439 libdb/sqlite3.c   rc = sqlite3Fts3EvalPhrasePoslist(p-&gt;pCsr, pExpr, p-&gt;iCol, &amp;pList);</span>
+<span class='curline'><a href='../S/185.html#L146461'>pCsr</a>             146461 libdb/sqlite3.c   Fts3Cursor *pCsr                /* Cursor object */</span>
+<span class='curline'><a href='../S/185.html#L146463'>pCsr</a>             146463 libdb/sqlite3.c   Fts3Table *pTab = (Fts3Table *)pCsr-&gt;base.pVtab;</span>
+<span class='curline'><a href='../S/185.html#L146471'>pCsr</a>             146471 libdb/sqlite3.c   if( !pCsr-&gt;pExpr ){</span>
+<span class='curline'><a href='../S/185.html#L146477'>pCsr</a>             146477 libdb/sqlite3.c   assert( pCsr-&gt;isRequireSeek==0 );</span>
+<span class='curline'><a href='../S/185.html#L146480'>pCsr</a>             146480 libdb/sqlite3.c   rc = fts3ExprLoadDoclists(pCsr, 0, &amp;nToken);</span>
+<span class='curline'><a href='../S/185.html#L146489'>pCsr</a>             146489 libdb/sqlite3.c   sCtx.iDocid = pCsr-&gt;iPrevId;</span>
+<span class='curline'><a href='../S/185.html#L146490'>pCsr</a>             146490 libdb/sqlite3.c   sCtx.pCsr = pCsr;</span>
+<span class='curline'><a href='../S/185.html#L146511'>pCsr</a>             146511 libdb/sqlite3.c     (void)fts3ExprIterate(pCsr-&gt;pExpr, fts3ExprTermOffsetInit, (void *)&amp;sCtx);</span>
+<span class='curline'><a href='../S/185.html#L146519'>pCsr</a>             146519 libdb/sqlite3.c     zDoc = (const char *)sqlite3_column_text(pCsr-&gt;pStmt, iCol+1);</span>
+<span class='curline'><a href='../S/185.html#L146520'>pCsr</a>             146520 libdb/sqlite3.c     nDoc = sqlite3_column_bytes(pCsr-&gt;pStmt, iCol+1);</span>
+<span class='curline'><a href='../S/185.html#L146522'>pCsr</a>             146522 libdb/sqlite3.c       if( sqlite3_column_type(pCsr-&gt;pStmt, iCol+1)==SQLITE_NULL ){</span>
+<span class='curline'><a href='../S/185.html#L146530'>pCsr</a>             146530 libdb/sqlite3.c     rc = sqlite3Fts3OpenTokenizer(pTab-&gt;pTokenizer, pCsr-&gt;iLangid,</span>
+<span class='curline'><a href='../S/185.html#L146599'>pCsr</a>             146599 libdb/sqlite3.c   Fts3Cursor *pCsr,               /* FTS3 table cursor */</span>
+<span class='curline'><a href='../S/185.html#L146602'>pCsr</a>             146602 libdb/sqlite3.c   Fts3Table *pTab = (Fts3Table *)pCsr-&gt;base.pVtab;</span>
+<span class='curline'><a href='../S/185.html#L146621'>pCsr</a>             146621 libdb/sqlite3.c   if( !pCsr-&gt;pExpr ){</span>
+<span class='curline'><a href='../S/185.html#L146627'>pCsr</a>             146627 libdb/sqlite3.c   rc = fts3GetMatchinfo(pCsr, zFormat);</span>
+<span class='curline'><a href='../S/185.html#L146633'>pCsr</a>             146633 libdb/sqlite3.c     int n = pCsr-&gt;nMatchinfo * sizeof(u32);</span>
+<span class='curline'><a href='../S/185.html#L146634'>pCsr</a>             146634 libdb/sqlite3.c     sqlite3_result_blob(pContext, pCsr-&gt;aMatchinfo, n, SQLITE_TRANSIENT);</span>
+<span class='curline'><a href='../S/185.html#L146913'>pCsr</a>             146913 libdb/sqlite3.c   unicode_cursor *pCsr;</span>
+<span class='curline'><a href='../S/185.html#L146915'>pCsr</a>             146915 libdb/sqlite3.c   pCsr = (unicode_cursor *)sqlite3_malloc(sizeof(unicode_cursor));</span>
+<span class='curline'><a href='../S/185.html#L146916'>pCsr</a>             146916 libdb/sqlite3.c   if( pCsr==0 ){</span>
+<span class='curline'><a href='../S/185.html#L146919'>pCsr</a>             146919 libdb/sqlite3.c   memset(pCsr, 0, sizeof(unicode_cursor));</span>
+<span class='curline'><a href='../S/185.html#L146921'>pCsr</a>             146921 libdb/sqlite3.c   pCsr-&gt;aInput = (const unsigned char *)aInput;</span>
+<span class='curline'><a href='../S/185.html#L146923'>pCsr</a>             146923 libdb/sqlite3.c     pCsr-&gt;nInput = 0;</span>
+<span class='curline'><a href='../S/185.html#L146925'>pCsr</a>             146925 libdb/sqlite3.c     pCsr-&gt;nInput = (int)strlen(aInput);</span>
+<span class='curline'><a href='../S/185.html#L146927'>pCsr</a>             146927 libdb/sqlite3.c     pCsr-&gt;nInput = nInput;</span>
+<span class='curline'><a href='../S/185.html#L146930'>pCsr</a>             146930 libdb/sqlite3.c   *pp = &amp;pCsr-&gt;base;</span>
+<span class='curline'><a href='../S/185.html#L146940'>pCsr</a>             146940 libdb/sqlite3.c   unicode_cursor *pCsr = (unicode_cursor *) pCursor;</span>
+<span class='curline'><a href='../S/185.html#L146941'>pCsr</a>             146941 libdb/sqlite3.c   sqlite3_free(pCsr-&gt;zToken);</span>
+<span class='curline'><a href='../S/185.html#L146942'>pCsr</a>             146942 libdb/sqlite3.c   sqlite3_free(pCsr);</span>
+<span class='curline'><a href='../S/185.html#L146958'>pCsr</a>             146958 libdb/sqlite3.c   unicode_cursor *pCsr = (unicode_cursor *)pC;</span>
+<span class='curline'><a href='../S/185.html#L146959'>pCsr</a>             146959 libdb/sqlite3.c   unicode_tokenizer *p = ((unicode_tokenizer *)pCsr-&gt;base.pTokenizer);</span>
+<span class='curline'><a href='../S/185.html#L146962'>pCsr</a>             146962 libdb/sqlite3.c   const unsigned char *z = &amp;pCsr-&gt;aInput[pCsr-&gt;iOff];</span>
+<span class='curline'><a href='../S/185.html#L146965'>pCsr</a>             146965 libdb/sqlite3.c   const unsigned char *zTerm = &amp;pCsr-&gt;aInput[pCsr-&gt;nInput];</span>
+<span class='curline'><a href='../S/185.html#L146977'>pCsr</a>             146977 libdb/sqlite3.c   zOut = pCsr-&gt;zToken;</span>
+<span class='curline'><a href='../S/185.html#L146982'>pCsr</a>             146982 libdb/sqlite3.c     if( (zOut-pCsr-&gt;zToken)&gt;=(pCsr-&gt;nAlloc-4) ){</span>
+<span class='curline'><a href='../S/185.html#L146983'>pCsr</a>             146983 libdb/sqlite3.c       char *zNew = sqlite3_realloc(pCsr-&gt;zToken, pCsr-&gt;nAlloc+64);</span>
+<span class='curline'><a href='../S/185.html#L146985'>pCsr</a>             146985 libdb/sqlite3.c       zOut = &amp;zNew[zOut - pCsr-&gt;zToken];</span>
+<span class='curline'><a href='../S/185.html#L146986'>pCsr</a>             146986 libdb/sqlite3.c       pCsr-&gt;zToken = zNew;</span>
+<span class='curline'><a href='../S/185.html#L146987'>pCsr</a>             146987 libdb/sqlite3.c       pCsr-&gt;nAlloc += 64;</span>
+<span class='curline'><a href='../S/185.html#L147005'>pCsr</a>             147005 libdb/sqlite3.c   pCsr-&gt;iOff = (int)(z - pCsr-&gt;aInput);</span>
+<span class='curline'><a href='../S/185.html#L147006'>pCsr</a>             147006 libdb/sqlite3.c   *paToken = pCsr-&gt;zToken;</span>
+<span class='curline'><a href='../S/185.html#L147007'>pCsr</a>             147007 libdb/sqlite3.c   *pnToken = (int)(zOut - pCsr-&gt;zToken);</span>
+<span class='curline'><a href='../S/185.html#L147008'>pCsr</a>             147008 libdb/sqlite3.c   *piStart = (int)(zStart - pCsr-&gt;aInput);</span>
+<span class='curline'><a href='../S/185.html#L147009'>pCsr</a>             147009 libdb/sqlite3.c   *piEnd = (int)(zEnd - pCsr-&gt;aInput);</span>
+<span class='curline'><a href='../S/185.html#L147010'>pCsr</a>             147010 libdb/sqlite3.c   *piPos = pCsr-&gt;iToken++;</span>
+<span class='curline'><a href='../S/185.html#L148251'>pCsr</a>             148251 libdb/sqlite3.c   RtreeCursor *pCsr;</span>
+<span class='curline'><a href='../S/185.html#L148253'>pCsr</a>             148253 libdb/sqlite3.c   pCsr = (RtreeCursor *)sqlite3_malloc(sizeof(RtreeCursor));</span>
+<span class='curline'><a href='../S/185.html#L148254'>pCsr</a>             148254 libdb/sqlite3.c   if( pCsr ){</span>
+<span class='curline'><a href='../S/185.html#L148255'>pCsr</a>             148255 libdb/sqlite3.c     memset(pCsr, 0, sizeof(RtreeCursor));</span>
+<span class='curline'><a href='../S/185.html#L148256'>pCsr</a>             148256 libdb/sqlite3.c     pCsr-&gt;base.pVtab = pVTab;</span>
+<span class='curline'><a href='../S/185.html#L148259'>pCsr</a>             148259 libdb/sqlite3.c   *ppCursor = (sqlite3_vtab_cursor *)pCsr;</span>
+<span class='curline'><a href='../S/185.html#L148268'>pCsr</a>             148268 libdb/sqlite3.c static void freeCursorConstraints(RtreeCursor *pCsr){</span>
+<span class='curline'><a href='../S/185.html#L148269'>pCsr</a>             148269 libdb/sqlite3.c   if( pCsr-&gt;aConstraint ){</span>
+<span class='curline'><a href='../S/185.html#L148271'>pCsr</a>             148271 libdb/sqlite3.c     for(i=0; i&lt;pCsr-&gt;nConstraint; i++){</span>
+<span class='curline'><a href='../S/185.html#L148272'>pCsr</a>             148272 libdb/sqlite3.c       sqlite3_rtree_query_info *pInfo = pCsr-&gt;aConstraint[i].pInfo;</span>
+<span class='curline'><a href='../S/185.html#L148278'>pCsr</a>             148278 libdb/sqlite3.c     sqlite3_free(pCsr-&gt;aConstraint);</span>
+<span class='curline'><a href='../S/185.html#L148279'>pCsr</a>             148279 libdb/sqlite3.c     pCsr-&gt;aConstraint = 0;</span>
+<span class='curline'><a href='../S/185.html#L148289'>pCsr</a>             148289 libdb/sqlite3.c   RtreeCursor *pCsr = (RtreeCursor *)cur;</span>
+<span class='curline'><a href='../S/185.html#L148290'>pCsr</a>             148290 libdb/sqlite3.c   freeCursorConstraints(pCsr);</span>
+<span class='curline'><a href='../S/185.html#L148291'>pCsr</a>             148291 libdb/sqlite3.c   sqlite3_free(pCsr-&gt;aPoint);</span>
+<span class='curline'><a href='../S/185.html#L148292'>pCsr</a>             148292 libdb/sqlite3.c   for(ii=0; ii&lt;RTREE_CACHE_SZ; ii++) nodeRelease(pRtree, pCsr-&gt;aNode[ii]);</span>
+<span class='curline'><a href='../S/185.html#L148293'>pCsr</a>             148293 libdb/sqlite3.c   sqlite3_free(pCsr);</span>
+<span class='curline'><a href='../S/185.html#L148304'>pCsr</a>             148304 libdb/sqlite3.c   RtreeCursor *pCsr = (RtreeCursor *)cur;</span>
+<span class='curline'><a href='../S/185.html#L148305'>pCsr</a>             148305 libdb/sqlite3.c   return pCsr-&gt;atEOF;</span>
+<span class='curline'><a href='../S/185.html#L148789'>pCsr</a>             148789 libdb/sqlite3.c   RtreeCursor *pCsr = (RtreeCursor *)pVtabCursor;</span>
+<span class='curline'><a href='../S/185.html#L148793'>pCsr</a>             148793 libdb/sqlite3.c   RTREE_QUEUE_TRACE(pCsr, "POP-Nx:");</span>
+<span class='curline'><a href='../S/185.html#L148794'>pCsr</a>             148794 libdb/sqlite3.c   rtreeSearchPointPop(pCsr);</span>
+<span class='curline'><a href='../S/185.html#L148795'>pCsr</a>             148795 libdb/sqlite3.c   rc = rtreeStepToLeaf(pCsr);</span>
+<span class='curline'><a href='../S/185.html#L148803'>pCsr</a>             148803 libdb/sqlite3.c   RtreeCursor *pCsr = (RtreeCursor *)pVtabCursor;</span>
+<span class='curline'><a href='../S/185.html#L148804'>pCsr</a>             148804 libdb/sqlite3.c   RtreeSearchPoint *p = rtreeSearchPointFirst(pCsr);</span>
+<span class='curline'><a href='../S/185.html#L148806'>pCsr</a>             148806 libdb/sqlite3.c   RtreeNode *pNode = rtreeNodeOfFirstSearchPoint(pCsr, &amp;rc);</span>
+<span class='curline'><a href='../S/185.html#L148808'>pCsr</a>             148808 libdb/sqlite3.c     *pRowid = nodeGetRowid(RTREE_OF_CURSOR(pCsr), pNode, p-&gt;iCell);</span>
+<span class='curline'><a href='../S/185.html#L148818'>pCsr</a>             148818 libdb/sqlite3.c   RtreeCursor *pCsr = (RtreeCursor *)cur;</span>
+<span class='curline'><a href='../S/185.html#L148819'>pCsr</a>             148819 libdb/sqlite3.c   RtreeSearchPoint *p = rtreeSearchPointFirst(pCsr);</span>
+<span class='curline'><a href='../S/185.html#L148822'>pCsr</a>             148822 libdb/sqlite3.c   RtreeNode *pNode = rtreeNodeOfFirstSearchPoint(pCsr, &amp;rc);</span>
+<span class='curline'><a href='../S/185.html#L148929'>pCsr</a>             148929 libdb/sqlite3.c   RtreeCursor *pCsr = (RtreeCursor *)pVtabCursor;</span>
+<span class='curline'><a href='../S/185.html#L148938'>pCsr</a>             148938 libdb/sqlite3.c   freeCursorConstraints(pCsr);</span>
+<span class='curline'><a href='../S/185.html#L148939'>pCsr</a>             148939 libdb/sqlite3.c   sqlite3_free(pCsr-&gt;aPoint);</span>
+<span class='curline'><a href='../S/185.html#L148940'>pCsr</a>             148940 libdb/sqlite3.c   memset(pCsr, 0, sizeof(RtreeCursor));</span>
+<span class='curline'><a href='../S/185.html#L148941'>pCsr</a>             148941 libdb/sqlite3.c   pCsr-&gt;base.pVtab = (sqlite3_vtab*)pRtree;</span>
+<span class='curline'><a href='../S/185.html#L148943'>pCsr</a>             148943 libdb/sqlite3.c   pCsr-&gt;iStrategy = idxNum;</span>
+<span class='curline'><a href='../S/185.html#L148952'>pCsr</a>             148952 libdb/sqlite3.c       p = rtreeSearchPointNew(pCsr, RTREE_ZERO, 0);</span>
+<span class='curline'><a href='../S/185.html#L148954'>pCsr</a>             148954 libdb/sqlite3.c       pCsr-&gt;aNode[0] = pLeaf;</span>
+<span class='curline'><a href='../S/185.html#L148959'>pCsr</a>             148959 libdb/sqlite3.c       RTREE_QUEUE_TRACE(pCsr, "PUSH-F1:");</span>
+<span class='curline'><a href='../S/185.html#L148961'>pCsr</a>             148961 libdb/sqlite3.c       pCsr-&gt;atEOF = 1;</span>
+<span class='curline'><a href='../S/185.html#L148969'>pCsr</a>             148969 libdb/sqlite3.c       pCsr-&gt;aConstraint = sqlite3_malloc(sizeof(RtreeConstraint)*argc);</span>
+<span class='curline'><a href='../S/185.html#L148970'>pCsr</a>             148970 libdb/sqlite3.c       pCsr-&gt;nConstraint = argc;</span>
+<span class='curline'><a href='../S/185.html#L148971'>pCsr</a>             148971 libdb/sqlite3.c       if( !pCsr-&gt;aConstraint ){</span>
+<span class='curline'><a href='../S/185.html#L148974'>pCsr</a>             148974 libdb/sqlite3.c         memset(pCsr-&gt;aConstraint, 0, sizeof(RtreeConstraint)*argc);</span>
+<span class='curline'><a href='../S/185.html#L148975'>pCsr</a>             148975 libdb/sqlite3.c         memset(pCsr-&gt;anQueue, 0, sizeof(u32)*(pRtree-&gt;iDepth + 1));</span>
+<span class='curline'><a href='../S/185.html#L148979'>pCsr</a>             148979 libdb/sqlite3.c           RtreeConstraint *p = &amp;pCsr-&gt;aConstraint[ii];</span>
+<span class='curline'><a href='../S/185.html#L148992'>pCsr</a>             148992 libdb/sqlite3.c             p-&gt;pInfo-&gt;anQueue = pCsr-&gt;anQueue;</span>
+<span class='curline'><a href='../S/185.html#L149006'>pCsr</a>             149006 libdb/sqlite3.c       pNew = rtreeSearchPointNew(pCsr, RTREE_ZERO, pRtree-&gt;iDepth+1);</span>
+<span class='curline'><a href='../S/185.html#L149011'>pCsr</a>             149011 libdb/sqlite3.c       assert( pCsr-&gt;bPoint==1 );</span>
+<span class='curline'><a href='../S/185.html#L149012'>pCsr</a>             149012 libdb/sqlite3.c       pCsr-&gt;aNode[0] = pRoot;</span>
+<span class='curline'><a href='../S/185.html#L149014'>pCsr</a>             149014 libdb/sqlite3.c       RTREE_QUEUE_TRACE(pCsr, "PUSH-Fm:");</span>
+<span class='curline'><a href='../S/185.html#L149015'>pCsr</a>             149015 libdb/sqlite3.c       rc = rtreeStepToLeaf(pCsr);</span>
+<span class='curline'><a href='../S/185.html#L151476'>pCsr</a>             151476 libdb/sqlite3.c   IcuCursor *pCsr;</span>
+<span class='curline'><a href='../S/185.html#L151495'>pCsr</a>             151495 libdb/sqlite3.c   pCsr = (IcuCursor *)sqlite3_malloc(</span>
+<span class='curline'><a href='../S/185.html#L151500'>pCsr</a>             151500 libdb/sqlite3.c   if( !pCsr ){</span>
+<span class='curline'><a href='../S/185.html#L151503'>pCsr</a>             151503 libdb/sqlite3.c   memset(pCsr, 0, sizeof(IcuCursor));</span>
+<span class='curline'><a href='../S/185.html#L151504'>pCsr</a>             151504 libdb/sqlite3.c   pCsr-&gt;aChar = (UChar *)&amp;pCsr[1];</span>
+<span class='curline'><a href='../S/185.html#L151505'>pCsr</a>             151505 libdb/sqlite3.c   pCsr-&gt;aOffset = (int *)&amp;pCsr-&gt;aChar[(nChar+3)&amp;~3];</span>
+<span class='curline'><a href='../S/185.html#L151507'>pCsr</a>             151507 libdb/sqlite3.c   pCsr-&gt;aOffset[iOut] = iInput;</span>
+<span class='curline'><a href='../S/185.html#L151512'>pCsr</a>             151512 libdb/sqlite3.c     U16_APPEND(pCsr-&gt;aChar, iOut, nChar, c, isError);</span>
+<span class='curline'><a href='../S/185.html#L151514'>pCsr</a>             151514 libdb/sqlite3.c       sqlite3_free(pCsr);</span>
+<span class='curline'><a href='../S/185.html#L151517'>pCsr</a>             151517 libdb/sqlite3.c     pCsr-&gt;aOffset[iOut] = iInput;</span>
+<span class='curline'><a href='../S/185.html#L151526'>pCsr</a>             151526 libdb/sqlite3.c   pCsr-&gt;pIter = ubrk_open(UBRK_WORD, p-&gt;zLocale, pCsr-&gt;aChar, iOut, &amp;status);</span>
+<span class='curline'><a href='../S/185.html#L151528'>pCsr</a>             151528 libdb/sqlite3.c     sqlite3_free(pCsr);</span>
+<span class='curline'><a href='../S/185.html#L151531'>pCsr</a>             151531 libdb/sqlite3.c   pCsr-&gt;nChar = iOut;</span>
+<span class='curline'><a href='../S/185.html#L151533'>pCsr</a>             151533 libdb/sqlite3.c   ubrk_first(pCsr-&gt;pIter);</span>
+<span class='curline'><a href='../S/185.html#L151534'>pCsr</a>             151534 libdb/sqlite3.c   *ppCursor = (sqlite3_tokenizer_cursor *)pCsr;</span>
+<span class='curline'><a href='../S/185.html#L151542'>pCsr</a>             151542 libdb/sqlite3.c   IcuCursor *pCsr = (IcuCursor *)pCursor;</span>
+<span class='curline'><a href='../S/185.html#L151543'>pCsr</a>             151543 libdb/sqlite3.c   ubrk_close(pCsr-&gt;pIter);</span>
+<span class='curline'><a href='../S/185.html#L151544'>pCsr</a>             151544 libdb/sqlite3.c   sqlite3_free(pCsr-&gt;zBuffer);</span>
+<span class='curline'><a href='../S/185.html#L151545'>pCsr</a>             151545 libdb/sqlite3.c   sqlite3_free(pCsr);</span>
+<span class='curline'><a href='../S/185.html#L151560'>pCsr</a>             151560 libdb/sqlite3.c   IcuCursor *pCsr = (IcuCursor *)pCursor;</span>
+<span class='curline'><a href='../S/185.html#L151569'>pCsr</a>             151569 libdb/sqlite3.c     iStart = ubrk_current(pCsr-&gt;pIter);</span>
+<span class='curline'><a href='../S/185.html#L151570'>pCsr</a>             151570 libdb/sqlite3.c     iEnd = ubrk_next(pCsr-&gt;pIter);</span>
+<span class='curline'><a href='../S/185.html#L151577'>pCsr</a>             151577 libdb/sqlite3.c       U16_NEXT(pCsr-&gt;aChar, iWhite, pCsr-&gt;nChar, c);</span>
+<span class='curline'><a href='../S/185.html#L151590'>pCsr</a>             151590 libdb/sqlite3.c       char *zNew = sqlite3_realloc(pCsr-&gt;zBuffer, nByte);</span>
+<span class='curline'><a href='../S/185.html#L151594'>pCsr</a>             151594 libdb/sqlite3.c       pCsr-&gt;zBuffer = zNew;</span>
+<span class='curline'><a href='../S/185.html#L151595'>pCsr</a>             151595 libdb/sqlite3.c       pCsr-&gt;nBuffer = nByte;</span>
+<span class='curline'><a href='../S/185.html#L151599'>pCsr</a>             151599 libdb/sqlite3.c         pCsr-&gt;zBuffer, pCsr-&gt;nBuffer, &amp;nByte,    /* Output vars */</span>
+<span class='curline'><a href='../S/185.html#L151600'>pCsr</a>             151600 libdb/sqlite3.c         &amp;pCsr-&gt;aChar[iStart], iEnd-iStart,       /* Input vars */</span>
+<span class='curline'><a href='../S/185.html#L151603'>pCsr</a>             151603 libdb/sqlite3.c   } while( nByte&gt;pCsr-&gt;nBuffer );</span>
+<span class='curline'><a href='../S/185.html#L151605'>pCsr</a>             151605 libdb/sqlite3.c   *ppToken = pCsr-&gt;zBuffer;</span>
+<span class='curline'><a href='../S/185.html#L151607'>pCsr</a>             151607 libdb/sqlite3.c   *piStartOffset = pCsr-&gt;aOffset[iStart];</span>
+<span class='curline'><a href='../S/185.html#L151608'>pCsr</a>             151608 libdb/sqlite3.c   *piEndOffset = pCsr-&gt;aOffset[iEnd];</span>
+<span class='curline'><a href='../S/185.html#L151609'>pCsr</a>             151609 libdb/sqlite3.c   *piPosition = pCsr-&gt;iToken++;</span>
+</pre>
+</body>
+</html>

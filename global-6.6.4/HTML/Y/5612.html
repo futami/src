@@ -1,0 +1,174 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>pShmNode</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/185.html#L25874'>pShmNode</a>         25874 libdb/sqlite3.c   unixShmNode *pShmNode;          /* Shared memory associated with this inode */</span>
+<span class='curline'><a href='../S/185.html#L26009'>pShmNode</a>         26009 libdb/sqlite3.c       assert( pInode-&gt;pShmNode==0 );</span>
+<span class='curline'><a href='../S/185.html#L28865'>pShmNode</a>         28865 libdb/sqlite3.c   unixShmNode *pShmNode;     /* The underlying unixShmNode object */</span>
+<span class='curline'><a href='../S/185.html#L28886'>pShmNode</a>         28886 libdb/sqlite3.c   unixShmNode *pShmNode, /* Apply locks to this open shared-memory segment */</span>
+<span class='curline'><a href='../S/185.html#L28895'>pShmNode</a>         28895 libdb/sqlite3.c   assert( sqlite3_mutex_held(pShmNode-&gt;mutex) || pShmNode-&gt;nRef==0 );</span>
+<span class='curline'><a href='../S/185.html#L28903'>pShmNode</a>         28903 libdb/sqlite3.c   if( pShmNode-&gt;h&gt;=0 ){</span>
+<span class='curline'><a href='../S/185.html#L28911'>pShmNode</a>         28911 libdb/sqlite3.c     rc = osFcntl(pShmNode-&gt;h, F_SETLK, &amp;f);</span>
+<span class='curline'><a href='../S/185.html#L28923'>pShmNode</a>         28923 libdb/sqlite3.c       pShmNode-&gt;exclMask &amp;= ~mask;</span>
+<span class='curline'><a href='../S/185.html#L28924'>pShmNode</a>         28924 libdb/sqlite3.c       pShmNode-&gt;sharedMask &amp;= ~mask;</span>
+<span class='curline'><a href='../S/185.html#L28927'>pShmNode</a>         28927 libdb/sqlite3.c       pShmNode-&gt;exclMask &amp;= ~mask;</span>
+<span class='curline'><a href='../S/185.html#L28928'>pShmNode</a>         28928 libdb/sqlite3.c       pShmNode-&gt;sharedMask |= mask;</span>
+<span class='curline'><a href='../S/185.html#L28932'>pShmNode</a>         28932 libdb/sqlite3.c       pShmNode-&gt;exclMask |= mask;</span>
+<span class='curline'><a href='../S/185.html#L28933'>pShmNode</a>         28933 libdb/sqlite3.c       pShmNode-&gt;sharedMask &amp;= ~mask;</span>
+<span class='curline'><a href='../S/185.html#L28946'>pShmNode</a>         28946 libdb/sqlite3.c            pShmNode-&gt;sharedMask, pShmNode-&gt;exclMask));</span>
+<span class='curline'><a href='../S/185.html#L28977'>pShmNode</a>         28977 libdb/sqlite3.c   unixShmNode *p = pFd-&gt;pInode-&gt;pShmNode;</span>
+<span class='curline'><a href='../S/185.html#L28996'>pShmNode</a>         28996 libdb/sqlite3.c     p-&gt;pInode-&gt;pShmNode = 0;</span>
+<span class='curline'><a href='../S/185.html#L29038'>pShmNode</a>         29038 libdb/sqlite3.c   struct unixShmNode *pShmNode;   /* The underlying mmapped file */</span>
+<span class='curline'><a href='../S/185.html#L29055'>pShmNode</a>         29055 libdb/sqlite3.c   pShmNode = pInode-&gt;pShmNode;</span>
+<span class='curline'><a href='../S/185.html#L29056'>pShmNode</a>         29056 libdb/sqlite3.c   if( pShmNode==0 ){</span>
+<span class='curline'><a href='../S/185.html#L29073'>pShmNode</a>         29073 libdb/sqlite3.c     pShmNode = sqlite3_malloc( sizeof(*pShmNode) + nShmFilename );</span>
+<span class='curline'><a href='../S/185.html#L29074'>pShmNode</a>         29074 libdb/sqlite3.c     if( pShmNode==0 ){</span>
+<span class='curline'><a href='../S/185.html#L29078'>pShmNode</a>         29078 libdb/sqlite3.c     memset(pShmNode, 0, sizeof(*pShmNode)+nShmFilename);</span>
+<span class='curline'><a href='../S/185.html#L29079'>pShmNode</a>         29079 libdb/sqlite3.c     zShmFilename = pShmNode-&gt;zFilename = (char*)&amp;pShmNode[1];</span>
+<span class='curline'><a href='../S/185.html#L29088'>pShmNode</a>         29088 libdb/sqlite3.c     pShmNode-&gt;h = -1;</span>
+<span class='curline'><a href='../S/185.html#L29089'>pShmNode</a>         29089 libdb/sqlite3.c     pDbFd-&gt;pInode-&gt;pShmNode = pShmNode;</span>
+<span class='curline'><a href='../S/185.html#L29090'>pShmNode</a>         29090 libdb/sqlite3.c     pShmNode-&gt;pInode = pDbFd-&gt;pInode;</span>
+<span class='curline'><a href='../S/185.html#L29091'>pShmNode</a>         29091 libdb/sqlite3.c     pShmNode-&gt;mutex = sqlite3_mutex_alloc(SQLITE_MUTEX_FAST);</span>
+<span class='curline'><a href='../S/185.html#L29092'>pShmNode</a>         29092 libdb/sqlite3.c     if( pShmNode-&gt;mutex==0 ){</span>
+<span class='curline'><a href='../S/185.html#L29101'>pShmNode</a>         29101 libdb/sqlite3.c         pShmNode-&gt;isReadonly = 1;</span>
+<span class='curline'><a href='../S/185.html#L29103'>pShmNode</a>         29103 libdb/sqlite3.c       pShmNode-&gt;h = robust_open(zShmFilename, openFlags, (sStat.st_mode&amp;0777));</span>
+<span class='curline'><a href='../S/185.html#L29104'>pShmNode</a>         29104 libdb/sqlite3.c       if( pShmNode-&gt;h&lt;0 ){</span>
+<span class='curline'><a href='../S/185.html#L29113'>pShmNode</a>         29113 libdb/sqlite3.c       osFchown(pShmNode-&gt;h, sStat.st_uid, sStat.st_gid);</span>
+<span class='curline'><a href='../S/185.html#L29119'>pShmNode</a>         29119 libdb/sqlite3.c       if( unixShmSystemLock(pShmNode, F_WRLCK, UNIX_SHM_DMS, 1)==SQLITE_OK ){</span>
+<span class='curline'><a href='../S/185.html#L29120'>pShmNode</a>         29120 libdb/sqlite3.c         if( robust_ftruncate(pShmNode-&gt;h, 0) ){</span>
+<span class='curline'><a href='../S/185.html#L29125'>pShmNode</a>         29125 libdb/sqlite3.c         rc = unixShmSystemLock(pShmNode, F_RDLCK, UNIX_SHM_DMS, 1);</span>
+<span class='curline'><a href='../S/185.html#L29132'>pShmNode</a>         29132 libdb/sqlite3.c   p-&gt;pShmNode = pShmNode;</span>
+<span class='curline'><a href='../S/185.html#L29134'>pShmNode</a>         29134 libdb/sqlite3.c   p-&gt;id = pShmNode-&gt;nextShmId++;</span>
+<span class='curline'><a href='../S/185.html#L29136'>pShmNode</a>         29136 libdb/sqlite3.c   pShmNode-&gt;nRef++;</span>
+<span class='curline'><a href='../S/185.html#L29147'>pShmNode</a>         29147 libdb/sqlite3.c   sqlite3_mutex_enter(pShmNode-&gt;mutex);</span>
+<span class='curline'><a href='../S/185.html#L29148'>pShmNode</a>         29148 libdb/sqlite3.c   p-&gt;pNext = pShmNode-&gt;pFirst;</span>
+<span class='curline'><a href='../S/185.html#L29149'>pShmNode</a>         29149 libdb/sqlite3.c   pShmNode-&gt;pFirst = p;</span>
+<span class='curline'><a href='../S/185.html#L29150'>pShmNode</a>         29150 libdb/sqlite3.c   sqlite3_mutex_leave(pShmNode-&gt;mutex);</span>
+<span class='curline'><a href='../S/185.html#L29189'>pShmNode</a>         29189 libdb/sqlite3.c   unixShmNode *pShmNode;</span>
+<span class='curline'><a href='../S/185.html#L29201'>pShmNode</a>         29201 libdb/sqlite3.c   pShmNode = p-&gt;pShmNode;</span>
+<span class='curline'><a href='../S/185.html#L29202'>pShmNode</a>         29202 libdb/sqlite3.c   sqlite3_mutex_enter(pShmNode-&gt;mutex);</span>
+<span class='curline'><a href='../S/185.html#L29203'>pShmNode</a>         29203 libdb/sqlite3.c   assert( szRegion==pShmNode-&gt;szRegion || pShmNode-&gt;nRegion==0 );</span>
+<span class='curline'><a href='../S/185.html#L29204'>pShmNode</a>         29204 libdb/sqlite3.c   assert( pShmNode-&gt;pInode==pDbFd-&gt;pInode );</span>
+<span class='curline'><a href='../S/185.html#L29205'>pShmNode</a>         29205 libdb/sqlite3.c   assert( pShmNode-&gt;h&gt;=0 || pDbFd-&gt;pInode-&gt;bProcessLock==1 );</span>
+<span class='curline'><a href='../S/185.html#L29206'>pShmNode</a>         29206 libdb/sqlite3.c   assert( pShmNode-&gt;h&lt;0 || pDbFd-&gt;pInode-&gt;bProcessLock==0 );</span>
+<span class='curline'><a href='../S/185.html#L29211'>pShmNode</a>         29211 libdb/sqlite3.c   if( pShmNode-&gt;nRegion&lt;nReqRegion ){</span>
+<span class='curline'><a href='../S/185.html#L29216'>pShmNode</a>         29216 libdb/sqlite3.c     pShmNode-&gt;szRegion = szRegion;</span>
+<span class='curline'><a href='../S/185.html#L29218'>pShmNode</a>         29218 libdb/sqlite3.c     if( pShmNode-&gt;h&gt;=0 ){</span>
+<span class='curline'><a href='../S/185.html#L29223'>pShmNode</a>         29223 libdb/sqlite3.c       if( osFstat(pShmNode-&gt;h, &amp;sStat) ){</span>
+<span class='curline'><a href='../S/185.html#L29250'>pShmNode</a>         29250 libdb/sqlite3.c             if( seekAndWriteFd(pShmNode-&gt;h, iPg*pgsz + pgsz-1, "", 1, 0)!=1 ){</span>
+<span class='curline'><a href='../S/185.html#L29251'>pShmNode</a>         29251 libdb/sqlite3.c               const char *zFile = pShmNode-&gt;zFilename;</span>
+<span class='curline'><a href='../S/185.html#L29262'>pShmNode</a>         29262 libdb/sqlite3.c         pShmNode-&gt;apRegion, nReqRegion*sizeof(char *)</span>
+<span class='curline'><a href='../S/185.html#L29268'>pShmNode</a>         29268 libdb/sqlite3.c     pShmNode-&gt;apRegion = apNew;</span>
+<span class='curline'><a href='../S/185.html#L29269'>pShmNode</a>         29269 libdb/sqlite3.c     while( pShmNode-&gt;nRegion&lt;nReqRegion ){</span>
+<span class='curline'><a href='../S/185.html#L29273'>pShmNode</a>         29273 libdb/sqlite3.c       if( pShmNode-&gt;h&gt;=0 ){</span>
+<span class='curline'><a href='../S/185.html#L29275'>pShmNode</a>         29275 libdb/sqlite3.c             pShmNode-&gt;isReadonly ? PROT_READ : PROT_READ|PROT_WRITE, </span>
+<span class='curline'><a href='../S/185.html#L29276'>pShmNode</a>         29276 libdb/sqlite3.c             MAP_SHARED, pShmNode-&gt;h, szRegion*(i64)pShmNode-&gt;nRegion</span>
+<span class='curline'><a href='../S/185.html#L29279'>pShmNode</a>         29279 libdb/sqlite3.c           rc = unixLogError(SQLITE_IOERR_SHMMAP, "mmap", pShmNode-&gt;zFilename);</span>
+<span class='curline'><a href='../S/185.html#L29292'>pShmNode</a>         29292 libdb/sqlite3.c         pShmNode-&gt;apRegion[pShmNode-&gt;nRegion+i] = &amp;((char*)pMem)[szRegion*i];</span>
+<span class='curline'><a href='../S/185.html#L29294'>pShmNode</a>         29294 libdb/sqlite3.c       pShmNode-&gt;nRegion += nShmPerMap;</span>
+<span class='curline'><a href='../S/185.html#L29299'>pShmNode</a>         29299 libdb/sqlite3.c   if( pShmNode-&gt;nRegion&gt;iRegion ){</span>
+<span class='curline'><a href='../S/185.html#L29300'>pShmNode</a>         29300 libdb/sqlite3.c     *pp = pShmNode-&gt;apRegion[iRegion];</span>
+<span class='curline'><a href='../S/185.html#L29304'>pShmNode</a>         29304 libdb/sqlite3.c   if( pShmNode-&gt;isReadonly &amp;&amp; rc==SQLITE_OK ) rc = SQLITE_READONLY;</span>
+<span class='curline'><a href='../S/185.html#L29305'>pShmNode</a>         29305 libdb/sqlite3.c   sqlite3_mutex_leave(pShmNode-&gt;mutex);</span>
+<span class='curline'><a href='../S/185.html#L29326'>pShmNode</a>         29326 libdb/sqlite3.c   unixShmNode *pShmNode = p-&gt;pShmNode;  /* The underlying file iNode */</span>
+<span class='curline'><a href='../S/185.html#L29330'>pShmNode</a>         29330 libdb/sqlite3.c   assert( pShmNode==pDbFd-&gt;pInode-&gt;pShmNode );</span>
+<span class='curline'><a href='../S/185.html#L29331'>pShmNode</a>         29331 libdb/sqlite3.c   assert( pShmNode-&gt;pInode==pDbFd-&gt;pInode );</span>
+<span class='curline'><a href='../S/185.html#L29339'>pShmNode</a>         29339 libdb/sqlite3.c   assert( pShmNode-&gt;h&gt;=0 || pDbFd-&gt;pInode-&gt;bProcessLock==1 );</span>
+<span class='curline'><a href='../S/185.html#L29340'>pShmNode</a>         29340 libdb/sqlite3.c   assert( pShmNode-&gt;h&lt;0 || pDbFd-&gt;pInode-&gt;bProcessLock==0 );</span>
+<span class='curline'><a href='../S/185.html#L29344'>pShmNode</a>         29344 libdb/sqlite3.c   sqlite3_mutex_enter(pShmNode-&gt;mutex);</span>
+<span class='curline'><a href='../S/185.html#L29349'>pShmNode</a>         29349 libdb/sqlite3.c     for(pX=pShmNode-&gt;pFirst; pX; pX=pX-&gt;pNext){</span>
+<span class='curline'><a href='../S/185.html#L29357'>pShmNode</a>         29357 libdb/sqlite3.c       rc = unixShmSystemLock(pShmNode, F_UNLCK, ofst+UNIX_SHM_BASE, n);</span>
+<span class='curline'><a href='../S/185.html#L29374'>pShmNode</a>         29374 libdb/sqlite3.c     for(pX=pShmNode-&gt;pFirst; pX; pX=pX-&gt;pNext){</span>
+<span class='curline'><a href='../S/185.html#L29385'>pShmNode</a>         29385 libdb/sqlite3.c         rc = unixShmSystemLock(pShmNode, F_RDLCK, ofst+UNIX_SHM_BASE, n);</span>
+<span class='curline'><a href='../S/185.html#L29399'>pShmNode</a>         29399 libdb/sqlite3.c     for(pX=pShmNode-&gt;pFirst; pX; pX=pX-&gt;pNext){</span>
+<span class='curline'><a href='../S/185.html#L29410'>pShmNode</a>         29410 libdb/sqlite3.c       rc = unixShmSystemLock(pShmNode, F_WRLCK, ofst+UNIX_SHM_BASE, n);</span>
+<span class='curline'><a href='../S/185.html#L29417'>pShmNode</a>         29417 libdb/sqlite3.c   sqlite3_mutex_leave(pShmNode-&gt;mutex);</span>
+<span class='curline'><a href='../S/185.html#L29449'>pShmNode</a>         29449 libdb/sqlite3.c   unixShmNode *pShmNode;          /* The underlying shared-memory file */</span>
+<span class='curline'><a href='../S/185.html#L29456'>pShmNode</a>         29456 libdb/sqlite3.c   pShmNode = p-&gt;pShmNode;</span>
+<span class='curline'><a href='../S/185.html#L29458'>pShmNode</a>         29458 libdb/sqlite3.c   assert( pShmNode==pDbFd-&gt;pInode-&gt;pShmNode );</span>
+<span class='curline'><a href='../S/185.html#L29459'>pShmNode</a>         29459 libdb/sqlite3.c   assert( pShmNode-&gt;pInode==pDbFd-&gt;pInode );</span>
+<span class='curline'><a href='../S/185.html#L29463'>pShmNode</a>         29463 libdb/sqlite3.c   sqlite3_mutex_enter(pShmNode-&gt;mutex);</span>
+<span class='curline'><a href='../S/185.html#L29464'>pShmNode</a>         29464 libdb/sqlite3.c   for(pp=&amp;pShmNode-&gt;pFirst; (*pp)!=p; pp = &amp;(*pp)-&gt;pNext){}</span>
+<span class='curline'><a href='../S/185.html#L29470'>pShmNode</a>         29470 libdb/sqlite3.c   sqlite3_mutex_leave(pShmNode-&gt;mutex);</span>
+<span class='curline'><a href='../S/185.html#L29475'>pShmNode</a>         29475 libdb/sqlite3.c   assert( pShmNode-&gt;nRef&gt;0 );</span>
+<span class='curline'><a href='../S/185.html#L29476'>pShmNode</a>         29476 libdb/sqlite3.c   pShmNode-&gt;nRef--;</span>
+<span class='curline'><a href='../S/185.html#L29477'>pShmNode</a>         29477 libdb/sqlite3.c   if( pShmNode-&gt;nRef==0 ){</span>
+<span class='curline'><a href='../S/185.html#L29478'>pShmNode</a>         29478 libdb/sqlite3.c     if( deleteFlag &amp;&amp; pShmNode-&gt;h&gt;=0 ) osUnlink(pShmNode-&gt;zFilename);</span>
+<span class='curline'><a href='../S/185.html#L35936'>pShmNode</a>         35936 libdb/sqlite3.c   winShmNode *pShmNode;      /* The underlying winShmNode object */</span>
+<span class='curline'><a href='../S/185.html#L36057'>pShmNode</a>         36057 libdb/sqlite3.c   struct winShmNode *pShmNode = 0;   /* The underlying mmapped file */</span>
+<span class='curline'><a href='../S/185.html#L36070'>pShmNode</a>         36070 libdb/sqlite3.c   pNew = sqlite3MallocZero( sizeof(*pShmNode) + nName + 17 );</span>
+<span class='curline'><a href='../S/185.html#L36083'>pShmNode</a>         36083 libdb/sqlite3.c   for(pShmNode = winShmNodeList; pShmNode; pShmNode=pShmNode-&gt;pNext){</span>
+<span class='curline'><a href='../S/185.html#L36087'>pShmNode</a>         36087 libdb/sqlite3.c     if( sqlite3StrICmp(pShmNode-&gt;zFilename, pNew-&gt;zFilename)==0 ) break;</span>
+<span class='curline'><a href='../S/185.html#L36089'>pShmNode</a>         36089 libdb/sqlite3.c   if( pShmNode ){</span>
+<span class='curline'><a href='../S/185.html#L36092'>pShmNode</a>         36092 libdb/sqlite3.c     pShmNode = pNew;</span>
+<span class='curline'><a href='../S/185.html#L36094'>pShmNode</a>         36094 libdb/sqlite3.c     ((winFile*)(&amp;pShmNode-&gt;hFile))-&gt;h = INVALID_HANDLE_VALUE;</span>
+<span class='curline'><a href='../S/185.html#L36095'>pShmNode</a>         36095 libdb/sqlite3.c     pShmNode-&gt;pNext = winShmNodeList;</span>
+<span class='curline'><a href='../S/185.html#L36096'>pShmNode</a>         36096 libdb/sqlite3.c     winShmNodeList = pShmNode;</span>
+<span class='curline'><a href='../S/185.html#L36098'>pShmNode</a>         36098 libdb/sqlite3.c     pShmNode-&gt;mutex = sqlite3_mutex_alloc(SQLITE_MUTEX_FAST);</span>
+<span class='curline'><a href='../S/185.html#L36099'>pShmNode</a>         36099 libdb/sqlite3.c     if( pShmNode-&gt;mutex==0 ){</span>
+<span class='curline'><a href='../S/185.html#L36105'>pShmNode</a>         36105 libdb/sqlite3.c                  pShmNode-&gt;zFilename,             /* Name of the file (UTF-8) */</span>
+<span class='curline'><a href='../S/185.html#L36106'>pShmNode</a>         36106 libdb/sqlite3.c                  (sqlite3_file*)&amp;pShmNode-&gt;hFile,  /* File handle here */</span>
+<span class='curline'><a href='../S/185.html#L36116'>pShmNode</a>         36116 libdb/sqlite3.c     if( winShmSystemLock(pShmNode, _SHM_WRLCK, WIN_SHM_DMS, 1)==SQLITE_OK ){</span>
+<span class='curline'><a href='../S/185.html#L36117'>pShmNode</a>         36117 libdb/sqlite3.c       rc = winTruncate((sqlite3_file *)&amp;pShmNode-&gt;hFile, 0);</span>
+<span class='curline'><a href='../S/185.html#L36124'>pShmNode</a>         36124 libdb/sqlite3.c       winShmSystemLock(pShmNode, _SHM_UNLCK, WIN_SHM_DMS, 1);</span>
+<span class='curline'><a href='../S/185.html#L36125'>pShmNode</a>         36125 libdb/sqlite3.c       rc = winShmSystemLock(pShmNode, _SHM_RDLCK, WIN_SHM_DMS, 1);</span>
+<span class='curline'><a href='../S/185.html#L36131'>pShmNode</a>         36131 libdb/sqlite3.c   p-&gt;pShmNode = pShmNode;</span>
+<span class='curline'><a href='../S/185.html#L36133'>pShmNode</a>         36133 libdb/sqlite3.c   p-&gt;id = pShmNode-&gt;nextShmId++;</span>
+<span class='curline'><a href='../S/185.html#L36135'>pShmNode</a>         36135 libdb/sqlite3.c   pShmNode-&gt;nRef++;</span>
+<span class='curline'><a href='../S/185.html#L36146'>pShmNode</a>         36146 libdb/sqlite3.c   sqlite3_mutex_enter(pShmNode-&gt;mutex);</span>
+<span class='curline'><a href='../S/185.html#L36147'>pShmNode</a>         36147 libdb/sqlite3.c   p-&gt;pNext = pShmNode-&gt;pFirst;</span>
+<span class='curline'><a href='../S/185.html#L36148'>pShmNode</a>         36148 libdb/sqlite3.c   pShmNode-&gt;pFirst = p;</span>
+<span class='curline'><a href='../S/185.html#L36149'>pShmNode</a>         36149 libdb/sqlite3.c   sqlite3_mutex_leave(pShmNode-&gt;mutex);</span>
+<span class='curline'><a href='../S/185.html#L36154'>pShmNode</a>         36154 libdb/sqlite3.c   winShmSystemLock(pShmNode, _SHM_UNLCK, WIN_SHM_DMS, 1);</span>
+<span class='curline'><a href='../S/185.html#L36172'>pShmNode</a>         36172 libdb/sqlite3.c   winShmNode *pShmNode; /* The underlying shared-memory file */</span>
+<span class='curline'><a href='../S/185.html#L36178'>pShmNode</a>         36178 libdb/sqlite3.c   pShmNode = p-&gt;pShmNode;</span>
+<span class='curline'><a href='../S/185.html#L36182'>pShmNode</a>         36182 libdb/sqlite3.c   sqlite3_mutex_enter(pShmNode-&gt;mutex);</span>
+<span class='curline'><a href='../S/185.html#L36183'>pShmNode</a>         36183 libdb/sqlite3.c   for(pp=&amp;pShmNode-&gt;pFirst; (*pp)!=p; pp = &amp;(*pp)-&gt;pNext){}</span>
+<span class='curline'><a href='../S/185.html#L36189'>pShmNode</a>         36189 libdb/sqlite3.c   sqlite3_mutex_leave(pShmNode-&gt;mutex);</span>
+<span class='curline'><a href='../S/185.html#L36194'>pShmNode</a>         36194 libdb/sqlite3.c   assert( pShmNode-&gt;nRef&gt;0 );</span>
+<span class='curline'><a href='../S/185.html#L36195'>pShmNode</a>         36195 libdb/sqlite3.c   pShmNode-&gt;nRef--;</span>
+<span class='curline'><a href='../S/185.html#L36196'>pShmNode</a>         36196 libdb/sqlite3.c   if( pShmNode-&gt;nRef==0 ){</span>
+<span class='curline'><a href='../S/185.html#L36216'>pShmNode</a>         36216 libdb/sqlite3.c   winShmNode *pShmNode = p-&gt;pShmNode;</span>
+<span class='curline'><a href='../S/185.html#L36230'>pShmNode</a>         36230 libdb/sqlite3.c   sqlite3_mutex_enter(pShmNode-&gt;mutex);</span>
+<span class='curline'><a href='../S/185.html#L36235'>pShmNode</a>         36235 libdb/sqlite3.c     for(pX=pShmNode-&gt;pFirst; pX; pX=pX-&gt;pNext){</span>
+<span class='curline'><a href='../S/185.html#L36243'>pShmNode</a>         36243 libdb/sqlite3.c       rc = winShmSystemLock(pShmNode, _SHM_UNLCK, ofst+WIN_SHM_BASE, n);</span>
+<span class='curline'><a href='../S/185.html#L36260'>pShmNode</a>         36260 libdb/sqlite3.c     for(pX=pShmNode-&gt;pFirst; pX; pX=pX-&gt;pNext){</span>
+<span class='curline'><a href='../S/185.html#L36271'>pShmNode</a>         36271 libdb/sqlite3.c         rc = winShmSystemLock(pShmNode, _SHM_RDLCK, ofst+WIN_SHM_BASE, n);</span>
+<span class='curline'><a href='../S/185.html#L36285'>pShmNode</a>         36285 libdb/sqlite3.c     for(pX=pShmNode-&gt;pFirst; pX; pX=pX-&gt;pNext){</span>
+<span class='curline'><a href='../S/185.html#L36296'>pShmNode</a>         36296 libdb/sqlite3.c       rc = winShmSystemLock(pShmNode, _SHM_WRLCK, ofst+WIN_SHM_BASE, n);</span>
+<span class='curline'><a href='../S/185.html#L36303'>pShmNode</a>         36303 libdb/sqlite3.c   sqlite3_mutex_leave(pShmNode-&gt;mutex);</span>
+<span class='curline'><a href='../S/185.html#L36353'>pShmNode</a>         36353 libdb/sqlite3.c   winShmNode *pShmNode;</span>
+<span class='curline'><a href='../S/185.html#L36361'>pShmNode</a>         36361 libdb/sqlite3.c   pShmNode = p-&gt;pShmNode;</span>
+<span class='curline'><a href='../S/185.html#L36363'>pShmNode</a>         36363 libdb/sqlite3.c   sqlite3_mutex_enter(pShmNode-&gt;mutex);</span>
+<span class='curline'><a href='../S/185.html#L36364'>pShmNode</a>         36364 libdb/sqlite3.c   assert( szRegion==pShmNode-&gt;szRegion || pShmNode-&gt;nRegion==0 );</span>
+<span class='curline'><a href='../S/185.html#L36366'>pShmNode</a>         36366 libdb/sqlite3.c   if( pShmNode-&gt;nRegion&lt;=iRegion ){</span>
+<span class='curline'><a href='../S/185.html#L36371'>pShmNode</a>         36371 libdb/sqlite3.c     pShmNode-&gt;szRegion = szRegion;</span>
+<span class='curline'><a href='../S/185.html#L36377'>pShmNode</a>         36377 libdb/sqlite3.c     rc = winFileSize((sqlite3_file *)&amp;pShmNode-&gt;hFile, &amp;sz);</span>
+<span class='curline'><a href='../S/185.html#L36392'>pShmNode</a>         36392 libdb/sqlite3.c       rc = winTruncate((sqlite3_file *)&amp;pShmNode-&gt;hFile, nByte);</span>
+<span class='curline'><a href='../S/185.html#L36402'>pShmNode</a>         36402 libdb/sqlite3.c         pShmNode-&gt;aRegion, (iRegion+1)*sizeof(apNew[0])</span>
+<span class='curline'><a href='../S/185.html#L36408'>pShmNode</a>         36408 libdb/sqlite3.c     pShmNode-&gt;aRegion = apNew;</span>
+<span class='curline'><a href='../S/185.html#L36410'>pShmNode</a>         36410 libdb/sqlite3.c     while( pShmNode-&gt;nRegion&lt;=iRegion ){</span>
+<span class='curline'><a href='../S/185.html#L36415'>pShmNode</a>         36415 libdb/sqlite3.c       hMap = osCreateFileMappingFromApp(pShmNode-&gt;hFile.h,</span>
+<span class='curline'><a href='../S/185.html#L36419'>pShmNode</a>         36419 libdb/sqlite3.c       hMap = osCreateFileMappingW(pShmNode-&gt;hFile.h,</span>
+<span class='curline'><a href='../S/185.html#L36423'>pShmNode</a>         36423 libdb/sqlite3.c       hMap = osCreateFileMappingA(pShmNode-&gt;hFile.h,</span>
+<span class='curline'><a href='../S/185.html#L36428'>pShmNode</a>         36428 libdb/sqlite3.c                osGetCurrentProcessId(), pShmNode-&gt;nRegion, nByte,</span>
+<span class='curline'><a href='../S/185.html#L36431'>pShmNode</a>         36431 libdb/sqlite3.c         int iOffset = pShmNode-&gt;nRegion*szRegion;</span>
+<span class='curline'><a href='../S/185.html#L36443'>pShmNode</a>         36443 libdb/sqlite3.c                  osGetCurrentProcessId(), pShmNode-&gt;nRegion, iOffset,</span>
+<span class='curline'><a href='../S/185.html#L36447'>pShmNode</a>         36447 libdb/sqlite3.c         pShmNode-&gt;lastErrno = osGetLastError();</span>
+<span class='curline'><a href='../S/185.html#L36448'>pShmNode</a>         36448 libdb/sqlite3.c         rc = winLogError(SQLITE_IOERR_SHMMAP, pShmNode-&gt;lastErrno,</span>
+<span class='curline'><a href='../S/185.html#L36454'>pShmNode</a>         36454 libdb/sqlite3.c       pShmNode-&gt;aRegion[pShmNode-&gt;nRegion].pMap = pMap;</span>
+<span class='curline'><a href='../S/185.html#L36455'>pShmNode</a>         36455 libdb/sqlite3.c       pShmNode-&gt;aRegion[pShmNode-&gt;nRegion].hMap = hMap;</span>
+<span class='curline'><a href='../S/185.html#L36456'>pShmNode</a>         36456 libdb/sqlite3.c       pShmNode-&gt;nRegion++;</span>
+<span class='curline'><a href='../S/185.html#L36461'>pShmNode</a>         36461 libdb/sqlite3.c   if( pShmNode-&gt;nRegion&gt;iRegion ){</span>
+<span class='curline'><a href='../S/185.html#L36464'>pShmNode</a>         36464 libdb/sqlite3.c     char *p = (char *)pShmNode-&gt;aRegion[iRegion].pMap;</span>
+<span class='curline'><a href='../S/185.html#L36469'>pShmNode</a>         36469 libdb/sqlite3.c   sqlite3_mutex_leave(pShmNode-&gt;mutex);</span>
+</pre>
+</body>
+</html>

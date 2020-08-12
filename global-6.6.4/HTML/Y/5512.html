@@ -1,0 +1,227 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>pParent</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/185.html#L14156'>pParent</a>          14156 libdb/sqlite3.c   VdbeFrame *pParent;     /* Parent of this frame, or NULL if parent is main */</span>
+<span class='curline'><a href='../S/185.html#L56548'>pParent</a>          56548 libdb/sqlite3.c static void assertParentIndex(MemPage *pParent, int iIdx, Pgno iChild){</span>
+<span class='curline'><a href='../S/185.html#L56549'>pParent</a>          56549 libdb/sqlite3.c   assert( iIdx&lt;=pParent-&gt;nCell );</span>
+<span class='curline'><a href='../S/185.html#L56550'>pParent</a>          56550 libdb/sqlite3.c   if( iIdx==pParent-&gt;nCell ){</span>
+<span class='curline'><a href='../S/185.html#L56551'>pParent</a>          56551 libdb/sqlite3.c     assert( get4byte(&amp;pParent-&gt;aData[pParent-&gt;hdrOffset+8])==iChild );</span>
+<span class='curline'><a href='../S/185.html#L56553'>pParent</a>          56553 libdb/sqlite3.c     assert( get4byte(findCell(pParent, iIdx))==iChild );</span>
+<span class='curline'><a href='../S/185.html#L58206'>pParent</a>          58206 libdb/sqlite3.c static int balance_quick(MemPage *pParent, MemPage *pPage, u8 *pSpace){</span>
+<span class='curline'><a href='../S/185.html#L58213'>pParent</a>          58213 libdb/sqlite3.c   assert( sqlite3PagerIswriteable(pParent-&gt;pDbPage) );</span>
+<span class='curline'><a href='../S/185.html#L58247'>pParent</a>          58247 libdb/sqlite3.c       ptrmapPut(pBt, pgnoNew, PTRMAP_BTREE, pParent-&gt;pgno, &amp;rc);</span>
+<span class='curline'><a href='../S/185.html#L58273'>pParent</a>          58273 libdb/sqlite3.c     insertCell(pParent, pParent-&gt;nCell, pSpace, (int)(pOut-pSpace),</span>
+<span class='curline'><a href='../S/185.html#L58277'>pParent</a>          58277 libdb/sqlite3.c     put4byte(&amp;pParent-&gt;aData[pParent-&gt;hdrOffset+8], pgnoNew);</span>
+<span class='curline'><a href='../S/185.html#L58431'>pParent</a>          58431 libdb/sqlite3.c   MemPage *pParent,               /* Parent page of siblings being balanced */</span>
+<span class='curline'><a href='../S/185.html#L58465'>pParent</a>          58465 libdb/sqlite3.c   pBt = pParent-&gt;pBt;</span>
+<span class='curline'><a href='../S/185.html#L58467'>pParent</a>          58467 libdb/sqlite3.c   assert( sqlite3PagerIswriteable(pParent-&gt;pDbPage) );</span>
+<span class='curline'><a href='../S/185.html#L58470'>pParent</a>          58470 libdb/sqlite3.c   TRACE(("BALANCE: begin page %d child of %d\n", pPage-&gt;pgno, pParent-&gt;pgno));</span>
+<span class='curline'><a href='../S/185.html#L58478'>pParent</a>          58478 libdb/sqlite3.c   assert( pParent-&gt;nOverflow==0 || pParent-&gt;nOverflow==1 );</span>
+<span class='curline'><a href='../S/185.html#L58479'>pParent</a>          58479 libdb/sqlite3.c   assert( pParent-&gt;nOverflow==0 || pParent-&gt;aiOvfl[0]==iParentIdx );</span>
+<span class='curline'><a href='../S/185.html#L58496'>pParent</a>          58496 libdb/sqlite3.c   i = pParent-&gt;nOverflow + pParent-&gt;nCell;</span>
+<span class='curline'><a href='../S/185.html#L58512'>pParent</a>          58512 libdb/sqlite3.c   if( (i+nxDiv-pParent-&gt;nOverflow)==pParent-&gt;nCell ){</span>
+<span class='curline'><a href='../S/185.html#L58513'>pParent</a>          58513 libdb/sqlite3.c     pRight = &amp;pParent-&gt;aData[pParent-&gt;hdrOffset+8];</span>
+<span class='curline'><a href='../S/185.html#L58515'>pParent</a>          58515 libdb/sqlite3.c     pRight = findCell(pParent, i+nxDiv-pParent-&gt;nOverflow);</span>
+<span class='curline'><a href='../S/185.html#L58527'>pParent</a>          58527 libdb/sqlite3.c     if( i+nxDiv==pParent-&gt;aiOvfl[0] &amp;&amp; pParent-&gt;nOverflow ){</span>
+<span class='curline'><a href='../S/185.html#L58528'>pParent</a>          58528 libdb/sqlite3.c       apDiv[i] = pParent-&gt;apOvfl[0];</span>
+<span class='curline'><a href='../S/185.html#L58530'>pParent</a>          58530 libdb/sqlite3.c       szNew[i] = cellSizePtr(pParent, apDiv[i]);</span>
+<span class='curline'><a href='../S/185.html#L58531'>pParent</a>          58531 libdb/sqlite3.c       pParent-&gt;nOverflow = 0;</span>
+<span class='curline'><a href='../S/185.html#L58533'>pParent</a>          58533 libdb/sqlite3.c       apDiv[i] = findCell(pParent, i+nxDiv-pParent-&gt;nOverflow);</span>
+<span class='curline'><a href='../S/185.html#L58535'>pParent</a>          58535 libdb/sqlite3.c       szNew[i] = cellSizePtr(pParent, apDiv[i]);</span>
+<span class='curline'><a href='../S/185.html#L58552'>pParent</a>          58552 libdb/sqlite3.c         iOff = SQLITE_PTR_TO_INT(apDiv[i]) - SQLITE_PTR_TO_INT(pParent-&gt;aData);</span>
+<span class='curline'><a href='../S/185.html#L58559'>pParent</a>          58559 libdb/sqlite3.c           apDiv[i] = &amp;aOvflSpace[apDiv[i]-pParent-&gt;aData];</span>
+<span class='curline'><a href='../S/185.html#L58562'>pParent</a>          58562 libdb/sqlite3.c       dropCell(pParent, i+nxDiv-pParent-&gt;nOverflow, szNew[i], &amp;rc);</span>
+<span class='curline'><a href='../S/185.html#L58742'>pParent</a>          58742 libdb/sqlite3.c   assert( cntNew[0]&gt;0 || (pParent-&gt;pgno==1 &amp;&amp; pParent-&gt;nCell==0) );</span>
+<span class='curline'><a href='../S/185.html#L58776'>pParent</a>          58776 libdb/sqlite3.c         ptrmapPut(pBt, pNew-&gt;pgno, PTRMAP_BTREE, pParent-&gt;pgno, &amp;rc);</span>
+<span class='curline'><a href='../S/185.html#L58831'>pParent</a>          58831 libdb/sqlite3.c   assert( sqlite3PagerIswriteable(pParent-&gt;pDbPage) );</span>
+<span class='curline'><a href='../S/185.html#L58892'>pParent</a>          58892 libdb/sqlite3.c           sz = cellSizePtr(pParent, pCell);</span>
+<span class='curline'><a href='../S/185.html#L58898'>pParent</a>          58898 libdb/sqlite3.c       insertCell(pParent, nxDiv, pCell, sz, pTemp, pNew-&gt;pgno, &amp;rc);</span>
+<span class='curline'><a href='../S/185.html#L58900'>pParent</a>          58900 libdb/sqlite3.c       assert( sqlite3PagerIswriteable(pParent-&gt;pDbPage) );</span>
+<span class='curline'><a href='../S/185.html#L58914'>pParent</a>          58914 libdb/sqlite3.c   if( isRoot &amp;&amp; pParent-&gt;nCell==0 &amp;&amp; pParent-&gt;hdrOffset&lt;=apNew[0]-&gt;nFree ){</span>
+<span class='curline'><a href='../S/185.html#L58933'>pParent</a>          58933 libdb/sqlite3.c     copyNodeContent(apNew[0], pParent, &amp;rc);</span>
+<span class='curline'><a href='../S/185.html#L59038'>pParent</a>          59038 libdb/sqlite3.c     ptrmapCheckPages(&amp;pParent, 1);</span>
+<span class='curline'><a href='../S/185.html#L59042'>pParent</a>          59042 libdb/sqlite3.c   assert( pParent-&gt;isInit );</span>
+<span class='curline'><a href='../S/185.html#L59175'>pParent</a>          59175 libdb/sqlite3.c       MemPage * const pParent = pCur-&gt;apPage[iPage-1];</span>
+<span class='curline'><a href='../S/185.html#L59178'>pParent</a>          59178 libdb/sqlite3.c       rc = sqlite3PagerWrite(pParent-&gt;pDbPage);</span>
+<span class='curline'><a href='../S/185.html#L59184'>pParent</a>          59184 libdb/sqlite3.c          &amp;&amp; pParent-&gt;pgno!=1</span>
+<span class='curline'><a href='../S/185.html#L59185'>pParent</a>          59185 libdb/sqlite3.c          &amp;&amp; pParent-&gt;nCell==iIdx</span>
+<span class='curline'><a href='../S/185.html#L59201'>pParent</a>          59201 libdb/sqlite3.c           rc = balance_quick(pParent, pPage, aBalanceQuickSpace);</span>
+<span class='curline'><a href='../S/185.html#L59223'>pParent</a>          59223 libdb/sqlite3.c           rc = balance_nonroot(pParent, iIdx, pSpace, iPage==1, pCur-&gt;hints);</span>
+<span class='curline'><a href='../S/185.html#L61992'>pParent</a>          61992 libdb/sqlite3.c     pFrame-&gt;pParent = pFrame-&gt;v-&gt;pDelFrame;</span>
+<span class='curline'><a href='../S/185.html#L64983'>pParent</a>          64983 libdb/sqlite3.c     for(pFrame=p-&gt;pFrame; pFrame-&gt;pParent; pFrame=pFrame-&gt;pParent);</span>
+<span class='curline'><a href='../S/185.html#L65005'>pParent</a>          65005 libdb/sqlite3.c     p-&gt;pDelFrame = pDel-&gt;pParent;</span>
+<span class='curline'><a href='../S/185.html#L69923'>pParent</a>          69923 libdb/sqlite3.c     p-&gt;pFrame = pFrame-&gt;pParent;</span>
+<span class='curline'><a href='../S/185.html#L72991'>pParent</a>          72991 libdb/sqlite3.c         for(pFrame=p-&gt;pFrame; pFrame-&gt;pParent; pFrame=pFrame-&gt;pParent);</span>
+<span class='curline'><a href='../S/185.html#L74369'>pParent</a>          74369 libdb/sqlite3.c     for(pFrame=p-&gt;pFrame; pFrame &amp;&amp; pFrame-&gt;token!=t; pFrame=pFrame-&gt;pParent);</span>
+<span class='curline'><a href='../S/185.html#L74429'>pParent</a>          74429 libdb/sqlite3.c   pFrame-&gt;pParent = p-&gt;pFrame;</span>
+<span class='curline'><a href='../S/185.html#L74530'>pParent</a>          74530 libdb/sqlite3.c     for(pFrame=p-&gt;pFrame; pFrame-&gt;pParent; pFrame=pFrame-&gt;pParent);</span>
+<span class='curline'><a href='../S/185.html#L96094'>pParent</a>          96094 libdb/sqlite3.c   Table *pParent,                 /* Parent table of FK constraint pFKey */</span>
+<span class='curline'><a href='../S/185.html#L96125'>pParent</a>          96125 libdb/sqlite3.c     if( pParent-&gt;iPKey&gt;=0 ){</span>
+<span class='curline'><a href='../S/185.html#L96127'>pParent</a>          96127 libdb/sqlite3.c       if( !sqlite3StrICmp(pParent-&gt;aCol[pParent-&gt;iPKey].zName, zKey) ) return 0;</span>
+<span class='curline'><a href='../S/185.html#L96136'>pParent</a>          96136 libdb/sqlite3.c   for(pIdx=pParent-&gt;pIndex; pIdx; pIdx=pIdx-&gt;pNext){</span>
+<span class='curline'><a href='../S/185.html#L96167'>pParent</a>          96167 libdb/sqlite3.c           zDfltColl = pParent-&gt;aCol[iCol].zColl;</span>
+<span class='curline'><a href='../S/185.html#L96173'>pParent</a>          96173 libdb/sqlite3.c           zIdxCol = pParent-&gt;aCol[iCol].zName;</span>
+<span class='curline'><a href='../S/185.html#L102388'>pParent</a>          102388 libdb/sqlite3.c     Table *pParent;        /* Parent table that child points to */</span>
+<span class='curline'><a href='../S/185.html#L102428'>pParent</a>          102428 libdb/sqlite3.c         pParent = sqlite3FindTable(db, pFK-&gt;zTo, zDb);</span>
+<span class='curline'><a href='../S/185.html#L102429'>pParent</a>          102429 libdb/sqlite3.c         if( pParent==0 ) continue;</span>
+<span class='curline'><a href='../S/185.html#L102431'>pParent</a>          102431 libdb/sqlite3.c         sqlite3TableLock(pParse, iDb, pParent-&gt;tnum, 0, pParent-&gt;zName);</span>
+<span class='curline'><a href='../S/185.html#L102432'>pParent</a>          102432 libdb/sqlite3.c         x = sqlite3FkLocateIndex(pParse, pParent, pFK, &amp;pIdx, 0);</span>
+<span class='curline'><a href='../S/185.html#L102435'>pParent</a>          102435 libdb/sqlite3.c             sqlite3OpenTable(pParse, i, iDb, pParent, OP_OpenRead);</span>
+<span class='curline'><a href='../S/185.html#L102450'>pParent</a>          102450 libdb/sqlite3.c         pParent = sqlite3FindTable(db, pFK-&gt;zTo, zDb);</span>
+<span class='curline'><a href='../S/185.html#L102453'>pParent</a>          102453 libdb/sqlite3.c         if( pParent ){</span>
+<span class='curline'><a href='../S/185.html#L102454'>pParent</a>          102454 libdb/sqlite3.c           x = sqlite3FkLocateIndex(pParse, pParent, pFK, &amp;pIdx, &amp;aiCols);</span>
+<span class='curline'><a href='../S/185.html#L102458'>pParent</a>          102458 libdb/sqlite3.c         if( pParent &amp;&amp; pIdx==0 ){</span>
+<span class='curline'><a href='../S/185.html#L102479'>pParent</a>          102479 libdb/sqlite3.c           if( pParent ){</span>
+<span class='curline'><a href='../S/185.html#L107261'>pParent</a>          107261 libdb/sqlite3.c   Select *pParent;</span>
+<span class='curline'><a href='../S/185.html#L107517'>pParent</a>          107517 libdb/sqlite3.c   for(pParent=p; pParent; pParent=pParent-&gt;pPrior, pSub=pSub-&gt;pPrior){</span>
+<span class='curline'><a href='../S/185.html#L107522'>pParent</a>          107522 libdb/sqlite3.c     pSrc = pParent-&gt;pSrc;     /* FROM clause of the outer query */</span>
+<span class='curline'><a href='../S/185.html#L107525'>pParent</a>          107525 libdb/sqlite3.c       assert( pParent==p );  /* First time through the loop */</span>
+<span class='curline'><a href='../S/185.html#L107528'>pParent</a>          107528 libdb/sqlite3.c       assert( pParent!=p );  /* 2nd and subsequent times through the loop */</span>
+<span class='curline'><a href='../S/185.html#L107529'>pParent</a>          107529 libdb/sqlite3.c       pSrc = pParent-&gt;pSrc = sqlite3SrcListAppend(db, 0, 0, 0);</span>
+<span class='curline'><a href='../S/185.html#L107552'>pParent</a>          107552 libdb/sqlite3.c       pParent-&gt;pSrc = pSrc = sqlite3SrcListEnlarge(db, pSrc, nSubSrc-1,iFrom+1);</span>
+<span class='curline'><a href='../S/185.html#L107580'>pParent</a>          107580 libdb/sqlite3.c     pList = pParent-&gt;pEList;</span>
+<span class='curline'><a href='../S/185.html#L107588'>pParent</a>          107588 libdb/sqlite3.c     substExprList(db, pParent-&gt;pEList, iParent, pSub-&gt;pEList);</span>
+<span class='curline'><a href='../S/185.html#L107590'>pParent</a>          107590 libdb/sqlite3.c       substExprList(db, pParent-&gt;pGroupBy, iParent, pSub-&gt;pEList);</span>
+<span class='curline'><a href='../S/185.html#L107591'>pParent</a>          107591 libdb/sqlite3.c       pParent-&gt;pHaving = substExpr(db, pParent-&gt;pHaving, iParent, pSub-&gt;pEList);</span>
+<span class='curline'><a href='../S/185.html#L107608'>pParent</a>          107608 libdb/sqlite3.c       assert( pParent-&gt;pOrderBy==0 );</span>
+<span class='curline'><a href='../S/185.html#L107610'>pParent</a>          107610 libdb/sqlite3.c       pParent-&gt;pOrderBy = pOrderBy;</span>
+<span class='curline'><a href='../S/185.html#L107612'>pParent</a>          107612 libdb/sqlite3.c     }else if( pParent-&gt;pOrderBy ){</span>
+<span class='curline'><a href='../S/185.html#L107613'>pParent</a>          107613 libdb/sqlite3.c       substExprList(db, pParent-&gt;pOrderBy, iParent, pSub-&gt;pEList);</span>
+<span class='curline'><a href='../S/185.html#L107621'>pParent</a>          107621 libdb/sqlite3.c       assert( pParent-&gt;pHaving==0 );</span>
+<span class='curline'><a href='../S/185.html#L107622'>pParent</a>          107622 libdb/sqlite3.c       pParent-&gt;pHaving = pParent-&gt;pWhere;</span>
+<span class='curline'><a href='../S/185.html#L107623'>pParent</a>          107623 libdb/sqlite3.c       pParent-&gt;pWhere = pWhere;</span>
+<span class='curline'><a href='../S/185.html#L107624'>pParent</a>          107624 libdb/sqlite3.c       pParent-&gt;pHaving = substExpr(db, pParent-&gt;pHaving, iParent, pSub-&gt;pEList);</span>
+<span class='curline'><a href='../S/185.html#L107625'>pParent</a>          107625 libdb/sqlite3.c       pParent-&gt;pHaving = sqlite3ExprAnd(db, pParent-&gt;pHaving, </span>
+<span class='curline'><a href='../S/185.html#L107627'>pParent</a>          107627 libdb/sqlite3.c       assert( pParent-&gt;pGroupBy==0 );</span>
+<span class='curline'><a href='../S/185.html#L107628'>pParent</a>          107628 libdb/sqlite3.c       pParent-&gt;pGroupBy = sqlite3ExprListDup(db, pSub-&gt;pGroupBy, 0);</span>
+<span class='curline'><a href='../S/185.html#L107630'>pParent</a>          107630 libdb/sqlite3.c       pParent-&gt;pWhere = substExpr(db, pParent-&gt;pWhere, iParent, pSub-&gt;pEList);</span>
+<span class='curline'><a href='../S/185.html#L107631'>pParent</a>          107631 libdb/sqlite3.c       pParent-&gt;pWhere = sqlite3ExprAnd(db, pParent-&gt;pWhere, pWhere);</span>
+<span class='curline'><a href='../S/185.html#L107637'>pParent</a>          107637 libdb/sqlite3.c     pParent-&gt;selFlags |= pSub-&gt;selFlags &amp; SF_Distinct;</span>
+<span class='curline'><a href='../S/185.html#L107646'>pParent</a>          107646 libdb/sqlite3.c       pParent-&gt;pLimit = pSub-&gt;pLimit;</span>
+<span class='curline'><a href='../S/185.html#L129693'>pParent</a>          129693 libdb/sqlite3.c   Fts3Expr *pParent;         /* pParent-&gt;pLeft==this or pParent-&gt;pRight==this */</span>
+<span class='curline'><a href='../S/185.html#L134718'>pParent</a>          134718 libdb/sqlite3.c    &amp;&amp; (pExpr-&gt;pParent==0 || pExpr-&gt;pParent-&gt;eType!=FTSQUERY_NEAR)</span>
+<span class='curline'><a href='../S/185.html#L134740'>pParent</a>          134740 libdb/sqlite3.c         for(p=p-&gt;pParent;res &amp;&amp; p &amp;&amp; p-&gt;eType==FTSQUERY_NEAR; p=p-&gt;pParent){</span>
+<span class='curline'><a href='../S/185.html#L134751'>pParent</a>          134751 libdb/sqlite3.c           assert( p-&gt;pParent &amp;&amp; p-&gt;pParent-&gt;pLeft==p );</span>
+<span class='curline'><a href='../S/185.html#L134752'>pParent</a>          134752 libdb/sqlite3.c           nNear = p-&gt;pParent-&gt;nNear;</span>
+<span class='curline'><a href='../S/185.html#L134811'>pParent</a>          134811 libdb/sqlite3.c          &amp;&amp; (pExpr-&gt;pParent==0 || pExpr-&gt;pParent-&gt;eType!=FTSQUERY_NEAR)</span>
+<span class='curline'><a href='../S/185.html#L135063'>pParent</a>          135063 libdb/sqlite3.c     while( pRoot-&gt;pParent &amp;&amp; pRoot-&gt;pParent-&gt;eType==FTSQUERY_NEAR ){</span>
+<span class='curline'><a href='../S/185.html#L135064'>pParent</a>          135064 libdb/sqlite3.c       pRoot = pRoot-&gt;pParent;</span>
+<span class='curline'><a href='../S/185.html#L135166'>pParent</a>          135166 libdb/sqlite3.c   if( pExpr-&gt;bDeferred &amp;&amp; pExpr-&gt;pParent-&gt;eType!=FTSQUERY_NEAR ){</span>
+<span class='curline'><a href='../S/185.html#L135242'>pParent</a>          135242 libdb/sqlite3.c     for(p=pExpr-&gt;pParent; p; p=p-&gt;pParent){</span>
+<span class='curline'><a href='../S/185.html#L136528'>pParent</a>          136528 libdb/sqlite3.c   while( pSplit-&gt;pParent &amp;&amp; opPrecedence(pSplit-&gt;pParent)&lt;=opPrecedence(pNew) ){</span>
+<span class='curline'><a href='../S/185.html#L136529'>pParent</a>          136529 libdb/sqlite3.c     pSplit = pSplit-&gt;pParent;</span>
+<span class='curline'><a href='../S/185.html#L136532'>pParent</a>          136532 libdb/sqlite3.c   if( pSplit-&gt;pParent ){</span>
+<span class='curline'><a href='../S/185.html#L136533'>pParent</a>          136533 libdb/sqlite3.c     assert( pSplit-&gt;pParent-&gt;pRight==pSplit );</span>
+<span class='curline'><a href='../S/185.html#L136534'>pParent</a>          136534 libdb/sqlite3.c     pSplit-&gt;pParent-&gt;pRight = pNew;</span>
+<span class='curline'><a href='../S/185.html#L136535'>pParent</a>          136535 libdb/sqlite3.c     pNew-&gt;pParent = pSplit-&gt;pParent;</span>
+<span class='curline'><a href='../S/185.html#L136540'>pParent</a>          136540 libdb/sqlite3.c   pSplit-&gt;pParent = pNew;</span>
+<span class='curline'><a href='../S/185.html#L136589'>pParent</a>          136589 libdb/sqlite3.c           p-&gt;pParent = pNot;</span>
+<span class='curline'><a href='../S/185.html#L136592'>pParent</a>          136592 libdb/sqlite3.c             pNotBranch-&gt;pParent = pNot;</span>
+<span class='curline'><a href='../S/185.html#L136648'>pParent</a>          136648 libdb/sqlite3.c               p-&gt;pParent = pPrev;</span>
+<span class='curline'><a href='../S/185.html#L136681'>pParent</a>          136681 libdb/sqlite3.c         pRet-&gt;pParent = pIter;</span>
+<span class='curline'><a href='../S/185.html#L136753'>pParent</a>          136753 libdb/sqlite3.c         assert( p-&gt;pParent==0 || p-&gt;pParent-&gt;pLeft==p );</span>
+<span class='curline'><a href='../S/185.html#L136760'>pParent</a>          136760 libdb/sqlite3.c         Fts3Expr *pParent = p-&gt;pParent;     /* Current parent of p */</span>
+<span class='curline'><a href='../S/185.html#L136762'>pParent</a>          136762 libdb/sqlite3.c         assert( pParent==0 || pParent-&gt;pLeft==p );</span>
+<span class='curline'><a href='../S/185.html#L136763'>pParent</a>          136763 libdb/sqlite3.c         p-&gt;pParent = 0;</span>
+<span class='curline'><a href='../S/185.html#L136764'>pParent</a>          136764 libdb/sqlite3.c         if( pParent ){</span>
+<span class='curline'><a href='../S/185.html#L136765'>pParent</a>          136765 libdb/sqlite3.c           pParent-&gt;pLeft = 0;</span>
+<span class='curline'><a href='../S/185.html#L136780'>pParent</a>          136780 libdb/sqlite3.c             pFree-&gt;pLeft-&gt;pParent = pFree;</span>
+<span class='curline'><a href='../S/185.html#L136781'>pParent</a>          136781 libdb/sqlite3.c             pFree-&gt;pRight-&gt;pParent = pFree;</span>
+<span class='curline'><a href='../S/185.html#L136784'>pParent</a>          136784 libdb/sqlite3.c             pFree = pFree-&gt;pParent;</span>
+<span class='curline'><a href='../S/185.html#L136785'>pParent</a>          136785 libdb/sqlite3.c             p-&gt;pParent = 0;</span>
+<span class='curline'><a href='../S/185.html#L136796'>pParent</a>          136796 libdb/sqlite3.c         if( pParent==0 ) break;</span>
+<span class='curline'><a href='../S/185.html#L136799'>pParent</a>          136799 libdb/sqlite3.c         for(p=pParent-&gt;pRight; p-&gt;eType==eType; p=p-&gt;pLeft);</span>
+<span class='curline'><a href='../S/185.html#L136802'>pParent</a>          136802 libdb/sqlite3.c         assert( pParent-&gt;pParent==0 || pParent-&gt;pParent-&gt;pLeft==pParent );</span>
+<span class='curline'><a href='../S/185.html#L136803'>pParent</a>          136803 libdb/sqlite3.c         pParent-&gt;pRight-&gt;pParent = pParent-&gt;pParent;</span>
+<span class='curline'><a href='../S/185.html#L136804'>pParent</a>          136804 libdb/sqlite3.c         if( pParent-&gt;pParent ){</span>
+<span class='curline'><a href='../S/185.html#L136805'>pParent</a>          136805 libdb/sqlite3.c           pParent-&gt;pParent-&gt;pLeft = pParent-&gt;pRight;</span>
+<span class='curline'><a href='../S/185.html#L136807'>pParent</a>          136807 libdb/sqlite3.c           assert( pParent==pRoot );</span>
+<span class='curline'><a href='../S/185.html#L136808'>pParent</a>          136808 libdb/sqlite3.c           pRoot = pParent-&gt;pRight;</span>
+<span class='curline'><a href='../S/185.html#L136813'>pParent</a>          136813 libdb/sqlite3.c         pParent-&gt;pParent = pFree;</span>
+<span class='curline'><a href='../S/185.html#L136814'>pParent</a>          136814 libdb/sqlite3.c         pFree = pParent;</span>
+<span class='curline'><a href='../S/185.html#L136823'>pParent</a>          136823 libdb/sqlite3.c               p-&gt;pParent = 0;</span>
+<span class='curline'><a href='../S/185.html#L136828'>pParent</a>          136828 libdb/sqlite3.c               pFree-&gt;pLeft-&gt;pParent = pFree;</span>
+<span class='curline'><a href='../S/185.html#L136829'>pParent</a>          136829 libdb/sqlite3.c               pFree-&gt;pRight-&gt;pParent = pFree;</span>
+<span class='curline'><a href='../S/185.html#L136832'>pParent</a>          136832 libdb/sqlite3.c               pFree = pFree-&gt;pParent;</span>
+<span class='curline'><a href='../S/185.html#L136833'>pParent</a>          136833 libdb/sqlite3.c               p-&gt;pParent = 0;</span>
+<span class='curline'><a href='../S/185.html#L136847'>pParent</a>          136847 libdb/sqlite3.c           pFree = pDel-&gt;pParent;</span>
+<span class='curline'><a href='../S/185.html#L136999'>pParent</a>          136999 libdb/sqlite3.c   assert( pDel==0 || pDel-&gt;pParent==0 );</span>
+<span class='curline'><a href='../S/185.html#L137001'>pParent</a>          137001 libdb/sqlite3.c     assert( p-&gt;pParent==0 || p==p-&gt;pParent-&gt;pRight || p==p-&gt;pParent-&gt;pLeft );</span>
+<span class='curline'><a href='../S/185.html#L137004'>pParent</a>          137004 libdb/sqlite3.c     Fts3Expr *pParent = p-&gt;pParent;</span>
+<span class='curline'><a href='../S/185.html#L137006'>pParent</a>          137006 libdb/sqlite3.c     if( pParent &amp;&amp; p==pParent-&gt;pLeft &amp;&amp; pParent-&gt;pRight ){</span>
+<span class='curline'><a href='../S/185.html#L137007'>pParent</a>          137007 libdb/sqlite3.c       p = pParent-&gt;pRight;</span>
+<span class='curline'><a href='../S/185.html#L137009'>pParent</a>          137009 libdb/sqlite3.c         assert( p==p-&gt;pParent-&gt;pRight || p==p-&gt;pParent-&gt;pLeft );</span>
+<span class='curline'><a href='../S/185.html#L137013'>pParent</a>          137013 libdb/sqlite3.c       p = pParent;</span>
+<span class='curline'><a href='../S/185.html#L139673'>pParent</a>          139673 libdb/sqlite3.c   SegmentNode *pParent;           /* Parent node (or NULL for root node) */</span>
+<span class='curline'><a href='../S/185.html#L141521'>pParent</a>          141521 libdb/sqlite3.c     SegmentNode *pParent = pTree-&gt;pParent;</span>
+<span class='curline'><a href='../S/185.html#L141522'>pParent</a>          141522 libdb/sqlite3.c     rc = fts3NodeAddTerm(p, &amp;pParent, isCopyTerm, zTerm, nTerm);</span>
+<span class='curline'><a href='../S/185.html#L141523'>pParent</a>          141523 libdb/sqlite3.c     if( pTree-&gt;pParent==0 ){</span>
+<span class='curline'><a href='../S/185.html#L141524'>pParent</a>          141524 libdb/sqlite3.c       pTree-&gt;pParent = pParent;</span>
+<span class='curline'><a href='../S/185.html#L141528'>pParent</a>          141528 libdb/sqlite3.c     pNew-&gt;pParent = pParent;</span>
+<span class='curline'><a href='../S/185.html#L141582'>pParent</a>          141582 libdb/sqlite3.c   if( !pTree-&gt;pParent ){</span>
+<span class='curline'><a href='../S/185.html#L141603'>pParent</a>          141603 libdb/sqlite3.c           p, pTree-&gt;pParent, iHeight+1, iFree, iNextFree, piLast, paRoot, pnRoot</span>
+<span class='curline'><a href='../S/185.html#L141617'>pParent</a>          141617 libdb/sqlite3.c     fts3NodeFree(p-&gt;pParent);</span>
+<span class='curline'><a href='../S/185.html#L147696'>pParent</a>          147696 libdb/sqlite3.c   RtreeNode *pParent;         /* Parent node */</span>
+<span class='curline'><a href='../S/185.html#L147892'>pParent</a>          147892 libdb/sqlite3.c static RtreeNode *nodeNew(Rtree *pRtree, RtreeNode *pParent){</span>
+<span class='curline'><a href='../S/185.html#L147899'>pParent</a>          147899 libdb/sqlite3.c     pNode-&gt;pParent = pParent;</span>
+<span class='curline'><a href='../S/185.html#L147901'>pParent</a>          147901 libdb/sqlite3.c     nodeReference(pParent);</span>
+<span class='curline'><a href='../S/185.html#L147912'>pParent</a>          147912 libdb/sqlite3.c   RtreeNode *pParent,        /* Either the parent node or NULL */</span>
+<span class='curline'><a href='../S/185.html#L147923'>pParent</a>          147923 libdb/sqlite3.c     assert( !pParent || !pNode-&gt;pParent || pNode-&gt;pParent==pParent );</span>
+<span class='curline'><a href='../S/185.html#L147924'>pParent</a>          147924 libdb/sqlite3.c     if( pParent &amp;&amp; !pNode-&gt;pParent ){</span>
+<span class='curline'><a href='../S/185.html#L147925'>pParent</a>          147925 libdb/sqlite3.c       nodeReference(pParent);</span>
+<span class='curline'><a href='../S/185.html#L147926'>pParent</a>          147926 libdb/sqlite3.c       pNode-&gt;pParent = pParent;</span>
+<span class='curline'><a href='../S/185.html#L147942'>pParent</a>          147942 libdb/sqlite3.c         pNode-&gt;pParent = pParent;</span>
+<span class='curline'><a href='../S/185.html#L147949'>pParent</a>          147949 libdb/sqlite3.c         nodeReference(pParent);</span>
+<span class='curline'><a href='../S/185.html#L148088'>pParent</a>          148088 libdb/sqlite3.c       if( pNode-&gt;pParent ){</span>
+<span class='curline'><a href='../S/185.html#L148089'>pParent</a>          148089 libdb/sqlite3.c         rc = nodeRelease(pRtree, pNode-&gt;pParent);</span>
+<span class='curline'><a href='../S/185.html#L148492'>pParent</a>          148492 libdb/sqlite3.c   RtreeNode *pParent = pNode-&gt;pParent;</span>
+<span class='curline'><a href='../S/185.html#L148493'>pParent</a>          148493 libdb/sqlite3.c   if( pParent ){</span>
+<span class='curline'><a href='../S/185.html#L148494'>pParent</a>          148494 libdb/sqlite3.c     return nodeRowidIndex(pRtree, pParent, pNode-&gt;iNode, piIndex);</span>
+<span class='curline'><a href='../S/185.html#L148588'>pParent</a>          148588 libdb/sqlite3.c     RtreeSearchPoint *pParent;</span>
+<span class='curline'><a href='../S/185.html#L148590'>pParent</a>          148590 libdb/sqlite3.c     pParent = pCur-&gt;aPoint + j;</span>
+<span class='curline'><a href='../S/185.html#L148591'>pParent</a>          148591 libdb/sqlite3.c     if( rtreeSearchPointCompare(pNew, pParent)&gt;=0 ) break;</span>
+<span class='curline'><a href='../S/185.html#L148594'>pParent</a>          148594 libdb/sqlite3.c     pNew = pParent;</span>
+<span class='curline'><a href='../S/185.html#L149312'>pParent</a>          149312 libdb/sqlite3.c   while( p-&gt;pParent ){</span>
+<span class='curline'><a href='../S/185.html#L149313'>pParent</a>          149313 libdb/sqlite3.c     RtreeNode *pParent = p-&gt;pParent;</span>
+<span class='curline'><a href='../S/185.html#L149321'>pParent</a>          149321 libdb/sqlite3.c     nodeGetCell(pRtree, pParent, iCell, &amp;cell);</span>
+<span class='curline'><a href='../S/185.html#L149324'>pParent</a>          149324 libdb/sqlite3.c       nodeOverwriteCell(pRtree, pParent, &amp;cell, iCell);</span>
+<span class='curline'><a href='../S/185.html#L149327'>pParent</a>          149327 libdb/sqlite3.c     p = pParent;</span>
+<span class='curline'><a href='../S/185.html#L149606'>pParent</a>          149606 libdb/sqlite3.c       nodeRelease(pRtree, pChild-&gt;pParent);</span>
+<span class='curline'><a href='../S/185.html#L149608'>pParent</a>          149608 libdb/sqlite3.c       pChild-&gt;pParent = pNode;</span>
+<span class='curline'><a href='../S/185.html#L149659'>pParent</a>          149659 libdb/sqlite3.c     pRight = nodeNew(pRtree, pLeft-&gt;pParent);</span>
+<span class='curline'><a href='../S/185.html#L149692'>pParent</a>          149692 libdb/sqlite3.c     rc = rtreeInsertCell(pRtree, pLeft-&gt;pParent, &amp;leftbbox, iHeight+1);</span>
+<span class='curline'><a href='../S/185.html#L149697'>pParent</a>          149697 libdb/sqlite3.c     RtreeNode *pParent = pLeft-&gt;pParent;</span>
+<span class='curline'><a href='../S/185.html#L149701'>pParent</a>          149701 libdb/sqlite3.c       nodeOverwriteCell(pRtree, pParent, &amp;leftbbox, iCell);</span>
+<span class='curline'><a href='../S/185.html#L149702'>pParent</a>          149702 libdb/sqlite3.c       rc = AdjustTree(pRtree, pParent, &amp;leftbbox);</span>
+<span class='curline'><a href='../S/185.html#L149708'>pParent</a>          149708 libdb/sqlite3.c   if( (rc = rtreeInsertCell(pRtree, pRight-&gt;pParent, &amp;rightbbox, iHeight+1)) ){</span>
+<span class='curline'><a href='../S/185.html#L149764'>pParent</a>          149764 libdb/sqlite3.c   while( rc==SQLITE_OK &amp;&amp; pChild-&gt;iNode!=1 &amp;&amp; pChild-&gt;pParent==0 ){</span>
+<span class='curline'><a href='../S/185.html#L149778'>pParent</a>          149778 libdb/sqlite3.c       for(pTest=pLeaf; pTest &amp;&amp; pTest-&gt;iNode!=iNode; pTest=pTest-&gt;pParent);</span>
+<span class='curline'><a href='../S/185.html#L149780'>pParent</a>          149780 libdb/sqlite3.c         rc2 = nodeAcquire(pRtree, iNode, 0, &amp;pChild-&gt;pParent);</span>
+<span class='curline'><a href='../S/185.html#L149785'>pParent</a>          149785 libdb/sqlite3.c     if( rc==SQLITE_OK &amp;&amp; !pChild-&gt;pParent ) rc = SQLITE_CORRUPT_VTAB;</span>
+<span class='curline'><a href='../S/185.html#L149786'>pParent</a>          149786 libdb/sqlite3.c     pChild = pChild-&gt;pParent;</span>
+<span class='curline'><a href='../S/185.html#L149796'>pParent</a>          149796 libdb/sqlite3.c   RtreeNode *pParent = 0;</span>
+<span class='curline'><a href='../S/185.html#L149804'>pParent</a>          149804 libdb/sqlite3.c     pParent = pNode-&gt;pParent;</span>
+<span class='curline'><a href='../S/185.html#L149805'>pParent</a>          149805 libdb/sqlite3.c     pNode-&gt;pParent = 0;</span>
+<span class='curline'><a href='../S/185.html#L149806'>pParent</a>          149806 libdb/sqlite3.c     rc = deleteCell(pRtree, pParent, iCell, iHeight+1);</span>
+<span class='curline'><a href='../S/185.html#L149808'>pParent</a>          149808 libdb/sqlite3.c   rc2 = nodeRelease(pRtree, pParent);</span>
+<span class='curline'><a href='../S/185.html#L149843'>pParent</a>          149843 libdb/sqlite3.c   RtreeNode *pParent = pNode-&gt;pParent;</span>
+<span class='curline'><a href='../S/185.html#L149845'>pParent</a>          149845 libdb/sqlite3.c   if( pParent ){</span>
+<span class='curline'><a href='../S/185.html#L149858'>pParent</a>          149858 libdb/sqlite3.c       nodeOverwriteCell(pRtree, pParent, &amp;box, ii);</span>
+<span class='curline'><a href='../S/185.html#L149859'>pParent</a>          149859 libdb/sqlite3.c       rc = fixBoundingBox(pRtree, pParent);</span>
+<span class='curline'><a href='../S/185.html#L149870'>pParent</a>          149870 libdb/sqlite3.c   RtreeNode *pParent;</span>
+<span class='curline'><a href='../S/185.html#L149887'>pParent</a>          149887 libdb/sqlite3.c   pParent = pNode-&gt;pParent;</span>
+<span class='curline'><a href='../S/185.html#L149888'>pParent</a>          149888 libdb/sqlite3.c   assert( pParent || pNode-&gt;iNode==1 );</span>
+<span class='curline'><a href='../S/185.html#L149889'>pParent</a>          149889 libdb/sqlite3.c   if( pParent ){</span>
+<span class='curline'><a href='../S/185.html#L150015'>pParent</a>          150015 libdb/sqlite3.c       nodeRelease(pRtree, pChild-&gt;pParent);</span>
+<span class='curline'><a href='../S/185.html#L150017'>pParent</a>          150017 libdb/sqlite3.c       pChild-&gt;pParent = pNode;</span>
+</pre>
+</body>
+</html>

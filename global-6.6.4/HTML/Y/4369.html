@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>nBlock</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/185.html#L17519'>nBlock</a>           17519 libdb/sqlite3.c static void *memsys3Checkout(u32 i, u32 nBlock){</span>
+<span class='curline'><a href='../S/185.html#L17523'>nBlock</a>           17523 libdb/sqlite3.c   assert( mem3.aPool[i-1].u.hdr.size4x/4==nBlock );</span>
+<span class='curline'><a href='../S/185.html#L17524'>nBlock</a>           17524 libdb/sqlite3.c   assert( mem3.aPool[i+nBlock-1].u.hdr.prevSize==nBlock );</span>
+<span class='curline'><a href='../S/185.html#L17526'>nBlock</a>           17526 libdb/sqlite3.c   mem3.aPool[i-1].u.hdr.size4x = nBlock*4 | 1 | (x&amp;2);</span>
+<span class='curline'><a href='../S/185.html#L17527'>nBlock</a>           17527 libdb/sqlite3.c   mem3.aPool[i+nBlock-1].u.hdr.prevSize = nBlock;</span>
+<span class='curline'><a href='../S/185.html#L17528'>nBlock</a>           17528 libdb/sqlite3.c   mem3.aPool[i+nBlock-1].u.hdr.size4x |= 2;</span>
+<span class='curline'><a href='../S/185.html#L17537'>nBlock</a>           17537 libdb/sqlite3.c static void *memsys3FromMaster(u32 nBlock){</span>
+<span class='curline'><a href='../S/185.html#L17539'>nBlock</a>           17539 libdb/sqlite3.c   assert( mem3.szMaster&gt;=nBlock );</span>
+<span class='curline'><a href='../S/185.html#L17540'>nBlock</a>           17540 libdb/sqlite3.c   if( nBlock&gt;=mem3.szMaster-1 ){</span>
+<span class='curline'><a href='../S/185.html#L17550'>nBlock</a>           17550 libdb/sqlite3.c     newi = mem3.iMaster + mem3.szMaster - nBlock;</span>
+<span class='curline'><a href='../S/185.html#L17552'>nBlock</a>           17552 libdb/sqlite3.c     mem3.aPool[mem3.iMaster+mem3.szMaster-1].u.hdr.prevSize = nBlock;</span>
+<span class='curline'><a href='../S/185.html#L17554'>nBlock</a>           17554 libdb/sqlite3.c     mem3.aPool[newi-1].u.hdr.size4x = nBlock*4 + 1;</span>
+<span class='curline'><a href='../S/185.html#L17555'>nBlock</a>           17555 libdb/sqlite3.c     mem3.szMaster -= nBlock;</span>
+<span class='curline'><a href='../S/185.html#L17623'>nBlock</a>           17623 libdb/sqlite3.c   u32 nBlock;</span>
+<span class='curline'><a href='../S/185.html#L17629'>nBlock</a>           17629 libdb/sqlite3.c     nBlock = 2;</span>
+<span class='curline'><a href='../S/185.html#L17631'>nBlock</a>           17631 libdb/sqlite3.c     nBlock = (nByte + 11)/8;</span>
+<span class='curline'><a href='../S/185.html#L17633'>nBlock</a>           17633 libdb/sqlite3.c   assert( nBlock&gt;=2 );</span>
+<span class='curline'><a href='../S/185.html#L17640'>nBlock</a>           17640 libdb/sqlite3.c   if( nBlock &lt;= MX_SMALL ){</span>
+<span class='curline'><a href='../S/185.html#L17641'>nBlock</a>           17641 libdb/sqlite3.c     i = mem3.aiSmall[nBlock-2];</span>
+<span class='curline'><a href='../S/185.html#L17643'>nBlock</a>           17643 libdb/sqlite3.c       memsys3UnlinkFromList(i, &amp;mem3.aiSmall[nBlock-2]);</span>
+<span class='curline'><a href='../S/185.html#L17644'>nBlock</a>           17644 libdb/sqlite3.c       return memsys3Checkout(i, nBlock);</span>
+<span class='curline'><a href='../S/185.html#L17647'>nBlock</a>           17647 libdb/sqlite3.c     int hash = nBlock % N_HASH;</span>
+<span class='curline'><a href='../S/185.html#L17649'>nBlock</a>           17649 libdb/sqlite3.c       if( mem3.aPool[i-1].u.hdr.size4x/4==nBlock ){</span>
+<span class='curline'><a href='../S/185.html#L17651'>nBlock</a>           17651 libdb/sqlite3.c         return memsys3Checkout(i, nBlock);</span>
+<span class='curline'><a href='../S/185.html#L17660'>nBlock</a>           17660 libdb/sqlite3.c   if( mem3.szMaster&gt;=nBlock ){</span>
+<span class='curline'><a href='../S/185.html#L17661'>nBlock</a>           17661 libdb/sqlite3.c     return memsys3FromMaster(nBlock);</span>
+<span class='curline'><a href='../S/185.html#L17672'>nBlock</a>           17672 libdb/sqlite3.c   for(toFree=nBlock*16; toFree&lt;(mem3.nPool*16); toFree *= 2){</span>
+<span class='curline'><a href='../S/185.html#L17687'>nBlock</a>           17687 libdb/sqlite3.c       if( mem3.szMaster&gt;=nBlock ){</span>
+<span class='curline'><a href='../S/185.html#L17688'>nBlock</a>           17688 libdb/sqlite3.c         return memsys3FromMaster(nBlock);</span>
+<span class='curline'><a href='../S/185.html#L18053'>nBlock</a>           18053 libdb/sqlite3.c   int nBlock;      /* Number of szAtom sized blocks in zPool */</span>
+<span class='curline'><a href='../S/185.html#L18105'>nBlock</a>           18105 libdb/sqlite3.c   assert( i&gt;=0 &amp;&amp; i&lt;mem5.nBlock );</span>
+<span class='curline'><a href='../S/185.html#L18128'>nBlock</a>           18128 libdb/sqlite3.c   assert( i&gt;=0 &amp;&amp; i&lt;mem5.nBlock );</span>
+<span class='curline'><a href='../S/185.html#L18135'>nBlock</a>           18135 libdb/sqlite3.c     assert( x&lt;mem5.nBlock );</span>
+<span class='curline'><a href='../S/185.html#L18162'>nBlock</a>           18162 libdb/sqlite3.c     assert( i&gt;=0 &amp;&amp; i&lt;mem5.nBlock );</span>
+<span class='curline'><a href='../S/185.html#L18257'>nBlock</a>           18257 libdb/sqlite3.c   assert( iBlock&gt;=0 &amp;&amp; iBlock&lt;mem5.nBlock );</span>
+<span class='curline'><a href='../S/185.html#L18263'>nBlock</a>           18263 libdb/sqlite3.c   assert( iBlock+size-1&lt;(u32)mem5.nBlock );</span>
+<span class='curline'><a href='../S/185.html#L18283'>nBlock</a>           18283 libdb/sqlite3.c     if( (iBuddy+(1&lt;&lt;iLogsize))&gt;mem5.nBlock ) break;</span>
+<span class='curline'><a href='../S/185.html#L18434'>nBlock</a>           18434 libdb/sqlite3.c   mem5.nBlock = (nByte / (mem5.szAtom+sizeof(u8)));</span>
+<span class='curline'><a href='../S/185.html#L18436'>nBlock</a>           18436 libdb/sqlite3.c   mem5.aCtrl = (u8 *)&amp;mem5.zPool[mem5.nBlock*mem5.szAtom];</span>
+<span class='curline'><a href='../S/185.html#L18445'>nBlock</a>           18445 libdb/sqlite3.c     if( (iOffset+nAlloc)&lt;=mem5.nBlock ){</span>
+<span class='curline'><a href='../S/185.html#L18450'>nBlock</a>           18450 libdb/sqlite3.c     assert((iOffset+nAlloc)&gt;mem5.nBlock);</span>
+<span class='curline'><a href='../S/185.html#L143708'>nBlock</a>           143708 libdb/sqlite3.c             int nBlock = 0;</span>
+<span class='curline'><a href='../S/185.html#L143711'>nBlock</a>           143711 libdb/sqlite3.c             rc = sqlite3Fts3ReadBlock(p, reader.iChild, &amp;aBlock, &amp;nBlock, 0);</span>
+<span class='curline'><a href='../S/185.html#L143712'>nBlock</a>           143712 libdb/sqlite3.c             blobGrowBuffer(&amp;pNode-&gt;block, MAX(nBlock, p-&gt;nNodeSize), &amp;rc);</span>
+<span class='curline'><a href='../S/185.html#L143714'>nBlock</a>           143714 libdb/sqlite3.c               memcpy(pNode-&gt;block.a, aBlock, nBlock);</span>
+<span class='curline'><a href='../S/185.html#L143715'>nBlock</a>           143715 libdb/sqlite3.c               pNode-&gt;block.n = nBlock;</span>
+<span class='curline'><a href='../S/185.html#L144036'>nBlock</a>           144036 libdb/sqlite3.c     int nBlock = 0;</span>
+<span class='curline'><a href='../S/185.html#L144039'>nBlock</a>           144039 libdb/sqlite3.c     rc = sqlite3Fts3ReadBlock(p, iBlock, &amp;aBlock, &amp;nBlock, 0);</span>
+<span class='curline'><a href='../S/185.html#L144041'>nBlock</a>           144041 libdb/sqlite3.c       rc = fts3TruncateNode(aBlock, nBlock, &amp;block, zTerm, nTerm, &amp;iBlock);</span>
+</pre>
+</body>
+</html>
