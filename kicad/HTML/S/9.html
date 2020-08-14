@@ -1,0 +1,358 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>kicad.cpp</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/kicad.cpp</h2>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L52'>[^]</a><a href='#L312'>[v]</a>[top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L52' title='Defined at 52.'>Kiface</a></li>
+<li><a href='#L66' title='Defined at 66.'>Pgm</a></li>
+<li><a href='#L72' title='Defined at 72.'>PgmTop</a></li>
+<li><a href='#L78' title='Defined at 78.'>OnPgmInit</a></li>
+<li><a href='#L176' title='Defined at 176.'>OnPgmExit</a></li>
+<li><a href='#L193' title='Defined at 193.'>MacOpenFile</a></li>
+<li><a href='#L206' title='Defined at 206.'>Destroy</a></li>
+<li><a href='#L252' title='Defined at 252.'>OnInit</a></li>
+<li><a href='#L263' title='Defined at 263.'>OnExit</a></li>
+<li><a href='#L275' title='Defined at 275.'>OnRun</a></li>
+<li><a href='#L305' title='Defined at 305.'>MacOpenFile</a></li>
+<li><a href='#L312' title='Defined at 312.'>IMPLEMENT_APP</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * This program source code file is part of KiCad, a free EDA CAD application.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 2004-2015 Jean-Pierre Charras, jp.charras at wanadoo.fr</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> * Copyright (C) 2004-2018 KiCad Developers, see AUTHORS.txt for contributors.</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> *</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> * This program is free software; you can redistribute it and/or</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * modify it under the terms of the GNU General Public License</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * as published by the Free Software Foundation; either version 2</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> * of the License, or (at your option) any later version.</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> *</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> * This program is distributed in the hope that it will be useful,</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> * GNU General Public License for more details.</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> *</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> * You should have received a copy of the GNU General Public License</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * along with this program; if not, you may find one here:</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> * or you may search the http://www.gnu.org website for the version 2 license,</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'> * or you may write to the Free Software Foundation, Inc.,</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'> * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'> */</em>
+<a id='L24' name='L24'></a>  24 
+<a id='L25' name='L25'></a>  25 <em class='comment'>/**</em>
+<a id='L26' name='L26'></a>  26 <em class='comment'> * @file kicad.cpp</em>
+<a id='L27' name='L27'></a>  27 <em class='comment'> * @brief Main KiCad Project manager file</em>
+<a id='L28' name='L28'></a>  28 <em class='comment'> */</em>
+<a id='L29' name='L29'></a>  29 
+<a id='L30' name='L30'></a>  30 
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#include</em> &lt;wx/filename.h&gt;
+<a id='L32' name='L32'></a>  32 <em class='sharp'>#include</em> &lt;wx/log.h&gt;
+<a id='L33' name='L33'></a>  33 <em class='sharp'>#include</em> &lt;wx/stdpaths.h&gt;
+<a id='L34' name='L34'></a>  34 <em class='sharp'>#include</em> &lt;wx/string.h&gt;
+<a id='L35' name='L35'></a>  35 
+<a id='L36' name='L36'></a>  36 <em class='sharp'>#include</em> &lt;filehistory.h&gt;
+<a id='L37' name='L37'></a>  37 <em class='sharp'>#include</em> &lt;hotkeys_basic.h&gt;
+<a id='L38' name='L38'></a>  38 <em class='sharp'>#include</em> &lt;kiway.h&gt;
+<a id='L39' name='L39'></a>  39 <em class='sharp'>#include</em> &lt;settings/settings_manager.h&gt;
+<a id='L40' name='L40'></a>  40 <em class='sharp'>#include</em> &lt;systemdirsappend.h&gt;
+<a id='L41' name='L41'></a>  41 <em class='sharp'>#include</em> &lt;wildcards_and_files_ext.h&gt;
+<a id='L42' name='L42'></a>  42 
+<a id='L43' name='L43'></a>  43 <em class='sharp'>#include</em> &lt;stdexcept&gt;
+<a id='L44' name='L44'></a>  44 
+<a id='L45' name='L45'></a>  45 <em class='sharp'>#include</em> "<a href='17.html'>pgm_kicad.h</a>"
+<a id='L46' name='L46'></a>  46 <em class='sharp'>#include</em> "<a href='13.html'>kicad_manager_frame.h</a>"
+<a id='L47' name='L47'></a>  47 <em class='sharp'>#include</em> "<a href='15.html'>kicad_settings.h</a>"
+<a id='L48' name='L48'></a>  48 
+<a id='L49' name='L49'></a>  49 
+<a id='L50' name='L50'></a>  50 <em class='comment'>// a dummy to quiet linking with EDA_BASE_FRAME::config();</em>
+<a id='L51' name='L51'></a>  51 <em class='sharp'>#include</em> &lt;kiface_i.h&gt;
+<a id='L52' name='L52'></a>  52 KIFACE_I&amp; Kiface()
+<a id='L53' name='L53'></a>  53 <em class='brace'>{</em>
+<a id='L54' name='L54'></a>  54     <em class='comment'>// This function should never be called.  It is only referenced from</em>
+<a id='L55' name='L55'></a>  55     <em class='comment'>// EDA_BASE_FRAME::config() and this is only provided to satisfy the linker,</em>
+<a id='L56' name='L56'></a>  56     <em class='comment'>// not to be actually called.</em>
+<a id='L57' name='L57'></a>  57     wxLogFatalError( <a href='../Y/1019.html' title='Multiple used in 67 places.'>wxT</a>( "Unexpected call to Kiface() in kicad/kicad.cpp" ) );
+<a id='L58' name='L58'></a>  58 
+<a id='L59' name='L59'></a>  59     <strong class='reserved'>throw</strong> <a href='../Y/830.html' title='Multiple used in 35 places.'>std</a>::logic_error( "Unexpected call to Kiface() in kicad/kicad.cpp" );
+<a id='L60' name='L60'></a>  60 <em class='brace'>}</em>
+<a id='L61' name='L61'></a>  61 
+<a id='L62' name='L62'></a>  62 
+<a id='L63' name='L63'></a>  63 <strong class='reserved'>static</strong> <a href='../Y/294.html' title='Multiple used in 10 places.'>PGM_KICAD</a> <a href='../Y/785.html' title='Multiple used in 6 places.'>program</a>;
+<a id='L64' name='L64'></a>  64 
+<a id='L65' name='L65'></a>  65 
+<a id='L66' name='L66'></a>  66 <a href='../Y/293.html' title='Multiple used in 3 places.'>PGM_BASE</a>&amp; <a href='../R/102.html' title='Multiple referred from 13 places.'>Pgm</a>()
+<a id='L67' name='L67'></a>  67 <em class='brace'>{</em>
+<a id='L68' name='L68'></a>  68     <strong class='reserved'>return</strong> <a href='../Y/785.html' title='Multiple used in 6 places.'>program</a>;
+<a id='L69' name='L69'></a>  69 <em class='brace'>}</em>
+<a id='L70' name='L70'></a>  70 
+<a id='L71' name='L71'></a>  71 
+<a id='L72' name='L72'></a>  72 <a href='../Y/294.html' title='Multiple used in 10 places.'>PGM_KICAD</a>&amp; <a href='../R/103.html' title='Multiple referred from 4 places.'>PgmTop</a>()
+<a id='L73' name='L73'></a>  73 <em class='brace'>{</em>
+<a id='L74' name='L74'></a>  74     <strong class='reserved'>return</strong> <a href='../Y/785.html' title='Multiple used in 6 places.'>program</a>;
+<a id='L75' name='L75'></a>  75 <em class='brace'>}</em>
+<a id='L76' name='L76'></a>  76 
+<a id='L77' name='L77'></a>  77 
+<a id='L78' name='L78'></a>  78 <strong class='reserved'>bool</strong> <a href='../Y/294.html' title='Multiple used in 10 places.'>PGM_KICAD</a>::<a href='../R/86.html' title='Multiple referred from 2 places.'>OnPgmInit</a>()
+<a id='L79' name='L79'></a>  79 <em class='brace'>{</em>
+<a id='L80' name='L80'></a>  80 <em class='sharp'>#if</em> <strong class='reserved'>defined</strong>(<a href='../Y/60.html' title='Multiple used in 2 places.'>DEBUG</a>)
+<a id='L81' name='L81'></a>  81     <a href='../Y/1017.html' title='Multiple used in 199 places.'>wxString</a> <a href='../Y/467.html' title='Multiple used in 2 places.'>absoluteArgv0</a> = <a href='../Y/1012.html' title='Multiple used in 3 places.'>wxStandardPaths</a>::<a href='../Y/127.html' title='Multiple used in 3 places.'>Get</a>().GetExecutablePath();
+<a id='L82' name='L82'></a>  82 
+<a id='L83' name='L83'></a>  83     <strong class='reserved'>if</strong>( !wxIsAbsolutePath( <a href='../Y/467.html' title='Multiple used in 2 places.'>absoluteArgv0</a> ) )
+<a id='L84' name='L84'></a>  84     <em class='brace'>{</em>
+<a id='L85' name='L85'></a>  85         <a href='../Y/974.html' title='Multiple used in 4 places.'>wxLogError</a>( <a href='../Y/1019.html' title='Multiple used in 67 places.'>wxT</a>( "No meaningful argv[0]" ) );
+<a id='L86' name='L86'></a>  86         <strong class='reserved'>return</strong> <strong class='reserved'>false</strong>;
+<a id='L87' name='L87'></a>  87     <em class='brace'>}</em>
+<a id='L88' name='L88'></a>  88 <em class='sharp'>#endif</em>
+<a id='L89' name='L89'></a>  89 
+<a id='L90' name='L90'></a>  90     <strong class='reserved'>if</strong>( !InitPgm() )
+<a id='L91' name='L91'></a>  91         <strong class='reserved'>return</strong> <strong class='reserved'>false</strong>;
+<a id='L92' name='L92'></a>  92 
+<a id='L93' name='L93'></a>  93     <a href='../Y/664.html' title='Multiple used in 11 places.'>m_bm</a>.InitSettings( <strong class='reserved'>new</strong> <a href='../S/14.html#L29' title='Defined at 29 in kicad_settings.cpp.'>KICAD_SETTINGS</a> );
+<a id='L94' name='L94'></a>  94     <a href='../Y/186.html' title='Multiple used in 6 places.'>GetSettingsManager</a>().RegisterSettings( <a href='../Y/304.html' title='Multiple used in 3 places.'>PgmSettings</a>() );
+<a id='L95' name='L95'></a>  95     <a href='../Y/664.html' title='Multiple used in 11 places.'>m_bm</a>.Init();
+<a id='L96' name='L96'></a>  96 
+<a id='L97' name='L97'></a>  97     <em class='comment'>// Add search paths to feed the PGM_KICAD::SysSearch() function,</em>
+<a id='L98' name='L98'></a>  98     <em class='comment'>// currenly limited in support to only look for project templates</em>
+<a id='L99' name='L99'></a>  99     <em class='brace'>{</em>
+<a id='L100' name='L100'></a> 100         <a href='../Y/328.html' title='Multiple used in 4 places.'>SEARCH_STACK</a> <a href='../Y/479.html' title='Multiple used in 4 places.'>bases</a>;
+<a id='L101' name='L101'></a> 101 
+<a id='L102' name='L102'></a> 102         SystemDirsAppend( &amp;<a href='../Y/479.html' title='Multiple used in 4 places.'>bases</a> );
+<a id='L103' name='L103'></a> 103 
+<a id='L104' name='L104'></a> 104         <strong class='reserved'>for</strong>( <strong class='reserved'>unsigned</strong> <a href='../Y/600.html' title='Multiple used in 16 places.'>i</a> = 0; <a href='../Y/600.html' title='Multiple used in 16 places.'>i</a> &lt; <a href='../Y/479.html' title='Multiple used in 4 places.'>bases</a>.<a href='../Y/135.html' title='Multiple used in 3 places.'>GetCount</a>(); ++<a href='../Y/600.html' title='Multiple used in 16 places.'>i</a> )
+<a id='L105' name='L105'></a> 105         <em class='brace'>{</em>
+<a id='L106' name='L106'></a> 106             <a href='../Y/942.html' title='Multiple used in 107 places.'>wxFileName</a> <a href='../Y/584.html' title='Multiple used in 95 places.'>fn</a>( <a href='../Y/479.html' title='Multiple used in 4 places.'>bases</a>[<a href='../Y/600.html' title='Multiple used in 16 places.'>i</a>], <a href='../Y/927.html' title='Multiple used in 22 places.'>wxEmptyString</a> );
+<a id='L107' name='L107'></a> 107 
+<a id='L108' name='L108'></a> 108             <em class='comment'>// Add KiCad template file path to search path list.</em>
+<a id='L109' name='L109'></a> 109             <a href='../Y/584.html' title='Multiple used in 95 places.'>fn</a>.<a href='../Y/30.html' title='Multiple used in 4 places.'>AppendDir</a>( <a href='../Y/1019.html' title='Multiple used in 67 places.'>wxT</a>( "template" ) );
+<a id='L110' name='L110'></a> 110 
+<a id='L111' name='L111'></a> 111             <em class='comment'>// Only add path if exists and can be read by the user.</em>
+<a id='L112' name='L112'></a> 112             <strong class='reserved'>if</strong>( <a href='../Y/584.html' title='Multiple used in 95 places.'>fn</a>.<a href='../Y/67.html' title='Multiple used in 8 places.'>DirExists</a>() &amp;&amp; <a href='../Y/584.html' title='Multiple used in 95 places.'>fn</a>.<a href='../Y/219.html' title='Multiple used in 2 places.'>IsDirReadable</a>() )
+<a id='L113' name='L113'></a> 113                 <a href='../Y/664.html' title='Multiple used in 11 places.'>m_bm</a>.<a href='../Y/701.html' title='Multiple used in 4 places.'>m_search</a>.AddPaths( <a href='../Y/584.html' title='Multiple used in 95 places.'>fn</a>.<a href='../Y/177.html' title='Multiple used in 43 places.'>GetPath</a>() );
+<a id='L114' name='L114'></a> 114         <em class='brace'>}</em>
+<a id='L115' name='L115'></a> 115 
+<a id='L116' name='L116'></a> 116         <em class='comment'>// The KICAD_TEMPLATE_DIR takes precedence over the search stack template path.</em>
+<a id='L117' name='L117'></a> 117         <a href='../Y/81.html' title='Multiple used in 2 places.'>ENV_VAR_MAP_CITER</a> <a href='../Y/623.html' title='Multiple used in 14 places.'>it</a> = <a href='../Y/164.html' title='Multiple used in 8 places.'>GetLocalEnvVariables</a>().<a href='../Y/582.html' title='Multiple used in 4 places.'>find</a>( "KICAD_TEMPLATE_DIR" );
+<a id='L118' name='L118'></a> 118 
+<a id='L119' name='L119'></a> 119         <strong class='reserved'>if</strong>( <a href='../Y/623.html' title='Multiple used in 14 places.'>it</a> != <a href='../Y/164.html' title='Multiple used in 8 places.'>GetLocalEnvVariables</a>().<a href='../Y/561.html' title='Multiple used in 5 places.'>end</a>() &amp;&amp; <a href='../Y/623.html' title='Multiple used in 14 places.'>it</a>-&gt;<a href='../Y/811.html' title='Multiple used in 8 places.'>second</a>.<a href='../Y/193.html' title='Multiple used in 15 places.'>GetValue</a>() != <a href='../Y/927.html' title='Multiple used in 22 places.'>wxEmptyString</a> )
+<a id='L120' name='L120'></a> 120             <a href='../Y/664.html' title='Multiple used in 11 places.'>m_bm</a>.<a href='../Y/701.html' title='Multiple used in 4 places.'>m_search</a>.<a href='../Y/215.html' title='Multiple used in 2 places.'>Insert</a>( <a href='../Y/623.html' title='Multiple used in 14 places.'>it</a>-&gt;<a href='../Y/811.html' title='Multiple used in 8 places.'>second</a>.<a href='../Y/193.html' title='Multiple used in 15 places.'>GetValue</a>(), 0 );
+<a id='L121' name='L121'></a> 121 
+<a id='L122' name='L122'></a> 122         <em class='comment'>// The KICAD_USER_TEMPLATE_DIR takes precedence over KICAD_TEMPLATE_DIR and the search</em>
+<a id='L123' name='L123'></a> 123         <em class='comment'>// stack template path.</em>
+<a id='L124' name='L124'></a> 124         <a href='../Y/623.html' title='Multiple used in 14 places.'>it</a> = <a href='../Y/164.html' title='Multiple used in 8 places.'>GetLocalEnvVariables</a>().<a href='../Y/582.html' title='Multiple used in 4 places.'>find</a>( "KICAD_USER_TEMPLATE_DIR" );
+<a id='L125' name='L125'></a> 125 
+<a id='L126' name='L126'></a> 126         <strong class='reserved'>if</strong>( <a href='../Y/623.html' title='Multiple used in 14 places.'>it</a> != <a href='../Y/164.html' title='Multiple used in 8 places.'>GetLocalEnvVariables</a>().<a href='../Y/561.html' title='Multiple used in 5 places.'>end</a>() &amp;&amp; <a href='../Y/623.html' title='Multiple used in 14 places.'>it</a>-&gt;<a href='../Y/811.html' title='Multiple used in 8 places.'>second</a>.<a href='../Y/193.html' title='Multiple used in 15 places.'>GetValue</a>() != <a href='../Y/927.html' title='Multiple used in 22 places.'>wxEmptyString</a> )
+<a id='L127' name='L127'></a> 127             <a href='../Y/664.html' title='Multiple used in 11 places.'>m_bm</a>.<a href='../Y/701.html' title='Multiple used in 4 places.'>m_search</a>.<a href='../Y/215.html' title='Multiple used in 2 places.'>Insert</a>( <a href='../Y/623.html' title='Multiple used in 14 places.'>it</a>-&gt;<a href='../Y/811.html' title='Multiple used in 8 places.'>second</a>.<a href='../Y/193.html' title='Multiple used in 15 places.'>GetValue</a>(), 0 );
+<a id='L128' name='L128'></a> 128     <em class='brace'>}</em>
+<a id='L129' name='L129'></a> 129 
+<a id='L130' name='L130'></a> 130     <a href='../S/12.html#L176' title='Defined at 176 in kicad_manager_frame.cpp.'>KICAD_MANAGER_FRAME</a>* <a href='../Y/587.html' title='Multiple used in 20 places.'>frame</a> = <strong class='reserved'>new</strong> <a href='../S/12.html#L176' title='Defined at 176 in kicad_manager_frame.cpp.'>KICAD_MANAGER_FRAME</a>( <a href='../Y/276.html' title='Multiple used in 24 places.'>NULL</a>, <a href='../Y/1019.html' title='Multiple used in 67 places.'>wxT</a>( "KiCad" ),
+<a id='L131' name='L131'></a> 131                                                           <a href='../Y/908.html' title='Multiple used in 19 places.'>wxDefaultPosition</a>, <a href='../Y/1009.html' title='Multiple used in 15 places.'>wxSize</a>( 775, -1 ) );
+<a id='L132' name='L132'></a> 132     <a href='../Y/28.html' title='Multiple used in 4 places.'>App</a>().SetTopWindow( <a href='../Y/587.html' title='Multiple used in 20 places.'>frame</a> );
+<a id='L133' name='L133'></a> 133 
+<a id='L134' name='L134'></a> 134     <a href='../Y/251.html' title='Multiple used in 20 places.'>Kiway</a>.SetTop( <a href='../Y/587.html' title='Multiple used in 20 places.'>frame</a> );
+<a id='L135' name='L135'></a> 135 
+<a id='L136' name='L136'></a> 136     <a href='../Y/1017.html' title='Multiple used in 199 places.'>wxString</a> <a href='../Y/787.html' title='Multiple used in 5 places.'>projToLoad</a>;
+<a id='L137' name='L137'></a> 137 
+<a id='L138' name='L138'></a> 138     <strong class='reserved'>if</strong>( <a href='../Y/28.html' title='Multiple used in 4 places.'>App</a>().argc &gt; 1 )
+<a id='L139' name='L139'></a> 139     <em class='brace'>{</em>
+<a id='L140' name='L140'></a> 140         <a href='../Y/787.html' title='Multiple used in 5 places.'>projToLoad</a> = <a href='../Y/28.html' title='Multiple used in 4 places.'>App</a>().argv[1];
+<a id='L141' name='L141'></a> 141     <em class='brace'>}</em>
+<a id='L142' name='L142'></a> 142     <strong class='reserved'>else</strong> <strong class='reserved'>if</strong>( <a href='../Y/587.html' title='Multiple used in 20 places.'>frame</a>-&gt;<a href='../Y/145.html' title='Multiple used in 5 places.'>GetFileHistory</a>().<a href='../Y/135.html' title='Multiple used in 3 places.'>GetCount</a>() )
+<a id='L143' name='L143'></a> 143     <em class='brace'>{</em>
+<a id='L144' name='L144'></a> 144         <a href='../Y/1017.html' title='Multiple used in 199 places.'>wxString</a> <a href='../Y/634.html' title='Multiple used in 3 places.'>last_pro</a> = <a href='../Y/587.html' title='Multiple used in 20 places.'>frame</a>-&gt;<a href='../Y/145.html' title='Multiple used in 5 places.'>GetFileHistory</a>().GetHistoryFile( 0 );
+<a id='L145' name='L145'></a> 145 
+<a id='L146' name='L146'></a> 146         <strong class='reserved'>if</strong>( !<a href='../Y/940.html' title='Multiple used in 2 places.'>wxFileExists</a>( <a href='../Y/634.html' title='Multiple used in 3 places.'>last_pro</a> ) )
+<a id='L147' name='L147'></a> 147         <em class='brace'>{</em>
+<a id='L148' name='L148'></a> 148             <a href='../Y/587.html' title='Multiple used in 20 places.'>frame</a>-&gt;<a href='../Y/145.html' title='Multiple used in 5 places.'>GetFileHistory</a>().RemoveFileFromHistory( 0 );
+<a id='L149' name='L149'></a> 149         <em class='brace'>}</em>
+<a id='L150' name='L150'></a> 150         <strong class='reserved'>else</strong>
+<a id='L151' name='L151'></a> 151         <em class='brace'>{</em>
+<a id='L152' name='L152'></a> 152             <em class='comment'>// Try to open the last opened project,</em>
+<a id='L153' name='L153'></a> 153             <em class='comment'>// if a project name is not given when starting Kicad</em>
+<a id='L154' name='L154'></a> 154             <a href='../Y/787.html' title='Multiple used in 5 places.'>projToLoad</a> = <a href='../Y/634.html' title='Multiple used in 3 places.'>last_pro</a>;
+<a id='L155' name='L155'></a> 155         <em class='brace'>}</em>
+<a id='L156' name='L156'></a> 156     <em class='brace'>}</em>
+<a id='L157' name='L157'></a> 157 
+<a id='L158' name='L158'></a> 158     <em class='comment'>// Do not attempt to load a non-existent project file.</em>
+<a id='L159' name='L159'></a> 159     <strong class='reserved'>if</strong>( !<a href='../Y/787.html' title='Multiple used in 5 places.'>projToLoad</a>.<a href='../Y/560.html' title='Multiple used in 11 places.'>empty</a>() )
+<a id='L160' name='L160'></a> 160     <em class='brace'>{</em>
+<a id='L161' name='L161'></a> 161         <a href='../Y/942.html' title='Multiple used in 107 places.'>wxFileName</a> <a href='../Y/584.html' title='Multiple used in 95 places.'>fn</a>( <a href='../Y/787.html' title='Multiple used in 5 places.'>projToLoad</a> );
+<a id='L162' name='L162'></a> 162         <strong class='reserved'>if</strong>( <a href='../Y/584.html' title='Multiple used in 95 places.'>fn</a>.<a href='../Y/97.html' title='Multiple used in 2 places.'>Exists</a>() )
+<a id='L163' name='L163'></a> 163         <em class='brace'>{</em>
+<a id='L164' name='L164'></a> 164             <a href='../Y/584.html' title='Multiple used in 95 places.'>fn</a>.<a href='../Y/267.html' title='Multiple used in 7 places.'>MakeAbsolute</a>();
+<a id='L165' name='L165'></a> 165             <a href='../Y/587.html' title='Multiple used in 20 places.'>frame</a>-&gt;<a href='../S/12.html#L336' title='Defined at 336 in kicad_manager_frame.cpp.'>LoadProject</a>( <a href='../Y/584.html' title='Multiple used in 95 places.'>fn</a> );
+<a id='L166' name='L166'></a> 166         <em class='brace'>}</em>
+<a id='L167' name='L167'></a> 167     <em class='brace'>}</em>
+<a id='L168' name='L168'></a> 168 
+<a id='L169' name='L169'></a> 169     <a href='../Y/587.html' title='Multiple used in 20 places.'>frame</a>-&gt;<a href='../Y/382.html' title='Multiple used in 5 places.'>Show</a>( <strong class='reserved'>true</strong> );
+<a id='L170' name='L170'></a> 170     <a href='../Y/587.html' title='Multiple used in 20 places.'>frame</a>-&gt;<a href='../Y/314.html' title='Multiple used in 5 places.'>Raise</a>();
+<a id='L171' name='L171'></a> 171 
+<a id='L172' name='L172'></a> 172     <strong class='reserved'>return</strong> <strong class='reserved'>true</strong>;
+<a id='L173' name='L173'></a> 173 <em class='brace'>}</em>
+<a id='L174' name='L174'></a> 174 
+<a id='L175' name='L175'></a> 175 
+<a id='L176' name='L176'></a> 176 <strong class='reserved'>void</strong> <a href='../Y/294.html' title='Multiple used in 10 places.'>PGM_KICAD</a>::<a href='../R/85.html' title='Multiple referred from 3 places.'>OnPgmExit</a>()
+<a id='L177' name='L177'></a> 177 <em class='brace'>{</em>
+<a id='L178' name='L178'></a> 178     <a href='../Y/251.html' title='Multiple used in 20 places.'>Kiway</a>.OnKiwayEnd();
+<a id='L179' name='L179'></a> 179 
+<a id='L180' name='L180'></a> 180     <strong class='reserved'>if</strong>( <a href='../Y/704.html' title='Multiple used in 2 places.'>m_settings_manager</a> &amp;&amp; <a href='../Y/704.html' title='Multiple used in 2 places.'>m_settings_manager</a>-&gt;<a href='../Y/223.html' title='Multiple used in 2 places.'>IsOK</a>() )
+<a id='L181' name='L181'></a> 181     <em class='brace'>{</em>
+<a id='L182' name='L182'></a> 182         SaveCommonSettings();
+<a id='L183' name='L183'></a> 183         <a href='../Y/704.html' title='Multiple used in 2 places.'>m_settings_manager</a>-&gt;Save();
+<a id='L184' name='L184'></a> 184     <em class='brace'>}</em>
+<a id='L185' name='L185'></a> 185 
+<a id='L186' name='L186'></a> 186     <em class='comment'>// Destroy everything in PGM_KICAD,</em>
+<a id='L187' name='L187'></a> 187     <em class='comment'>// especially wxSingleInstanceCheckerImpl earlier than wxApp and earlier</em>
+<a id='L188' name='L188'></a> 188     <em class='comment'>// than static destruction would.</em>
+<a id='L189' name='L189'></a> 189     <a href='../S/9.html#L206' title='Defined at 206 in kicad.cpp.'>Destroy</a>();
+<a id='L190' name='L190'></a> 190 <em class='brace'>}</em>
+<a id='L191' name='L191'></a> 191 
+<a id='L192' name='L192'></a> 192 
+<a id='L193' name='L193'></a> 193 <strong class='reserved'>void</strong> <a href='../Y/294.html' title='Multiple used in 10 places.'>PGM_KICAD</a>::<a href='../R/62.html' title='Multiple referred from 2 places.'>MacOpenFile</a>( <strong class='reserved'>const</strong> <a href='../Y/1017.html' title='Multiple used in 199 places.'>wxString</a>&amp; <a href='../Y/437.html' title='Multiple used in 6 places.'>aFileName</a> )
+<a id='L194' name='L194'></a> 194 <em class='brace'>{</em>
+<a id='L195' name='L195'></a> 195 <em class='sharp'>#if</em> <strong class='reserved'>defined</strong>(<a href='../Y/428.html' title='Multiple used in 5 places.'>__WXMAC__</a>)
+<a id='L196' name='L196'></a> 196 
+<a id='L197' name='L197'></a> 197     <a href='../S/12.html#L176' title='Defined at 176 in kicad_manager_frame.cpp.'>KICAD_MANAGER_FRAME</a>* <a href='../Y/587.html' title='Multiple used in 20 places.'>frame</a> = (<a href='../S/12.html#L176' title='Defined at 176 in kicad_manager_frame.cpp.'>KICAD_MANAGER_FRAME</a>*) <a href='../Y/28.html' title='Multiple used in 4 places.'>App</a>().GetTopWindow();
+<a id='L198' name='L198'></a> 198 
+<a id='L199' name='L199'></a> 199     <strong class='reserved'>if</strong>( !<a href='../Y/437.html' title='Multiple used in 6 places.'>aFileName</a>.<a href='../Y/560.html' title='Multiple used in 11 places.'>empty</a>() &amp;&amp; <a href='../Y/940.html' title='Multiple used in 2 places.'>wxFileExists</a>( <a href='../Y/437.html' title='Multiple used in 6 places.'>aFileName</a> ) )
+<a id='L200' name='L200'></a> 200         <a href='../Y/587.html' title='Multiple used in 20 places.'>frame</a>-&gt;<a href='../S/12.html#L336' title='Defined at 336 in kicad_manager_frame.cpp.'>LoadProject</a>( <a href='../Y/942.html' title='Multiple used in 107 places.'>wxFileName</a>( <a href='../Y/437.html' title='Multiple used in 6 places.'>aFileName</a> ) );
+<a id='L201' name='L201'></a> 201 
+<a id='L202' name='L202'></a> 202 <em class='sharp'>#endif</em>
+<a id='L203' name='L203'></a> 203 <em class='brace'>}</em>
+<a id='L204' name='L204'></a> 204 
+<a id='L205' name='L205'></a> 205 
+<a id='L206' name='L206'></a> 206 <strong class='reserved'>void</strong> <a href='../Y/294.html' title='Multiple used in 10 places.'>PGM_KICAD</a>::<a href='../R/17.html' title='Multiple referred from 5 places.'>Destroy</a>()
+<a id='L207' name='L207'></a> 207 <em class='brace'>{</em>
+<a id='L208' name='L208'></a> 208     <em class='comment'>// unlike a normal destructor, this is designed to be called more</em>
+<a id='L209' name='L209'></a> 209     <em class='comment'>// than once safely:</em>
+<a id='L210' name='L210'></a> 210 
+<a id='L211' name='L211'></a> 211     <a href='../Y/664.html' title='Multiple used in 11 places.'>m_bm</a>.End();
+<a id='L212' name='L212'></a> 212 
+<a id='L213' name='L213'></a> 213     <a href='../Y/293.html' title='Multiple used in 3 places.'>PGM_BASE</a>::<a href='../S/9.html#L206' title='Defined at 206 in kicad.cpp.'>Destroy</a>();
+<a id='L214' name='L214'></a> 214 <em class='brace'>}</em>
+<a id='L215' name='L215'></a> 215 
+<a id='L216' name='L216'></a> 216 
+<a id='L217' name='L217'></a> 217 <a href='../Y/242.html' title='Multiple used in 6 places.'>KIWAY</a>  <a href='../Y/251.html' title='Multiple used in 20 places.'>Kiway</a>( &amp;<a href='../S/9.html#L66' title='Defined at 66 in kicad.cpp.'>Pgm</a>(), KFCTL_CPP_PROJECT_SUITE );
+<a id='L218' name='L218'></a> 218 
+<a id='L219' name='L219'></a> 219 
+<a id='L220' name='L220'></a> 220 <em class='comment'>/**</em>
+<a id='L221' name='L221'></a> 221 <em class='comment'> * Struct APP_KICAD</em>
+<a id='L222' name='L222'></a> 222 <em class='comment'> * is not publicly visible because most of the action is in PGM_KICAD these days.</em>
+<a id='L223' name='L223'></a> 223 <em class='comment'> */</em>
+<a id='L224' name='L224'></a> 224 <strong class='reserved'>struct</strong> <a href='../S/9.html#L312' title='Referred from 312 in kicad.cpp.'>APP_KICAD</a> : <strong class='reserved'>public</strong> <a href='../Y/879.html' title='Multiple used in 4 places.'>wxApp</a>
+<a id='L225' name='L225'></a> 225 <em class='brace'>{</em>
+<a id='L226' name='L226'></a> 226 <em class='sharp'>#if</em> <strong class='reserved'>defined</strong> (__LINUX__)
+<a id='L227' name='L227'></a> 227     APP_KICAD(): <a href='../Y/879.html' title='Multiple used in 4 places.'>wxApp</a>()
+<a id='L228' name='L228'></a> 228     <em class='brace'>{</em>
+<a id='L229' name='L229'></a> 229         <em class='comment'>// Disable proxy menu in Unity window manager. Only usual menubar works with</em>
+<a id='L230' name='L230'></a> 230         <em class='comment'>// wxWidgets (at least &lt;= 3.1).  When the proxy menu menubar is enable, some</em>
+<a id='L231' name='L231'></a> 231         <em class='comment'>// important things for us do not work: menuitems UI events and shortcuts.</em>
+<a id='L232' name='L232'></a> 232         <a href='../Y/1017.html' title='Multiple used in 199 places.'>wxString</a> <a href='../Y/872.html' title='Multiple used in 2 places.'>wm</a>;
+<a id='L233' name='L233'></a> 233 
+<a id='L234' name='L234'></a> 234         <strong class='reserved'>if</strong>( wxGetEnv( <a href='../Y/1019.html' title='Multiple used in 67 places.'>wxT</a>( "XDG_CURRENT_DESKTOP" ), &amp;<a href='../Y/872.html' title='Multiple used in 2 places.'>wm</a> ) &amp;&amp; <a href='../Y/872.html' title='Multiple used in 2 places.'>wm</a>.<a href='../Y/53.html' title='Multiple used in 5 places.'>CmpNoCase</a>( <a href='../Y/1019.html' title='Multiple used in 67 places.'>wxT</a>( "Unity" ) ) == 0 )
+<a id='L235' name='L235'></a> 235         <em class='brace'>{</em>
+<a id='L236' name='L236'></a> 236             <a href='../Y/1008.html' title='Multiple used in 4 places.'>wxSetEnv</a> ( <a href='../Y/1019.html' title='Multiple used in 67 places.'>wxT</a>("UBUNTU_MENUPROXY" ), <a href='../Y/1019.html' title='Multiple used in 67 places.'>wxT</a>( "0" ) );
+<a id='L237' name='L237'></a> 237         <em class='brace'>}</em>
+<a id='L238' name='L238'></a> 238 
+<a id='L239' name='L239'></a> 239         <em class='comment'>// Force the use of X11 backend (or wayland-x11 compatibilty layer).  This is required until wxWidgets</em>
+<a id='L240' name='L240'></a> 240         <em class='comment'>// supports the Wayland compositors</em>
+<a id='L241' name='L241'></a> 241         <a href='../Y/1008.html' title='Multiple used in 4 places.'>wxSetEnv</a>( <a href='../Y/1019.html' title='Multiple used in 67 places.'>wxT</a>( "GDK_BACKEND" ), <a href='../Y/1019.html' title='Multiple used in 67 places.'>wxT</a>( "x11" ) );
+<a id='L242' name='L242'></a> 242 
+<a id='L243' name='L243'></a> 243         <em class='comment'>// Disable overlay scrollbars as they mess up wxWidgets window sizing and cause excessive redraw requests</em>
+<a id='L244' name='L244'></a> 244         <a href='../Y/1008.html' title='Multiple used in 4 places.'>wxSetEnv</a>( <a href='../Y/1019.html' title='Multiple used in 67 places.'>wxT</a>( "GTK_OVERLAY_SCROLLING" ), <a href='../Y/1019.html' title='Multiple used in 67 places.'>wxT</a>( "0" ) );
+<a id='L245' name='L245'></a> 245 
+<a id='L246' name='L246'></a> 246         <em class='comment'>// Set GTK2-style input instead of xinput2.  This disables touchscreen and smooth scrolling</em>
+<a id='L247' name='L247'></a> 247         <em class='comment'>// Needed to ensure that we are not getting multiple mouse scroll events</em>
+<a id='L248' name='L248'></a> 248         <a href='../Y/1008.html' title='Multiple used in 4 places.'>wxSetEnv</a>( <a href='../Y/1019.html' title='Multiple used in 67 places.'>wxT</a>( "GDK_CORE_DEVICE_EVENTS" ), <a href='../Y/1019.html' title='Multiple used in 67 places.'>wxT</a>( "1" ) );
+<a id='L249' name='L249'></a> 249     <em class='brace'>}</em>
+<a id='L250' name='L250'></a> 250 <em class='sharp'>#endif</em>
+<a id='L251' name='L251'></a> 251 
+<a id='L252' name='L252'></a> 252     <strong class='reserved'>bool</strong> OnInit()           <a href='../Y/748.html' title='Multiple used in 31 places.'>override</a>
+<a id='L253' name='L253'></a> 253     <em class='brace'>{</em>
+<a id='L254' name='L254'></a> 254         <strong class='reserved'>if</strong>( !<a href='../Y/785.html' title='Multiple used in 6 places.'>program</a>.<a href='../S/9.html#L78' title='Defined at 78 in kicad.cpp.'>OnPgmInit</a>() )
+<a id='L255' name='L255'></a> 255         <em class='brace'>{</em>
+<a id='L256' name='L256'></a> 256             <a href='../Y/785.html' title='Multiple used in 6 places.'>program</a>.<a href='../S/9.html#L176' title='Defined at 176 in kicad.cpp.'>OnPgmExit</a>();
+<a id='L257' name='L257'></a> 257             <strong class='reserved'>return</strong> <strong class='reserved'>false</strong>;
+<a id='L258' name='L258'></a> 258         <em class='brace'>}</em>
+<a id='L259' name='L259'></a> 259 
+<a id='L260' name='L260'></a> 260         <strong class='reserved'>return</strong> <strong class='reserved'>true</strong>;
+<a id='L261' name='L261'></a> 261     <em class='brace'>}</em>
+<a id='L262' name='L262'></a> 262 
+<a id='L263' name='L263'></a> 263     <strong class='reserved'>int</strong>  <a href='../R/74.html' title='Multiple referred from 3 places.'>OnExit</a>()           <a href='../Y/748.html' title='Multiple used in 31 places.'>override</a>
+<a id='L264' name='L264'></a> 264     <em class='brace'>{</em>
+<a id='L265' name='L265'></a> 265         <a href='../Y/785.html' title='Multiple used in 6 places.'>program</a>.<a href='../S/9.html#L176' title='Defined at 176 in kicad.cpp.'>OnPgmExit</a>();
+<a id='L266' name='L266'></a> 266 
+<a id='L267' name='L267'></a> 267 <em class='sharp'>#if</em> <strong class='reserved'>defined</strong>(__FreeBSD__)
+<a id='L268' name='L268'></a> 268         <em class='comment'>/* Avoid wxLog crashing when used in destructors. */</em>
+<a id='L269' name='L269'></a> 269         wxLog::EnableLogging( <strong class='reserved'>false</strong> );
+<a id='L270' name='L270'></a> 270 <em class='sharp'>#endif</em>
+<a id='L271' name='L271'></a> 271 
+<a id='L272' name='L272'></a> 272         <strong class='reserved'>return</strong> <a href='../Y/879.html' title='Multiple used in 4 places.'>wxApp</a>::<a href='../D/79.html' title='Multiple defined in 2 places.'>OnExit</a>();
+<a id='L273' name='L273'></a> 273     <em class='brace'>}</em>
+<a id='L274' name='L274'></a> 274 
+<a id='L275' name='L275'></a> 275     <strong class='reserved'>int</strong> <a href='../S/9.html#L279' title='Referred from 279 in kicad.cpp.'>OnRun</a>()             <a href='../Y/748.html' title='Multiple used in 31 places.'>override</a>
+<a id='L276' name='L276'></a> 276     <em class='brace'>{</em>
+<a id='L277' name='L277'></a> 277         <strong class='reserved'>try</strong>
+<a id='L278' name='L278'></a> 278         <em class='brace'>{</em>
+<a id='L279' name='L279'></a> 279             <strong class='reserved'>return</strong> <a href='../Y/879.html' title='Multiple used in 4 places.'>wxApp</a>::<a href='../S/9.html#L275' title='Defined at 275 in kicad.cpp.'>OnRun</a>();
+<a id='L280' name='L280'></a> 280         <em class='brace'>}</em>
+<a id='L281' name='L281'></a> 281         <strong class='reserved'>catch</strong>( <strong class='reserved'>const</strong> <a href='../Y/830.html' title='Multiple used in 35 places.'>std</a>::exception&amp; <a href='../Y/547.html' title='Multiple used in 3 places.'>e</a> )
+<a id='L282' name='L282'></a> 282         <em class='brace'>{</em>
+<a id='L283' name='L283'></a> 283             <a href='../Y/974.html' title='Multiple used in 4 places.'>wxLogError</a>( <a href='../Y/1019.html' title='Multiple used in 67 places.'>wxT</a>( "Unhandled exception class: %s  what: %s" ),
+<a id='L284' name='L284'></a> 284                 <a href='../Y/131.html' title='Multiple used in 5 places.'>GetChars</a>( <a href='../Y/111.html' title='Multiple used in 2 places.'>FROM_UTF8</a>( <strong class='reserved'>typeid</strong>(<a href='../Y/547.html' title='Multiple used in 3 places.'>e</a>).<a href='../Y/725.html' title='Multiple used in 18 places.'>name</a>() )),
+<a id='L285' name='L285'></a> 285                 <a href='../Y/131.html' title='Multiple used in 5 places.'>GetChars</a>( <a href='../Y/111.html' title='Multiple used in 2 places.'>FROM_UTF8</a>( <a href='../Y/547.html' title='Multiple used in 3 places.'>e</a>.what() ) ) );
+<a id='L286' name='L286'></a> 286         <em class='brace'>}</em>
+<a id='L287' name='L287'></a> 287         <strong class='reserved'>catch</strong>( <strong class='reserved'>const</strong> <a href='../Y/208.html' title='Multiple used in 2 places.'>IO_ERROR</a>&amp; <a href='../Y/620.html' title='Multiple used in 2 places.'>ioe</a> )
+<a id='L288' name='L288'></a> 288         <em class='brace'>{</em>
+<a id='L289' name='L289'></a> 289             <a href='../Y/974.html' title='Multiple used in 4 places.'>wxLogError</a>( <a href='../Y/131.html' title='Multiple used in 5 places.'>GetChars</a>( <a href='../Y/620.html' title='Multiple used in 2 places.'>ioe</a>.<a href='../Y/417.html' title='Multiple used in 2 places.'>What</a>() ) );
+<a id='L290' name='L290'></a> 290         <em class='brace'>}</em>
+<a id='L291' name='L291'></a> 291         <strong class='reserved'>catch</strong>(...)
+<a id='L292' name='L292'></a> 292         <em class='brace'>{</em>
+<a id='L293' name='L293'></a> 293             <a href='../Y/974.html' title='Multiple used in 4 places.'>wxLogError</a>( <a href='../Y/1019.html' title='Multiple used in 67 places.'>wxT</a>( "Unhandled exception of unknown type" ) );
+<a id='L294' name='L294'></a> 294         <em class='brace'>}</em>
+<a id='L295' name='L295'></a> 295 
+<a id='L296' name='L296'></a> 296         <strong class='reserved'>return</strong> -1;
+<a id='L297' name='L297'></a> 297     <em class='brace'>}</em>
+<a id='L298' name='L298'></a> 298 
+<a id='L299' name='L299'></a> 299     <em class='comment'>/**</em>
+<a id='L300' name='L300'></a> 300 <em class='comment'>     * Set MacOS file associations.</em>
+<a id='L301' name='L301'></a> 301 <em class='comment'>     *</em>
+<a id='L302' name='L302'></a> 302 <em class='comment'>     * @see http://wiki.wxwidgets.org/WxMac-specific_topics</em>
+<a id='L303' name='L303'></a> 303 <em class='comment'>     */</em>
+<a id='L304' name='L304'></a> 304 <em class='sharp'>#if</em> <strong class='reserved'>defined</strong>( <a href='../Y/428.html' title='Multiple used in 5 places.'>__WXMAC__</a> )
+<a id='L305' name='L305'></a> 305     <strong class='reserved'>void</strong> <a href='../R/62.html' title='Multiple referred from 2 places.'>MacOpenFile</a>( <strong class='reserved'>const</strong> <a href='../Y/1017.html' title='Multiple used in 199 places.'>wxString</a>&amp; <a href='../Y/437.html' title='Multiple used in 6 places.'>aFileName</a> ) <a href='../Y/748.html' title='Multiple used in 31 places.'>override</a>
+<a id='L306' name='L306'></a> 306     <em class='brace'>{</em>
+<a id='L307' name='L307'></a> 307         <a href='../S/9.html#L66' title='Defined at 66 in kicad.cpp.'>Pgm</a>().<a href='../D/66.html' title='Multiple defined in 2 places.'>MacOpenFile</a>( <a href='../Y/437.html' title='Multiple used in 6 places.'>aFileName</a> );
+<a id='L308' name='L308'></a> 308     <em class='brace'>}</em>
+<a id='L309' name='L309'></a> 309 <em class='sharp'>#endif</em>
+<a id='L310' name='L310'></a> 310 <em class='brace'>}</em>;
+<a id='L311' name='L311'></a> 311 
+<a id='L312' name='L312'></a> 312 IMPLEMENT_APP( <a href='../S/9.html#L224' title='Defined at 224 in kicad.cpp.'>APP_KICAD</a> )
+<a id='L313' name='L313'></a> 313 
+<a id='L314' name='L314'></a> 314 
+<a id='L315' name='L315'></a> 315 <em class='comment'>// The C++ project manager supports one open PROJECT, so Prj() calls within</em>
+<a id='L316' name='L316'></a> 316 <em class='comment'>// this link image need this function.</em>
+<a id='L317' name='L317'></a> 317 <a href='../Y/296.html' title='Multiple used in 3 places.'>PROJECT</a>&amp; <a href='../Y/310.html' title='Multiple used in 19 places.'>Prj</a>()
+<a id='L318' name='L318'></a> 318 <em class='brace'>{</em>
+<a id='L319' name='L319'></a> 319     <strong class='reserved'>return</strong> <a href='../Y/251.html' title='Multiple used in 20 places.'>Kiway</a>.<a href='../Y/310.html' title='Multiple used in 19 places.'>Prj</a>();
+<a id='L320' name='L320'></a> 320 <em class='brace'>}</em>
+<a id='L321' name='L321'></a> 321 
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L52'>[^]</a><a href='#L312'>[v]</a><a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>

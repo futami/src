@@ -1,0 +1,329 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>dialogs/dialog_template_selector.cpp</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.4' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/30.html'>dialogs</a>/dialog_template_selector.cpp</h2>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L62'>[^]</a><a href='#L285'>[v]</a>[top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L62' title='Defined at 62.'>Select</a></li>
+<li><a href='#L71' title='Defined at 71.'>Unselect</a></li>
+<li><a href='#L79' title='Defined at 79.'>SetTemplate</a></li>
+<li><a href='#L87' title='Defined at 87.'>OnMouse</a></li>
+<li><a href='#L95' title='Defined at 95.'>onNotebookResize</a></li>
+<li><a href='#L111' title='Defined at 111.'>OnPageChange</a></li>
+<li><a href='#L133' title='Defined at 133.'>SetWidget</a></li>
+<li><a href='#L143' title='Defined at 143.'>AddTemplate</a></li>
+<li><a href='#L160' title='Defined at 160.'>GetSelectedTemplate</a></li>
+<li><a href='#L166' title='Defined at 166.'>AddTemplatesPage</a></li>
+<li><a href='#L185' title='Defined at 185.'>buildPageContent</a></li>
+<li><a href='#L219' title='Defined at 219.'>onDirectoryBrowseClicked</a></li>
+<li><a href='#L242' title='Defined at 242.'>onValidatePath</a></li>
+<li><a href='#L261' title='Defined at 261.'>replaceCurrentPage</a></li>
+<li><a href='#L285' title='Defined at 285.'>OnHtmlLinkActivated</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> * This program source code file is part of KiCad, a free EDA CAD application.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> * Copyright (C) 2012 Brian Sidebotham &lt;brian.sidebotham@gmail.com&gt;</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'> * Copyright (C) 1992-2018 KiCad Developers, see AUTHORS.txt for contributors.</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'> *</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'> * This program is free software; you can redistribute it and/or</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'> * modify it under the terms of the GNU General Public License</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'> * as published by the Free Software Foundation; either version 2</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'> * of the License, or (at your option) any later version.</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'> *</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'> * This program is distributed in the hope that it will be useful,</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'> * but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'> * GNU General Public License for more details.</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'> *</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'> * You should have received a copy of the GNU General Public License</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'> * along with this program; if not, you may find one here:</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'> * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'> * or you may search the http://www.gnu.org website for the version 2 license,</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'> * or you may write to the Free Software Foundation, Inc.,</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'> * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'> */</em>
+<a id='L24' name='L24'></a>  24 
+<a id='L25' name='L25'></a>  25 <em class='sharp'>#include</em> "<a href='3.html'>dialog_template_selector.h</a>"
+<a id='L26' name='L26'></a>  26 
+<a id='L27' name='L27'></a>  27 <em class='sharp'>#include</em> &lt;wx/dir.h&gt;
+<a id='L28' name='L28'></a>  28 <em class='sharp'>#include</em> &lt;wx/settings.h&gt;
+<a id='L29' name='L29'></a>  29 
+<a id='L30' name='L30'></a>  30 
+<a id='L31' name='L31'></a>  31 <a href='../R/129.html' title='Multiple referred from 6 places.'>TEMPLATE_SELECTION_PANEL</a>::<a href='../S/2.html#L31' title='Defined at 31 in dialogs/dialog_template_selector.cpp.'>TEMPLATE_SELECTION_PANEL</a>( <a href='../Y/989.html' title='Multiple used in 5 places.'>wxNotebookPage</a>* <a href='../Y/449.html' title='Multiple used in 17 places.'>aParent</a>,
+<a id='L32' name='L32'></a>  32                                                     <strong class='reserved'>const</strong> <a href='../Y/1017.html' title='Multiple used in 199 places.'>wxString</a>&amp; <a href='../Y/450.html' title='Multiple used in 19 places.'>aPath</a> ) :
+<a id='L33' name='L33'></a>  33     <a href='../D/138.html' title='Multiple defined in 2 places.'>TEMPLATE_SELECTION_PANEL_BASE</a>( <a href='../Y/449.html' title='Multiple used in 17 places.'>aParent</a> )
+<a id='L34' name='L34'></a>  34 <em class='brace'>{</em>
+<a id='L35' name='L35'></a>  35     <a href='../Y/693.html' title='Multiple used in 16 places.'>m_parent</a> = <a href='../Y/449.html' title='Multiple used in 17 places.'>aParent</a>;
+<a id='L36' name='L36'></a>  36     <a href='../Y/710.html' title='Multiple used in 3 places.'>m_templatesPath</a> = <a href='../Y/450.html' title='Multiple used in 19 places.'>aPath</a>;
+<a id='L37' name='L37'></a>  37 <em class='brace'>}</em>
+<a id='L38' name='L38'></a>  38 
+<a id='L39' name='L39'></a>  39 
+<a id='L40' name='L40'></a>  40 <a href='../R/131.html' title='Multiple referred from 13 places.'>TEMPLATE_WIDGET</a>::<a href='../S/2.html#L40' title='Defined at 40 in dialogs/dialog_template_selector.cpp.'>TEMPLATE_WIDGET</a>( <a href='../Y/1038.html' title='Multiple used in 19 places.'>wxWindow</a>* <a href='../Y/449.html' title='Multiple used in 17 places.'>aParent</a>, <a href='../S/2.html#L122' title='Defined at 122 in dialogs/dialog_template_selector.cpp.'>DIALOG_TEMPLATE_SELECTOR</a>* <a href='../Y/433.html' title='Multiple used in 3 places.'>aDialog</a> ) :
+<a id='L41' name='L41'></a>  41     <a href='../D/140.html' title='Multiple defined in 2 places.'>TEMPLATE_WIDGET_BASE</a>( <a href='../Y/449.html' title='Multiple used in 17 places.'>aParent</a> )
+<a id='L42' name='L42'></a>  42 <em class='brace'>{</em>
+<a id='L43' name='L43'></a>  43     <a href='../Y/693.html' title='Multiple used in 16 places.'>m_parent</a> = <a href='../Y/449.html' title='Multiple used in 17 places.'>aParent</a>;
+<a id='L44' name='L44'></a>  44     <a href='../Y/670.html' title='Multiple used in 3 places.'>m_dialog</a> = <a href='../Y/433.html' title='Multiple used in 3 places.'>aDialog</a>;
+<a id='L45' name='L45'></a>  45 
+<a id='L46' name='L46'></a>  46     <em class='comment'>// wxWidgets_3.xx way of doing the same...</em>
+<a id='L47' name='L47'></a>  47     <em class='comment'>// Bind(wxEVT_LEFT_DOWN, &amp;TEMPLATE_WIDGET::OnMouse, this );</em>
+<a id='L48' name='L48'></a>  48 
+<a id='L49' name='L49'></a>  49     <a href='../Y/663.html' title='Multiple used in 5 places.'>m_bitmapIcon</a>-&gt;<a href='../Y/56.html' title='Multiple used in 8 places.'>Connect</a>( <a href='../Y/923.html' title='Multiple used in 2 places.'>wxEVT_LEFT_DOWN</a>,
+<a id='L50' name='L50'></a>  50                            <a href='../Y/983.html' title='Multiple used in 2 places.'>wxMouseEventHandler</a>( <a href='../S/2.html#L40' title='Defined at 40 in dialogs/dialog_template_selector.cpp.'>TEMPLATE_WIDGET</a>::<a href='../S/2.html#L87' title='Defined at 87 in dialogs/dialog_template_selector.cpp.'>OnMouse</a> ), <a href='../Y/276.html' title='Multiple used in 24 places.'>NULL</a>, <strong class='reserved'>this</strong> );
+<a id='L51' name='L51'></a>  51     <a href='../Y/707.html' title='Multiple used in 6 places.'>m_staticTitle</a>-&gt;<a href='../Y/56.html' title='Multiple used in 8 places.'>Connect</a>( <a href='../Y/923.html' title='Multiple used in 2 places.'>wxEVT_LEFT_DOWN</a>,
+<a id='L52' name='L52'></a>  52                             <a href='../Y/983.html' title='Multiple used in 2 places.'>wxMouseEventHandler</a>( <a href='../S/2.html#L40' title='Defined at 40 in dialogs/dialog_template_selector.cpp.'>TEMPLATE_WIDGET</a>::<a href='../S/2.html#L87' title='Defined at 87 in dialogs/dialog_template_selector.cpp.'>OnMouse</a> ), <a href='../Y/276.html' title='Multiple used in 24 places.'>NULL</a>, <strong class='reserved'>this</strong> );
+<a id='L53' name='L53'></a>  53 
+<a id='L54' name='L54'></a>  54     <em class='comment'>// We're not selected until we're clicked</em>
+<a id='L55' name='L55'></a>  55     <a href='../S/2.html#L71' title='Defined at 71 in dialogs/dialog_template_selector.cpp.'>Unselect</a>();
+<a id='L56' name='L56'></a>  56 
+<a id='L57' name='L57'></a>  57     <em class='comment'>// Start with template being NULL</em>
+<a id='L58' name='L58'></a>  58     <a href='../Y/669.html' title='Multiple used in 4 places.'>m_currTemplate</a> = <a href='../Y/276.html' title='Multiple used in 24 places.'>NULL</a>;
+<a id='L59' name='L59'></a>  59 <em class='brace'>}</em>
+<a id='L60' name='L60'></a>  60 
+<a id='L61' name='L61'></a>  61 
+<a id='L62' name='L62'></a>  62 <strong class='reserved'>void</strong> <a href='../S/2.html#L40' title='Defined at 40 in dialogs/dialog_template_selector.cpp.'>TEMPLATE_WIDGET</a>::<a href='../R/121.html' title='Multiple referred from 2 places.'>Select</a>()
+<a id='L63' name='L63'></a>  63 <em class='brace'>{</em>
+<a id='L64' name='L64'></a>  64     <a href='../Y/670.html' title='Multiple used in 3 places.'>m_dialog</a>-&gt;<a href='../S/2.html#L133' title='Defined at 133 in dialogs/dialog_template_selector.cpp.'>SetWidget</a>( <strong class='reserved'>this</strong> );
+<a id='L65' name='L65'></a>  65     <a href='../Y/338.html' title='Multiple used in 2 places.'>SetBackgroundColour</a>( <a href='../Y/1018.html' title='Multiple used in 2 places.'>wxSystemSettings</a>::<a href='../Y/133.html' title='Multiple used in 2 places.'>GetColour</a>( wxSYS_COLOUR_BTNHIGHLIGHT ) );
+<a id='L66' name='L66'></a>  66     <a href='../Y/702.html' title='Multiple used in 4 places.'>m_selected</a> = <strong class='reserved'>true</strong>;
+<a id='L67' name='L67'></a>  67     <a href='../S/22.html#L558' title='Defined at 558 in tools/kicad_manager_control.cpp.'>Refresh</a>();
+<a id='L68' name='L68'></a>  68 <em class='brace'>}</em>
+<a id='L69' name='L69'></a>  69 
+<a id='L70' name='L70'></a>  70 
+<a id='L71' name='L71'></a>  71 <strong class='reserved'>void</strong> <a href='../S/2.html#L40' title='Defined at 40 in dialogs/dialog_template_selector.cpp.'>TEMPLATE_WIDGET</a>::<a href='../R/168.html' title='Multiple referred from 3 places.'>Unselect</a>()
+<a id='L72' name='L72'></a>  72 <em class='brace'>{</em>
+<a id='L73' name='L73'></a>  73     <a href='../Y/338.html' title='Multiple used in 2 places.'>SetBackgroundColour</a>( <a href='../Y/1018.html' title='Multiple used in 2 places.'>wxSystemSettings</a>::<a href='../Y/133.html' title='Multiple used in 2 places.'>GetColour</a>( wxSYS_COLOUR_BTNFACE ) );
+<a id='L74' name='L74'></a>  74     <a href='../Y/702.html' title='Multiple used in 4 places.'>m_selected</a> = <strong class='reserved'>false</strong>;
+<a id='L75' name='L75'></a>  75     <a href='../S/22.html#L558' title='Defined at 558 in tools/kicad_manager_control.cpp.'>Refresh</a>();
+<a id='L76' name='L76'></a>  76 <em class='brace'>}</em>
+<a id='L77' name='L77'></a>  77 
+<a id='L78' name='L78'></a>  78 
+<a id='L79' name='L79'></a>  79 <strong class='reserved'>void</strong> <a href='../S/2.html#L40' title='Defined at 40 in dialogs/dialog_template_selector.cpp.'>TEMPLATE_WIDGET</a>::<a href='../R/124.html' title='Multiple referred from 2 places.'>SetTemplate</a>(<a href='../D/105.html' title='Multiple defined in 2 places.'>PROJECT_TEMPLATE</a>* <a href='../Y/459.html' title='Multiple used in 8 places.'>aTemplate</a>)
+<a id='L80' name='L80'></a>  80 <em class='brace'>{</em>
+<a id='L81' name='L81'></a>  81     <a href='../Y/669.html' title='Multiple used in 4 places.'>m_currTemplate</a> = <a href='../Y/459.html' title='Multiple used in 8 places.'>aTemplate</a>;
+<a id='L82' name='L82'></a>  82     <a href='../Y/707.html' title='Multiple used in 6 places.'>m_staticTitle</a>-&gt;SetLabel( *(<a href='../Y/459.html' title='Multiple used in 8 places.'>aTemplate</a>-&gt;<a href='../S/18.html#L255' title='Defined at 255 in project_template.cpp.'>GetTitle</a>()) );
+<a id='L83' name='L83'></a>  83     <a href='../Y/663.html' title='Multiple used in 5 places.'>m_bitmapIcon</a>-&gt;SetBitmap( *(<a href='../Y/459.html' title='Multiple used in 8 places.'>aTemplate</a>-&gt;<a href='../S/18.html#L115' title='Defined at 115 in project_template.cpp.'>GetIcon</a>()) );
+<a id='L84' name='L84'></a>  84 <em class='brace'>}</em>
+<a id='L85' name='L85'></a>  85 
+<a id='L86' name='L86'></a>  86 
+<a id='L87' name='L87'></a>  87 <strong class='reserved'>void</strong> <a href='../S/2.html#L40' title='Defined at 40 in dialogs/dialog_template_selector.cpp.'>TEMPLATE_WIDGET</a>::<a href='../R/80.html' title='Multiple referred from 3 places.'>OnMouse</a>( <a href='../Y/982.html' title='Multiple used in 2 places.'>wxMouseEvent</a>&amp; <a href='../Y/565.html' title='Multiple used in 60 places.'>event</a> )
+<a id='L88' name='L88'></a>  88 <em class='brace'>{</em>
+<a id='L89' name='L89'></a>  89     <em class='comment'>// Toggle selection here</em>
+<a id='L90' name='L90'></a>  90     <a href='../S/2.html#L62' title='Defined at 62 in dialogs/dialog_template_selector.cpp.'>Select</a>();
+<a id='L91' name='L91'></a>  91     <a href='../Y/565.html' title='Multiple used in 60 places.'>event</a>.<a href='../Y/386.html' title='Multiple used in 8 places.'>Skip</a>();
+<a id='L92' name='L92'></a>  92 <em class='brace'>}</em>
+<a id='L93' name='L93'></a>  93 
+<a id='L94' name='L94'></a>  94 
+<a id='L95' name='L95'></a>  95 <strong class='reserved'>void</strong> <a href='../S/2.html#L122' title='Defined at 122 in dialogs/dialog_template_selector.cpp.'>DIALOG_TEMPLATE_SELECTOR</a>::<a href='../R/181.html' title='Multiple referred from 2 places.'>onNotebookResize</a>(<a href='../Y/1010.html' title='Multiple used in 4 places.'>wxSizeEvent</a>&amp; <a href='../Y/565.html' title='Multiple used in 60 places.'>event</a>)
+<a id='L96' name='L96'></a>  96 <em class='brace'>{</em>
+<a id='L97' name='L97'></a>  97     <strong class='reserved'>for</strong>( <a href='../Y/820.html' title='Multiple used in 4 places.'>size_t</a> <a href='../Y/600.html' title='Multiple used in 16 places.'>i</a>=0; <a href='../Y/600.html' title='Multiple used in 16 places.'>i</a> &lt; <a href='../Y/689.html' title='Multiple used in 21 places.'>m_notebook</a>-&gt;<a href='../Y/173.html' title='Multiple used in 3 places.'>GetPageCount</a>(); <a href='../Y/600.html' title='Multiple used in 16 places.'>i</a>++ )
+<a id='L98' name='L98'></a>  98     <em class='brace'>{</em>
+<a id='L99' name='L99'></a>  99         <a href='../Y/691.html' title='Multiple used in 18 places.'>m_panels</a>[<a href='../Y/600.html' title='Multiple used in 16 places.'>i</a>]-&gt;<a href='../Y/370.html' title='Multiple used in 4 places.'>SetSize</a>( <a href='../Y/689.html' title='Multiple used in 21 places.'>m_notebook</a>-&gt;<a href='../Y/187.html' title='Multiple used in 7 places.'>GetSize</a>().<a href='../Y/195.html' title='Multiple used in 5 places.'>GetWidth</a>() - 6, 140 );
+<a id='L100' name='L100'></a> 100         <a href='../Y/691.html' title='Multiple used in 18 places.'>m_panels</a>[<a href='../Y/600.html' title='Multiple used in 16 places.'>i</a>]-&gt;<a href='../Y/653.html' title='Multiple used in 6 places.'>m_SizerBase</a>-&gt;<a href='../Y/120.html' title='Multiple used in 4 places.'>FitInside</a>( <a href='../Y/691.html' title='Multiple used in 18 places.'>m_panels</a>[<a href='../Y/600.html' title='Multiple used in 16 places.'>i</a>] );
+<a id='L101' name='L101'></a> 101         <a href='../Y/691.html' title='Multiple used in 18 places.'>m_panels</a>[<a href='../Y/600.html' title='Multiple used in 16 places.'>i</a>]-&gt;<a href='../Y/697.html' title='Multiple used in 12 places.'>m_scrolledWindow</a>-&gt;<a href='../Y/370.html' title='Multiple used in 4 places.'>SetSize</a>( <a href='../Y/691.html' title='Multiple used in 18 places.'>m_panels</a>[<a href='../Y/600.html' title='Multiple used in 16 places.'>i</a>]-&gt;<a href='../Y/187.html' title='Multiple used in 7 places.'>GetSize</a>().<a href='../Y/195.html' title='Multiple used in 5 places.'>GetWidth</a>() - 6,
+<a id='L102' name='L102'></a> 102                                                 <a href='../Y/691.html' title='Multiple used in 18 places.'>m_panels</a>[<a href='../Y/600.html' title='Multiple used in 16 places.'>i</a>]-&gt;<a href='../Y/187.html' title='Multiple used in 7 places.'>GetSize</a>().<a href='../Y/152.html' title='Multiple used in 3 places.'>GetHeight</a>() - 6 );
+<a id='L103' name='L103'></a> 103         <a href='../Y/691.html' title='Multiple used in 18 places.'>m_panels</a>[<a href='../Y/600.html' title='Multiple used in 16 places.'>i</a>]-&gt;<a href='../Y/654.html' title='Multiple used in 8 places.'>m_SizerChoice</a>-&gt;<a href='../Y/120.html' title='Multiple used in 4 places.'>FitInside</a>( <a href='../Y/691.html' title='Multiple used in 18 places.'>m_panels</a>[<a href='../Y/600.html' title='Multiple used in 16 places.'>i</a>]-&gt;<a href='../Y/697.html' title='Multiple used in 12 places.'>m_scrolledWindow</a> );
+<a id='L104' name='L104'></a> 104     <em class='brace'>}</em>
+<a id='L105' name='L105'></a> 105     <a href='../Y/689.html' title='Multiple used in 21 places.'>m_notebook</a>-&gt;<a href='../S/22.html#L558' title='Defined at 558 in tools/kicad_manager_control.cpp.'>Refresh</a>();
+<a id='L106' name='L106'></a> 106 
+<a id='L107' name='L107'></a> 107     <a href='../Y/565.html' title='Multiple used in 60 places.'>event</a>.<a href='../Y/386.html' title='Multiple used in 8 places.'>Skip</a>();
+<a id='L108' name='L108'></a> 108 <em class='brace'>}</em>
+<a id='L109' name='L109'></a> 109 
+<a id='L110' name='L110'></a> 110 
+<a id='L111' name='L111'></a> 111 <strong class='reserved'>void</strong> <a href='../S/2.html#L122' title='Defined at 122 in dialogs/dialog_template_selector.cpp.'>DIALOG_TEMPLATE_SELECTOR</a>::<a href='../R/84.html' title='Multiple referred from 4 places.'>OnPageChange</a>( <a href='../Y/987.html' title='Multiple used in 3 places.'>wxNotebookEvent</a>&amp; <a href='../Y/565.html' title='Multiple used in 60 places.'>event</a> )
+<a id='L112' name='L112'></a> 112 <em class='brace'>{</em>
+<a id='L113' name='L113'></a> 113     <strong class='reserved'>int</strong> <a href='../Y/752.html' title='Multiple used in 12 places.'>page</a> = <a href='../Y/565.html' title='Multiple used in 60 places.'>event</a>.<a href='../Y/184.html' title='Multiple used in 3 places.'>GetSelection</a>();
+<a id='L114' name='L114'></a> 114 
+<a id='L115' name='L115'></a> 115     <strong class='reserved'>if</strong>( <a href='../Y/752.html' title='Multiple used in 12 places.'>page</a> != <a href='../Y/984.html' title='Multiple used in 4 places.'>wxNOT_FOUND</a> &amp;&amp; (<strong class='reserved'>unsigned</strong>)<a href='../Y/752.html' title='Multiple used in 12 places.'>page</a> &lt; <a href='../Y/691.html' title='Multiple used in 18 places.'>m_panels</a>.<a href='../Y/819.html' title='Multiple used in 23 places.'>size</a>() )
+<a id='L116' name='L116'></a> 116         <a href='../Y/709.html' title='Multiple used in 12 places.'>m_tcTemplatePath</a>-&gt;<a href='../Y/381.html' title='Multiple used in 5 places.'>SetValue</a>( <a href='../Y/691.html' title='Multiple used in 18 places.'>m_panels</a>[<a href='../Y/752.html' title='Multiple used in 12 places.'>page</a>]-&gt;<a href='../Y/177.html' title='Multiple used in 43 places.'>GetPath</a>() );
+<a id='L117' name='L117'></a> 117 
+<a id='L118' name='L118'></a> 118     <a href='../Y/565.html' title='Multiple used in 60 places.'>event</a>.<a href='../Y/386.html' title='Multiple used in 8 places.'>Skip</a>();
+<a id='L119' name='L119'></a> 119 <em class='brace'>}</em>
+<a id='L120' name='L120'></a> 120 
+<a id='L121' name='L121'></a> 121 
+<a id='L122' name='L122'></a> 122 <a href='../S/2.html#L122' title='Defined at 122 in dialogs/dialog_template_selector.cpp.'>DIALOG_TEMPLATE_SELECTOR</a>::<a href='../R/13.html' title='Multiple referred from 20 places.'>DIALOG_TEMPLATE_SELECTOR</a>( <a href='../Y/1038.html' title='Multiple used in 19 places.'>wxWindow</a>* <a href='../Y/449.html' title='Multiple used in 17 places.'>aParent</a> ) :
+<a id='L123' name='L123'></a> 123     <a href='../D/14.html' title='Multiple defined in 2 places.'>DIALOG_TEMPLATE_SELECTOR_BASE</a>( <a href='../Y/449.html' title='Multiple used in 17 places.'>aParent</a> )
+<a id='L124' name='L124'></a> 124 <em class='brace'>{</em>
+<a id='L125' name='L125'></a> 125     <a href='../Y/676.html' title='Multiple used in 7 places.'>m_htmlWin</a>-&gt;SetPage( <a href='../D/178.html' title='Multiple defined in 2 places.'>_</a>( "&lt;html&gt;&lt;h1&gt;Template Selector&lt;/h1&gt;&lt;/html&gt;" ) );
+<a id='L126' name='L126'></a> 126     <a href='../Y/689.html' title='Multiple used in 21 places.'>m_notebook</a>-&gt;<a href='../Y/56.html' title='Multiple used in 8 places.'>Connect</a>( wxEVT_SIZE,
+<a id='L127' name='L127'></a> 127                          wxSizeEventHandler( <a href='../S/2.html#L122' title='Defined at 122 in dialogs/dialog_template_selector.cpp.'>DIALOG_TEMPLATE_SELECTOR</a>::<a href='../S/2.html#L95' title='Defined at 95 in dialogs/dialog_template_selector.cpp.'>onNotebookResize</a> ),
+<a id='L128' name='L128'></a> 128                          <a href='../Y/276.html' title='Multiple used in 24 places.'>NULL</a>, <strong class='reserved'>this</strong> );
+<a id='L129' name='L129'></a> 129     <a href='../Y/703.html' title='Multiple used in 8 places.'>m_selectedWidget</a> = <a href='../Y/276.html' title='Multiple used in 24 places.'>NULL</a>;
+<a id='L130' name='L130'></a> 130 <em class='brace'>}</em>
+<a id='L131' name='L131'></a> 131 
+<a id='L132' name='L132'></a> 132 
+<a id='L133' name='L133'></a> 133 <strong class='reserved'>void</strong> <a href='../S/2.html#L122' title='Defined at 122 in dialogs/dialog_template_selector.cpp.'>DIALOG_TEMPLATE_SELECTOR</a>::<a href='../R/125.html' title='Multiple referred from 2 places.'>SetWidget</a>( <a href='../S/2.html#L40' title='Defined at 40 in dialogs/dialog_template_selector.cpp.'>TEMPLATE_WIDGET</a>* <a href='../Y/466.html' title='Multiple used in 3 places.'>aWidget</a> )
+<a id='L134' name='L134'></a> 134 <em class='brace'>{</em>
+<a id='L135' name='L135'></a> 135     <strong class='reserved'>if</strong>( <a href='../Y/703.html' title='Multiple used in 8 places.'>m_selectedWidget</a> != <a href='../Y/276.html' title='Multiple used in 24 places.'>NULL</a> )
+<a id='L136' name='L136'></a> 136         <a href='../Y/703.html' title='Multiple used in 8 places.'>m_selectedWidget</a>-&gt;<a href='../S/2.html#L71' title='Defined at 71 in dialogs/dialog_template_selector.cpp.'>Unselect</a>();
+<a id='L137' name='L137'></a> 137 
+<a id='L138' name='L138'></a> 138     <a href='../Y/703.html' title='Multiple used in 8 places.'>m_selectedWidget</a> = <a href='../Y/466.html' title='Multiple used in 3 places.'>aWidget</a>;
+<a id='L139' name='L139'></a> 139     <a href='../Y/348.html' title='Multiple used in 2 places.'>SetHtml</a>( <a href='../Y/703.html' title='Multiple used in 8 places.'>m_selectedWidget</a>-&gt;<a href='../Y/188.html' title='Multiple used in 3 places.'>GetTemplate</a>()-&gt;<a href='../S/18.html#L109' title='Defined at 109 in project_template.cpp.'>GetHtmlFile</a>() );
+<a id='L140' name='L140'></a> 140 <em class='brace'>}</em>
+<a id='L141' name='L141'></a> 141 
+<a id='L142' name='L142'></a> 142 
+<a id='L143' name='L143'></a> 143 <strong class='reserved'>void</strong> <a href='../S/2.html#L122' title='Defined at 122 in dialogs/dialog_template_selector.cpp.'>DIALOG_TEMPLATE_SELECTOR</a>::<a href='../R/4.html' title='Multiple referred from 3 places.'>AddTemplate</a>( <strong class='reserved'>int</strong> <a href='../Y/448.html' title='Multiple used in 14 places.'>aPage</a>, <a href='../D/105.html' title='Multiple defined in 2 places.'>PROJECT_TEMPLATE</a>* <a href='../Y/459.html' title='Multiple used in 8 places.'>aTemplate</a> )
+<a id='L144' name='L144'></a> 144 <em class='brace'>{</em>
+<a id='L145' name='L145'></a> 145     <a href='../S/2.html#L40' title='Defined at 40 in dialogs/dialog_template_selector.cpp.'>TEMPLATE_WIDGET</a>* <a href='../Y/868.html' title='Multiple used in 3 places.'>w</a> = <strong class='reserved'>new</strong> <a href='../S/2.html#L40' title='Defined at 40 in dialogs/dialog_template_selector.cpp.'>TEMPLATE_WIDGET</a>( <a href='../Y/691.html' title='Multiple used in 18 places.'>m_panels</a>[<a href='../Y/448.html' title='Multiple used in 14 places.'>aPage</a>]-&gt;<a href='../Y/697.html' title='Multiple used in 12 places.'>m_scrolledWindow</a>, <strong class='reserved'>this</strong>  );
+<a id='L146' name='L146'></a> 146     <a href='../Y/868.html' title='Multiple used in 3 places.'>w</a>-&gt;<a href='../S/2.html#L79' title='Defined at 79 in dialogs/dialog_template_selector.cpp.'>SetTemplate</a>( <a href='../Y/459.html' title='Multiple used in 8 places.'>aTemplate</a> );
+<a id='L147' name='L147'></a> 147 
+<a id='L148' name='L148'></a> 148     <a href='../Y/691.html' title='Multiple used in 18 places.'>m_panels</a>[<a href='../Y/448.html' title='Multiple used in 14 places.'>aPage</a>]-&gt;<a href='../Y/654.html' title='Multiple used in 8 places.'>m_SizerChoice</a>-&gt;<a href='../Y/7.html' title='Multiple used in 53 places.'>Add</a>( <a href='../Y/868.html' title='Multiple used in 3 places.'>w</a> );
+<a id='L149' name='L149'></a> 149     <a href='../Y/691.html' title='Multiple used in 18 places.'>m_panels</a>[<a href='../Y/448.html' title='Multiple used in 14 places.'>aPage</a>]-&gt;<a href='../Y/654.html' title='Multiple used in 8 places.'>m_SizerChoice</a>-&gt;<a href='../Y/255.html' title='Multiple used in 5 places.'>Layout</a>();
+<a id='L150' name='L150'></a> 150     <a href='../Y/691.html' title='Multiple used in 18 places.'>m_panels</a>[<a href='../Y/448.html' title='Multiple used in 14 places.'>aPage</a>]-&gt;<a href='../Y/370.html' title='Multiple used in 4 places.'>SetSize</a>( <a href='../Y/689.html' title='Multiple used in 21 places.'>m_notebook</a>-&gt;<a href='../Y/187.html' title='Multiple used in 7 places.'>GetSize</a>().<a href='../Y/195.html' title='Multiple used in 5 places.'>GetWidth</a>() - 6, 140 );
+<a id='L151' name='L151'></a> 151     <a href='../Y/691.html' title='Multiple used in 18 places.'>m_panels</a>[<a href='../Y/448.html' title='Multiple used in 14 places.'>aPage</a>]-&gt;<a href='../Y/653.html' title='Multiple used in 6 places.'>m_SizerBase</a>-&gt;<a href='../Y/120.html' title='Multiple used in 4 places.'>FitInside</a>( <a href='../Y/691.html' title='Multiple used in 18 places.'>m_panels</a>[<a href='../Y/448.html' title='Multiple used in 14 places.'>aPage</a>] );
+<a id='L152' name='L152'></a> 152     <a href='../Y/691.html' title='Multiple used in 18 places.'>m_panels</a>[<a href='../Y/448.html' title='Multiple used in 14 places.'>aPage</a>]-&gt;<a href='../Y/697.html' title='Multiple used in 12 places.'>m_scrolledWindow</a>-&gt;<a href='../Y/370.html' title='Multiple used in 4 places.'>SetSize</a>( <a href='../Y/691.html' title='Multiple used in 18 places.'>m_panels</a>[<a href='../Y/448.html' title='Multiple used in 14 places.'>aPage</a>]-&gt;<a href='../Y/187.html' title='Multiple used in 7 places.'>GetSize</a>().<a href='../Y/195.html' title='Multiple used in 5 places.'>GetWidth</a>() - 6,
+<a id='L153' name='L153'></a> 153                                                 <a href='../Y/691.html' title='Multiple used in 18 places.'>m_panels</a>[<a href='../Y/448.html' title='Multiple used in 14 places.'>aPage</a>]-&gt;<a href='../Y/187.html' title='Multiple used in 7 places.'>GetSize</a>().<a href='../Y/152.html' title='Multiple used in 3 places.'>GetHeight</a>() - 6 );
+<a id='L154' name='L154'></a> 154     <a href='../Y/691.html' title='Multiple used in 18 places.'>m_panels</a>[<a href='../Y/448.html' title='Multiple used in 14 places.'>aPage</a>]-&gt;<a href='../Y/654.html' title='Multiple used in 8 places.'>m_SizerChoice</a>-&gt;<a href='../Y/120.html' title='Multiple used in 4 places.'>FitInside</a>( <a href='../Y/691.html' title='Multiple used in 18 places.'>m_panels</a>[<a href='../Y/448.html' title='Multiple used in 14 places.'>aPage</a>]-&gt;<a href='../Y/697.html' title='Multiple used in 12 places.'>m_scrolledWindow</a> );
+<a id='L155' name='L155'></a> 155 
+<a id='L156' name='L156'></a> 156     <a href='../Y/689.html' title='Multiple used in 21 places.'>m_notebook</a>-&gt;<a href='../S/22.html#L558' title='Defined at 558 in tools/kicad_manager_control.cpp.'>Refresh</a>();
+<a id='L157' name='L157'></a> 157 <em class='brace'>}</em>
+<a id='L158' name='L158'></a> 158 
+<a id='L159' name='L159'></a> 159 
+<a id='L160' name='L160'></a> 160 <a href='../D/105.html' title='Multiple defined in 2 places.'>PROJECT_TEMPLATE</a>* <a href='../S/2.html#L122' title='Defined at 122 in dialogs/dialog_template_selector.cpp.'>DIALOG_TEMPLATE_SELECTOR</a>::<a href='../R/32.html' title='Multiple referred from 4 places.'>GetSelectedTemplate</a>()
+<a id='L161' name='L161'></a> 161 <em class='brace'>{</em>
+<a id='L162' name='L162'></a> 162     <strong class='reserved'>return</strong> <a href='../Y/703.html' title='Multiple used in 8 places.'>m_selectedWidget</a>? <a href='../Y/703.html' title='Multiple used in 8 places.'>m_selectedWidget</a>-&gt;<a href='../Y/188.html' title='Multiple used in 3 places.'>GetTemplate</a>() : <a href='../Y/276.html' title='Multiple used in 24 places.'>NULL</a>;
+<a id='L163' name='L163'></a> 163 <em class='brace'>}</em>
+<a id='L164' name='L164'></a> 164 
+<a id='L165' name='L165'></a> 165 
+<a id='L166' name='L166'></a> 166 <strong class='reserved'>void</strong> <a href='../S/2.html#L122' title='Defined at 122 in dialogs/dialog_template_selector.cpp.'>DIALOG_TEMPLATE_SELECTOR</a>::<a href='../R/5.html' title='Multiple referred from 3 places.'>AddTemplatesPage</a>( <strong class='reserved'>const</strong> <a href='../Y/1017.html' title='Multiple used in 199 places.'>wxString</a>&amp; <a href='../Y/462.html' title='Multiple used in 3 places.'>aTitle</a>, <a href='../Y/942.html' title='Multiple used in 107 places.'>wxFileName</a>&amp; <a href='../Y/450.html' title='Multiple used in 19 places.'>aPath</a> )
+<a id='L167' name='L167'></a> 167 <em class='brace'>{</em>
+<a id='L168' name='L168'></a> 168     <a href='../Y/989.html' title='Multiple used in 5 places.'>wxNotebookPage</a>* <a href='../Y/730.html' title='Multiple used in 6 places.'>newPage</a> = <strong class='reserved'>new</strong> <a href='../Y/989.html' title='Multiple used in 5 places.'>wxNotebookPage</a>( <a href='../Y/689.html' title='Multiple used in 21 places.'>m_notebook</a>, <a href='../Y/960.html' title='Multiple used in 17 places.'>wxID_ANY</a> );
+<a id='L169' name='L169'></a> 169 
+<a id='L170' name='L170'></a> 170     <a href='../Y/450.html' title='Multiple used in 19 places.'>aPath</a>.<a href='../Y/280.html' title='Multiple used in 3 places.'>Normalize</a>();
+<a id='L171' name='L171'></a> 171     <a href='../Y/1017.html' title='Multiple used in 199 places.'>wxString</a> <a href='../Y/756.html' title='Multiple used in 13 places.'>path</a> = <a href='../Y/450.html' title='Multiple used in 19 places.'>aPath</a>.<a href='../Y/151.html' title='Multiple used in 48 places.'>GetFullPath</a>();    <em class='comment'>// caller ensures this ends with file separator.</em>
+<a id='L172' name='L172'></a> 172 
+<a id='L173' name='L173'></a> 173     <a href='../S/2.html#L31' title='Defined at 31 in dialogs/dialog_template_selector.cpp.'>TEMPLATE_SELECTION_PANEL</a>* <a href='../Y/851.html' title='Multiple used in 4 places.'>tpanel</a> = <strong class='reserved'>new</strong> <a href='../S/2.html#L31' title='Defined at 31 in dialogs/dialog_template_selector.cpp.'>TEMPLATE_SELECTION_PANEL</a>( <a href='../Y/730.html' title='Multiple used in 6 places.'>newPage</a>, <a href='../Y/756.html' title='Multiple used in 13 places.'>path</a> );
+<a id='L174' name='L174'></a> 174     <a href='../Y/691.html' title='Multiple used in 18 places.'>m_panels</a>.<a href='../Y/795.html' title='Multiple used in 4 places.'>push_back</a>( <a href='../Y/851.html' title='Multiple used in 4 places.'>tpanel</a> );
+<a id='L175' name='L175'></a> 175 
+<a id='L176' name='L176'></a> 176     <a href='../Y/689.html' title='Multiple used in 21 places.'>m_notebook</a>-&gt;AddPage( <a href='../Y/730.html' title='Multiple used in 6 places.'>newPage</a>, <a href='../Y/462.html' title='Multiple used in 3 places.'>aTitle</a> );
+<a id='L177' name='L177'></a> 177 
+<a id='L178' name='L178'></a> 178     <strong class='reserved'>if</strong>( <a href='../Y/689.html' title='Multiple used in 21 places.'>m_notebook</a>-&gt;<a href='../Y/173.html' title='Multiple used in 3 places.'>GetPageCount</a>() == 1 )
+<a id='L179' name='L179'></a> 179         <a href='../Y/709.html' title='Multiple used in 12 places.'>m_tcTemplatePath</a>-&gt;<a href='../Y/381.html' title='Multiple used in 5 places.'>SetValue</a>( <a href='../Y/756.html' title='Multiple used in 13 places.'>path</a> );
+<a id='L180' name='L180'></a> 180 
+<a id='L181' name='L181'></a> 181     <a href='../S/2.html#L185' title='Defined at 185 in dialogs/dialog_template_selector.cpp.'>buildPageContent</a>( <a href='../Y/756.html' title='Multiple used in 13 places.'>path</a>, <a href='../Y/689.html' title='Multiple used in 21 places.'>m_notebook</a>-&gt;<a href='../Y/173.html' title='Multiple used in 3 places.'>GetPageCount</a>() - 1 );
+<a id='L182' name='L182'></a> 182 <em class='brace'>}</em>
+<a id='L183' name='L183'></a> 183 
+<a id='L184' name='L184'></a> 184 
+<a id='L185' name='L185'></a> 185 <strong class='reserved'>void</strong> <a href='../S/2.html#L122' title='Defined at 122 in dialogs/dialog_template_selector.cpp.'>DIALOG_TEMPLATE_SELECTOR</a>::<a href='../R/172.html' title='Multiple referred from 3 places.'>buildPageContent</a>( <strong class='reserved'>const</strong> <a href='../Y/1017.html' title='Multiple used in 199 places.'>wxString</a>&amp; <a href='../Y/450.html' title='Multiple used in 19 places.'>aPath</a>, <strong class='reserved'>int</strong> <a href='../Y/448.html' title='Multiple used in 14 places.'>aPage</a> )
+<a id='L186' name='L186'></a> 186 <em class='brace'>{</em>
+<a id='L187' name='L187'></a> 187     <em class='comment'>// Get a list of files under the template path to include as choices...</em>
+<a id='L188' name='L188'></a> 188     <a href='../Y/911.html' title='Multiple used in 11 places.'>wxDir</a>           <a href='../Y/533.html' title='Multiple used in 20 places.'>dir</a>;
+<a id='L189' name='L189'></a> 189 
+<a id='L190' name='L190'></a> 190     <strong class='reserved'>if</strong>( <a href='../Y/533.html' title='Multiple used in 20 places.'>dir</a>.<a href='../Y/284.html' title='Multiple used in 2 places.'>Open</a>( <a href='../Y/450.html' title='Multiple used in 19 places.'>aPath</a> ) )
+<a id='L191' name='L191'></a> 191     <em class='brace'>{</em>
+<a id='L192' name='L192'></a> 192         <strong class='reserved'>if</strong>( <a href='../Y/533.html' title='Multiple used in 20 places.'>dir</a>.HasSubDirs( "meta" ) )
+<a id='L193' name='L193'></a> 193         <em class='brace'>{</em>
+<a id='L194' name='L194'></a> 194             <a href='../S/2.html#L143' title='Defined at 143 in dialogs/dialog_template_selector.cpp.'>AddTemplate</a>( <a href='../Y/448.html' title='Multiple used in 14 places.'>aPage</a>, <strong class='reserved'>new</strong> <a href='../D/105.html' title='Multiple defined in 2 places.'>PROJECT_TEMPLATE</a>( <a href='../Y/450.html' title='Multiple used in 19 places.'>aPath</a> ) );
+<a id='L195' name='L195'></a> 195         <em class='brace'>}</em>
+<a id='L196' name='L196'></a> 196         <strong class='reserved'>else</strong>
+<a id='L197' name='L197'></a> 197         <em class='brace'>{</em>
+<a id='L198' name='L198'></a> 198             <a href='../Y/911.html' title='Multiple used in 11 places.'>wxDir</a>       <a href='../Y/834.html' title='Multiple used in 2 places.'>sub_dir</a>;
+<a id='L199' name='L199'></a> 199             <a href='../Y/1017.html' title='Multiple used in 199 places.'>wxString</a>    <a href='../Y/836.html' title='Multiple used in 4 places.'>sub_name</a>;
+<a id='L200' name='L200'></a> 200 
+<a id='L201' name='L201'></a> 201             <strong class='reserved'>bool</strong> <a href='../Y/503.html' title='Multiple used in 6 places.'>cont</a> = <a href='../Y/533.html' title='Multiple used in 20 places.'>dir</a>.<a href='../Y/147.html' title='Multiple used in 4 places.'>GetFirst</a>( &amp;<a href='../Y/836.html' title='Multiple used in 4 places.'>sub_name</a>, <a href='../Y/927.html' title='Multiple used in 22 places.'>wxEmptyString</a>, wxDIR_DIRS );
+<a id='L202' name='L202'></a> 202 
+<a id='L203' name='L203'></a> 203             <strong class='reserved'>while</strong>( <a href='../Y/503.html' title='Multiple used in 6 places.'>cont</a> )
+<a id='L204' name='L204'></a> 204             <em class='brace'>{</em>
+<a id='L205' name='L205'></a> 205                 <a href='../Y/1017.html' title='Multiple used in 199 places.'>wxString</a> <a href='../Y/835.html' title='Multiple used in 3 places.'>sub_full</a> = <a href='../Y/450.html' title='Multiple used in 19 places.'>aPath</a> + <a href='../Y/836.html' title='Multiple used in 4 places.'>sub_name</a>;
+<a id='L206' name='L206'></a> 206 
+<a id='L207' name='L207'></a> 207                 <strong class='reserved'>if</strong>( <a href='../Y/834.html' title='Multiple used in 2 places.'>sub_dir</a>.<a href='../Y/284.html' title='Multiple used in 2 places.'>Open</a>( <a href='../Y/835.html' title='Multiple used in 3 places.'>sub_full</a> ) )
+<a id='L208' name='L208'></a> 208                 <em class='brace'>{</em>
+<a id='L209' name='L209'></a> 209                     <a href='../S/2.html#L143' title='Defined at 143 in dialogs/dialog_template_selector.cpp.'>AddTemplate</a>( <a href='../Y/448.html' title='Multiple used in 14 places.'>aPage</a>, <strong class='reserved'>new</strong> <a href='../D/105.html' title='Multiple defined in 2 places.'>PROJECT_TEMPLATE</a>( <a href='../Y/835.html' title='Multiple used in 3 places.'>sub_full</a> ) );
+<a id='L210' name='L210'></a> 210                 <em class='brace'>}</em>
+<a id='L211' name='L211'></a> 211 
+<a id='L212' name='L212'></a> 212                 <a href='../Y/503.html' title='Multiple used in 6 places.'>cont</a> = <a href='../Y/533.html' title='Multiple used in 20 places.'>dir</a>.<a href='../Y/171.html' title='Multiple used in 4 places.'>GetNext</a>( &amp;<a href='../Y/836.html' title='Multiple used in 4 places.'>sub_name</a> );
+<a id='L213' name='L213'></a> 213             <em class='brace'>}</em>
+<a id='L214' name='L214'></a> 214         <em class='brace'>}</em>
+<a id='L215' name='L215'></a> 215     <em class='brace'>}</em>
+<a id='L216' name='L216'></a> 216 <em class='brace'>}</em>
+<a id='L217' name='L217'></a> 217 
+<a id='L218' name='L218'></a> 218 
+<a id='L219' name='L219'></a> 219 <strong class='reserved'>void</strong> <a href='../S/2.html#L122' title='Defined at 122 in dialogs/dialog_template_selector.cpp.'>DIALOG_TEMPLATE_SELECTOR</a>::<a href='../R/180.html' title='Multiple referred from 4 places.'>onDirectoryBrowseClicked</a>( <a href='../Y/898.html' title='Multiple used in 41 places.'>wxCommandEvent</a>&amp; <a href='../Y/565.html' title='Multiple used in 60 places.'>event</a> )
+<a id='L220' name='L220'></a> 220 <em class='brace'>{</em>
+<a id='L221' name='L221'></a> 221     <a href='../Y/942.html' title='Multiple used in 107 places.'>wxFileName</a> <a href='../Y/584.html' title='Multiple used in 95 places.'>fn</a>;
+<a id='L222' name='L222'></a> 222     <a href='../Y/584.html' title='Multiple used in 95 places.'>fn</a>.<a href='../Y/36.html' title='Multiple used in 7 places.'>AssignDir</a>( <a href='../Y/709.html' title='Multiple used in 12 places.'>m_tcTemplatePath</a>-&gt;<a href='../Y/193.html' title='Multiple used in 15 places.'>GetValue</a>() );
+<a id='L223' name='L223'></a> 223     <a href='../Y/584.html' title='Multiple used in 95 places.'>fn</a>.<a href='../Y/280.html' title='Multiple used in 3 places.'>Normalize</a>();
+<a id='L224' name='L224'></a> 224     <a href='../Y/1017.html' title='Multiple used in 199 places.'>wxString</a> <a href='../Y/508.html' title='Multiple used in 7 places.'>currPath</a> = <a href='../Y/584.html' title='Multiple used in 95 places.'>fn</a>.<a href='../Y/151.html' title='Multiple used in 48 places.'>GetFullPath</a>();
+<a id='L225' name='L225'></a> 225 
+<a id='L226' name='L226'></a> 226     <a href='../Y/912.html' title='Multiple used in 3 places.'>wxDirDialog</a> <a href='../Y/534.html' title='Multiple used in 3 places.'>dirDialog</a>( <strong class='reserved'>this</strong>, <a href='../D/178.html' title='Multiple defined in 2 places.'>_</a>( "Select Templates Directory" ),
+<a id='L227' name='L227'></a> 227                            <a href='../Y/508.html' title='Multiple used in 7 places.'>currPath</a>,
+<a id='L228' name='L228'></a> 228                            <a href='../Y/903.html' title='Multiple used in 3 places.'>wxDD_DEFAULT_STYLE</a> | wxDD_DIR_MUST_EXIST );
+<a id='L229' name='L229'></a> 229 
+<a id='L230' name='L230'></a> 230     <strong class='reserved'>if</strong>( <a href='../Y/534.html' title='Multiple used in 3 places.'>dirDialog</a>.<a href='../Y/384.html' title='Multiple used in 20 places.'>ShowModal</a>() != <a href='../Y/963.html' title='Multiple used in 4 places.'>wxID_OK</a> )
+<a id='L231' name='L231'></a> 231         <strong class='reserved'>return</strong>;
+<a id='L232' name='L232'></a> 232 
+<a id='L233' name='L233'></a> 233     <a href='../Y/942.html' title='Multiple used in 107 places.'>wxFileName</a> <a href='../Y/536.html' title='Multiple used in 2 places.'>dirName</a> = <a href='../Y/942.html' title='Multiple used in 107 places.'>wxFileName</a>::<a href='../Y/68.html' title='Multiple used in 3 places.'>DirName</a>( <a href='../Y/534.html' title='Multiple used in 3 places.'>dirDialog</a>.<a href='../Y/177.html' title='Multiple used in 43 places.'>GetPath</a>() );
+<a id='L234' name='L234'></a> 234 
+<a id='L235' name='L235'></a> 235     <a href='../Y/709.html' title='Multiple used in 12 places.'>m_tcTemplatePath</a>-&gt;<a href='../Y/381.html' title='Multiple used in 5 places.'>SetValue</a>( <a href='../Y/536.html' title='Multiple used in 2 places.'>dirName</a>.<a href='../Y/151.html' title='Multiple used in 48 places.'>GetFullPath</a>() );
+<a id='L236' name='L236'></a> 236 
+<a id='L237' name='L237'></a> 237     <em class='comment'>// Rebuild the page from the new templates path:</em>
+<a id='L238' name='L238'></a> 238     <a href='../S/2.html#L261' title='Defined at 261 in dialogs/dialog_template_selector.cpp.'>replaceCurrentPage</a>();
+<a id='L239' name='L239'></a> 239 <em class='brace'>}</em>
+<a id='L240' name='L240'></a> 240 
+<a id='L241' name='L241'></a> 241 
+<a id='L242' name='L242'></a> 242 <strong class='reserved'>void</strong> <a href='../S/2.html#L122' title='Defined at 122 in dialogs/dialog_template_selector.cpp.'>DIALOG_TEMPLATE_SELECTOR</a>::<a href='../R/182.html' title='Multiple referred from 4 places.'>onValidatePath</a>( <a href='../Y/898.html' title='Multiple used in 41 places.'>wxCommandEvent</a>&amp; <a href='../Y/565.html' title='Multiple used in 60 places.'>event</a> )
+<a id='L243' name='L243'></a> 243 <em class='brace'>{</em>
+<a id='L244' name='L244'></a> 244     <strong class='reserved'>int</strong> <a href='../Y/752.html' title='Multiple used in 12 places.'>page</a> = <a href='../Y/689.html' title='Multiple used in 21 places.'>m_notebook</a>-&gt;<a href='../Y/184.html' title='Multiple used in 3 places.'>GetSelection</a>();
+<a id='L245' name='L245'></a> 245 
+<a id='L246' name='L246'></a> 246     <strong class='reserved'>if</strong>( <a href='../Y/752.html' title='Multiple used in 12 places.'>page</a> &lt; 0 )
+<a id='L247' name='L247'></a> 247         <strong class='reserved'>return</strong>;     <em class='comment'>// Should not happen</em>
+<a id='L248' name='L248'></a> 248 
+<a id='L249' name='L249'></a> 249     <a href='../Y/1017.html' title='Multiple used in 199 places.'>wxString</a> <a href='../Y/508.html' title='Multiple used in 7 places.'>currPath</a> = <a href='../Y/709.html' title='Multiple used in 12 places.'>m_tcTemplatePath</a>-&gt;<a href='../Y/193.html' title='Multiple used in 15 places.'>GetValue</a>();
+<a id='L250' name='L250'></a> 250 
+<a id='L251' name='L251'></a> 251     <a href='../Y/942.html' title='Multiple used in 107 places.'>wxFileName</a> <a href='../Y/584.html' title='Multiple used in 95 places.'>fn</a>;
+<a id='L252' name='L252'></a> 252     <a href='../Y/584.html' title='Multiple used in 95 places.'>fn</a>.<a href='../Y/36.html' title='Multiple used in 7 places.'>AssignDir</a>( <a href='../Y/709.html' title='Multiple used in 12 places.'>m_tcTemplatePath</a>-&gt;<a href='../Y/193.html' title='Multiple used in 15 places.'>GetValue</a>() );
+<a id='L253' name='L253'></a> 253     <a href='../Y/584.html' title='Multiple used in 95 places.'>fn</a>.<a href='../Y/280.html' title='Multiple used in 3 places.'>Normalize</a>();
+<a id='L254' name='L254'></a> 254     <a href='../Y/508.html' title='Multiple used in 7 places.'>currPath</a> = <a href='../Y/584.html' title='Multiple used in 95 places.'>fn</a>.<a href='../Y/151.html' title='Multiple used in 48 places.'>GetFullPath</a>();
+<a id='L255' name='L255'></a> 255     <a href='../Y/709.html' title='Multiple used in 12 places.'>m_tcTemplatePath</a>-&gt;<a href='../Y/381.html' title='Multiple used in 5 places.'>SetValue</a>( <a href='../Y/508.html' title='Multiple used in 7 places.'>currPath</a> );
+<a id='L256' name='L256'></a> 256 
+<a id='L257' name='L257'></a> 257     <a href='../S/2.html#L261' title='Defined at 261 in dialogs/dialog_template_selector.cpp.'>replaceCurrentPage</a>();
+<a id='L258' name='L258'></a> 258 <em class='brace'>}</em>
+<a id='L259' name='L259'></a> 259 
+<a id='L260' name='L260'></a> 260 
+<a id='L261' name='L261'></a> 261 <strong class='reserved'>void</strong> <a href='../S/2.html#L122' title='Defined at 122 in dialogs/dialog_template_selector.cpp.'>DIALOG_TEMPLATE_SELECTOR</a>::<a href='../R/183.html' title='Multiple referred from 3 places.'>replaceCurrentPage</a>()
+<a id='L262' name='L262'></a> 262 <em class='brace'>{</em>
+<a id='L263' name='L263'></a> 263     <em class='comment'>// Rebuild the page from the new templates path:</em>
+<a id='L264' name='L264'></a> 264     <strong class='reserved'>int</strong> <a href='../Y/752.html' title='Multiple used in 12 places.'>page</a> = <a href='../Y/689.html' title='Multiple used in 21 places.'>m_notebook</a>-&gt;<a href='../Y/184.html' title='Multiple used in 3 places.'>GetSelection</a>();
+<a id='L265' name='L265'></a> 265 
+<a id='L266' name='L266'></a> 266     <strong class='reserved'>if</strong>( <a href='../Y/752.html' title='Multiple used in 12 places.'>page</a> &lt; 0 )
+<a id='L267' name='L267'></a> 267         <strong class='reserved'>return</strong>;     <em class='comment'>// Should not happen</em>
+<a id='L268' name='L268'></a> 268 
+<a id='L269' name='L269'></a> 269     <a href='../Y/1017.html' title='Multiple used in 199 places.'>wxString</a> <a href='../Y/846.html' title='Multiple used in 14 places.'>title</a> = <a href='../Y/689.html' title='Multiple used in 21 places.'>m_notebook</a>-&gt;GetPageText( <a href='../Y/752.html' title='Multiple used in 12 places.'>page</a> );
+<a id='L270' name='L270'></a> 270     <a href='../Y/1017.html' title='Multiple used in 199 places.'>wxString</a> <a href='../Y/508.html' title='Multiple used in 7 places.'>currPath</a> = <a href='../Y/709.html' title='Multiple used in 12 places.'>m_tcTemplatePath</a>-&gt;<a href='../Y/193.html' title='Multiple used in 15 places.'>GetValue</a>();
+<a id='L271' name='L271'></a> 271 
+<a id='L272' name='L272'></a> 272     <a href='../Y/689.html' title='Multiple used in 21 places.'>m_notebook</a>-&gt;DeletePage( <a href='../Y/752.html' title='Multiple used in 12 places.'>page</a> );
+<a id='L273' name='L273'></a> 273 
+<a id='L274' name='L274'></a> 274     <a href='../Y/989.html' title='Multiple used in 5 places.'>wxNotebookPage</a>* <a href='../Y/730.html' title='Multiple used in 6 places.'>newPage</a> = <strong class='reserved'>new</strong> <a href='../Y/989.html' title='Multiple used in 5 places.'>wxNotebookPage</a>( <a href='../Y/689.html' title='Multiple used in 21 places.'>m_notebook</a>, <a href='../Y/960.html' title='Multiple used in 17 places.'>wxID_ANY</a> );
+<a id='L275' name='L275'></a> 275     <a href='../S/2.html#L31' title='Defined at 31 in dialogs/dialog_template_selector.cpp.'>TEMPLATE_SELECTION_PANEL</a>* <a href='../Y/851.html' title='Multiple used in 4 places.'>tpanel</a> = <strong class='reserved'>new</strong> <a href='../S/2.html#L31' title='Defined at 31 in dialogs/dialog_template_selector.cpp.'>TEMPLATE_SELECTION_PANEL</a>( <a href='../Y/730.html' title='Multiple used in 6 places.'>newPage</a>, <a href='../Y/508.html' title='Multiple used in 7 places.'>currPath</a> );
+<a id='L276' name='L276'></a> 276     <a href='../Y/691.html' title='Multiple used in 18 places.'>m_panels</a>[<a href='../Y/752.html' title='Multiple used in 12 places.'>page</a>] = <a href='../Y/851.html' title='Multiple used in 4 places.'>tpanel</a>;
+<a id='L277' name='L277'></a> 277     <a href='../Y/689.html' title='Multiple used in 21 places.'>m_notebook</a>-&gt;InsertPage( <a href='../Y/752.html' title='Multiple used in 12 places.'>page</a>, <a href='../Y/730.html' title='Multiple used in 6 places.'>newPage</a>, <a href='../Y/846.html' title='Multiple used in 14 places.'>title</a>, <strong class='reserved'>true</strong> );
+<a id='L278' name='L278'></a> 278 
+<a id='L279' name='L279'></a> 279     <a href='../S/2.html#L185' title='Defined at 185 in dialogs/dialog_template_selector.cpp.'>buildPageContent</a>( <a href='../Y/709.html' title='Multiple used in 12 places.'>m_tcTemplatePath</a>-&gt;<a href='../Y/193.html' title='Multiple used in 15 places.'>GetValue</a>(), <a href='../Y/752.html' title='Multiple used in 12 places.'>page</a> );
+<a id='L280' name='L280'></a> 280 
+<a id='L281' name='L281'></a> 281     <a href='../Y/703.html' title='Multiple used in 8 places.'>m_selectedWidget</a> = <a href='../Y/276.html' title='Multiple used in 24 places.'>NULL</a>;
+<a id='L282' name='L282'></a> 282 <em class='brace'>}</em>
+<a id='L283' name='L283'></a> 283 
+<a id='L284' name='L284'></a> 284 
+<a id='L285' name='L285'></a> 285 <strong class='reserved'>void</strong> <a href='../S/2.html#L122' title='Defined at 122 in dialogs/dialog_template_selector.cpp.'>DIALOG_TEMPLATE_SELECTOR</a>::<a href='../R/78.html' title='Multiple referred from 4 places.'>OnHtmlLinkActivated</a>( <a href='../Y/954.html' title='Multiple used in 3 places.'>wxHtmlLinkEvent</a>&amp; <a href='../Y/565.html' title='Multiple used in 60 places.'>event</a> )
+<a id='L286' name='L286'></a> 286 <em class='brace'>{</em>
+<a id='L287' name='L287'></a> 287     <a href='../Y/1017.html' title='Multiple used in 199 places.'>wxString</a> <a href='../Y/863.html' title='Multiple used in 2 places.'>url</a> = <a href='../Y/565.html' title='Multiple used in 60 places.'>event</a>.GetLinkInfo().GetHref();
+<a id='L288' name='L288'></a> 288     <a href='../Y/972.html' title='Multiple used in 2 places.'>wxLaunchDefaultBrowser</a>( <a href='../Y/863.html' title='Multiple used in 2 places.'>url</a> );
+<a id='L289' name='L289'></a> 289 <em class='brace'>}</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* [&lt;][&gt;]<a href='#L62'>[^]</a><a href='#L285'>[v]</a><a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</em>
+</body>
+</html>
